@@ -1,0 +1,60 @@
+import { createElement } from 'React';
+import {
+  collectAppLifeCycle,
+  initAppLifeCycles,
+  emitLifeCycles,
+<% if (enableRouter !== false) {%>
+  initHistory,
+  // createHistory,
+<% } %>
+} from 'create-app-shared';
+import render from '@ice/framework-runtime';
+<% if (globalStyle) {%>
+  // eslint-disable-next-line
+  import '<%= globalStyle %>'
+<% } %>
+import loadStaticModules from './loadStaticModules';
+import loadRuntimeModules from './loadRuntimeModules';
+
+import { setAppConfig } from '<%- relativeCorePath %>/appConfig';
+import { IAppConfig, IBuildConfig } from '<%- typesPath  %>';
+
+const buildConfig: IBuildConfig = <%- JSON.stringify(buildConfig) %>;
+const runtimeValue = {
+<% if(enableRouter){ %>
+  enableRouter: true,
+<% } %>
+};
+
+export function runApp(defaultConfig: IAppConfig = {}, staticConfig = {}) {
+  // default appConfig and you can override app config here like SSR
+  const appConfig = {
+    ...defaultConfig,
+    app: {
+      rootId: 'root',
+      ...(defaultConfig?.app || {}),
+    },
+    router: {
+      type: 'hash',
+      ...(defaultConfig?.router || {}),
+    }
+  }
+  // store appConfig in case of server side render
+  // server bundle will to get appConfig after run runApp
+  setAppConfig(appConfig as IAppConfig);
+  // load static modules before init runtime such as request
+  loadStaticModules(appConfig as IAppConfig);
+  <% if (enableRouter !== false) {%>
+  // set History before GID
+  initHistory && initHistory(appConfig as any);
+  <% } %>
+  if (process.env.__IS_SERVER__) return;
+  const context = {
+    createElement,
+    staticConfig,
+  };
+  const runtime = new RuntimeModule(appConfig, buildConfig, context);
+  loadRuntimeModules(runtime);
+
+  render(runtime, { collectAppLifeCycle, initAppLifeCycles, emitLifeCycles });
+};

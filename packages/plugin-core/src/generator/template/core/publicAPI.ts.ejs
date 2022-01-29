@@ -1,0 +1,19 @@
+import { useEffect } from 'react';
+import {
+  withPageLifeCycle,
+  createUsePageLifeCycle,
+  emitLifeCycles,
+  getSearchParams,
+} from 'create-app-shared';
+
+const { usePageShow, usePageHide } = createUsePageLifeCycle({ useEffect });
+
+// Public API
+export {
+  // LifeCycles api
+  emitLifeCycles,
+  usePageShow,
+  usePageHide,
+  withPageLifeCycle,
+  getSearchParams,
+};

@@ -51,7 +51,7 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig) => {
   } as Json;
   let plugins: IPluginList = [
     // common plugins
-    // ['build-plugin-app-core', coreOptions],
+    require.resolve('build-plugin-core'),
     // 'build-plugin-ice-logger',
 
     // react base plugin

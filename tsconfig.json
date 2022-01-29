@@ -1,6 +1,8 @@
 {
   "files": [],
   "references": [
+    { "path": "packages/runtime"},
+    { "path": "packages/plugin-core"},
     { "path": "packages/plugin-app"},
     { "path": "packages/icejs" }
   ]

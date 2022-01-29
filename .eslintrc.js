@@ -28,6 +28,7 @@ module.exports = getESLintConfig('react-ts', {
     '@typescript-eslint/explicit-function-return-type': 0,
     '@typescript-eslint/no-var-requires': 0,
     '@typescript-eslint/explicit-module-boundary-types': 0,
+    '@typescript-eslint/explicit-member-accessibility': 0,
     '@typescript-eslint/prefer-for-of': 0,
     'id-length': 0,
     'no-use-before-define': 0,
