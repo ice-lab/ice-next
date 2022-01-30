@@ -45,10 +45,6 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig) => {
   // eslint-disable-next-line
   const pkg = require('../package.json');
   process.env.__FRAMEWORK_VERSION__ = pkg.version;
-  const coreOptions = {
-    framework: 'react',
-    alias: process.env.__FRAMEWORK_NAME__ || 'ice',
-  } as Json;
   let plugins: IPluginList = [
     // common plugins
     require.resolve('build-plugin-core'),

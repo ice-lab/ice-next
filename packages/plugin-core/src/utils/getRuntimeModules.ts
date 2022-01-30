@@ -1,13 +1,15 @@
 import * as path from 'path';
 import * as fse from 'fs-extra';
 import * as globby from 'globby';
+import * as findUp from 'find-up';
 import formatPath from './formatPath';
 import formatPluginDir from './formatPluginDir';
 
 //  https://regexr.com/47jlq
 const importRegex = /import\s+?(?:(?:(?:[\w*\s{},]*)\s+from\s+?)|)(?:(?:"(.*?)")|(?:'(.*?)'))[\s]*?(?:;|$|)/;
 
-export default (plugins: any = [], targetDir: string, hasJsxRuntime: boolean) => {
+export default (plugins: any, targetDir: string, hasJsxRuntime: boolean) => {
+  console.log('plugins ==>', plugins);
   const analyzeMap = new Set();
   const sourceCache = new Map();
   function removeReactStatement(sourceCode: string) {
@@ -61,37 +63,34 @@ export default (plugins: any = [], targetDir: string, hasJsxRuntime: boolean) =>
     });
   }
 
-  return plugins.map(({ pluginPath, name }) => {
+  return plugins.map(({ pluginPath }) => {
     // compatible with function plugin
     if (!pluginPath) return false;
-    // NOTE: module.js will be discarded in future.
     const pluginDir = path.dirname(pluginPath);
-    // compatible with output file extension of .jsx
-    let [absoluteModulePath] = globby.sync('runtime.@((t|j)s?(x))', { cwd: pluginDir, absolute: true });
-    let modulePath = absoluteModulePath;
-    const moduleDir = path.join(pluginDir, '..');
-    if (!absoluteModulePath) {
-      // filter plugin without runtime
-      return false;
-    } else if (name) {
+    const pluginPackagePath = findUp.sync('package.json', { cwd: pluginDir });
+    const moduleDir = path.dirname(pluginPackagePath);
+    const name = path.basename(moduleDir);
+    console.log('moduleDir', moduleDir);
+    console.log('name', name);
+    let absoluteModulePath = '';
+    let modulePath = '';
+    if (name) {
       // copy module dir to target dir
-      const tempDir = path.join(targetDir, 'plugins', formatPluginDir(name), 'pluginRuntime');
+      const tempDir = path.join(targetDir, 'plugins', formatPluginDir(name));
       // ensure source dir
-      const srcDir = path.join(moduleDir, 'src');
-      if (fse.existsSync(srcDir)) {
-        const runtimePaths = globby.sync('runtime.@((t|j)s?(x))', { cwd: srcDir });
+      const runtimeDir = path.join(moduleDir, 'runtime');
+      if (fse.existsSync(runtimeDir)) {
+        const runtimePaths = globby.sync('index.@((t|j)s?(x))', { cwd: runtimeDir });
         if (runtimePaths.length > 0) {
-          const runtimeFilePath = path.join(srcDir, runtimePaths[0]);
+          const runtimeFilePath = path.join(runtimeDir, runtimePaths[0]);
           const relativeFiles = [];
           analyzeRelativePath(runtimeFilePath, relativeFiles);
           // copy source code when runtime exists
           [runtimeFilePath, ...relativeFiles].forEach((filePath) => {
-            let targetPath = '';
-            if (filePath !== runtimeFilePath) {
-              targetPath = path.join(tempDir, path.relative(path.dirname(runtimeFilePath), path.dirname(filePath)), path.basename(filePath));
-            } else {
-              targetPath = path.join(tempDir, path.basename(runtimeFilePath));
-            }
+            const targetPath = filePath === runtimeFilePath
+              ? path.join(tempDir, path.basename(runtimeFilePath))
+              : path.join(tempDir,
+                path.relative(path.dirname(runtimeFilePath), path.dirname(filePath)), path.basename(filePath));
             fse.ensureDirSync(path.dirname(targetPath));
             if (hasJsxRuntime) {
               // remove React import when jsx runtime is enabled
