@@ -9,7 +9,6 @@ import formatPluginDir from './formatPluginDir';
 const importRegex = /import\s+?(?:(?:(?:[\w*\s{},]*)\s+from\s+?)|)(?:(?:"(.*?)")|(?:'(.*?)'))[\s]*?(?:;|$|)/;
 
 export default (plugins: any, targetDir: string, hasJsxRuntime: boolean) => {
-  console.log('plugins ==>', plugins);
   const analyzeMap = new Set();
   const sourceCache = new Map();
   function removeReactStatement(sourceCode: string) {
@@ -70,8 +69,6 @@ export default (plugins: any, targetDir: string, hasJsxRuntime: boolean) => {
     const pluginPackagePath = findUp.sync('package.json', { cwd: pluginDir });
     const moduleDir = path.dirname(pluginPackagePath);
     const name = path.basename(moduleDir);
-    console.log('moduleDir', moduleDir);
-    console.log('name', name);
     let absoluteModulePath = '';
     let modulePath = '';
     if (name) {
