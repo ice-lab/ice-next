@@ -128,8 +128,7 @@ export default class Generator {
   }
 
   public parseRenderData() {
-    const staticConfig = globby.sync(['src/app.json'], { cwd: this.rootDir });
-    // fix https://github.com/raxjs/rax-app/issues/831
+    const staticConfig = globby.sync(['src/manifest.json'], { cwd: this.rootDir });
     const globalStyles = globby.sync(['src/global.@(scss|less|styl|css)'], { cwd: this.rootDir, absolute: true });
     let exportsData = {};
     EXPORT_API_MPA.forEach(item => {
@@ -143,10 +142,6 @@ export default class Generator {
       ...exportsData,
       staticConfig: staticConfig.length && staticConfig[0],
       globalStyle: globalStyles.length && formatPath(path.relative(path.join(this.targetDir, 'core'), globalStyles[0])),
-      entryImportsBefore: this.generateImportStr('addEntryImports_before'),
-      entryImportsAfter: this.generateImportStr('addEntryImports_after'),
-      entryCodeBefore: this.contentRegistration.addEntryCode_before || '',
-      entryCodeAfter: this.contentRegistration.addEntryCode_after || '',
     };
   }
 
@@ -202,9 +197,9 @@ export default class Generator {
 
   public addTemplateFiles = (templateOptions: string | TemplateOptions, extraData: ExtraData = {}) => {
     const { template, targetDir } = typeof templateOptions === 'string' ? { template: templateOptions, targetDir: '' } : templateOptions;
-    const templates = !path.extname(template)
-      ? globby.sync(['**/*'], { cwd: template })
-      : [template];
+    const templates = path.extname(template)
+      ? [template]
+      : globby.sync(['**/*'], { cwd: template });
     templates.forEach((templateFile) => {
       const templatePath = path.isAbsolute(templateFile) ? templateFile : path.join(template, templateFile);
       const filePath = path.isAbsolute(templateFile) ? path.basename(templateFile) : templateFile;
