@@ -7,8 +7,5 @@
   },
   "description": "",
   "author": "",
-  "license": "MIT",
-  "devDependencies": {
-    "ice.js": "^3.0.0"
-  }
+  "license": "MIT"
 }

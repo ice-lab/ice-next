@@ -5,10 +5,17 @@ import * as findUp from 'find-up';
 import formatPath from './formatPath';
 import formatPluginDir from './formatPluginDir';
 
+export interface RuntimeModule {
+  staticModule: boolean;
+  path: string;
+  absoluteModulePath: string;
+  name: string;
+}
+
 //  https://regexr.com/47jlq
 const importRegex = /import\s+?(?:(?:(?:[\w*\s{},]*)\s+from\s+?)|)(?:(?:"(.*?)")|(?:'(.*?)'))[\s]*?(?:;|$|)/;
 
-export default (plugins: any, targetDir: string, hasJsxRuntime: boolean) => {
+export default (plugins: any, targetDir: string, hasJsxRuntime: boolean): RuntimeModule[] => {
   const analyzeMap = new Set();
   const sourceCache = new Map();
   function removeReactStatement(sourceCode: string) {

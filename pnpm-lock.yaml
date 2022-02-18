@@ -80,6 +80,15 @@ importers:
       '@types/react': 17.0.38
       '@types/react-dom': 17.0.11
 
+  packages/app-lifecycle:
+    specifiers:
+      history: ^5.2.0
+      react-router-dom: ^6.2.1
+    dependencies:
+      history: 5.2.0
+    devDependencies:
+      react-router-dom: 6.2.1_react@17.0.2
+
   packages/icejs:
     specifiers:
       '@builder/pack': ^0.6.0
@@ -631,7 +640,6 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       regenerator-runtime: 0.13.9
-    dev: true
 
   /@babel/standalone/7.16.12:
     resolution: {integrity: sha512-Yhx3HHbBLCE0AzpmAXQ2h0adOz0N4Ga64EC7BibFPbdE0c9/davL/NCdHJf/xuQUbwtCg99g1ZLUsMvTLgBQ2w==}
@@ -3939,6 +3947,11 @@ packages:
     dependencies:
       function-bind: 1.1.1
 
+  /history/5.2.0:
+    resolution: {integrity: sha512-uPSF6lAJb3nSePJ43hN3eKj1dTWpN9gMod0ZssbFTIsen+WehTmEadgL+kg78xLJFdRfrrC//SavDzmRVdE+Ig==}
+    dependencies:
+      '@babel/runtime': 7.16.7
+
   /hosted-git-info/2.8.9:
     resolution: {integrity: sha512-mxIDAb9Lsm6DoOJ7xH+5+X4y1LU/4Hi50L9C5sIswK3JzULS4bwk1FvjdBgvYR4bzT4tuUQiC15FE2f5HbLvYw==}
     dev: true
@@ -5989,6 +6002,26 @@ packages:
     resolution: {integrity: sha512-F27qZr8uUqwhWZboondsPx8tnC3Ct3SxZA3V5WyEvujRyyNv0VYPhoBg1gZ8/MV5tubQp76Trw8lTv9hzRBa+A==}
     engines: {node: '>=0.10.0'}
     dev: false
+
+  /react-router-dom/6.2.1_react@17.0.2:
+    resolution: {integrity: sha512-I6Zax+/TH/cZMDpj3/4Fl2eaNdcvoxxHoH1tYOREsQ22OKDYofGebrNm6CTPUcvLvZm63NL/vzCYdjf9CUhqmA==}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      history: 5.2.0
+      react: 17.0.2
+      react-router: 6.2.1_react@17.0.2
+    dev: true
+
+  /react-router/6.2.1_react@17.0.2:
+    resolution: {integrity: sha512-2fG0udBtxou9lXtK97eJeET2ki5//UWfQSl1rlJ7quwe6jrktK9FCCc8dQb5QY6jAv3jua8bBQRhhDOM/kVRsg==}
+    peerDependencies:
+      react: '>=16.8'
+    dependencies:
+      history: 5.2.0
+      react: 17.0.2
+    dev: true
 
   /react/17.0.2:
     resolution: {integrity: sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA==}

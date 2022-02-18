@@ -1,0 +1,17 @@
+{
+  "name": "@ice/app-lifecycle",
+  "version": "0.0.1",
+  "description": "provide unite lifecycle for app platform",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ICE",
+  "license": "MIT",
+  "devDependencies": {
+    "react-router-dom": "^6.2.1"
+  },
+  "dependencies": {
+    "history": "^5.2.0"
+  }
+}

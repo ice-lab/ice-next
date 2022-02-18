@@ -9,21 +9,19 @@ export interface AppLifeCycle {
 
 export function getRenderApp(runtime: RuntimeService) {
   const appConfig = runtime.getAppConfig();
+  const { strict = false } = appConfig.app;
   const AppProvider = runtime.composeAppProvider();
   const AppComponent = runtime.getAppComponent();
 
-  let rootApp = <AppComponent />;
-  if (AppProvider) {
-    rootApp = (
-      <AppProvider>
-        {rootApp}
-      </AppProvider>
-    );
-  }
-
-  const { strict = false } = appConfig.app;
-
   function App() {
+    let rootApp = <AppComponent />;
+    if (AppProvider) {
+      rootApp = (
+        <AppProvider>
+          {rootApp}
+        </AppProvider>
+      );
+    }
     if (strict) {
       rootApp = (
         <React.StrictMode>

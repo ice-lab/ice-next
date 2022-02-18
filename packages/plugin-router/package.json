@@ -1,0 +1,11 @@
+{
+  "name": "build-plugin-router",
+  "version": "3.0.0",
+  "description": "plugin for enhance router",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ICE",
+  "license": "MIT"
+}

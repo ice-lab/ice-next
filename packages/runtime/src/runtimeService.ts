@@ -193,9 +193,9 @@ class RuntimeService {
   private applyRuntimeAPI: ApplyRuntimeAPI = (key, ...args) => {
     if (!this.apiRegistration[key]) {
       console.warn(`unknown api ${key}`);
-    } else {
-      return this.apiRegistration[key](...args);
+      return;
     }
+    return this.apiRegistration[key](...args);
   };
 
   public setRuntimeValue: SetRuntimeValue = (key, value) => {
