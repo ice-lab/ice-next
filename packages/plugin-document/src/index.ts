@@ -1,37 +1,21 @@
 import * as path from 'path';
-import getWebpackConfig from '@builder/webpack-config';
 import type { IPlugin } from 'build-scripts';
 import render from './render';
+import { ssrLoadModule } from './ssrModuleLoader';
 
-const plugin: IPlugin = ({ registerTask, context, onGetWebpackConfig }) => {
+const plugin: IPlugin = ({ context, onGetWebpackConfig }) => {
   const { command, rootDir } = context;
-  const mode = command === 'start' ? 'development' : 'production';
 
-  // register document entry
-  const webpackConfig = getWebpackConfig(mode);
-
-  webpackConfig.entry('document').add(path.join(rootDir, 'src/document'));
-
-  webpackConfig.target('node');
-  webpackConfig.output.library({ type: 'commonjs2' });
-  webpackConfig.externals({
-    react: 'commonjs2 react',
-  });
-
-  webpackConfig.merge({
-    devServer: {
-      devMiddleware: {
-        writeToDisk: true,
-      },
-    },
-  });
-
-  webpackConfig.devServer.hot(false);
-
-  registerTask('document', webpackConfig);
-
-  // 路由 /index 的 html 走到了默认逻辑
+  // FIXME：路由 /index 没有被劫持
   const routes = [
+    {
+      path: '/',
+      component: './src/pages/index',
+    },
+    {
+      path: '/index',
+      component: './src/pages/index',
+    },
     {
       path: '/about',
       component: './src/pages/index',
@@ -50,11 +34,12 @@ const plugin: IPlugin = ({ registerTask, context, onGetWebpackConfig }) => {
         }
 
         routes.forEach((route) => {
-          devServer.app.get(route.path, (req, res) => {
-            // 如何保证每次都能取到最新的 document 产物
-            const Document = require(path.join(rootDir, 'dist/document')).default;
+          devServer.app.get(route.path, async (req, res) => {
+            const sourcePath = path.join(rootDir, '/src/document/index.jsx');
+            const { mod } = await ssrLoadModule(sourcePath);
 
-            // 需要写入 bundle 信息
+            const Document = mod;
+
             const html = render(Document);
             res.setHeader('Content-Type', 'text/html; charset=utf-8');
             res.send(html);
@@ -62,11 +47,6 @@ const plugin: IPlugin = ({ registerTask, context, onGetWebpackConfig }) => {
         });
       });
     });
-
-    // onHook('before.start.run', stats => {
-    //   // console.log(stats.config);
-    //   // do something after build
-    // });
   }
 };
 
