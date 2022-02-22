@@ -15,16 +15,6 @@ module.exports = {
       label: '指南',
     },
     {
-      to: '/docs/config/about',
-      position: 'right',
-      label: '配置',
-    },
-    {
-      to: '/docs/api/about',
-      position: 'right',
-      label: 'API',
-    },
-    {
       position: 'right',
       label: '插件',
       to: '/docs/plugin/develop/start'

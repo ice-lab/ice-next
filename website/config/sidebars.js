@@ -9,8 +9,8 @@ const getDocsFromDir = require('../scripts/getDocsFromDir');
 module.exports = {
   docs: [
     'guide/about',
-    'guide/start',
-    'guide/upgrade',
+    // 'guide/start',
+    // 'guide/upgrade',
     {
       type: 'category',
       label: '基础指南',
