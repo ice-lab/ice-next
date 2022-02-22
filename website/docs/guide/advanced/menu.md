@@ -52,7 +52,7 @@ export const asideMenuConfig = [
 
 ## 菜单图标
 
-我们默认使用 [Icon](/fusion/components/general/Icon.md) 这个组件渲染图标，可以使用哪些图标可以在组件文档中看到，如果有其他自定义的图标需求，将代码改为对应图标组件即可。
+我们默认使用 Icon 这个组件渲染图标，可以使用哪些图标可以在组件文档中看到，如果有其他自定义的图标需求，将代码改为对应图标组件即可。
 
 ```jsx
 <SubNav key={item.name} icon={item.icon} label={item.name}>

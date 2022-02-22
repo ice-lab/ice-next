@@ -39,5 +39,4 @@ module.exports = {
     },
   ],
   examples: getDocsFromDir('examples'),
-  resource: getDocsFromDir('resource')
 };

@@ -5,14 +5,6 @@ module.exports = {
       title: '参考',
       items: [
         {
-          label: '前端基础知识',
-          href: '/docs/resource/front-basic',
-        },
-        {
-          label: '前端环境准备',
-          to: '/docs/resource/front-env'
-        },
-        {
           to: 'https://iceteam.gitee.io',
           label: '国内镜像站点',
         },
