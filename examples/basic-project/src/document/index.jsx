@@ -10,7 +10,8 @@ function Document() {
         <title>ICE Demo</title>
       </head>
       <body>
-        <div id="root"></div>
+        <div id="ice-container"></div>
+        <script src="./index.js"></script>
       </body>
     </html>
   );
