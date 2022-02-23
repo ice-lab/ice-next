@@ -56,7 +56,6 @@ const getBuiltInPlugins: IGetBuiltInPlugins = (userConfig) => {
 
     // react base plugin
     require.resolve('build-plugin-app'),
-    require.resolve('build-plugin-document'),
 
     // for ice/react plugins
     /* 'build-plugin-ice-router',

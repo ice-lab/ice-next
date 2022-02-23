@@ -1,6 +1,7 @@
 import * as path from 'path';
 import getWebpackConfig from '@builder/webpack-config';
 import type { IPlugin } from 'build-scripts';
+import { handleRequest } from './dev/server';
 
 const plugin: IPlugin = ({ registerTask, context }) => {
   const { command, rootDir } = context;
@@ -16,6 +17,28 @@ const plugin: IPlugin = ({ registerTask, context }) => {
       events: require.resolve('events'),
     },
   });
+
+  const mockRoutes = [
+    {
+      path: '/',
+      component: './src/pages/index',
+    },
+  ];
+
+  webpackConfig.devServer.set('onAfterSetupMiddleware', (devServer) => {
+    if (!devServer) {
+      throw new Error('webpack-dev-server is not defined');
+    }
+
+    mockRoutes.forEach((route) => {
+      devServer.app.get(route.path, async (req, res) => {
+        handleRequest(req, res, {
+          rootDir: rootDir,
+        });
+      });
+    });
+  });
+
   registerTask('web', webpackConfig);
 };
 
