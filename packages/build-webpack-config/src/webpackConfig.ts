@@ -1,4 +1,5 @@
 import type { Configuration } from 'webpack';
+import type { Configuration as DevServerConfiguration } from "webpack-dev-server";
 import * as path from 'path';
 import type { IFrameworkConfig } from './frameworkConfig';
 import { merge } from '@builder/pack/deps/lodash';
@@ -18,6 +19,8 @@ export function getWebpackConfig({ rootDir, frameworkConfig }: GetWebpackConfigO
     outputDir = path.join(rootDir, 'build'),
     loaders = [],
   } = frameworkConfig;
+
+  const devServer: DevServerConfiguration = frameworkConfig.devServer;
 
   return {
     mode,
@@ -45,6 +48,7 @@ export function getWebpackConfig({ rootDir, frameworkConfig }: GetWebpackConfigO
       },
       extensions: ['.ts', '.tsx', '.jsx', '...'],
     },
+    devServer,
   };
 }
 
