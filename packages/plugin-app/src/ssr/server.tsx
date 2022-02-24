@@ -15,7 +15,7 @@ export function setupRenderServer(options: any) {
     }
 
     // TODO: disable cache
-    const document = path.resolve(rootDir, 'dist/document.js');
+    const document = path.resolve(rootDir, 'build/document.js');
     const Document = require(document).default;
 
     const html = ReactDOMServer.renderToString(<Document />);

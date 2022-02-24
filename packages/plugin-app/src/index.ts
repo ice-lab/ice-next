@@ -20,22 +20,20 @@ const plugin: FrameworkPlugin = ({ registerTask, context, onHook }) => {
 
   registerTask('web', {
     mode,
-    devServer: {
-      setupMiddlewares: (middlewares, devServer) => {
-        if (!devServer) {
-          throw new Error('webpack-dev-server is not defined');
-        }
+    middlewares: (middlewares, devServer) => {
+      if (!devServer) {
+        throw new Error('webpack-dev-server is not defined');
+      }
 
-        middlewares.push({
-          name: 'document-render-server',
-          middleware: setupRenderServer({
-            rootDir,
-            routeManifest,
-          }),
-        });
+      middlewares.push({
+        name: 'document-render-server',
+        middleware: setupRenderServer({
+          rootDir,
+          routeManifest,
+        }),
+      });
 
-        return middlewares;
-      },
+      return middlewares;
     },
    });
 };
