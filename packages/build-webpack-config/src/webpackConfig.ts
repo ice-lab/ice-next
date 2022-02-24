@@ -22,13 +22,8 @@ export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
     loaders = [],
     alias = {},
     sourceMap,
-<<<<<<< HEAD
     middlewares,
   } = config;
-=======
-    devServer,
-  } = frameworkConfig;
->>>>>>> 106a40889bd12fec3b22a03414559b18500ffde2
 
   return {
     mode,
