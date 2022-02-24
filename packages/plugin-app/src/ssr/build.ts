@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as esbuild from "esbuild";
+import * as esbuild from 'esbuild';
 
 export async function buildServerEntry(options: any): Promise<esbuild.BuildResult> {
   const { rootDir } = options;
@@ -13,6 +13,6 @@ export async function buildServerEntry(options: any): Promise<esbuild.BuildResul
     entryPoints: [document],
     bundle: true,
     platform: 'node',
-    external: ['./node_modules/*']
+    external: ['./node_modules/*'],
   });
 }

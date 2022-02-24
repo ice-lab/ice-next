@@ -1,5 +1,5 @@
 import type { Configuration } from 'webpack';
-import type { Configuration as DevServerConfiguration } from "webpack-dev-server";
+import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
 import * as path from 'path';
 import type { IFrameworkConfig } from './frameworkConfig';
 import { merge } from '@builder/pack/deps/lodash';
@@ -20,7 +20,7 @@ export function getWebpackConfig({ rootDir, frameworkConfig }: GetWebpackConfigO
     loaders = [],
   } = frameworkConfig;
 
-  const devServer: DevServerConfiguration = frameworkConfig.devServer;
+  const { devServer } = frameworkConfig;
 
   return {
     mode,
@@ -39,12 +39,12 @@ export function getWebpackConfig({ rootDir, frameworkConfig }: GetWebpackConfigO
             options: getSwcLoaderOptions(suffix, rootDir),
           },
         }))),
-        ...loaders
+        ...loaders,
       ],
     },
     resolve: {
       alias: {
-        'ice': path.join(rootDir, '.ice', 'index.ts')
+        ice: path.join(rootDir, '.ice', 'index.ts'),
       },
       extensions: ['.ts', '.tsx', '.jsx', '...'],
     },

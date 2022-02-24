@@ -8,7 +8,7 @@ const plugin: FrameworkPlugin = ({ registerTask, context, onHook }) => {
 
   // mock routeManifest
   const routeManifest = {
-    '/': '/src/pages/index'
+    '/': '/src/pages/index',
   };
 
   onHook(`before.${command}.run`, async () => {
@@ -25,18 +25,18 @@ const plugin: FrameworkPlugin = ({ registerTask, context, onHook }) => {
         if (!devServer) {
           throw new Error('webpack-dev-server is not defined');
         }
-  
+
         middlewares.push({
           name: 'document-render-server',
           middleware: setupRenderServer({
             rootDir,
-            routeManifest
+            routeManifest,
           }),
         });
-  
+
         return middlewares;
-      }
-    }
+      },
+    },
    });
 };
 

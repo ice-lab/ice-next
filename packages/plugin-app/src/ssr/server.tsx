@@ -6,7 +6,7 @@ import * as ReactDOMServer from 'react-dom/server';
 export function setupRenderServer(options: any) {
   const {
     rootDir,
-    routeManifest
+    routeManifest,
   } = options;
 
   return (req, res) => {
@@ -17,10 +17,10 @@ export function setupRenderServer(options: any) {
     // TODO: disable cache
     const document = path.resolve(rootDir, 'dist/document.js');
     const Document = require(document).default;
-    
+
     const html = ReactDOMServer.renderToString(<Document />);
-    
+
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(html);
-  }
+  };
 }
