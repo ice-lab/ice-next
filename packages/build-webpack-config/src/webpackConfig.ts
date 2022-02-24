@@ -18,9 +18,8 @@ export function getWebpackConfig({ rootDir, frameworkConfig }: GetWebpackConfigO
     publicPath = '/',
     outputDir = path.join(rootDir, 'build'),
     loaders = [],
+    devServer,
   } = frameworkConfig;
-
-  const { devServer } = frameworkConfig;
 
   return {
     mode,
