@@ -17,7 +17,7 @@ export function getWebpackConfig({ rootDir, frameworkConfig }: GetWebpackConfigO
     outputDir = path.join(rootDir, 'build'),
     loaders = [],
     sourceMap,
-    devServer
+    devServer,
   } = frameworkConfig;
 
   return {
