@@ -1,5 +1,5 @@
 {
-  "name": "build-plugin-ice-router",
+  "name": "build-plugin-router",
   "version": "3.0.0",
   "description": "plugin router",
   "main": "lib/index.js",
@@ -17,7 +17,6 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "@ice/service": "^1.0.0",
     "@ice/types": "^1.0.0"
   }
 }
