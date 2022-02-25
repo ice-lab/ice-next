@@ -104,10 +104,10 @@ importers:
     specifiers:
       '@builder/pack': ^0.6.0
       '@builder/webpack-config': ^3.0.0
+      '@ice/plugin-app': ^1.0.0
+      '@ice/plugin-router': ^1.0.0
       '@ice/types': ^1.0.0
       address: ^1.1.2
-      build-plugin-app: ^1.0.0
-      build-plugin-router: ^3.0.0
       build-scripts: ^2.0.0-5
       chalk: ^4.0.0
       commander: ^9.0.0
@@ -126,9 +126,9 @@ importers:
     dependencies:
       '@builder/pack': 0.6.0
       '@builder/webpack-config': link:../build-webpack-config
+      '@ice/plugin-app': link:../plugin-app
+      '@ice/plugin-router': link:../plugin-router
       address: 1.1.2
-      build-plugin-app: link:../plugin-app
-      build-plugin-router: link:../plugin-router
       build-scripts: 2.0.0-5
       chalk: 4.1.2
       commander: 9.0.0
