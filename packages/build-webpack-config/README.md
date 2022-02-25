@@ -7,6 +7,7 @@ This package providers basic webpack configuration.
 
 ```js
 import { getWebpackConfig } from '@builder/webpack-config';
-
-const webpackConfig = getWebpackConfig({});
+const config = { alias: {} };
+const rootDir = process.cwd();
+const webpackConfig = getWebpackConfig({ rootDir, config });
 ```

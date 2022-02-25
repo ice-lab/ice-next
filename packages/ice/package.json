@@ -4,6 +4,9 @@
   "description": "provide scripts and configuration used by web framework ice",
   "main": "./lib/index.js",
   "exports": "./lib/index.js",
+  "bin": {
+    "ice": "./bin/ice-cli.js"
+  },
   "scripts": {},
   "author": "ice-admin",
   "license": "MIT",
