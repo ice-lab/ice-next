@@ -2,7 +2,7 @@ import * as http from 'http';
 import * as url from 'url';
 import * as fse from 'fs-extra';
 import * as path from 'path';
-import * as puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer';
 
 export interface Page extends puppeteer.Page {
   html?: () => Promise<string>;
