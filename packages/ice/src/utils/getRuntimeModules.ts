@@ -1,6 +1,6 @@
-import * as path from 'path';
+import path from 'path';
 import fse from 'fs-extra';
-import * as findUp from 'find-up';
+import findUp from 'find-up';
 
 export interface RuntimeModule {
   staticModule: boolean;

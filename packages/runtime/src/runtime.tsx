@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import type { ComponentType } from 'react';
 import type {
   AppConfig,

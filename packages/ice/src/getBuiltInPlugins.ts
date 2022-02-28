@@ -1,7 +1,7 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
-import chalk from 'chalk';
+import consola from 'consola';
 import fse from 'fs-extra';
 import { hijackWebpack } from './requireHook.js';
 import type { IGetBuiltInPlugins, IPluginList, IUserConfig, Json } from 'build-scripts';
@@ -35,9 +35,9 @@ const getDynamicPlugins = (userConfig: IUserConfig) => {
     .filter(([pluginName, configKey, defaultValue]) => {
       const exist = checkPluginExist(pluginName);
       if (exist) {
-        console.log('');
-        console.log(chalk.magenta(`The ${pluginName} has been built in. Please remove it from build.json.`));
-        console.log('');
+        consola.warn('');
+        consola.warn(`The ${pluginName} has been built in. Please remove it from build.json.`);
+        consola.warn('');
       } else {
         return Object.prototype.hasOwnProperty.call(userConfig, configKey) ? userConfig[configKey] : defaultValue;
       }

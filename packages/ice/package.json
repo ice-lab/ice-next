@@ -27,8 +27,6 @@
     "fast-glob": "^3.2.11",
     "find-up": "^5.0.0",
     "fs-extra": "^10.0.0",
-    "lodash.debounce": "^4.0.8",
-    "lodash.defaultsdeep": "^4.6.1",
     "prettier": "^2.5.1",
     "semver": "^7.3.5",
     "webpack-dev-server": "^4.7.4",

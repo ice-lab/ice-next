@@ -1,10 +1,12 @@
 import WebpackDevServer from 'webpack-dev-server';
 import type { Context } from 'build-scripts';
 import { getWebpackConfig } from '@builder/webpack-config';
-import defaultsDeep from 'lodash.defaultsdeep';
+import lodash from '@builder/pack/deps/lodash/lodash.js';
 import webpackCompiler from '../service/webpackCompiler.js';
 import prepareURLs from '../utils/prepareURLs.js';
 import type { Config } from '@ice/types';
+
+const { defaultsDeep } = lodash;
 
 interface IWebTaskConfig {
   name: string;
@@ -13,7 +15,7 @@ interface IWebTaskConfig {
 
 type DevServerConfig = Record<string, any>;
 // TODO config type of ice.js
-const start = async (context: Context<any>) => {
+const start = async (context: Context<Config>) => {
   const { getConfig, applyHook, commandArgs, command, rootDir } = context;
 
   // FIXME: getConfig -> getConfigs, because getConfig will return an array

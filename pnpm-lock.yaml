@@ -87,17 +87,17 @@ importers:
 
   packages/build-webpack-config:
     specifiers:
+      '@builder/pack': ^0.6.0
       '@builder/swc': ^0.1.3
       '@ice/types': ^1.0.0
       browserslist: ^4.19.3
-      lodash-es: ^4.17.21
       unplugin: ^0.3.2
       webpack: ^5.69.1
       webpack-dev-server: ^4.7.4
     dependencies:
+      '@builder/pack': 0.6.0
       '@builder/swc': 0.1.3
       browserslist: 4.19.3
-      lodash-es: 4.17.21
       unplugin: 0.3.2_webpack@5.69.1
       webpack-dev-server: 4.7.4_webpack@5.69.1
     devDependencies:
@@ -120,8 +120,6 @@ importers:
       fast-glob: ^3.2.11
       find-up: ^5.0.0
       fs-extra: ^10.0.0
-      lodash.debounce: ^4.0.8
-      lodash.defaultsdeep: ^4.6.1
       prettier: ^2.5.1
       semver: ^7.3.5
       webpack: ^5.0.0
@@ -141,8 +139,6 @@ importers:
       fast-glob: 3.2.11
       find-up: 5.0.0
       fs-extra: 10.0.1
-      lodash.debounce: 4.0.8
-      lodash.defaultsdeep: 4.6.1
       prettier: 2.5.1
       semver: 7.3.5
       webpack-dev-server: 4.7.4_webpack@5.69.1
@@ -5152,18 +5148,6 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       p-locate: 5.0.0
-
-  /lodash-es/4.17.21:
-    resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
-    dev: false
-
-  /lodash.debounce/4.0.8:
-    resolution: {integrity: sha1-gteb/zCmfEAF/9XiUVMArZyk168=}
-    dev: false
-
-  /lodash.defaultsdeep/4.6.1:
-    resolution: {integrity: sha512-3j8wdDzYuWO3lM3Reg03MuQR957t287Rpcxp1njpEa8oDrikb+FwGdW3n+FELh/A6qib6yPit0j/pv9G/yeAqA==}
-    dev: false
 
   /lodash.memoize/4.1.2:
     resolution: {integrity: sha1-vMbEmkKihA7Zl/Mj6tpezRguC/4=}

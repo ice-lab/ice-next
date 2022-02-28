@@ -1,10 +1,10 @@
-import * as path from 'path';
+import path from 'path';
 import fse from 'fs-extra';
 import consola from 'consola';
 import fg from 'fast-glob';
-import * as ejs from 'ejs';
+import ejs from 'ejs';
 import prettier from 'prettier';
-import debounce from 'lodash.debounce';
+import lodash from '@builder/pack/deps/lodash/lodash.js';
 import getRuntimeModules from '../utils/getRuntimeModules.js';
 import formatPath from '../utils/formatPath.js';
 import type {
@@ -27,6 +27,8 @@ import type {
   ExportData,
   Registration,
 } from '@ice/types/lib/generator.js';
+
+const { debounce } = lodash;
 
 const RENDER_WAIT = 150;
 
@@ -253,6 +255,7 @@ export default class Generator {
 
   public renderFile: RenderFile = (templatePath, targetPath, extraData = {}) => {
     const renderExt = '.ejs';
+    const realTargetPath = path.isAbsolute(targetPath) ? targetPath : path.join(this.rootDir, targetPath);
     if (path.extname(templatePath) === '.ejs') {
       const templateContent = fse.readFileSync(templatePath, 'utf-8');
       let renderData = { ...this.renderData };
@@ -276,12 +279,10 @@ export default class Generator {
           this.showPrettierError = false;
         }
       }
-      const realTargetPath = targetPath.replace(renderExt, '');
-      fse.ensureDirSync(path.dirname(realTargetPath));
-      fse.writeFileSync(realTargetPath, content, 'utf-8');
+      fse.writeFileSync(realTargetPath.replace(renderExt, ''), content, 'utf-8');
     } else {
-      fse.ensureDirSync(path.dirname(targetPath));
-      fse.copyFileSync(templatePath, targetPath);
+      fse.ensureDirSync(path.dirname(realTargetPath));
+      fse.copyFileSync(templatePath, realTargetPath);
     }
   };
 

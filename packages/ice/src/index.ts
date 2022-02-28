@@ -1,4 +1,4 @@
-import * as path from 'path';
+import path from 'path';
 import { fileURLToPath } from 'url';
 import { Context } from 'build-scripts';
 import type { CommandArgs, CommandName, IGetBuiltInPlugins } from 'build-scripts';
