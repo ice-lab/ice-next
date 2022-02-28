@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as getPort from 'get-port';
+import getPort from 'get-port';
 import Browser, { Page } from './browser';
 import { Server } from 'http';
 import { getBuiltInPlugins } from '../../packages/ice/src/getBuiltInPlugins';
