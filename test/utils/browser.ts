@@ -82,11 +82,11 @@ export default class Browser {
     if (!this.browser) { return }
     await this.browser.close();
     // @ts-ignore
-    if (this.server?.stop) {
+    if (this.server.stop) {
       // @ts-ignore
-      this.server?.stop();
+      this.server.stop();
     } else {
-      this.server?.close();
+      this.server.close();
     }
   }
 
