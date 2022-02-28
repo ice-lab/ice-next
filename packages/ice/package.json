@@ -5,7 +5,7 @@
   "main": "./lib/index.js",
   "exports": "./lib/index.js",
   "bin": {
-    "ice": "./bin/ice-cli.js"
+    "ice": "./bin/ice-cli.mjs"
   },
   "scripts": {},
   "author": "ice-admin",
@@ -41,5 +41,6 @@
   "engines": {
     "node": ">=12.22.0",
     "npm": ">=3.0.0"
-  }
+  },
+  "type": "module"
 }

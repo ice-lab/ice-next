@@ -5,8 +5,8 @@ import fg from 'fast-glob';
 import * as ejs from 'ejs';
 import * as prettier from 'prettier';
 import debounce from 'lodash.debounce';
-import getRuntimeModules from '../utils/getRuntimeModules';
-import formatPath from '../utils/formatPath';
+import getRuntimeModules from '../utils/getRuntimeModules.js';
+import formatPath from '../utils/formatPath.js';
 import type {
   SetPlugins,
   AddExport,
@@ -26,7 +26,7 @@ import type {
   RenderData,
   ExportData,
   Registration,
-} from '@ice/types/lib/generator';
+} from '@ice/types/lib/generator.js';
 
 const RENDER_WAIT = 150;
 

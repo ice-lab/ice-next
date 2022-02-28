@@ -16,7 +16,7 @@ import type {
   WrapperPageComponent,
   GetWrapperPageRegistration,
   GetAppComponent,
-} from '@ice/types/lib/runtime';
+} from '@ice/types/lib/runtime.js';
 
 class Runtime {
   private appConfig: AppConfig;

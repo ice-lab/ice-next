@@ -1,6 +1,6 @@
 import type { Plugin } from '@ice/types';
-import { setupRenderServer } from './ssr/server';
-import { buildServerEntry } from './ssr/build';
+import { setupRenderServer } from './ssr/server.js';
+import { buildServerEntry } from './ssr/build.js';
 
 const plugin: Plugin = ({ registerTask, context, onHook }) => {
   const { command, rootDir } = context;

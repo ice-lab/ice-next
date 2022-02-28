@@ -3,7 +3,7 @@ import * as process from 'process';
 import { build } from 'build-scripts';
 import * as getPort from 'get-port';
 import Browser, { IPage } from './browser';
-import getBuiltInPlugins = require('../../packages/icejs/src/getBuiltInPlugins');
+import getBuiltInPlugins from '../../packages/ice/src/getBuiltInPlugins';
 
 interface ISetupBrowser {
   (options: {

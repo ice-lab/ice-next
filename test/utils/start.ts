@@ -3,7 +3,7 @@ import { start } from 'build-scripts';
 import * as getPort from 'get-port';
 import Browser, { IPage } from './browser';
 import { Server } from 'http';
-import getBuiltInPlugins = require('../../packages/icejs/src/getBuiltInPlugins');
+import getBuiltInPlugins from '../../packages/ice/src/getBuiltInPlugins';
 
 interface ISetupBrowser {
   (options: { port: number; defaultPath?: string; server: Server; }): Promise<IReturn>;

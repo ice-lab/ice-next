@@ -1,8 +1,8 @@
 import consola from 'consola';
 import type { Context } from 'build-scripts';
 import type { StatsError } from 'webpack';
-import webpackCompiler from '../service/webpackCompiler';
-import formatWebpackMessages from '../utils/formatWebpackMessages';
+import webpackCompiler from '../service/webpackCompiler.js';
+import formatWebpackMessages from '../utils/formatWebpackMessages.js';
 
 const build = async (context: Context<any>) => {
   const { getConfig, applyHook, commandArgs, command } = context;
