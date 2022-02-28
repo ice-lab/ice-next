@@ -1,7 +1,9 @@
 import * as path from 'path';
 import { Context } from 'build-scripts';
+import consola from 'consola';
 import Generator from './service/runtimeGenerator';
 import preCompile from './service/preCompile';
+import createWatch from './service/watchSource';
 import start from './commands/start';
 import build from './commands/build';
 import type { CommandArgs, CommandName, IGetBuiltInPlugins } from 'build-scripts';
@@ -41,12 +43,17 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
     addRenderFile: generator.addRenderFile,
     addRenderTemplate: generator.addTemplateFiles,
   };
+  const { addWatchEvent, removeWatchEvent } = createWatch(path.join(rootDir, 'src'));
   const ctx = new Context<any, ExtendsPluginAPI>({
     rootDir,
     command,
     commandArgs,
     extendsPluginAPI: {
       generator: generatorAPI,
+      watch: {
+        addEvent: addWatchEvent,
+        removeEvent: removeWatchEvent,
+      },
       context: {
         routeManifest,
       },
@@ -57,7 +64,9 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
   generator.setPlugins(ctx.getAllPlugin());
   await ctx.setup();
   // render template before webpack compile
+  const renderStart = new Date().getTime();
   generator.render();
+  consola.debug('template render cost:', new Date().getTime() - renderStart);
 
   return {
     run: async () => {

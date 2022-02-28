@@ -16,9 +16,9 @@
   "dependencies": {
     "@builder/pack": "^0.6.0",
     "@builder/webpack-config": "^3.0.0",
-    "address": "^1.1.2",
     "@ice/plugin-app": "^1.0.0",
     "@ice/plugin-router": "^1.0.0",
+    "address": "^1.1.2",
     "build-scripts": "^2.0.0-5",
     "chalk": "^4.0.0",
     "commander": "^9.0.0",
@@ -36,6 +36,9 @@
   },
   "devDependencies": {
     "@ice/types": "^1.0.0",
+    "@types/ejs": "^3.1.0",
+    "@types/lodash.debounce": "^4.0.6",
+    "chokidar": "^3.5.3",
     "webpack": "^5.0.0"
   },
   "engines": {

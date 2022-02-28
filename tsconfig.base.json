@@ -9,6 +9,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
-    "allowJs": true
+    "allowJs": true,
+    "esModuleInterop": true
   }
 }
