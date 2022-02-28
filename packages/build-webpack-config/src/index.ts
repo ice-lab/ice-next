@@ -48,6 +48,7 @@ export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
     plugins: [
       swcPlugin({ rootDir, sourceMap }),
     ],
+    devtool: 'source-map',
     devServer: {
       allowedHosts: 'all',
       headers: {
