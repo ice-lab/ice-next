@@ -1,9 +1,9 @@
 import * as path from 'path';
-import * as fse from 'fs-extra';
+import fse from 'fs-extra';
 import consola from 'consola';
 import fg from 'fast-glob';
 import * as ejs from 'ejs';
-import * as prettier from 'prettier';
+import prettier from 'prettier';
 import debounce from 'lodash.debounce';
 import getRuntimeModules from '../utils/getRuntimeModules.js';
 import formatPath from '../utils/formatPath.js';

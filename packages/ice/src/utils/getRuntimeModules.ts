@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as fse from 'fs-extra';
+import fse from 'fs-extra';
 import * as findUp from 'find-up';
 
 export interface RuntimeModule {
