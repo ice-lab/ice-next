@@ -3,13 +3,16 @@ import { createRequire } from 'module';
 import swcPlugin from './swcPlugin.js';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin/lib/index.js';
 import MiniCssExtractPlugin from '@builder/pack/deps/mini-css-extract-plugin/cjs.js';
+import CssMinimizerPlugin from '@builder/pack/deps/css-minimizer-webpack-plugin/cjs.js';
+import safeParser from '@builder/pack/deps/postcss-safe-parser/safe-parse.js';
+import TerserPlugin from '@builder/pack/deps/terser-webpack-plugin/cjs.js';
 import type { Configuration } from 'webpack';
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
 import type { Config } from '@ice/types';
 
 const require = createRequire(import.meta.url);
-const dev = process.env.NODE_ENV !== 'production';
-const watchIgnoredRegexp = process.env.RUNTIME_DEBUG ? /node_modules/ : /node_modules|[/\\]\.ice[/\\]|[/\\]\.rax[/\\]/;
+const baseWatchIgnored = ['**/.git/**', '**/node_modules/**'];
+const watchIgnoredRegexp = process.env.RUNTIME_DEBUG ? baseWatchIgnored : baseWatchIgnored.concat('**/.ice/**');
 
 interface GetWebpackConfigOptions {
   rootDir: string;
@@ -36,6 +39,8 @@ export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
     middlewares,
   } = config;
 
+  const dev = mode !== 'production';
+
   const webpackConfig: WebpackConfig = {
     mode,
     entry: path.join(rootDir, 'src/app'),
@@ -44,6 +49,7 @@ export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
       publicPath,
       path: outputDir,
     },
+    context: rootDir,
     module: {
       rules: [
         ...([
@@ -65,11 +71,46 @@ export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
     watchOptions: {
       ignored: watchIgnoredRegexp,
     },
+    optimization: {
+      minimizer: [
+        '...',
+        new TerserPlugin({
+          minify: TerserPlugin.esbuildMinify,
+          parallel: true,
+          extractComments: false,
+          terserOptions: {
+            compress: {
+              unused: false,
+            },
+            output: {
+              ascii_only: true,
+              comments: 'some',
+              beautify: false,
+            },
+            mangle: true,
+          },
+        }),
+        new CssMinimizerPlugin({
+          parallel: false,
+          minimizerOptions: {
+            preset: [
+              'default',
+              {
+                discardComments: { removeAll: true },
+              },
+            ],
+            processorOptions: {
+              parser: safeParser,
+            },
+          },
+        }),
+      ],
+    },
     cache: {
       type: 'filesystem',
       version: `${process.env.__ICE_VERSION__}|${JSON.stringify(config)}`,
-      buildDependencies: { config: [path.join(process.cwd(), 'package.json')] },
-      cacheDirectory: path.join(process.cwd(), 'node_modules', '.cache', 'webpack'),
+      buildDependencies: { config: [path.join(rootDir, 'package.json')] },
+      cacheDirectory: path.join(rootDir, 'node_modules', '.cache', 'webpack'),
     },
     performance: false,
     devtool: getDevtoolValue(sourceMap),
