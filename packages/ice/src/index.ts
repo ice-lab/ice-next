@@ -8,8 +8,8 @@ import preCompile from './service/preCompile.js';
 import createWatch from './service/watchSource.js';
 import start from './commands/start.js';
 import build from './commands/build.js';
-import type { ExportData } from '@ice/types/lib/generator.js';
-import type { ExtendsPluginAPI } from '@ice/types/lib/plugin.js';
+import type { ExportData } from '@ice/types/esm/generator.js';
+import type { ExtendsPluginAPI } from '@ice/types/esm/plugin.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
