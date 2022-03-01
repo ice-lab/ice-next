@@ -46,7 +46,7 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
     addRenderFile: generator.addRenderFile,
     addRenderTemplate: generator.addTemplateFiles,
   };
-  const { addWatchEvent, removeWatchEvent } = createWatch(path.join(rootDir, 'src'));
+  const { addWatchEvent, removeWatchEvent } = createWatch(path.join(rootDir, 'src'), command);
   const ctx = new Context<any, ExtendsPluginAPI>({
     rootDir,
     command,

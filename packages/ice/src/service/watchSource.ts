@@ -3,9 +3,10 @@ import type { WatchOptions } from 'chokidar';
 import type { WatchEvent } from '@ice/types/esm/plugin.js';
 import formatPath from '../utils/formatPath.js';
 
-function createWatch(dir: string, options?: WatchOptions) {
+function createWatch(dir: string, command: string, options?: WatchOptions) {
   const watchEvents = [];
-  const watcher = chokidar.watch(dir, {
+  // do not setup chokidar when run build
+  const watcher = command === 'start' && chokidar.watch(dir, {
     ignoreInitial: true,
     ...(options || {}),
   }).on('all', (event, filePath) => {
