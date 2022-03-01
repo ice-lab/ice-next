@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { RenderApp } from '@ice/types/esm/runtime.js';
+import type { RenderApp } from '@ice/types/esm/runtime.js';
 
 const renderRouter: RenderApp = ({ renderComponent, routeManifest }) => {
   if (routeManifest) {
     return function AppRouter() {
-      return <div>Router</div>
+      return <div>Router</div>;
     };
   }
 
