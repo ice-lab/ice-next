@@ -1,4 +1,5 @@
 import { type RuleSetRule } from 'webpack';
+import type { ProxyConfigArray, ProxyConfigArrayItem, ProxyConfigMap } from 'webpack-dev-server';
 import { type Middleware } from 'webpack-dev-server';
 import type Server from 'webpack-dev-server';
 
@@ -26,4 +27,6 @@ export interface Config {
   middlewares?:
     | ((middlewares: Middleware[], devServer: Server) => Middleware[])
     | undefined;
+
+  proxy?: ProxyConfigArrayItem | ProxyConfigMap | ProxyConfigArray | undefined;
 }

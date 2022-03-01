@@ -40,6 +40,7 @@ export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArg
     alias = {},
     sourceMap,
     middlewares,
+    proxy,
   } = config;
 
   const dev = mode !== 'production';
@@ -120,6 +121,11 @@ export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArg
       buildDependencies: { config: [path.join(rootDir, 'package.json')] },
       cacheDirectory: path.join(rootDir, 'node_modules', '.cache', 'webpack'),
     },
+    // custom stat output by stats.toJson() calls in plugin-app
+    stats: 'none',
+    infrastructureLogging: {
+      level: 'warn',
+    },
     performance: false,
     devtool: getDevtoolValue(sourceMap),
     plugins: [
@@ -138,6 +144,7 @@ export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArg
         'Access-Control-Allow-Methods': '*',
         'Access-Control-Allow-Headers': '*',
       },
+      proxy,
       hot: true,
       compress: true,
       webSocketServer: 'ws',

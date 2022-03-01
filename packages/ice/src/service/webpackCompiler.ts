@@ -33,11 +33,13 @@ async function webpackCompiler(options: {
       all: false,
       warnings: true,
       errors: true,
+      timings: true,
+      assets: true,
     });
     const messages = formatWebpackMessages(statsData);
     const isSuccessful = !messages.errors.length && !messages.warnings.length;
     if (isSuccessful) {
-      consola.success('Compiled successfully');
+      consola.success(`Compiled successfully in ${statsData.time} ms`);
       isFirstCompile = false;
     }
     if (messages.errors.length) {
@@ -57,6 +59,7 @@ async function webpackCompiler(options: {
       stats,
       isFirstCompile,
       urls,
+      messages,
     });
   });
 
