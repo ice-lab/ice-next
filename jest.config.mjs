@@ -6,10 +6,14 @@ const moduleNameMapper = getHookFiles().reduce((mapper, [id, value]) => {
 }, {});
 
 export default {
-  moduleNameMapper,
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+    ...moduleNameMapper,
+  },
   coverageDirectory: './coverage/',
+  coverageProvider: 'v8',
   collectCoverage: true,
-  collectCoverageFrom: ['packages/*/lib/*.{js,jsx}'],
+  collectCoverageFrom: ['packages/*/lib/**/*.js'],
   coveragePathIgnorePatterns: [
     '<rootDir>/node_modules/',
   ],
