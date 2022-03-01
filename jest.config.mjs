@@ -6,7 +6,10 @@ const moduleNameMapper = getHookFiles().reduce((mapper, [id, value]) => {
 }, {});
 
 export default {
-  moduleNameMapper,
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+    ...moduleNameMapper,
+  },
   coverageDirectory: './coverage/',
   collectCoverage: true,
   collectCoverageFrom: ['packages/*/lib/*.{js,jsx}'],
@@ -36,6 +39,9 @@ export default {
       // https://github.com/kulshekhar/ts-jest/issues/1648
       tsconfig: 'tsconfig.base.json',
       useESM: true,
+      babelConfig: {
+        sourceType: 'module',
+      },
     },
   },
 };
