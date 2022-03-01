@@ -2,8 +2,9 @@ import path from 'path';
 import fs from 'fs';
 import type { Plugin } from '@ice/types';
 import { setupRenderServer } from './ssr/server.js';
-import { buildServerEntry } from './ssr/build.js';
+import { buildEntry } from './ssr/build.js';
 import renderDocument from './ssr/renderDocument.js';
+import type { UnpluginOptions } from 'unplugin';
 
 const plugin: Plugin = ({ registerTask, context, onHook }) => {
   const { command, rootDir } = context;
@@ -14,11 +15,16 @@ const plugin: Plugin = ({ registerTask, context, onHook }) => {
     '/': '/src/pages/index',
   };
 
-  onHook(`before.${command}.run`, async () => {
+  onHook(`before.${command}.run`, async ({ uniPlugins, config }) => {
     // TODO: watch file changes and rebuild
-    await buildServerEntry({
+    await buildEntry({
       rootDir,
+      outdir: 'build',
+      entry: 'src/document.tsx',
+      alias: config?.resolve?.alias,
+      plugins: uniPlugins as UnpluginOptions[],
     });
+
     if (command === 'build') {
       // generator html to outputDir
       const htmlContent = renderDocument({ rootDir, documentPath: 'build/document.js' });
