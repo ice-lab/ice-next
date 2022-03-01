@@ -10,12 +10,12 @@ type JSXSuffix = 'jsx' | 'tsx';
 
 interface Options {
   rootDir: string;
-
+  dev: boolean;
   sourceMap?: Config['sourceMap'];
 }
 
 const unplugin = createUnplugin((options: Options) => {
-  const { rootDir, sourceMap } = options;
+  const { rootDir, sourceMap, dev } = options;
   return {
     name: 'swc-plugin',
     async transform(source: string, id: string) {
@@ -23,17 +23,17 @@ const unplugin = createUnplugin((options: Options) => {
       if (/node_modules/.test(id) && !/[\\/]runtime[\\/]/.test(id)) {
         return;
       }
-      const initOptions = {
+
+      const suffix = (['jsx', 'tsx'] as JSXSuffix[]).find(suffix => new RegExp(`\\.${suffix}?$`).test(id));
+      if (!suffix) {
+        return;
+      }
+
+      const programmaticOptions = {
         filename: id,
         sourceMaps: !!sourceMap,
+        ...getSwcTransformOptions({ suffix, rootDir, dev }),
       };
-      let transformOptions = {};
-      if (/\\.jsx?$/.test(id)) {
-        transformOptions = getSwcTransformOptions('jsx', rootDir);
-      } else if (/\\.tsx?$/.test(id)) {
-        transformOptions = getSwcTransformOptions('tsx', rootDir);
-      }
-      const programmaticOptions = Object.assign({}, transformOptions, initOptions);
       const output = await transform(source, programmaticOptions);
       const { code, map } = output;
 
@@ -42,8 +42,20 @@ const unplugin = createUnplugin((options: Options) => {
   };
 });
 
-function getSwcTransformOptions(suffix: JSXSuffix, rootDir: string) {
-  const reactTransformConfig = hasJsxRuntime(rootDir) ? { runtime: 'automatic' } : {};
+function getSwcTransformOptions({
+  suffix,
+  rootDir,
+  dev,
+}: {
+    suffix: JSXSuffix;
+    rootDir: string;
+    dev: boolean;
+  }) {
+  const baseReactTransformConfig = {
+    // development: dev,
+    // refresh: dev,
+   };
+  const reactTransformConfig = merge(baseReactTransformConfig, hasJsxRuntime(rootDir) ? { runtime: 'automatic' } : {});
 
   const commonOptions = {
     jsc: {
