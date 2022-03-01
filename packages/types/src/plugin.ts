@@ -5,10 +5,18 @@ import type { ExportData, AddRenderFile, AddTemplateFiles } from './generator.js
 
 type AddExport = (exportData: ExportData) => void;
 
+export interface RouteItem {
+  path: string;
+  filepath: string;
+  chunkName: string;
+  componentName: string;
+}
+
+export type Routes = RouteItem[];
+
 export interface ExtendsPluginAPI {
   context: {
-    // TODO define routeManifest type
-    routeManifest: any;
+    routes: Routes;
     webpack?: typeof webpack;
   };
   generator: {

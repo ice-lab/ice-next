@@ -13,8 +13,18 @@ export interface AppConfig extends Record<string, any> {
 export interface DOMRender {
   ({ App, appMountNode }: { App: React.ComponentType; appMountNode?: HTMLElement }): void;
 }
+
+export interface RouteItem {
+  path: string;
+  component: ComponentType;
+  exact?: boolean;
+  strict?: boolean;
+  children?: RouteItem[];
+}
+
+export type Routes = RouteItem[];
 export interface RenderOptions {
-  routeManifest?: Record<string, any>;
+  routes?: Routes;
   pageWrappers?: PageWrapper<any>[];
   renderComponent?: ComponentType;
 }
@@ -29,9 +39,10 @@ export interface BuildConfig extends Record<string, any> {
   ssr?: boolean;
   target?: string[];
 }
+
 export interface Context {
   appManifest?: Record<string, any>;
-  routeManifest?: Record<string, any>;
+  routes?: Routes;
   initialContext?: Record<string, any>;
   initialData?: any;
   enableRouter?: boolean;

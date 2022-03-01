@@ -2,6 +2,7 @@ import { Runtime, renderRouter, render } from '@ice/runtime';
 import loadStaticModules from './loadStaticModules';
 import loadRuntimeModules from './loadRuntimeModules';
 import type { AppConfig } from './types';
+import routes from './routes';
 
 export function runApp(config: AppConfig = {}) {
   const appConfig = {
@@ -18,7 +19,8 @@ export function runApp(config: AppConfig = {}) {
   };
   // TODO create context
   const context = {
-    // routeManifest: {},
+    enableRouter: true,
+    routes,
   };
 
   const runtime = new Runtime(appConfig, buildConfig, context);

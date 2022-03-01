@@ -94,10 +94,10 @@ class Runtime {
   };
 
   public getAppComponent: GetAppComponent = () => {
-    const { enableRouter, routeManifest } = this.context;
+    const { enableRouter, routes } = this.context;
     const renderComponent = this.appConfig.app?.renderComponent;
     return this.renderApp(enableRouter ? {
-      routeManifest,
+      routes,
       pageWrappers: this.wrapperPageRegistration,
     } : {
       pageWrappers: this.wrapperPageRegistration,
