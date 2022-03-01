@@ -40,6 +40,9 @@ export default {
       // https://github.com/kulshekhar/ts-jest/issues/1648
       tsconfig: 'tsconfig.base.json',
       useESM: true,
+      babelConfig: {
+        sourceType: 'module',
+      },
     },
   },
 };
