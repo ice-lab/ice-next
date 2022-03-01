@@ -2,7 +2,7 @@ import swcPlugin from './swc.js';
 import type { Config } from '@ice/types';
 
 const getUnPlugins = (rootDir: string, config: Config) => {
-  const { sourceMap, uniPlugins, transforms } = config;
+  const { sourceMap, uniPlugins = [], transforms = [] } = config;
   return [
     swcPlugin({ rootDir, sourceMap }),
     ...uniPlugins,
