@@ -12,7 +12,7 @@ interface Options {
 }
 
 export async function buildEntry(options: Options): Promise<esbuild.BuildResult> {
-  const { rootDir, alias = {}, plugins, outdir, entry } = options;
+  const { rootDir, alias = {}, plugins = [], outdir, entry } = options;
   const aliasKey = Object.keys(alias);
   const resolveFilter = new RegExp(`^(${aliasKey.map((str) => {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
