@@ -20,7 +20,7 @@ const plugin: Plugin = ({ registerTask, context, onHook }) => {
     await buildEntry({
       rootDir,
       outdir: 'build',
-      entry: 'src/document.tsx',
+      entry: path.join(rootDir, 'src/document.tsx'),
       alias: config?.resolve?.alias,
       plugins: uniPlugins as UnpluginOptions[],
     });
