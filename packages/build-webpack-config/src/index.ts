@@ -52,33 +52,6 @@ export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
           ['scss', require.resolve('@builder/pack/deps/sass-loader')],
         ] as CSSRuleConfig[]).map((config) => configCSSRule(config)).flat(),
         ...loaders,
-        // {
-        //   test: /\.tsx?$/,
-        //   use: [
-        //     {
-        //       loader: require.resolve('swc-loader'),
-        //       options: {
-        //         env: { mode: 'usage' },
-        //         jsc: {
-        //           parser: {
-        //             syntax: 'typescript',
-        //             tsx: true,
-        //             dynamicImport: true,
-        //           },
-        //           transform: {
-        //             react: {
-        //               // swc-loader will check whether webpack mode is 'development'
-        //               // and set this automatically starting from 0.1.13. You could also set it yourself.
-        //               // swc won't enable fast refresh when development is false
-        //               runtime: 'automatic',
-        //               refresh: true,
-        //             },
-        //           },
-        //         },
-        //       },
-        //     },
-        //   ],
-        // },
       ],
     },
     resolve: {
@@ -91,6 +64,12 @@ export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
     },
     watchOptions: {
       ignored: watchIgnoredRegexp,
+    },
+    cache: {
+      type: 'filesystem',
+      version: `${process.env.__ICE_VERSION__}|${JSON.stringify(config)}`,
+      buildDependencies: { config: [path.join(process.cwd(), 'package.json')] },
+      cacheDirectory: path.join(process.cwd(), 'node_modules', '.cache', 'webpack'),
     },
     performance: false,
     devtool: getDevtoolValue(sourceMap),

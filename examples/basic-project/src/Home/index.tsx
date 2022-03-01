@@ -5,6 +5,11 @@ import './index.css';
 
 export default function Home() {
   return (
-    <div>rrrr33333rrrr</div>
+    <>
+      <div>Home</div>
+      <div>
+        Name: <input />
+      </div>
+    </>
   );
 }
