@@ -11,11 +11,12 @@ type JSXSuffix = 'jsx' | 'tsx';
 interface Options {
   rootDir: string;
   dev: boolean;
+  mode: 'development' | 'production' | 'none';
   sourceMap?: Config['sourceMap'];
 }
 
 const unplugin = createUnplugin((options: Options) => {
-  const { rootDir, sourceMap, dev } = options;
+  const { rootDir, sourceMap, dev, mode } = options;
   return {
     name: 'swc-plugin',
     async transform(source: string, id: string) {
@@ -34,6 +35,12 @@ const unplugin = createUnplugin((options: Options) => {
         sourceMaps: !!sourceMap,
         ...getSwcTransformOptions({ suffix, rootDir, dev }),
       };
+      // auto detect development mode
+      if (mode && programmaticOptions.jsc && programmaticOptions.jsc.transform &&
+              programmaticOptions.jsc.transform.react &&
+              !Object.prototype.hasOwnProperty.call(programmaticOptions.jsc.transform.react, 'development')) {
+        programmaticOptions.jsc.transform.react.development = mode === 'development';
+      }
       const output = await transform(source, programmaticOptions);
       const { code, map } = output;
 
@@ -52,8 +59,7 @@ function getSwcTransformOptions({
     dev: boolean;
   }) {
   const baseReactTransformConfig = {
-    // development: dev,
-    // refresh: dev,
+    refresh: dev,
    };
   const reactTransformConfig = merge(baseReactTransformConfig, hasJsxRuntime(rootDir) ? { runtime: 'automatic' } : {});
 

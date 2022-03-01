@@ -1,7 +1,7 @@
 import path from 'path';
 import { createRequire } from 'module';
 import swcPlugin from './swcPlugin.js';
-import ReactRefreshWebpackPlugin from '@builder/pack/deps/@pmmmwh/react-refresh-webpack-plugin/lib/index.js';
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin/lib/index.js';
 import MiniCssExtractPlugin from '@builder/pack/deps/mini-css-extract-plugin/cjs.js';
 import type { Configuration } from 'webpack';
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
@@ -52,6 +52,33 @@ export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
           ['scss', require.resolve('@builder/pack/deps/sass-loader')],
         ] as CSSRuleConfig[]).map((config) => configCSSRule(config)).flat(),
         ...loaders,
+        // {
+        //   test: /\.tsx?$/,
+        //   use: [
+        //     {
+        //       loader: require.resolve('swc-loader'),
+        //       options: {
+        //         env: { mode: 'usage' },
+        //         jsc: {
+        //           parser: {
+        //             syntax: 'typescript',
+        //             tsx: true,
+        //             dynamicImport: true,
+        //           },
+        //           transform: {
+        //             react: {
+        //               // swc-loader will check whether webpack mode is 'development'
+        //               // and set this automatically starting from 0.1.13. You could also set it yourself.
+        //               // swc won't enable fast refresh when development is false
+        //               runtime: 'automatic',
+        //               refresh: true,
+        //             },
+        //           },
+        //         },
+        //       },
+        //     },
+        //   ],
+        // },
       ],
     },
     resolve: {
@@ -60,6 +87,7 @@ export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
         ...alias,
       },
       extensions: ['.ts', '.tsx', '.jsx', '...'],
+      fallback: { events: require.resolve('events') },
     },
     watchOptions: {
       ignored: watchIgnoredRegexp,
@@ -67,11 +95,11 @@ export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
     performance: false,
     devtool: getDevtoolValue(sourceMap),
     plugins: [
-      swcPlugin({ rootDir, sourceMap, dev }),
+      swcPlugin({ rootDir, sourceMap, dev, mode }),
       new MiniCssExtractPlugin({
         filename: '[name].css',
       }),
-      // dev && new ReactRefreshWebpackPlugin(),
+      dev && new ReactRefreshWebpackPlugin({ esModule: true, forceEnable: true }),
     ].filter(Boolean),
     devServer: {
       allowedHosts: 'all',
@@ -92,7 +120,7 @@ export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
         },
       },
       client: {
-        overlay: false,
+        overlay: true,
         logging: 'info',
       },
       setupMiddlewares: middlewares,
@@ -104,10 +132,6 @@ export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
 
 function configCSSRule(config: CSSRuleConfig) {
   const [style, loader, loaderOptions] = config;
-  // const styleRegexp = {
-  //   // css: new RegExp(`\\.${style}$`),
-  //   module: new RegExp(`\\.module\\.${style}$`),
-  // };
   const cssLoaderOpts = {
     sourceMap: true,
   };
@@ -118,7 +142,6 @@ function configCSSRule(config: CSSRuleConfig) {
       localIdentName: '[folder]--[local]--[hash:base64:7]',
     },
   };
-  // return Object.keys(styleRegexp).map((ruleKey: string) => {
     return {
       test: new RegExp(`\\.${style}$`),
       use: [
@@ -131,6 +154,7 @@ function configCSSRule(config: CSSRuleConfig) {
           loader: require.resolve('@builder/pack/deps/css-loader'),
           options: cssModuleLoaderOpts,
         },
+        // TODO: add postcss-loader
         // {
         //   loader: require.resolve('@builder/pack/deps/postcss-loader'),
         // },
@@ -140,7 +164,6 @@ function configCSSRule(config: CSSRuleConfig) {
         },
       ].filter(Boolean),
     };
-  // });
 }
 
 function getDevtoolValue(sourceMap: Config['sourceMap']) {

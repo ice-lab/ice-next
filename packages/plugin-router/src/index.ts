@@ -2,7 +2,7 @@ import type { Plugin } from '@ice/types';
 
 const plugin: Plugin = ({ onGetConfig }) => {
   onGetConfig('web', (config) => {
-    config.mode = 'production';
+    // config.mode = 'production';
     return config;
   });
 };
