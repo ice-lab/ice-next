@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import type Runtime from './runtime';
+import type Runtime from './runtime.js';
 
 function getRenderApp(runtime: Runtime) {
   const appConfig = runtime.getAppConfig();

@@ -1,6 +1,6 @@
-import Runtime from './runtime';
-import renderRouter from './renderRouter';
-import render from './render';
+import Runtime from './runtime.js';
+import renderRouter from './renderRouter.js';
+import render from './render.js';
 
 export {
   Runtime,

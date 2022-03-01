@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { RenderApp } from '@ice/types/lib/runtime';
+import { RenderApp } from '@ice/types/esm/runtime.js';
 
 const renderRouter: RenderApp = ({ renderComponent, routeManifest }) => {
   if (routeManifest) {
