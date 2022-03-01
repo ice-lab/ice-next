@@ -22,7 +22,7 @@ const renderRouter: RenderApp = ({ renderComponent, routes }) => {
                       key={index}
                       path={route.path}
                       element={
-                        <React.Suspense  fallback={<>loading chunk....</>}>
+                        <React.Suspense fallback={<>loading chunk....</>}>
                           <RouteComponent />
                         </React.Suspense>
                       }
