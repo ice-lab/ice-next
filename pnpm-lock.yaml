@@ -190,11 +190,13 @@ importers:
     specifiers:
       build-scripts: ^2.0.0-7
       react: ^17.0.2
+      unplugin: ^0.3.2
       webpack: ^5.69.1
       webpack-dev-server: ^4.7.4
     devDependencies:
       build-scripts: 2.0.0-7
       react: 17.0.2
+      unplugin: 0.3.2_webpack@5.69.1
       webpack: 5.69.1
       webpack-dev-server: 4.7.4_webpack@5.69.1
 
@@ -7043,7 +7045,6 @@ packages:
     dependencies:
       webpack: 5.69.1
       webpack-virtual-modules: 0.4.3
-    dev: false
 
   /uri-js/4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
@@ -7225,7 +7226,6 @@ packages:
 
   /webpack-virtual-modules/0.4.3:
     resolution: {integrity: sha512-5NUqC2JquIL2pBAAo/VfBP6KuGkHIZQXW/lNKupLPfhViwh8wNsu0BObtl09yuKZszeEUfbXz8xhrHvSG16Nqw==}
-    dev: false
 
   /webpack/5.69.1:
     resolution: {integrity: sha512-+VyvOSJXZMT2V5vLzOnDuMz5GxEqLk7hKWQ56YxPW/PQRUuKimPqmEIJOx8jHYeyo65pKbapbW464mvsKbaj4A==}
