@@ -1,7 +1,7 @@
 import * as chokidar from 'chokidar';
 import type { WatchOptions } from 'chokidar';
-import type { WatchEvent } from '@ice/types/esm/plugin';
-import formatPath from '../utils/formatPath';
+import type { WatchEvent } from '@ice/types/esm/plugin.js';
+import formatPath from '../utils/formatPath.js';
 
 function createWatch(dir: string, options?: WatchOptions) {
   const watchEvents = [];
