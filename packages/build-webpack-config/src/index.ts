@@ -13,7 +13,7 @@ interface GetWebpackConfigOptions {
 }
 type GetWebpackConfig = (options: GetWebpackConfigOptions) => Configuration & { devServer?: DevServerConfiguration };
 
-export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
+const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
   const {
     mode,
     externals = {},
@@ -80,5 +80,6 @@ export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
 };
 
 export {
+  getWebpackConfig,
   getUniPlugins,
 };

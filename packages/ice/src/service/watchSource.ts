@@ -1,6 +1,6 @@
 import * as chokidar from 'chokidar';
 import type { WatchOptions } from 'chokidar';
-import type { WatchEvent } from '@ice/types/lib/plugin';
+import type { WatchEvent } from '@ice/types/esm/plugin';
 import formatPath from '../utils/formatPath';
 
 function createWatch(dir: string, options?: WatchOptions) {
