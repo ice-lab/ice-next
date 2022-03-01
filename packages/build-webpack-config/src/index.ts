@@ -6,9 +6,11 @@ import MiniCssExtractPlugin from '@builder/pack/deps/mini-css-extract-plugin/cjs
 import CssMinimizerPlugin from '@builder/pack/deps/css-minimizer-webpack-plugin/cjs.js';
 import safeParser from '@builder/pack/deps/postcss-safe-parser/safe-parse.js';
 import TerserPlugin from '@builder/pack/deps/terser-webpack-plugin/cjs.js';
-import type { Configuration } from 'webpack';
+import webpack, { type Configuration } from 'webpack';
+import postcss from 'postcss';
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
 import type { Config } from '@ice/types';
+import type { CommandArgs } from 'build-scripts';
 
 const require = createRequire(import.meta.url);
 const baseWatchIgnored = ['**/.git/**', '**/node_modules/**'];
@@ -17,6 +19,7 @@ const watchIgnoredRegexp = process.env.RUNTIME_DEBUG ? baseWatchIgnored : baseWa
 interface GetWebpackConfigOptions {
   rootDir: string;
   config: Config;
+  commandArgs?: CommandArgs;
 }
 type WebpackConfig = Configuration & { devServer?: DevServerConfiguration };
 type GetWebpackConfig = (options: GetWebpackConfigOptions) => WebpackConfig;
@@ -26,7 +29,7 @@ export const getDefaultPlugins = () => {
 
 };
 
-export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
+export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} }) => {
   const {
     mode,
     externals = {},
@@ -40,6 +43,11 @@ export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
   } = config;
 
   const dev = mode !== 'production';
+  const defineVariables = {
+    'process.env.NODE_ENV': JSON.stringify(mode || 'development'),
+    'process.env.SERVER_PORT': JSON.stringify(commandArgs.port),
+    'process.env.__IS_SERVER__': false,
+  };
 
   const webpackConfig: WebpackConfig = {
     mode,
@@ -119,6 +127,8 @@ export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
       new MiniCssExtractPlugin({
         filename: '[name].css',
       }),
+      new webpack.DefinePlugin(defineVariables),
+      new webpack.ProvidePlugin({ process: 'process/browser' }),
       dev && new ReactRefreshWebpackPlugin({ esModule: true, forceEnable: true }),
     ].filter(Boolean),
     devServer: {
@@ -162,28 +172,53 @@ function configCSSRule(config: CSSRuleConfig) {
       localIdentName: '[folder]--[local]--[hash:base64:7]',
     },
   };
-    return {
-      test: new RegExp(`\\.${style}$`),
-      use: [
-        {
-          loader: MiniCssExtractPlugin.loader,
-          // compatible with commonjs syntax: const styles = require('./index.module.less')
-          options: { esModule: false },
+  const postcssOpts = {
+    // lock postcss version
+    implementation: postcss,
+    postcssOptions: {
+      config: false,
+      plugins: [
+        ['@builder/pack/deps/postcss-nested'],
+        ['@builder/pack/deps/postcss-preset-env', {
+          // Without any configuration options, PostCSS Preset Env enables Stage 2 features.
+          stage: 3,
+          browsers: [
+            'last 2 versions',
+            'Firefox ESR',
+            '> 1%',
+            'ie >= 9',
+            'iOS >= 8',
+            'Android >= 4',
+          ],
+        }],
+      ],
+    },
+  };
+  return {
+    test: new RegExp(`\\.${style}$`),
+    use: [
+      {
+        loader: MiniCssExtractPlugin.loader,
+        // compatible with commonjs syntax: const styles = require('./index.module.less')
+        options: { esModule: false },
+      },
+      {
+        loader: require.resolve('@builder/pack/deps/css-loader'),
+        options: cssModuleLoaderOpts,
+      },
+      {
+        loader: require.resolve('@builder/pack/deps/postcss-loader'),
+        options: {
+          ...cssLoaderOpts,
+          ...postcssOpts,
         },
-        {
-          loader: require.resolve('@builder/pack/deps/css-loader'),
-          options: cssModuleLoaderOpts,
-        },
-        // TODO: add postcss-loader
-        // {
-        //   loader: require.resolve('@builder/pack/deps/postcss-loader'),
-        // },
-        loader && {
-          loader,
-          options: { ...cssLoaderOpts, ...loaderOptions },
-        },
-      ].filter(Boolean),
-    };
+      },
+      loader && {
+        loader,
+        options: { ...cssLoaderOpts, ...loaderOptions },
+      },
+    ].filter(Boolean),
+  };
 }
 
 function getDevtoolValue(sourceMap: Config['sourceMap']) {

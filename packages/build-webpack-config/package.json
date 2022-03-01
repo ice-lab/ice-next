@@ -14,6 +14,8 @@
     "browserslist": "^4.19.3",
     "event": "^1.0.0",
     "less": "^4.1.2",
+    "postcss": "^8.4.7",
+    "process": "^0.11.10",
     "react-refresh": "^0.11.0",
     "sass": "^1.49.9",
     "unplugin": "^0.3.2",
@@ -21,6 +23,7 @@
   },
   "devDependencies": {
     "@ice/types": "^1.0.0",
+    "build-scripts": "^2.0.0-7",
     "swc-loader": "^0.1.15",
     "webpack": "^5.69.1",
     "webpack-dev-server": "^4.7.4"

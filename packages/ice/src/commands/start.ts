@@ -37,6 +37,7 @@ const start = async (context: Context<Config>) => {
   const webpackConfig = getWebpackConfig({
     rootDir,
     config,
+    commandArgs,
   });
 
   let devServerConfig: DevServerConfig = {
