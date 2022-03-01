@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2019",
-    "module": "commonjs",
+    "module": "ES2020",
     "jsx": "react",
     "experimentalDecorators": true,
     "declaration": true,
@@ -9,7 +9,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
-    "allowJs": true,
-    "esModuleInterop": true
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true
   }
 }

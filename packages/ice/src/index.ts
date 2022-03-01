@@ -1,14 +1,17 @@
-import * as path from 'path';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { Context } from 'build-scripts';
 import consola from 'consola';
-import Generator from './service/runtimeGenerator';
-import preCompile from './service/preCompile';
-import createWatch from './service/watchSource';
-import start from './commands/start';
-import build from './commands/build';
 import type { CommandArgs, CommandName, IGetBuiltInPlugins } from 'build-scripts';
-import type { ExportData } from '@ice/types/lib/generator';
-import type { ExtendsPluginAPI } from '@ice/types/lib/plugin';
+import Generator from './service/runtimeGenerator.js';
+import preCompile from './service/preCompile.js';
+import createWatch from './service/watchSource.js';
+import start from './commands/start.js';
+import build from './commands/build.js';
+import type { ExportData } from '@ice/types/lib/generator.js';
+import type { ExtendsPluginAPI } from '@ice/types/lib/plugin.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 interface CreateServiceOptions {
   rootDir: string;
