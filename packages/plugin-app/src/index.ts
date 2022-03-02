@@ -4,7 +4,6 @@ import type { Plugin } from '@ice/types';
 import { setupRenderServer } from './ssr/server.js';
 import { buildEntry } from './ssr/build.js';
 import renderDocument from './ssr/renderDocument.js';
-import type { UnpluginOptions } from 'unplugin';
 
 const plugin: Plugin = ({ registerTask, context, onHook }) => {
   const { command, rootDir } = context;
@@ -15,14 +14,16 @@ const plugin: Plugin = ({ registerTask, context, onHook }) => {
     '/': '/src/pages/index',
   };
 
-  onHook(`before.${command}.run`, async ({ uniPlugins, config }) => {
+  onHook(`before.${command as 'start' | 'build'}.run`, async ({ transformPlugins, config }) => {
     // TODO: watch file changes and rebuild
     await buildEntry({
       rootDir,
       outdir: 'build',
       entry: path.join(rootDir, 'src/document.tsx'),
-      alias: config?.resolve?.alias,
-      plugins: uniPlugins as UnpluginOptions[],
+      // alias will be formatted as Record<string, string>
+      // TODO consider with alias to false
+      alias: (Array.isArray(config) ? config[0] : config).resolve?.alias as Record<string, string>,
+      plugins: transformPlugins,
     });
 
     if (command === 'build') {

@@ -3,7 +3,7 @@ import type { Configuration } from 'webpack';
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
 import type { Config } from '@ice/types';
 import { createUnplugin } from 'unplugin';
-import getUniPlugins from './uniPlugins/index.js';
+import getTransformPlugins from './plugins/index.js';
 
 const watchIgnoredRegexp = process.env.RUNTIME_DEBUG ? /node_modules/ : /node_modules|[/\\]\.ice[/\\]|[/\\]\.rax[/\\]/;
 
@@ -27,7 +27,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
   } = config;
 
   // create plugins
-  const webpackPlugins = getUniPlugins(rootDir, config).map((plugin) => createUnplugin(() => plugin).webpack());
+  const webpackPlugins = getTransformPlugins(rootDir, config).map((plugin) => createUnplugin(() => plugin).webpack());
   return {
     mode,
     entry: path.join(rootDir, 'src/app'),
@@ -81,5 +81,5 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
 
 export {
   getWebpackConfig,
-  getUniPlugins,
+  getTransformPlugins,
 };

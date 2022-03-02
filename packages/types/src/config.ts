@@ -24,7 +24,7 @@ export interface Config {
 
   hash?: boolean;
 
-  uniPlugins?: UnpluginOptions[];
+  transformPlugins?: UnpluginOptions[];
 
   transforms?: UnpluginOptions['transform'][];
 
