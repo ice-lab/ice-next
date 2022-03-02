@@ -66,6 +66,18 @@ export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArg
           ['less', require.resolve('@builder/pack/deps/less-loader'), ({ lessOptions: { javascriptEnabled: true } })],
           ['scss', require.resolve('@builder/pack/deps/sass-loader')],
         ] as CSSRuleConfig[]).map((config) => configCSSRule(config)).flat(),
+        {
+          test: /\.(png|jpg|gif|jpeg|woff|woff2|eot|ttf|otf)$/,
+          use: [
+            {
+              loader: 'url-loader',
+              options: {
+                limit: 8192,
+                name: 'assets/[hash].[ext]',
+              },
+            },
+          ],
+        },
         ...loaders,
       ],
     },
