@@ -11,6 +11,21 @@ export type WatchEvent = [
   name?: string,
 ];
 
+export interface HookLifecycle {
+  'before.start.run': {
+
+  };
+  'before.build.run': {
+
+  };
+  'after.start.compile': {
+
+  };
+  'after.build.compile': {
+
+  };
+}
+
 export interface ExtendsPluginAPI {
   context: {
     // TODO define routeManifest type
@@ -25,8 +40,8 @@ export interface ExtendsPluginAPI {
     addRenderTemplate: AddTemplateFiles;
   };
   watch: {
-    addEvent: (watchEvent: WatchEvent) => void;
-    removeEvent: (name: string) => void;
+    addEvent?: (watchEvent: WatchEvent) => void;
+    removeEvent?: (name: string) => void;
   };
 }
 
