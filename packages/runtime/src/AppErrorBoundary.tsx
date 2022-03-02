@@ -1,24 +1,23 @@
 import * as React from 'react';
 
-interface Props {}
 interface State {
   error: Error;
 }
 
-export default class AppErrorBoundary extends React.Component<Props, State> {
-  state: State = {
+export default class AppErrorBoundary extends React.Component<{}, State> {
+  public state: State = {
     error: null,
   };
 
-  static getDerivedStateFromError(error: Error) {
+  public static getDerivedStateFromError(error: Error) {
     return { error };
   }
 
-  componentDidCatch(error, errorInfo) {
+  public componentDidCatch(error, errorInfo) {
     console.error('AppErrorBoundary', error, errorInfo);
   }
 
-  render() {
+  public render() {
     if (this.state.error) {
       return <h1>Something went wrong.</h1>;
     }

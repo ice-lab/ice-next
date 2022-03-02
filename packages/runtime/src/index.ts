@@ -1,9 +1,18 @@
 import Runtime from './runtime.js';
-import renderRouter from './renderRouter.js';
+import App from './App.js';
 import render from './render.js';
+import {
+  RuntimePlugin,
+  Context,
+  BuildConfig,
+} from './types.js';
 
 export {
   Runtime,
-  renderRouter,
+  App,
   render,
+
+  RuntimePlugin,
+  BuildConfig,
+  Context,
 };

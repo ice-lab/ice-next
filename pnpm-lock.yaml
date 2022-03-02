@@ -110,6 +110,7 @@ importers:
       '@builder/webpack-config': ^3.0.0
       '@ice/plugin-app': ^1.0.0
       '@ice/plugin-router': ^1.0.0
+      '@ice/runtime': workspace:^1.0.0
       '@ice/types': ^1.0.0
       address: ^1.1.2
       build-scripts: ^2.0.0-7
@@ -130,6 +131,7 @@ importers:
       '@builder/webpack-config': link:../build-webpack-config
       '@ice/plugin-app': link:../plugin-app
       '@ice/plugin-router': link:../plugin-router
+      '@ice/runtime': link:../runtime
       address: 1.1.2
       build-scripts: 2.0.0-7
       chalk: 4.1.2
@@ -172,7 +174,6 @@ importers:
 
   packages/runtime:
     specifiers:
-      '@ice/types': ^1.0.0
       react: ^17.0.2
       react-dom: ^17.0.0
       react-router-dom: ^6.2.2
@@ -181,17 +182,18 @@ importers:
       react-router-dom: 6.2.2_react-dom@17.0.2+react@17.0.2
       regenerator-runtime: 0.13.9
     devDependencies:
-      '@ice/types': link:../types
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
 
   packages/types:
     specifiers:
+      '@ice/runtime': workspace:^1.0.0
       build-scripts: ^2.0.0-7
       react: ^17.0.2
       webpack: ^5.69.1
       webpack-dev-server: ^4.7.4
     devDependencies:
+      '@ice/runtime': link:../runtime
       build-scripts: 2.0.0-7
       react: 17.0.2
       webpack: 5.69.1
