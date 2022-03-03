@@ -120,7 +120,7 @@ importers:
       webpack-dev-server: 4.7.4_webpack@5.69.1
     devDependencies:
       '@ice/types': link:../types
-      build-scripts: 2.0.0-7
+      build-scripts: 2.0.0-9
       swc-loader: 0.1.15_@swc+core@1.2.146+webpack@5.69.1
       webpack: 5.69.1_@swc+core@1.2.146
 
@@ -180,6 +180,8 @@ importers:
       '@ice/types': ^1.0.0
       '@types/react': ^17.0.39
       '@types/react-dom': ^17.0.11
+      chalk: ^5.0.0
+      cross-spawn: ^7.0.3
       esbuild: ^0.14.23
       open: ^8.4.0
       react: ^17.0.2
@@ -7480,7 +7482,7 @@ packages:
       webpack:
         optional: true
     dependencies:
-      webpack: 5.69.1_@swc+core@1.2.146
+      webpack: 5.69.1
       webpack-virtual-modules: 0.4.3
 
   /uri-js/4.4.1:

@@ -10,19 +10,19 @@ type JSXSuffix = 'jsx' | 'tsx';
 
 interface Options {
   rootDir: string;
-  dev: boolean;
   mode: 'development' | 'production' | 'none';
   sourceMap?: Config['sourceMap'];
 }
 
 const swcPlugin = (options: Options): UnpluginOptions => {
-    const { rootDir, sourceMap, dev, mode } = options;
+  const { rootDir, sourceMap, mode } = options;
+  const dev = mode !== 'production';
 
   return {
     name: 'swc-plugin',
     async transform(source: string, id: string) {
       // TODO specific runtime plugin name
-      if (/node_modules/.test(id) && !/[\\/]runtime[\\/]/.test(id)) {
+      if ((/node_modules/.test(id) && !/[\\/]runtime[\\/]/.test(id)) || /src[\/\\]+document\.(tsx|jsx?)/.test(id)) {
         return;
       }
 
