@@ -40,6 +40,10 @@
   },
   "devDependencies": {
     "@ice/types": "^1.0.0",
+    "@types/ejs": "^3.1.0",
+    "@types/lodash.debounce": "^4.0.6",
+    "chokidar": "^3.5.3",
+    "unplugin": "^0.3.2",
     "webpack": "^5.0.0"
   }
 }
