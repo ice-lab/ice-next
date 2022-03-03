@@ -1,6 +1,6 @@
 import { type RuleSetRule } from 'webpack';
-import type { ProxyConfigArray, ProxyConfigArrayItem, ProxyConfigMap } from 'webpack-dev-server';
-import { type Middleware } from 'webpack-dev-server';
+import type { ProxyConfigArray, ProxyConfigArrayItem, ProxyConfigMap, Middleware } from 'webpack-dev-server';
+import type { UnpluginOptions } from 'unplugin';
 import type Server from 'webpack-dev-server';
 
 export interface Config {
@@ -23,6 +23,10 @@ export interface Config {
   alias?: Record<string, any>;
 
   hash?: boolean;
+
+  transformPlugins?: UnpluginOptions[];
+
+  transforms?: UnpluginOptions['transform'][];
 
   middlewares?:
     | ((middlewares: Middleware[], devServer: Server) => Middleware[])

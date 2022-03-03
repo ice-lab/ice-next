@@ -1,11 +1,11 @@
 import path from 'path';
 import fs from 'fs';
 import chalk from 'chalk';
+import openBrowser from './utils/openBrowser.js';
 import type { Plugin } from '@ice/types';
 import { setupRenderServer } from './ssr/server.js';
-import { buildServerEntry } from './ssr/build.js';
+import { buildEntry } from './ssr/build.js';
 import renderDocument from './ssr/renderDocument.js';
-import openBrowser from './utils/openBrowser.js';
 
 const plugin: Plugin = ({ registerTask, context, onHook }) => {
   const { command, rootDir, commandArgs } = context;
@@ -16,11 +16,18 @@ const plugin: Plugin = ({ registerTask, context, onHook }) => {
     '/': '/src/pages/index',
   };
 
-  onHook(`before.${command}.run`, async () => {
+  onHook(`before.${command as 'start' | 'build'}.run`, async ({ transformPlugins, config }) => {
     // TODO: watch file changes and rebuild
-    await buildServerEntry({
+    await buildEntry({
       rootDir,
+      outdir: 'build',
+      entry: path.join(rootDir, 'src/document.tsx'),
+      // alias will be formatted as Record<string, string>
+      // TODO consider with alias to false
+      alias: (Array.isArray(config) ? config[0] : config).resolve?.alias as Record<string, string>,
+      plugins: transformPlugins,
     });
+
     if (command === 'build') {
       // generator html to outputDir
       const htmlContent = renderDocument({ rootDir, documentPath: 'build/document.js' });

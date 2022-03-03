@@ -1,6 +1,5 @@
 import path from 'path';
 import { createRequire } from 'module';
-import swcPlugin from './swcPlugin.js';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin/lib/index.js';
 import MiniCssExtractPlugin from '@builder/pack/deps/mini-css-extract-plugin/cjs.js';
 import CssMinimizerPlugin from '@builder/pack/deps/css-minimizer-webpack-plugin/cjs.js';
@@ -11,6 +10,8 @@ import postcss from 'postcss';
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
 import type { Config } from '@ice/types';
 import type { CommandArgs } from 'build-scripts';
+import { createUnplugin } from 'unplugin';
+import getTransformPlugins from './plugins/index.js';
 
 const require = createRequire(import.meta.url);
 const baseWatchIgnored = ['**/.git/**', '**/node_modules/**'];
@@ -25,11 +26,7 @@ type WebpackConfig = Configuration & { devServer?: DevServerConfiguration };
 type GetWebpackConfig = (options: GetWebpackConfigOptions) => WebpackConfig;
 type CSSRuleConfig = [string, string?, Record<string, any>?];
 
-export const getDefaultPlugins = () => {
-
-};
-
-export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} }) => {
+const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} }) => {
   const {
     mode,
     externals = {},
@@ -49,6 +46,8 @@ export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArg
     'process.env.SERVER_PORT': JSON.stringify(commandArgs.port),
     'process.env.__IS_SERVER__': false,
   };
+  // create plugins
+  const webpackPlugins = getTransformPlugins(rootDir, config).map((plugin) => createUnplugin(() => plugin).webpack());
 
   const webpackConfig: WebpackConfig = {
     mode,
@@ -141,7 +140,7 @@ export const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArg
     performance: false,
     devtool: getDevtoolValue(sourceMap),
     plugins: [
-      swcPlugin({ rootDir, sourceMap, dev, mode }),
+       ...webpackPlugins,
       new MiniCssExtractPlugin({
         filename: '[name].css',
       }),
@@ -249,3 +248,7 @@ function getDevtoolValue(sourceMap: Config['sourceMap']) {
 
   return 'source-map';
 }
+export {
+  getWebpackConfig,
+  getTransformPlugins,
+};
