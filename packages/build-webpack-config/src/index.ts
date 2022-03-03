@@ -1,6 +1,6 @@
 import path from 'path';
 import { createRequire } from 'module';
-import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin/lib/index.js';
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import MiniCssExtractPlugin from '@builder/pack/deps/mini-css-extract-plugin/cjs.js';
 import CssMinimizerPlugin from '@builder/pack/deps/css-minimizer-webpack-plugin/cjs.js';
 import safeParser from '@builder/pack/deps/postcss-safe-parser/safe-parse.js';
@@ -86,7 +86,10 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
         ...alias,
       },
       extensions: ['.ts', '.tsx', '.jsx', '...'],
-      fallback: { events: require.resolve('events') },
+      fallback: {
+        // TODO: add more fallback module
+        events: require.resolve('events'),
+      },
     },
     watchOptions: {
       ignored: watchIgnoredRegexp,

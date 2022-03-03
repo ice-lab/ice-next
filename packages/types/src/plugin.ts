@@ -29,6 +29,7 @@ interface BeforeCommandRunOptions {
 
 interface AfterCommandCompileOptions {
   stats: Stats;
+  messages: { warnings: any[]; errors: any[] };
   isSuccessful: Boolean;
   isFirstCompile: Boolean;
   urls: Urls;

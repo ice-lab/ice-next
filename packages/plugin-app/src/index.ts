@@ -43,7 +43,7 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption }) =>
     }
   });
 
-  onHook('after.start.compile', ({ urls, stats, messages }: any) => {
+  onHook('after.start.compile', ({ urls, stats, messages }) => {
     // 包含错误时不打印 localUrl 和 assets 信息
     if (!messages.errors.length) {
       if (!commandArgs.disableAssets) {
