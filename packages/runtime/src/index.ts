@@ -12,6 +12,7 @@ export {
   App,
   render,
 
+  // types
   RuntimePlugin,
   BuildConfig,
   Context,
