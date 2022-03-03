@@ -7,9 +7,17 @@ import { setupRenderServer } from './ssr/server.js';
 import { buildEntry } from './ssr/build.js';
 import renderDocument from './ssr/renderDocument.js';
 
-const plugin: Plugin = ({ registerTask, context, onHook }) => {
+const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption }) => {
   const { command, rootDir, commandArgs } = context;
   const mode = command === 'start' ? 'development' : 'production';
+  // TODO: register more cli options
+  const cliOptions = [
+    {
+      name: 'disableOpen',
+      commands: ['start'],
+    },
+  ];
+  registerCliOption(cliOptions);
 
   // mock routeManifest
   const routeManifest = {
