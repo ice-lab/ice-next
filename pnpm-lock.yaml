@@ -110,7 +110,7 @@ importers:
       '@builder/webpack-config': ^3.0.0
       '@ice/plugin-app': ^1.0.0
       '@ice/plugin-router': ^1.0.0
-      '@ice/runtime': workspace:^1.0.0
+      '@ice/runtime': ^1.0.0
       '@ice/types': ^1.0.0
       address: ^1.1.2
       build-scripts: ^2.0.0-7
@@ -187,7 +187,7 @@ importers:
 
   packages/types:
     specifiers:
-      '@ice/runtime': workspace:^1.0.0
+      '@ice/runtime': ^1.0.0
       build-scripts: ^2.0.0-7
       react: ^17.0.2
       webpack: ^5.69.1
