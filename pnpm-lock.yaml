@@ -115,7 +115,7 @@ importers:
       '@types/ejs': ^3.1.0
       '@types/lodash.debounce': ^4.0.6
       address: ^1.1.2
-      build-scripts: ^2.0.0-9
+      build-scripts: ^2.0.0-7
       chalk: ^4.0.0
       chokidar: ^3.5.3
       commander: ^9.0.0
@@ -205,7 +205,7 @@ importers:
       webpack-dev-server: ^4.7.4
     devDependencies:
       '@ice/runtime': link:../runtime
-      build-scripts: 2.0.0-7
+      build-scripts: 2.0.0-9
       react: 17.0.2
       unplugin: 0.3.2_webpack@5.69.1
       webpack: 5.69.1
