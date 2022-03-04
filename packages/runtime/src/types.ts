@@ -52,6 +52,7 @@ export interface Context {
   routes?: Routes;
   initialContext?: Record<string, any>;
   initialData?: any;
+  document?: ComponentType;
 }
 export interface RuntimeAPI {
   setRenderApp: SetRenderApp;

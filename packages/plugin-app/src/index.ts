@@ -1,9 +1,9 @@
-import path from 'path';
-import fs from 'fs';
+import * as path from 'path';
+import * as fs from 'fs';
+
 import type { Plugin } from '@ice/types';
-import { setupRenderServer } from './ssr/server.js';
+import { setupServerRender } from './ssr/server.js';
 import { buildEntry } from './ssr/build.js';
-import renderDocument from './ssr/renderDocument.js';
 
 const plugin: Plugin = ({ registerTask, context, onHook }) => {
   const { command, rootDir } = context;
@@ -19,7 +19,7 @@ const plugin: Plugin = ({ registerTask, context, onHook }) => {
     await buildEntry({
       rootDir,
       outdir: 'build',
-      entry: path.join(rootDir, 'src/document.tsx'),
+      entry: path.join(rootDir, '.ice/server.tsx'),
       // alias will be formatted as Record<string, string>
       // TODO consider with alias to false
       alias: (Array.isArray(config) ? config[0] : config).resolve?.alias as Record<string, string>,
@@ -28,8 +28,9 @@ const plugin: Plugin = ({ registerTask, context, onHook }) => {
 
     if (command === 'build') {
       // generator html to outputDir
-      const htmlContent = renderDocument({ rootDir, documentPath: 'build/document.js' });
-      fs.writeFileSync(path.join(rootDir, 'build/index.html'), htmlContent);
+      const serverRender = await import(path.resolve(rootDir, 'build/server.mjs'));
+      const html = await serverRender.default({});
+      fs.writeFileSync(path.join(rootDir, 'build/index.html'), html);
     }
   });
 
@@ -41,8 +42,8 @@ const plugin: Plugin = ({ registerTask, context, onHook }) => {
       }
 
       middlewares.push({
-        name: 'document-render-server',
-        middleware: setupRenderServer({
+        name: 'server-render',
+        middleware: setupServerRender({
           rootDir,
           routeManifest,
         }),

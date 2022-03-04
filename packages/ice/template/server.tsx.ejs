@@ -1,0 +1,34 @@
+import * as React from 'react';
+import '@/app';
+import Document from '@/document';
+import { getAppConfig, Runtime, App, serverRender } from '@ice/runtime';
+import type { BuildConfig, Context } from '@ice/runtime';
+import loadStaticModules from './loadStaticModules';
+import loadRuntimeModules from './loadRuntimeModules';
+import routes from './routes';
+
+// appConfig set by: import '@/app'
+const appConfig = getAppConfig();
+
+const buildConfig: BuildConfig = {
+  ssr: true,
+};
+
+export default async function render(requestContext) {
+  loadStaticModules(appConfig);
+
+  const appContext: Context = {
+    routes,
+    document: Document,
+  };
+
+  const runtime = new Runtime(appConfig, buildConfig, appContext);
+
+  runtime.setRenderApp((args) => {
+    return <App {...args} />;
+  });
+
+  loadRuntimeModules(runtime);
+
+  return await serverRender(requestContext, runtime);
+}

@@ -1,5 +1,5 @@
-import path from 'path';
-import esbuild from 'esbuild';
+import * as path from 'path';
+import * as esbuild from 'esbuild';
 import { createUnplugin } from 'unplugin';
 import type { UnpluginOptions } from 'unplugin';
 
@@ -22,6 +22,8 @@ export async function buildEntry(options: Options): Promise<esbuild.BuildResult>
     entryPoints: [entry],
     bundle: true,
     platform: 'node',
+    format: 'esm',
+    outExtension: { '.js': '.mjs' },
     external: ['./node_modules/*'],
     plugins: [
       {
