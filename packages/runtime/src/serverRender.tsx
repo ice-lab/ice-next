@@ -32,7 +32,7 @@ export default async function render(context, runtime) {
 
   const pageHtml = ReactDOMServer.renderToString(<AppWrapper />);
 
-  const html = documentHtml.replace('<div id="root"></div>', pageHtml);
+  const html = documentHtml.replace('<!--app-html-->', pageHtml);
 
   return html;
 }
