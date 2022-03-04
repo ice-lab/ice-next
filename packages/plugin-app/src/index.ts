@@ -28,6 +28,8 @@ const plugin: Plugin = ({ registerTask, context, onHook }) => {
 
     if (command === 'build') {
       // generator html to outputDir
+      process.env.__IS_SERVER__ = 'true';
+
       const serverRender = await import(path.resolve(rootDir, 'build/server.mjs'));
       const html = await serverRender.default({});
       fs.writeFileSync(path.join(rootDir, 'build/index.html'), html);
