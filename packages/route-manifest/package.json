@@ -1,0 +1,22 @@
+{
+  "name": "@ice/route-manifest",
+  "version": "1.0.0",
+  "description": "Generate route manifest",
+  "main": "./esm/index.js",
+  "exports": "./esm/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ice-admin",
+  "files": [
+    "lib"
+  ],
+  "license": "MIT",
+  "repository": "ice-lab/ice-next",
+  "bugs": "https://github.com/ice-lab/ice-next/issues",
+  "homepage": "https://next.ice.work",
+  "dependencies": {
+    "minimatch": "^5.0.1"
+  },
+  "type": "module"
+}
