@@ -2,7 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 import minimatch from 'minimatch';
-import { createRouteId, defineRoutes } from './routes.js';
+import { createRouteId, defineRoutes, NestedRouteManifest } from './routes.js';
 import type { RouteManifest, DefineRouteFunction } from './routes.js';
 
 const routeModuleExts = ['.js', '.jsx', '.ts', '.tsx', '.md', '.mdx'];
@@ -11,13 +11,13 @@ export function isRouteModuleFile(filename: string): boolean {
   return routeModuleExts.includes(path.extname(filename));
 }
 
-export default function generateRouteManifest(rootDir: string) {
+export function generateRouteManifest(rootDir: string) {
   const srcDir = path.join(rootDir, 'src');
-  const routes: RouteManifest = {};
+  const routeManifest: RouteManifest = {};
   // 1. find global layout
   const globalLayoutFile = findGlobalLayout(srcDir, 'layout');
   if (globalLayoutFile) {
-    routes['globalLayout'] = { path: '', id: 'globalLayout', file: globalLayoutFile };
+    routeManifest['layout'] = { path: '', id: 'layout', file: globalLayoutFile };
   }
 
   // 2. find routes in `src/pages` directory
@@ -29,14 +29,27 @@ export default function generateRouteManifest(rootDir: string) {
 
     for (const key of Object.keys(conventionalRoutes)) {
       const route = conventionalRoutes[key];
-      routes[route.id] = {
+      routeManifest[route.id] = {
         ...route,
-        parentId: route.parentId || (globalLayoutFile && 'globalLayout') || undefined,
+        parentId: route.parentId || (globalLayoutFile && 'layout') || undefined,
       };
     }
   }
 
-  return routes;
+  return routeManifest;
+}
+
+export function generateNestedRouteManifest(routeManifest: RouteManifest, parentId?: string): NestedRouteManifest[] {
+  return Object.keys(routeManifest)
+    .filter(key => routeManifest[key].parentId === parentId)
+    .map(key => {
+      const route = {
+        ...routeManifest[key]
+      } as NestedRouteManifest;
+      const children = generateNestedRouteManifest(routeManifest, route.id);
+      if (children.length > 0) route.children = children;
+      return route;
+    })
 }
 
 function defineConventionalRoutes(

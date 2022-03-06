@@ -76,6 +76,10 @@ export interface RouteManifest {
   [routeId: string]: ConfigRoute;
 }
 
+export interface NestedRouteManifest extends ConfigRoute {
+  children?: ConfigRoute[];
+}
+
 export function defineRoutes(
   callback: (defineRoute: DefineRouteFunction) => void,
 ) {
