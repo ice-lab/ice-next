@@ -7,16 +7,19 @@ import { setupRenderServer } from './ssr/server.js';
 import { buildEntry } from './ssr/build.js';
 import renderDocument from './ssr/renderDocument.js';
 
-const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption }) => {
+// TODO: register more cli options
+const cliOptions = [
+  {
+    name: 'disableOpen',
+    commands: ['start'],
+  },
+];
+
+const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, onGetConfig }) => {
   const { command, rootDir, commandArgs } = context;
   const mode = command === 'start' ? 'development' : 'production';
-  // TODO: register more cli options
-  const cliOptions = [
-    {
-      name: 'disableOpen',
-      commands: ['start'],
-    },
-  ];
+
+
   registerCliOption(cliOptions);
 
   // mock routeManifest
@@ -24,11 +27,14 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption }) =>
     '/': '/src/pages/index',
   };
 
+  let outputDir;
+
   onHook(`before.${command as 'start' | 'build'}.run`, async ({ transformPlugins, config }) => {
+    outputDir = Array.isArray(config) ? (config.find(({ name }) => name === 'web')).output.path : config.output.path;
     // TODO: watch file changes and rebuild
     await buildEntry({
       rootDir,
-      outdir: 'build',
+      outdir: outputDir,
       entry: path.join(rootDir, 'src/document.tsx'),
       // alias will be formatted as Record<string, string>
       // TODO consider with alias to false
@@ -38,8 +44,8 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption }) =>
 
     if (command === 'build') {
       // generator html to outputDir
-      const htmlContent = renderDocument({ rootDir, documentPath: 'build/document.js' });
-      fs.writeFileSync(path.join(rootDir, 'build/index.html'), htmlContent);
+      const htmlContent = renderDocument(path.join(outputDir, 'document.js'));
+      fs.writeFileSync(path.join(outputDir, 'index.html'), htmlContent);
     }
   });
 
@@ -87,7 +93,7 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption }) =>
       middlewares.push({
         name: 'document-render-server',
         middleware: setupRenderServer({
-          rootDir,
+          outputDir,
           routeManifest,
         }),
       });
