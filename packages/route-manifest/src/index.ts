@@ -2,8 +2,8 @@
 import fs from 'fs';
 import path from 'path';
 import minimatch from 'minimatch';
-import { createRouteId, defineRoutes, NestedRouteManifest } from './routes.js';
-import type { RouteManifest, DefineRouteFunction } from './routes.js';
+import { createRouteId, defineRoutes } from './routes.js';
+import type { RouteManifest, DefineRouteFunction, NestedRouteManifest } from './routes.js';
 
 const routeModuleExts = ['.js', '.jsx', '.ts', '.tsx', '.md', '.mdx'];
 
@@ -44,12 +44,12 @@ export function generateNestedRouteManifest(routeManifest: RouteManifest, parent
     .filter(key => routeManifest[key].parentId === parentId)
     .map(key => {
       const route = {
-        ...routeManifest[key]
+        ...routeManifest[key],
       } as NestedRouteManifest;
       const children = generateNestedRouteManifest(routeManifest, route.id);
       if (children.length > 0) route.children = children;
       return route;
-    })
+    });
 }
 
 function defineConventionalRoutes(
