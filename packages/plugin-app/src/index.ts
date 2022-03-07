@@ -30,7 +30,7 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, onGe
   let outputDir;
 
   onHook(`before.${command as 'start' | 'build'}.run`, async ({ transformPlugins, config }) => {
-    outputDir = Array.isArray(config) ? (config.find(({ name }) => name === 'web')).output.path : config.output.path;
+    outputDir = Array.isArray(config) ? config[0].output.path : config.output.path;
     // TODO: watch file changes and rebuild
     await buildEntry({
       rootDir,

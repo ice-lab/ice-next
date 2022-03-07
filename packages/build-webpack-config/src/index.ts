@@ -14,8 +14,8 @@ import { createUnplugin } from 'unplugin';
 import getTransformPlugins from './plugins/index.js';
 
 const require = createRequire(import.meta.url);
-const baseWatchIgnored = ['**/.git/**', '**/node_modules/**'];
-const watchIgnoredRegexp = process.env.RUNTIME_DEBUG ? baseWatchIgnored : baseWatchIgnored.concat('**/.ice/**');
+
+const watchIgnoredRegexp = ['**/.git/**', '**/node_modules/**'];
 
 interface GetWebpackConfigOptions {
   rootDir: string;
