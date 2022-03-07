@@ -1,6 +1,4 @@
-
 import * as React from 'react';
-// import type { ComponentType } from 'react';
 import * as ReactDOMServer from 'react-dom/server.js';
 
 export default async function render(context, runtime) {
