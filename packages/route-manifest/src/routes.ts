@@ -22,22 +22,12 @@ export interface ConfigRoute {
    */
   path?: string;
   /**
-   * Should be `true` if the `path` is case-sensitive. Defaults to `false`.
-   */
-  caseSensitive?: boolean;
-  /**
    * Should be `true` if it is an index route. This disallows child routes.
    */
   index?: boolean;
 }
 
 export interface DefineRouteOptions {
-  /**
-   * Should be `true` if the route `path` is case-sensitive. Defaults to
-   * `false`.
-   */
-  caseSensitive?: boolean;
-
   /**
    * Should be `true` if this is an index route that does not allow child routes.
    */
@@ -110,7 +100,6 @@ export function defineRoutes(
     const route: ConfigRoute = {
       path: path || undefined,
       index: options.index ? true : undefined,
-      caseSensitive: options.caseSensitive ? true : undefined,
       id: createRouteId(file),
       parentId:
         parentRoutes.length > 0

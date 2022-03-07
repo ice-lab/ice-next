@@ -1,6 +1,6 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { generateRouteManifest, generateNestedRouteManifest } from '../src/index';
+import { generateRouteManifest, formatNestedRouteManifest } from '../src/index';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const fixturesDir = path.join(__dirname, 'fixtures');
@@ -156,7 +156,7 @@ describe('route-manifest', () => {
   });
 
   test('generateNestedRouteManifest function', () => {
-    const nestedRouteManifest = generateNestedRouteManifest(expectedRouteManifest);
+    const nestedRouteManifest = formatNestedRouteManifest(expectedRouteManifest);
     expect(nestedRouteManifest).toEqual(expectedNestedRouteManifest);
   });
 })

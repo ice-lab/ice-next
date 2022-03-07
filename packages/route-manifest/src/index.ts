@@ -39,14 +39,14 @@ export function generateRouteManifest(rootDir: string) {
   return routeManifest;
 }
 
-export function generateNestedRouteManifest(routeManifest: RouteManifest, parentId?: string): NestedRouteManifest[] {
+export function formatNestedRouteManifest(routeManifest: RouteManifest, parentId?: string): NestedRouteManifest[] {
   return Object.keys(routeManifest)
     .filter(key => routeManifest[key].parentId === parentId)
     .map(key => {
       const route = {
         ...routeManifest[key],
       } as NestedRouteManifest;
-      const children = generateNestedRouteManifest(routeManifest, route.id);
+      const children = formatNestedRouteManifest(routeManifest, route.id);
       if (children.length > 0) route.children = children;
       return route;
     });
