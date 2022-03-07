@@ -27,14 +27,13 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, onGe
     '/': '/src/pages/index',
   };
 
-  let outputDir;
+  let outDir;
 
   onHook(`before.${command as 'start' | 'build'}.run`, async ({ transformPlugins, config }) => {
-    outputDir = Array.isArray(config) ? config[0].output.path : config.output.path;
+    outDir = Array.isArray(config) ? config[0].output.path : config.output.path;
     // TODO: watch file changes and rebuild
     await buildEntry({
-      rootDir,
-      outdir: outputDir,
+      outDir,
       entry: path.join(rootDir, 'src/document.tsx'),
       // alias will be formatted as Record<string, string>
       // TODO consider with alias to false
@@ -44,8 +43,8 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, onGe
 
     if (command === 'build') {
       // generator html to outputDir
-      const htmlContent = renderDocument(path.join(outputDir, 'document.js'));
-      fs.writeFileSync(path.join(outputDir, 'index.html'), htmlContent);
+      const htmlContent = renderDocument(path.join(outDir, 'document.js'));
+      fs.writeFileSync(path.join(outDir, 'index.html'), htmlContent);
     }
   });
 
@@ -93,7 +92,7 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, onGe
       middlewares.push({
         name: 'document-render-server',
         middleware: setupRenderServer({
-          outputDir,
+          outDir,
           routeManifest,
         }),
       });

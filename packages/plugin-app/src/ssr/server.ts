@@ -2,14 +2,14 @@ import path from 'path';
 import renderDocument from './renderDocument.js';
 
 interface Options {
-  outputDir: string;
+  outDir: string;
   // TODO: type
   routeManifest: any;
 }
 
 export function setupRenderServer(options: Options) {
   const {
-    outputDir,
+    outDir,
     routeManifest,
   } = options;
 
@@ -19,7 +19,7 @@ export function setupRenderServer(options: Options) {
     }
 
     // TODO: disable cache
-    const html = renderDocument(path.join(outputDir, 'document.js'));
+    const html = renderDocument(path.join(outDir, 'document.js'));
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(html);
