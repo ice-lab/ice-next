@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url';
 import { generateRouteManifest, generateNestedRouteManifest } from '../src/index';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const fixturesDir = path.join(__dirname, '__fixtures__');
+const fixturesDir = path.join(__dirname, 'fixtures');
 
 const expectedRouteManifest = {
   layout: { path: '', id: 'layout', file: 'layout.tsx' },
