@@ -8,8 +8,6 @@ export function setupServerRender(options: any) {
     routeManifest,
   } = options;
 
-  process.env.__IS_SERVER__ = 'true';
-
   return async (req, res) => {
     if (!routeManifest[req.path]) {
       return;

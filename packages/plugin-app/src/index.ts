@@ -31,8 +31,6 @@ const plugin: Plugin = ({ registerTask, context, onHook }) => {
 
     if (command === 'build') {
       // generator html to outputDir
-      process.env.__IS_SERVER__ = 'true';
-
       const serverRender = require(path.resolve(rootDir, 'build/server.js'));
       const html = await serverRender.default({});
       fs.writeFileSync(path.join(rootDir, 'build/index.html'), html);

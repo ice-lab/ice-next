@@ -25,6 +25,9 @@ export async function buildEntry(options: Options): Promise<esbuild.BuildResult>
     platform: 'node',
     format: 'cjs',
     external: ['react-dom', 'react'],
+    define: {
+      'process.env.__IS_SERVER__': 'true',
+    },
     plugins: [
       {
         name: 'esbuild-alias',
