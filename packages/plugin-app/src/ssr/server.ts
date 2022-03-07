@@ -1,4 +1,6 @@
 import * as path from 'path';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 
 export function setupServerRender(options: any) {
   const {
@@ -14,7 +16,7 @@ export function setupServerRender(options: any) {
     }
 
     // TODO: disable cache
-    const serverRender = await import(path.resolve(rootDir, 'build/server.mjs'));
+    const serverRender = require(path.resolve(rootDir, 'build/server.js'));
 
     const html = await serverRender.default({
       req,

@@ -1,9 +1,12 @@
 import * as path from 'path';
 import * as fs from 'fs';
+import { createRequire } from 'module';
 
 import type { Plugin } from '@ice/types';
 import { setupServerRender } from './ssr/server.js';
 import { buildEntry } from './ssr/build.js';
+
+const require = createRequire(import.meta.url);
 
 const plugin: Plugin = ({ registerTask, context, onHook }) => {
   const { command, rootDir } = context;
@@ -30,7 +33,7 @@ const plugin: Plugin = ({ registerTask, context, onHook }) => {
       // generator html to outputDir
       process.env.__IS_SERVER__ = 'true';
 
-      const serverRender = await import(path.resolve(rootDir, 'build/server.mjs'));
+      const serverRender = require(path.resolve(rootDir, 'build/server.js'));
       const html = await serverRender.default({});
       fs.writeFileSync(path.join(rootDir, 'build/index.html'), html);
     }
