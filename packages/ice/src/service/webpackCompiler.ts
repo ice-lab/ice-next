@@ -42,7 +42,7 @@ async function webpackCompiler(options: {
     const messages = formatWebpackMessages(statsData);
     const isSuccessful = !messages.errors.length && !messages.warnings.length;
     if (isSuccessful) {
-      consola.success(`Compiled successfully in ${statsData.time} ms`);
+      consola.success(`Compiled successfully in ${(statsData.children ? statsData.children[0] : statsData).time} ms`);
       isFirstCompile = false;
     }
     if (messages.errors.length) {

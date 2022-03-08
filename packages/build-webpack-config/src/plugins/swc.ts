@@ -22,7 +22,7 @@ const swcPlugin = (options: Options): UnpluginOptions => {
     name: 'swc-plugin',
     async transform(source: string, id: string) {
       // TODO specific runtime plugin name
-      if ((/node_modules/.test(id) && !/[\\/]runtime[\\/]/.test(id)) || /src[/\\]+document\.(tsx|jsx?)/.test(id)) {
+      if ((/node_modules/.test(id) && !/[\\/]runtime[\\/]/.test(id))) {
         return;
       }
 
