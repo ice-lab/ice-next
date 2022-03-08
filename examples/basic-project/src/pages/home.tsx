@@ -1,11 +1,11 @@
 import * as React from 'react';
-import './index.css';
+import { useAppContext } from 'ice';
+import './home.css';
 
 export default function Home() {
-  return (
-    <>
-      <h2>Home Page</h2>
-      <input />
-    </>
-  );
+  const appContext = useAppContext();
+
+  console.log('Home Page: appContext', appContext);
+
+  return <><h2>Home Page</h2></>;
 }
