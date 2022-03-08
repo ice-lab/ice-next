@@ -107,9 +107,7 @@ export async function redirectImport(code: string, options: Options): Promise<st
           let localIdentifier = '';
           const matchedLocalAlias = identifier.match(AS_ALIAS_REG_EXP);
           if (matchedLocalAlias) {
-            const [, imported, local] = matchedLocalAlias;
-            identifier = imported;
-            localIdentifier = local;
+            [, identifier, localIdentifier] = matchedLocalAlias;
           }
           if (redirectData[identifier]) {
             const { isDefault, alias, source } = redirectData[identifier];
