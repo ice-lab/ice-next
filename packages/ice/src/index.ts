@@ -4,12 +4,13 @@ import { Context } from 'build-scripts';
 import consola from 'consola';
 import type { CommandArgs, CommandName, IGetBuiltInPlugins } from 'build-scripts';
 import Generator from './service/runtimeGenerator.js';
-import preCompile from './service/preCompile.js';
+import { createEsbuildCompiler } from './service/preCompile.js';
 import createWatch from './service/watchSource.js';
 import start from './commands/start.js';
 import build from './commands/build.js';
 import type { ExportData } from '@ice/types/esm/generator.js';
 import type { ExtendsPluginAPI } from '@ice/types/esm/plugin.js';
+import getTaskConfig from './utils/getTaskConfig.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -21,8 +22,6 @@ interface CreateServiceOptions {
 }
 
 async function createService({ rootDir, command, commandArgs, getBuiltInPlugins }: CreateServiceOptions) {
-  // TODO pre compile
-  preCompile();
   const routeManifest = {};
   const generator = new Generator({
     rootDir,
@@ -70,6 +69,13 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
   const renderStart = new Date().getTime();
   generator.render();
   consola.debug('template render cost:', new Date().getTime() - renderStart);
+
+  const taskConfig = getTaskConfig(ctx);
+  const webTask = taskConfig.find(({ name }) => name === 'web');
+  const preCompiler = createEsbuildCompiler({
+    alias: webTask.webpackConfig.resolve.alias as Record<string, string>,
+    getTransformPlugins: webTask.getTransformPlugins,
+  });
 
   return {
     run: async () => {
