@@ -64,14 +64,15 @@ const start = async (context: Context<Config>) => {
     devServerConfig.host,
     devServerConfig.port as number,
   );
-  const transformPlugins = getTransformPlugins(rootDir, config);
+
   const compiler = await webpackCompiler({
-    config: webpackConfig,
+    rootDir,
+    config,
     urls,
     commandArgs,
     command,
     applyHook,
-    transformPlugins,
+    getTransformPlugins: (config) => getTransformPlugins(rootDir, config),
   });
   const devServer = new WebpackDevServer(devServerConfig, compiler);
   devServer.startCallback(() => {

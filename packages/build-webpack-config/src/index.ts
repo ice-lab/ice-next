@@ -82,8 +82,6 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
     },
     resolve: {
       alias: {
-        ice: path.join(rootDir, '.ice', 'index.ts'),
-        '@': path.join(rootDir, 'src'),
         ...alias,
       },
       extensions: ['.ts', '.tsx', '.jsx', '...'],

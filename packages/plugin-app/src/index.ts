@@ -15,10 +15,9 @@ const cliOptions = [
   },
 ];
 
-const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, onGetConfig }) => {
+const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption }) => {
   const { command, rootDir, commandArgs } = context;
   const mode = command === 'start' ? 'development' : 'production';
-
 
   registerCliOption(cliOptions);
 
@@ -29,22 +28,23 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, onGe
 
   let outDir;
 
-  onHook(`before.${command as 'start' | 'build'}.run`, async ({ transformPlugins, config }) => {
-    outDir = Array.isArray(config) ? config[0].output.path : config.output.path;
+  onHook(`before.${command as 'start' | 'build'}.run`, async ({ getTransformPlugins, config }) => {
+    outDir = config.outputDir;
+    config.isServer = true;
     // TODO: watch file changes and rebuild
     await buildEntry({
       outDir,
       entry: path.join(rootDir, 'src/document.tsx'),
       // alias will be formatted as Record<string, string>
       // TODO consider with alias to false
-      alias: (Array.isArray(config) ? config[0] : config).resolve?.alias as Record<string, string>,
-      plugins: transformPlugins,
+      alias: config.alias,
+      plugins: getTransformPlugins(config),
     });
 
     if (command === 'build') {
       // generator html to outputDir
-      const htmlContent = renderDocument(path.join(outDir, 'document.js'));
-      fs.writeFileSync(path.join(outDir, 'index.html'), htmlContent);
+      const htmlContent = renderDocument(path.join(config.outputDir, 'document.js'));
+      fs.writeFileSync(path.join(config.outputDir, 'index.html'), htmlContent);
     }
   });
 
@@ -84,6 +84,11 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, onGe
 
   registerTask('web', {
     mode,
+    outputDir: path.join(rootDir, 'build'),
+    alias: {
+      ice: path.join(rootDir, '.ice', 'index.ts'),
+      '@': path.join(rootDir, 'src'),
+    },
     middlewares: (middlewares, devServer) => {
       if (!devServer) {
         throw new Error('webpack-dev-server is not defined');

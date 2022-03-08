@@ -11,18 +11,19 @@ type JSXSuffix = 'jsx' | 'tsx';
 interface Options {
   rootDir: string;
   mode: 'development' | 'production' | 'none';
+  isServer?: boolean;
   sourceMap?: Config['sourceMap'];
 }
 
 const swcPlugin = (options: Options): UnpluginOptions => {
-  const { rootDir, sourceMap, mode } = options;
+  const { rootDir, sourceMap, mode, isServer } = options;
   const dev = mode !== 'production';
 
   return {
     name: 'swc-plugin',
     async transform(source: string, id: string) {
       // TODO specific runtime plugin name
-      if ((/node_modules/.test(id) && !/[\\/]runtime[\\/]/.test(id)) || /src[/\\]+document\.(tsx|jsx?)/.test(id)) {
+      if ((/node_modules/.test(id) && !/[\\/]runtime[\\/]/.test(id))) {
         return;
       }
 
@@ -34,7 +35,7 @@ const swcPlugin = (options: Options): UnpluginOptions => {
       const programmaticOptions = {
         filename: id,
         sourceMaps: !!sourceMap,
-        ...getSwcTransformOptions({ suffix, rootDir, dev }),
+        ...getSwcTransformOptions({ suffix, rootDir, dev, isServer }),
       };
       // auto detect development mode
       if (mode && programmaticOptions.jsc && programmaticOptions.jsc.transform &&
@@ -54,13 +55,15 @@ function getSwcTransformOptions({
   suffix,
   rootDir,
   dev,
+  isServer,
 }: {
     suffix: JSXSuffix;
     rootDir: string;
     dev: boolean;
+    isServer?: boolean;
   }) {
   const baseReactTransformConfig = {
-    refresh: dev,
+    refresh: dev && !isServer,
    };
   const reactTransformConfig = merge(baseReactTransformConfig, hasJsxRuntime(rootDir) ? { runtime: 'automatic' } : {});
 

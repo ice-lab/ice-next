@@ -33,4 +33,6 @@ export interface Config {
     | undefined;
 
   proxy?: ProxyConfigArrayItem | ProxyConfigMap | ProxyConfigArray | undefined;
+
+  isServer?: boolean;
 }
