@@ -5,11 +5,11 @@ import {
   Routes,
   Route,
 } from 'react-router-dom';
-import type { RenderOptions } from './types';
+import { useAppContext } from './AppContext.js';
 
-export default function AppRouter(props: RenderOptions) {
-  const { context, appConfig } = props;
-  const { routes } = context;
+export default function AppRouter() {
+  const appContext = useAppContext();
+  const { routes, appConfig } = appContext;
 
   if (!routes || routes.length === 0) {
     throw new Error('Please add routes(like pages/index.tsx) to your app.');
@@ -21,14 +21,14 @@ export default function AppRouter(props: RenderOptions) {
         <Routes>
           {
             routes.map((route, index) => {
-              const RouteComponent = route.component;
+              const PageComponent = route.component;
               return (
                 <Route
                   key={index}
                   path={route.path}
                   element={
                     <React.Suspense fallback={<>loading chunk....</>}>
-                      <RouteComponent />
+                      <PageComponent />
                     </React.Suspense>
                   }
                 />
