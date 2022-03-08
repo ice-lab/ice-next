@@ -51,7 +51,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
 
   const webpackConfig: WebpackConfig = {
     mode,
-    entry: path.join(rootDir, 'src/app'),
+    entry: path.join(rootDir, '.ice/entry.client'),
     externals,
     output: {
       publicPath,
@@ -83,6 +83,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
     resolve: {
       alias: {
         ice: path.join(rootDir, '.ice', 'index.ts'),
+        '@': path.join(rootDir, 'src'),
         ...alias,
       },
       extensions: ['.ts', '.tsx', '.jsx', '...'],
