@@ -190,7 +190,6 @@ importers:
       '@types/react-dom': ^17.0.11
       chalk: ^4.0.0
       cross-spawn: ^7.0.3
-      esbuild: ^0.14.23
       open: ^8.4.0
       react: ^17.0.2
       react-dom: ^17.0.2
@@ -198,11 +197,10 @@ importers:
     dependencies:
       chalk: 4.1.2
       cross-spawn: 7.0.3
-      esbuild: 0.14.23
       open: 8.4.0
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
-      unplugin: 0.3.2_esbuild@0.14.23
+      unplugin: 0.3.2
     devDependencies:
       '@ice/types': link:../types
       '@types/react': 17.0.39
@@ -7480,7 +7478,7 @@ packages:
     resolution: {integrity: sha1-sr9O6FFKrmFltIF4KdIbLvSZBOw=}
     engines: {node: '>= 0.8'}
 
-  /unplugin/0.3.2_esbuild@0.14.23:
+  /unplugin/0.3.2:
     resolution: {integrity: sha512-5d0DMYNKZU+S9eZUiBfw6Co32eRg8myUgBPoWSqG/wDFCUE/WznfSsJnZWi1P9l69x4uLJqt2qVq1xW/AsXFrw==}
     peerDependencies:
       esbuild: '>=0.13'
@@ -7497,7 +7495,6 @@ packages:
       webpack:
         optional: true
     dependencies:
-      esbuild: 0.14.23
       webpack-virtual-modules: 0.4.3
     dev: false
 
