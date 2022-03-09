@@ -1,3 +1,5 @@
+import { createRequire } from 'module';
+import * as path from 'path';
 import consola from 'consola';
 import type { Context } from 'build-scripts';
 import type { StatsError } from 'webpack';
@@ -8,10 +10,12 @@ import type { TaskConfig } from '../utils/getTaskConfig.js';
 import type { PreCompile } from '@ice/types/esm/plugin.js';
 
 const build = async (context: Context<Config>, taskConfig: TaskConfig[], preCompile: PreCompile) => {
-  const { applyHook, commandArgs, command } = context;
-  const webpackConfigs = taskConfig.map(({ webpackConfig }) => webpackConfig);
+  const { applyHook, commandArgs, command, rootDir } = context;
+  const webTask = taskConfig.find(({ name }) => name === 'web');
   const compiler = await webpackCompiler({
-    config: webpackConfigs,
+    rootDir,
+    webpackConfig: taskConfig.map(({ webpackConfig }) => webpackConfig),
+    config: webTask.config,
     commandArgs,
     command,
     applyHook,

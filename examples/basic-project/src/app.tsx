@@ -1,8 +1,19 @@
-import * as React from 'react';
-import { runApp } from 'ice';
+// import { AppConfig } from 'ice';
 
-runApp({
-  app: {
-    renderComponent: () => <><h2>Simple App</h2></>,
-  },
-});
+// runApp({
+//   app: {
+//     getInitialData: async (ctx) => {
+//       console.log(ctx);
+//       return {
+//         auth: {
+//           admin: true,
+//         },
+//       };
+//     },
+//   },
+// });
+
+const appConfig = {
+
+};
+export default appConfig;

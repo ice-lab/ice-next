@@ -28,7 +28,7 @@ function getTaskConfig(context: Context<Config>): TaskConfig[] {
     // add runtime alias for built-in plugins
     const builtInAlias = {};
     builtInPlugins.forEach((pluginName) => {
-      builtInAlias[`${pluginName}/runtime`] = path.join(require.resolve(pluginName), '../runtime');
+      builtInAlias[`${pluginName}/runtime`] = path.join(require.resolve(pluginName), '../../runtime');
     });
     const webpackConfig = getWebpackConfig({
       rootDir,

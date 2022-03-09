@@ -24,12 +24,14 @@ export interface Urls {
 
 interface BeforeCommandRunOptions {
   commandArgs: CommandArgs;
-  config: Configuration | Configuration[];
+  webpackConfig: Configuration | Configuration[];
+  config: Config;
   preCompile: PreCompile;
 }
 
 interface AfterCommandCompileOptions {
   stats: Stats;
+  messages: { warnings: any[]; errors: any[] };
   isSuccessful: Boolean;
   isFirstCompile: Boolean;
   urls: Urls;
@@ -49,10 +51,18 @@ export interface HookLifecycle {
 export type ApplyHook = <T extends keyof HookLifecycle>(lifecycle: T, args: HookLifecycle[T]) => void;
 type OnHook = <T extends keyof HookLifecycle>(lifecycle: T, callback: (args: HookLifecycle[T]) => void) => void;
 
+export interface RouteItem {
+  path: string;
+  filepath: string;
+  chunkName: string;
+  componentName: string;
+}
+
+export type Routes = RouteItem[];
+
 export interface ExtendsPluginAPI {
   context: {
-    // TODO define routeManifest type
-    routeManifest: any;
+    routes: Routes;
     webpack?: typeof webpack;
   };
   generator: {
