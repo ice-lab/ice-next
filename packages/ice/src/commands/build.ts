@@ -1,5 +1,3 @@
-import { createRequire } from 'module';
-import * as path from 'path';
 import consola from 'consola';
 import type { Context } from 'build-scripts';
 import type { StatsError } from 'webpack';
