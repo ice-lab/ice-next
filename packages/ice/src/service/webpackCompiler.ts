@@ -2,8 +2,7 @@ import webpack from 'webpack';
 import consola from 'consola';
 import type { CommandArgs } from 'build-scripts';
 import type { Compiler, Configuration } from 'webpack';
-import type { UnpluginOptions } from 'unplugin';
-import type { Urls } from '@ice/types/esm/plugin.js';
+import type { Urls, PreCompile } from '@ice/types/esm/plugin.js';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
 
 async function webpackCompiler(options: {
@@ -12,13 +11,13 @@ async function webpackCompiler(options: {
   commandArgs: CommandArgs;
   applyHook: (key: string, opts?: {}) => Promise<void>;
   urls?: Urls;
-  transformPlugins?: UnpluginOptions[];
+  preCompile: PreCompile;
 }) {
-  const { config, urls, applyHook, command, commandArgs, transformPlugins } = options;
+  const { config, urls, applyHook, command, commandArgs, preCompile } = options;
   await applyHook(`before.${command}.run`, {
     commandArgs,
     config,
-    transformPlugins,
+    preCompile,
   });
   let compiler: Compiler;
   try {

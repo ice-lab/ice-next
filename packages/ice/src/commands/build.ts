@@ -3,31 +3,19 @@ import type { Context } from 'build-scripts';
 import type { StatsError } from 'webpack';
 import webpackCompiler from '../service/webpackCompiler.js';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
-import { getWebpackConfig, getTransformPlugins } from '@builder/webpack-config';
 import type { Config } from '@ice/types';
+import type { TaskConfig } from '../utils/getTaskConfig.js';
+import type { PreCompile } from '@ice/types/esm/plugin.js';
 
-const build = async (context: Context<Config>) => {
-  const { getConfig, applyHook, commandArgs, command, rootDir } = context;
-  const configs = getConfig();
-  if (!configs.length) {
-    const errMsg = 'Task config is not found';
-    await applyHook('error', { err: new Error(errMsg) });
-    return;
-  }
-  // transform config to webpack config
-  const webpackConfig = configs.map((task) => {
-    return getWebpackConfig({
-      rootDir,
-      config: task.config,
-    });
-  });
-  const transformPlugins = getTransformPlugins(rootDir, configs.find(({ name }) => name === 'web').config);
+const build = async (context: Context<Config>, taskConfig: TaskConfig[], preCompile: PreCompile) => {
+  const { applyHook, commandArgs, command } = context;
+  const webpackConfigs = taskConfig.map(({ webpackConfig }) => webpackConfig);
   const compiler = await webpackCompiler({
-    config: webpackConfig,
+    config: webpackConfigs,
     commandArgs,
     command,
     applyHook,
-    transformPlugins,
+    preCompile,
   });
   await new Promise((resolve, reject): void => {
     let messages: { errors: string[]; warnings: string[] };

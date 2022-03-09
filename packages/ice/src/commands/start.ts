@@ -1,43 +1,21 @@
 import WebpackDevServer from 'webpack-dev-server';
 import type { Context } from 'build-scripts';
-import { getWebpackConfig, getTransformPlugins } from '@builder/webpack-config';
 import lodash from '@builder/pack/deps/lodash/lodash.js';
 import webpackCompiler from '../service/webpackCompiler.js';
 import prepareURLs from '../utils/prepareURLs.js';
 import type { Config } from '@ice/types';
+import type { TaskConfig } from '../utils/getTaskConfig.js';
+import type { PreCompile } from '@ice/types/esm/plugin.js';
 
 const { defaultsDeep } = lodash;
 
-interface IWebTaskConfig {
-  name: string;
-  config: Config;
-}
-
 type DevServerConfig = Record<string, any>;
 // TODO config type of ice.js
-const start = async (context: Context<Config>) => {
-  const { getConfig, applyHook, commandArgs, command, rootDir } = context;
+const start = async (context: Context<Config>, taskConfig: TaskConfig[], preCompile: PreCompile) => {
+  const { applyHook, commandArgs, command } = context;
 
-  // FIXME: getConfig -> getConfigs, because getConfig will return an array
-  const configs = getConfig();
-  if (!configs.length) {
-    const errMsg = 'Task config is not found';
-    await applyHook('error', { err: new Error(errMsg) });
-    return;
-  }
-  const webConfig = configs.find(({ name }) => name === 'web');
-  if (!webConfig) {
-    const errMsg = 'Web task config is not found';
-    await applyHook('error', { err: new Error(errMsg) });
-    return;
-  }
-  const { config } = webConfig as IWebTaskConfig;
-
-  // transform config to webpack config
-  const webpackConfig = getWebpackConfig({
-    rootDir,
-    config,
-  });
+  // TODO: task includes miniapp / kraken / pha
+  const { webpackConfig } = taskConfig.find(({ name }) => name === 'web');
 
   let devServerConfig: DevServerConfig = {
     port: commandArgs.port || 3333,
@@ -54,14 +32,13 @@ const start = async (context: Context<Config>) => {
     devServerConfig.host,
     devServerConfig.port,
   );
-  const transformPlugins = getTransformPlugins(rootDir, config);
   const compiler = await webpackCompiler({
     config: webpackConfig,
     urls,
     commandArgs,
     command,
     applyHook,
-    transformPlugins,
+    preCompile,
   });
   const devServer = new WebpackDevServer(devServerConfig, compiler);
   devServer.startCallback(() => {

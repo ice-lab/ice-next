@@ -1,34 +1,48 @@
+import * as path from 'path';
 import consola from 'consola';
-import esbuild, { type BuildOptions } from 'esbuild';
+import fg from 'fast-glob';
+import esbuild from 'esbuild';
 import { createUnplugin } from 'unplugin';
 import type { UnpluginOptions } from 'unplugin';
 import type { Config } from '@ice/types';
+import type { PreCompile } from '@ice/types/esm/plugin.js';
+import { resolveId } from './preAnalyze.js';
 
 export function createEsbuildCompiler(options: {
   alias?: Record<string, string>;
   getTransformPlugins?: (config: Partial<Config>) => UnpluginOptions[];
 }) {
   const { alias = {}, getTransformPlugins } = options;
-  const aliasKey = Object.keys(alias);
-  const resolveFilter = new RegExp(`^(${aliasKey.map((str) => {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  }).join('|')})$`);
-  return async (buildOptions: BuildOptions, customConfig?: Partial<Config>) => {
+  const preCompile: PreCompile = async (buildOptions, customConfig) => {
     const startTime = new Date().getTime();
     consola.debug('[esbuild]', `start compile for: ${buildOptions.entryPoints}`);
     const transformPlugins = getTransformPlugins(customConfig);
     const buildResult = await esbuild.build({
       bundle: true,
-      platform: 'node',
-      external: ['./node_modules/*'],
       ...buildOptions,
       plugins: [
         {
           name: 'esbuild-alias',
           setup(build) {
-            build.onResolve({ filter: resolveFilter }, (args) => ({
-              path: alias[args.path],
-            }));
+            build.onResolve({ filter: /.*/ }, (args) => {
+              const id = args.path;
+              const resolved = resolveId(id, alias);
+              if (resolved && resolved !== id) {
+                if (!path.extname(resolved)) {
+                  const basename = path.basename(resolved);
+                  const patterns = [`${basename}.{js,ts,jsx,tsx}`, `${basename}/index.{js,ts,jsx,tsx}`];
+                  const absoluteId = fg.sync(patterns, {
+                    cwd: path.dirname(resolved),
+                    absolute: true,
+                  })[0];
+                  if (absoluteId) {
+                    return {
+                      path: absoluteId,
+                    };
+                  }
+                }
+              }
+            });
           },
         },
         ...transformPlugins.map(plugin => createUnplugin(() => plugin).esbuild()),
@@ -37,4 +51,5 @@ export function createEsbuildCompiler(options: {
     consola.debug('[esbuild]', `time cost: ${new Date().getTime() - startTime}ms`);
     return buildResult;
   };
+  return preCompile;
 }

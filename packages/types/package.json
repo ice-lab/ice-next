@@ -26,6 +26,7 @@
   "homepage": "https://next.ice.work",
   "devDependencies": {
     "build-scripts": "^2.0.0-9",
+    "esbuild": "^0.14.23",
     "react": "^17.0.2",
     "unplugin": "^0.3.2",
     "webpack": "^5.69.1",

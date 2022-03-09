@@ -72,7 +72,7 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
 
   const taskConfig = getTaskConfig(ctx);
   const webTask = taskConfig.find(({ name }) => name === 'web');
-  const preCompiler = createEsbuildCompiler({
+  const preCompile = createEsbuildCompiler({
     alias: webTask.webpackConfig.resolve.alias as Record<string, string>,
     getTransformPlugins: webTask.getTransformPlugins,
   });
@@ -80,9 +80,9 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
   return {
     run: async () => {
       if (command === 'start') {
-        return await start(ctx);
+        return await start(ctx, taskConfig, preCompile);
       } else if (command === 'build') {
-        return await build(ctx);
+        return await build(ctx, taskConfig, preCompile);
       }
     },
   };
