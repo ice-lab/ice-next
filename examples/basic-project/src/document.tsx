@@ -14,7 +14,8 @@ function Document() {
       <body>
         <div id="root"></div>
         <script src="./main.js"></script>
-        <link href="./home.css" rel="stylesheet" />
+        <script src="./pageshome.js"></script>
+        <script src="./pagesabout.js"></script>
       </body>
     </html>
   );

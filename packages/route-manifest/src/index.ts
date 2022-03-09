@@ -5,6 +5,11 @@ import minimatch from 'minimatch';
 import { createRouteId, defineRoutes } from './routes.js';
 import type { RouteManifest, DefineRouteFunction, NestedRouteManifest } from './routes.js';
 
+export {
+  RouteManifest,
+  NestedRouteManifest,
+};
+
 const routeModuleExts = ['.js', '.jsx', '.ts', '.tsx', '.md', '.mdx'];
 
 export function isRouteModuleFile(filename: string): boolean {
@@ -75,10 +80,6 @@ function defineConventionalRoutes(
         files[routeId] = filePath;
         return;
       }
-
-      throw new Error(
-        `Invalid route module file: ${path.join(rootDir, filePath)}`,
-      );
     },
   );
 
@@ -95,8 +96,6 @@ function defineConventionalRoutes(
       const parentRouteId = findParentRouteId(routeIds, id);
       return parentRouteId === parentId;
     });
-
-    console.log('childRouteIds: ', childRouteIds);
 
     for (let routeId of childRouteIds) {
       const routePath: string | undefined = createRoutePath(

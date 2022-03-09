@@ -27,6 +27,7 @@
   "homepage": "https://next.ice.work",
   "devDependencies": {
     "@ice/runtime": "^1.0.0",
+    "@ice/route-manifest": "^1.0.0",
     "build-scripts": "^2.0.0-7",
     "react": "^17.0.2",
     "unplugin": "^0.3.2",
