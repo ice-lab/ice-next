@@ -22,12 +22,15 @@ const AppRouter: React.ComponentType<AppRouterProps> = (props) => {
   if (!routes || routes.length === 0) {
     throw new Error('Please add routes(like pages/index.tsx) to your app.');
   }
+  const app = <App routes={routes} PageWrappers={PageWrappers} />;
+  if (routes.length === 1) {
+    return app;
+  }
 
   const Router = appConfig.router.type === 'hash' ? HashRouter : BrowserRouter;
-
   return (
     <Router>
-      <App routes={routes} PageWrappers={PageWrappers} />
+      {app}
     </Router>
   );
 };
