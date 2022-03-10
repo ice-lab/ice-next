@@ -14,6 +14,10 @@ export interface ConfigRoute {
    */
   file: string;
   /**
+   * current route's component. `src/pages/gist.jsx` will have an `componentName` of `PageGist`
+   */
+  componentName: string;
+  /**
    * The unique `id` for this route's parent route, if there is one.
    */
   parentId?: string;
@@ -96,16 +100,17 @@ export function defineRoutes(
       // route(path, file, options)
       options = optionsOrChildren || {};
     }
-
+    const id = createRouteId(file);
     const route: ConfigRoute = {
       path: path || undefined,
       index: options.index ? true : undefined,
-      id: createRouteId(file),
+      id,
       parentId:
         parentRoutes.length > 0
           ? parentRoutes[parentRoutes.length - 1].id
           : undefined,
       file,
+      componentName: createComponentName(id),
     };
 
     routes[route.id] = route;
@@ -134,4 +139,10 @@ export function normalizeSlashes(file: string) {
 
 function stripFileExtension(file: string) {
   return file.replace(/\.[a-z0-9]+$/i, '');
+}
+
+function createComponentName(id: string) {
+  return id.split('/')
+    .map((item: string) => item[0].toUpperCase() + item.slice(1, item.length))
+    .join('');
 }

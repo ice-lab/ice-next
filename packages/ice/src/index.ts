@@ -28,16 +28,8 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
 
   const { addWatchEvent, removeWatchEvent } = createWatch(path.join(rootDir, 'src'), command);
   const tmpDirName = '.ice';
-  const routeManifest = generateRouteManifest(rootDir);
-  const routes = formatNestedRouteManifest(routeManifest);
 
-  // TODO: watch and generate routeManifest
-  // const routes: Routes = [{
-  //   path: '/*',
-  //   filepath: path.join(rootDir, 'src/pages/home'),
-  //   chunkName: 'home',
-  //   componentName: 'Home',
-  // }];
+  const { routeManifest, routes } = getRouteData(rootDir);
   const componentsImportStr = generateComponentsImportStr(routeManifest);
   const routesStr = generateRoutesStr(routes);
 
@@ -58,9 +50,9 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
   addWatchEvent([
     path.join(rootDir, 'src'),
     (eventName: string, filePath: string) => {
-      const routeManifest = generateRouteManifest(rootDir);
-      const routes = formatNestedRouteManifest(routeManifest);
-      consola.log('routes: ', routes);
+      const { routeManifest, routes } = getRouteData(rootDir);
+      const componentsImportStr = generateComponentsImportStr(routeManifest);
+      const routesStr = generateRoutesStr(routes);
       generator.renderFile(
         path.join(templatePath, 'routes.ts.ejs'),
         path.join(rootDir, tmpDirName, 'routes.ts'),
@@ -116,17 +108,17 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
   };
 }
 
-function createComponentName(id: string) {
-  return id.split('/')
-    .map((item: string) => item[0].toUpperCase() + item.slice(1, item.length))
-    .join('');
+function getRouteData(rootDir: string) {
+  const routeManifest = generateRouteManifest(rootDir);
+  const routes = formatNestedRouteManifest(routeManifest);
+  return { routeManifest, routes };
 }
+
 
 function generateComponentsImportStr(routeManifest: RouteManifest) {
   return Object.keys(routeManifest)
     .reduce((prev: string, id: string) => {
-      const componentName = createComponentName(id);
-      let { file } = routeManifest[id];
+      let { file, componentName } = routeManifest[id];
       const fileExtname = path.extname(file);
       file = file.replace(new RegExp(`${fileExtname}$`), '');
       return `${prev}const ${componentName} = React.lazy(() => import(/* webpackChunkName: "${componentName}" */ '@/${file}'))\n`;
@@ -140,10 +132,12 @@ function generateRoutesStr(nestRouteManifest: NestedRouteManifest[]) {
 
 function generateNestRoutesStr(nestRouteManifest: NestedRouteManifest[]) {
   return nestRouteManifest.reduce((prev, route) => {
-    const { children, path, id } = route;
+    const { children, path, index, componentName } = route;
     let str = `{
       path: '${path}',
-      component: ${createComponentName(id)},
+      component: ${componentName},
+      componentName: '${componentName}',
+      index: ${index},
       exact: true,
     `;
     if (children) {

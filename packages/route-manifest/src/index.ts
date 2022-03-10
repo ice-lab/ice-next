@@ -10,7 +10,15 @@ export {
   NestedRouteManifest,
 };
 
-const routeModuleExts = ['.js', '.jsx', '.ts', '.tsx', '.md', '.mdx'];
+const routeModuleExts = [
+  '.js',
+  '.jsx',
+  '.ts',
+  '.tsx',
+  // 暂不支持 md 文件，需要工程配合
+  // '.md',
+  // '.mdx',
+];
 
 export function isRouteModuleFile(filename: string): boolean {
   return routeModuleExts.includes(path.extname(filename));
@@ -22,9 +30,13 @@ export function generateRouteManifest(rootDir: string) {
   // 1. find global layout
   const globalLayoutFile = findGlobalLayout(srcDir, 'layout');
   if (globalLayoutFile) {
-    routeManifest['layout'] = { path: '', id: 'layout', file: globalLayoutFile };
+    routeManifest['layout'] = {
+      path: '',
+      id: 'layout',
+      componentName: 'Layout',
+      file: globalLayoutFile,
+    };
   }
-
   // 2. find routes in `src/pages` directory
   if (fs.existsSync(path.resolve(srcDir, 'pages'))) {
     const conventionalRoutes = defineConventionalRoutes(

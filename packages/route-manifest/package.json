@@ -4,9 +4,6 @@
   "description": "Generate route manifest",
   "main": "./esm/index.js",
   "exports": "./esm/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "ice-admin",
   "files": [
     "lib"
