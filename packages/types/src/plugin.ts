@@ -5,6 +5,7 @@ import type WebpackDevServer from 'webpack-dev-server';
 import type { UnpluginOptions } from 'unplugin';
 import type { Config } from './config.js';
 import type { ExportData, AddRenderFile, AddTemplateFiles } from './generator.js';
+import type { NestedRouteManifest } from '@ice/route-manifest';
 
 type AddExport = (exportData: ExportData) => void;
 type EventName = 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir';
@@ -23,12 +24,13 @@ export interface Urls {
 
 interface BeforeCommandRunOptions {
   commandArgs: CommandArgs;
-  config: Configuration | Configuration[];
-  transformPlugins?: UnpluginOptions[];
+  config: Config;
+  getTransformPlugins?: (config: Config) => UnpluginOptions[];
 }
 
 interface AfterCommandCompileOptions {
   stats: Stats;
+  messages: { warnings: any[]; errors: any[] };
   isSuccessful: Boolean;
   isFirstCompile: Boolean;
   urls: Urls;
@@ -48,14 +50,7 @@ export interface HookLifecycle {
 export type ApplyHook = <T extends keyof HookLifecycle>(lifecycle: T, args: HookLifecycle[T]) => void;
 type OnHook = <T extends keyof HookLifecycle>(lifecycle: T, callback: (args: HookLifecycle[T]) => void) => void;
 
-export interface RouteItem {
-  path: string;
-  filepath: string;
-  chunkName: string;
-  componentName: string;
-}
-
-export type Routes = RouteItem[];
+export type Routes = NestedRouteManifest[];
 
 export interface ExtendsPluginAPI {
   context: {
