@@ -1,3 +1,6 @@
+import {
+  Link,
+} from 'react-router-dom';
 import Runtime from './runtime.js';
 import App from './App.js';
 import render from './render.js';
@@ -18,6 +21,7 @@ export {
   runApp,
   runServerApp,
   useAppContext,
+  Link,
 
   // types
   RuntimePlugin,

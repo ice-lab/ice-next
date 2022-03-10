@@ -143,7 +143,7 @@ function generateNestRoutesStr(nestRouteManifest: NestedRouteManifest[]) {
     if (children) {
       str += `children: [${generateNestRoutesStr(children)}],`;
     }
-    str += '}';
+    str += '},';
     prev += str;
     return prev;
   }, '');

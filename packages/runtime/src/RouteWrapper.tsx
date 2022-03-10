@@ -11,6 +11,8 @@ const staticPropNames = ['pageConfig', 'getInitialProps'];
 export default function RouteWrapper(props: Props) {
   const { PageComponent, PageWrappers } = props;
 
+  console.log('render Route Wrapper', props);
+
   const Page = (PageWrappers || []).reduce((acc, curr) => {
     const compose = curr(acc);
 

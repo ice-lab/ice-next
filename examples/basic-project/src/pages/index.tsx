@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useAppContext } from 'ice';
+import { useAppContext, Link } from 'ice';
 import './index.css';
 
 export default function Home() {
@@ -7,7 +7,7 @@ export default function Home() {
 
   console.log('Home Page: appContext', appContext);
 
-  return <><h3>Home Page</h3></>;
+  return <><h2>Home Page</h2><Link to="/about">about</Link></>;
 }
 
 Home.pageConfig = {
