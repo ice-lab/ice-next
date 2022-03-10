@@ -26,7 +26,7 @@ export interface RouteItem {
   path: string;
   component: ComponentType;
   componentName: string;
-  index?: boolean;
+  index?: false;
   exact?: boolean;
   strict?: boolean;
   children?: RouteItem[];

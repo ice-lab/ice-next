@@ -1,59 +1,64 @@
 import * as React from 'react';
+import type {
+  RouteObject } from 'react-router-dom';
 import {
   HashRouter,
   BrowserRouter,
-  Routes,
-  Route,
+  useRoutes,
 } from 'react-router-dom';
 import { useAppContext } from './AppContext.js';
 import RouteWrapper from './RouteWrapper.js';
-import type { PageWrapper } from './types';
+import type { PageWrapper, RouteItem } from './types';
 
-interface Props {
+interface AppRouterProps {
   PageWrappers?: PageWrapper<any>[];
 }
 
-const AppRouter: React.ComponentType<Props> = (props) => {
+const AppRouter: React.ComponentType<AppRouterProps> = (props) => {
   const { PageWrappers } = props;
   const appContext = useAppContext();
   const { routes, appConfig } = appContext;
 
   if (!routes || routes.length === 0) {
     throw new Error('Please add routes(like pages/index.tsx) to your app.');
-  } else if (routes.length > 1) {
-    // TODO: routes.length > 1 -> process.env.ICE_ROUTER === 'disabled'
-    const Router = appConfig.router.type === 'hash' ? HashRouter : BrowserRouter;
-    return (
-      <Router>
-        <Routes>
-          {
-            routes.map((route, index) => {
-              const PageComponent = route.component;
-              return (
-                <Route
-                  key={index}
-                  path={route.path}
-                  element={
-                    <React.Suspense fallback={<>loading chunk....</>}>
-                      <RouteWrapper PageComponent={PageComponent} PageWrappers={PageWrappers} />
-                    </React.Suspense>
-                  }
-                />
-              );
-            })
-          }
-        </Routes>
-      </Router>
-    );
-  } else {
-    // routes.length === 1
-    const PageComponent = routes[0].component;
-    return (
+  }
+
+  const Router = appConfig.router.type === 'hash' ? HashRouter : BrowserRouter;
+
+  return (
+    <Router>
+      <App routes={routes} PageWrappers={PageWrappers} />
+    </Router>
+  );
+};
+
+export default AppRouter;
+
+interface AppProps extends AppRouterProps {
+  routes: RouteItem[];
+}
+
+function App({ routes, PageWrappers }: AppProps) {
+  const newRoutes = updateRouteElement(routes, PageWrappers);
+  const element = useRoutes(newRoutes);
+  return element;
+}
+
+function updateRouteElement(routes: RouteItem[], PageWrappers?: PageWrapper<any>[]) {
+  return routes.map(({ path, component: PageComponent, children, index }: RouteItem) => {
+    const element = (
       <React.Suspense fallback={<>loading chunk....</>}>
         <RouteWrapper PageComponent={PageComponent} PageWrappers={PageWrappers} />
       </React.Suspense>
     );
-  }
-};
-
-export default AppRouter;
+    const route: RouteObject = {
+      path,
+      element: element,
+      index,
+    };
+    if (children) {
+      route.children = updateRouteElement(children, PageWrappers);
+    }
+    return route;
+  });
+}

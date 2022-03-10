@@ -134,7 +134,7 @@ function generateNestRoutesStr(nestRouteManifest: NestedRouteManifest[]) {
   return nestRouteManifest.reduce((prev, route) => {
     const { children, path, index, componentName } = route;
     let str = `{
-      path: '${path}',
+      path: '${path || ''}',
       component: ${componentName},
       componentName: '${componentName}',
       index: ${index},
