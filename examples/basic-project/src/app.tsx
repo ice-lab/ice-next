@@ -1,20 +1,15 @@
-import * as React from 'react';
-// import { AppConfig } from 'ice';
+import type { AppConfig } from 'ice';
 
-// runApp({
-//   app: {
-//     getInitialData: async (ctx) => {
-//       console.log(ctx);
-//       return {
-//         auth: {
-//           admin: true,
-//         },
-//       };
-//     },
-//   },
-// });
-
-const appConfig = {
-
+const appConfig: AppConfig = {
+  app: {
+    getInitialData: async (ctx) => {
+      console.log(ctx);
+      return {
+        auth: {
+          admin: true,
+        },
+      };
+    },
+  },
 };
 export default appConfig;

@@ -8,6 +8,7 @@ import {
   RuntimePlugin,
   AppContext,
   AppConfig,
+  PageWrapper,
 } from './types.js';
 
 export {
@@ -22,4 +23,5 @@ export {
   RuntimePlugin,
   AppContext,
   AppConfig,
+  PageWrapper,
 };

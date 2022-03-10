@@ -6,8 +6,15 @@ import {
   Route,
 } from 'react-router-dom';
 import { useAppContext } from './AppContext.js';
+import RouteWrapper from './RouteWrapper.js';
+import type { PageWrapper } from './types';
 
-export default function AppRouter() {
+interface Props {
+  PageWrappers?: PageWrapper<any>[];
+}
+
+const AppRouter: React.ComponentType<Props> = (props) => {
+  const { PageWrappers } = props;
   const appContext = useAppContext();
   const { routes, appConfig } = appContext;
 
@@ -28,7 +35,7 @@ export default function AppRouter() {
                   path={route.path}
                   element={
                     <React.Suspense fallback={<>loading chunk....</>}>
-                      <PageComponent />
+                      <RouteWrapper PageComponent={PageComponent} PageWrappers={PageWrappers} />
                     </React.Suspense>
                   }
                 />
@@ -43,8 +50,10 @@ export default function AppRouter() {
     const PageComponent = routes[0].component;
     return (
       <React.Suspense fallback={<>loading chunk....</>}>
-        <PageComponent />
+        <RouteWrapper PageComponent={PageComponent} PageWrappers={PageWrappers} />
       </React.Suspense>
     );
   }
-}
+};
+
+export default AppRouter;
