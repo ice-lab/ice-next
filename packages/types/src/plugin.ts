@@ -3,9 +3,9 @@ import type { IPluginAPI, CommandArgs } from 'build-scripts';
 import type { Configuration, Stats } from 'webpack';
 import type WebpackDevServer from 'webpack-dev-server';
 import type { BuildOptions, BuildResult } from 'esbuild';
+import type { NestedRouteManifest } from '@ice/route-manifest';
 import type { Config } from './config.js';
 import type { ExportData, AddRenderFile, AddTemplateFiles } from './generator.js';
-import type { NestedRouteManifest } from '@ice/route-manifest';
 
 type AddExport = (exportData: ExportData) => void;
 type EventName = 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir';
