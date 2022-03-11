@@ -29,5 +29,9 @@ describe('generateRouteManifest function', () => {
   test('splat-routes', () => {
     const routeManifest = generateRouteManifest(path.join(fixturesDir, 'splat-routes'));
     expect(routeManifest).toMatchSnapshot();
-  })
+  });
+
+  test('invalid-routes', () => {
+    expect(() => generateRouteManifest(path.join(fixturesDir, 'invalid-routes'))).toThrow('invalid character [ in \'/[a.pdf]\'. Only support char: -, \\w');
+  });
 });

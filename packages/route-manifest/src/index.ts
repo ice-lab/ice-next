@@ -15,7 +15,7 @@ const routeModuleExts = [
   '.jsx',
   '.ts',
   '.tsx',
-  // 暂不支持 md 文件，需要工程配合
+  // 暂不支持 .md/.mdx 文件，需要工程配合
   // '.md',
   // '.mdx',
 ];
@@ -157,45 +157,16 @@ function defineConventionalRoutes(
   return defineRoutes(defineNestedRoutes);
 }
 
-let escapeStart = '[';
-let escapeEnd = ']';
-
-export function createRoutePath(partialRouteId: string): string | undefined {
+export function createRoutePath(routeId: string): string | undefined {
   let result = '';
   let rawSegmentBuffer = '';
 
-  let inEscapeSequence = 0;
-
-  partialRouteId = removeLayoutStrFromId(partialRouteId);
-
+  const partialRouteId = removeLayoutStrFromId(routeId);
+  const validChar = ['-', '\\w'];
   for (let i = 0; i < partialRouteId.length; i++) {
     const char = partialRouteId.charAt(i);
-    const lastChar = i > 0 ? partialRouteId.charAt(i - 1) : undefined;
+
     const nextChar = i < partialRouteId.length - 1 ? partialRouteId.charAt(i + 1) : undefined;
-
-    function isNewEscapeSequence() {
-      return !inEscapeSequence && char === escapeStart && lastChar !== escapeStart;
-    }
-
-    function isCloseEscapeSequence() {
-      return inEscapeSequence && char === escapeEnd && nextChar !== escapeEnd;
-    }
-
-    if (isNewEscapeSequence()) {
-      inEscapeSequence++;
-      continue;
-    }
-
-    if (isCloseEscapeSequence()) {
-      inEscapeSequence--;
-      continue;
-    }
-
-    // if you want to mark resource route for a `/sitemap.xml`, add a route `src/pages/[sitemap.xml].tsx`
-    if (inEscapeSequence) {
-      result += char;
-      continue;
-    }
 
     if (char === '/' || char === path.win32.sep || char === '.') {
       if (rawSegmentBuffer === 'index' && result.endsWith('index')) {
@@ -212,6 +183,10 @@ export function createRoutePath(partialRouteId: string): string | undefined {
     if (char === '$') {
       result += typeof nextChar === 'undefined' ? '*' : ':';
       continue;
+    }
+
+    if (!RegExp(`[${validChar.join(',')}]`).test(char)) {
+      throw new Error(`invalid character ${char} in '${routeId}'. Only support char: ${validChar.join(', ')}`);
     }
 
     result += char;
