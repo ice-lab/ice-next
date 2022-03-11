@@ -10,6 +10,8 @@ export {
   NestedRouteManifest,
 };
 
+const validRouteChar = ['-', '\\w', '/', ':', '*'];
+
 const routeModuleExts = [
   '.js',
   '.jsx',
@@ -113,7 +115,9 @@ function defineConventionalRoutes(
       const routePath: string | undefined = createRoutePath(
         routeId.slice((removeLayoutStrFromId(parentId) || 'pages').length),
       );
-
+      if (RegExp(`[^${validRouteChar.join(',')}]`).test(routePath)) {
+        throw new Error(`invalid character in '${routeId}'. Only support char: ${validRouteChar.join(', ')}`);
+      }
       const isIndexRoute = routeId.endsWith('/index');
       let fullPath = createRoutePath(routeId.slice('pages'.length + 1));
       let uniqueRouteId = (fullPath || '') + (isIndexRoute ? '?index' : '');
@@ -162,7 +166,7 @@ export function createRoutePath(routeId: string): string | undefined {
   let rawSegmentBuffer = '';
 
   const partialRouteId = removeLayoutStrFromId(routeId);
-  const validChar = ['-', '\\w'];
+
   for (let i = 0; i < partialRouteId.length; i++) {
     const char = partialRouteId.charAt(i);
 
@@ -183,10 +187,6 @@ export function createRoutePath(routeId: string): string | undefined {
     if (char === '$') {
       result += typeof nextChar === 'undefined' ? '*' : ':';
       continue;
-    }
-
-    if (!RegExp(`[${validChar.join(',')}]`).test(char)) {
-      throw new Error(`invalid character ${char} in '${routeId}'. Only support char: ${validChar.join(', ')}`);
     }
 
     result += char;

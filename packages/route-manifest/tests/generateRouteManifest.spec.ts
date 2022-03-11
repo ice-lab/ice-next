@@ -32,6 +32,6 @@ describe('generateRouteManifest function', () => {
   });
 
   test('invalid-routes', () => {
-    expect(() => generateRouteManifest(path.join(fixturesDir, 'invalid-routes'))).toThrow('invalid character [ in \'/[a.pdf]\'. Only support char: -, \\w');
+    expect(() => generateRouteManifest(path.join(fixturesDir, 'invalid-routes'))).toThrow(`invalid character in 'pages/[a.pdf]'. Only support char: -, \\w, /`);
   });
 });
