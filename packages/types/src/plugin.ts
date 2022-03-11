@@ -25,7 +25,7 @@ export interface Urls {
 interface BeforeCommandRunOptions {
   commandArgs: CommandArgs;
   webpackConfigs: Configuration | Configuration[];
-  config: Config;
+  taskConfig: Config;
   esbuildCompile: EsbuildCompile;
 }
 

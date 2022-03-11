@@ -6,15 +6,15 @@ import type { Config } from '@ice/types';
 import type { EsbuildCompile } from '@ice/types/esm/plugin.js';
 import webpackCompiler from '../service/webpackCompiler.js';
 import prepareURLs from '../utils/prepareURLs.js';
-import type { TaskConfig } from '../utils/getTaskConfig.js';
+import type { ContextConfig } from '../utils/getContextConfig.js';
 
 const { defaultsDeep } = lodash;
 
-const start = async (context: Context<Config>, taskConfig: TaskConfig[], esbuildCompile: EsbuildCompile) => {
+const start = async (context: Context<Config>, contextConfig: ContextConfig[], esbuildCompile: EsbuildCompile) => {
   const { applyHook, commandArgs, command, rootDir } = context;
 
   // TODO: task includes miniapp / kraken / pha
-  const { webpackConfig, config } = taskConfig.find(({ name }) => name === 'web');
+  const { webpackConfig, taskConfig } = contextConfig.find(({ name }) => name === 'web');
 
   let devServerConfig: Configuration = {
     port: commandArgs.port || 3333,
@@ -33,8 +33,8 @@ const start = async (context: Context<Config>, taskConfig: TaskConfig[], esbuild
   );
   const compiler = await webpackCompiler({
     rootDir,
-    webpackConfigs: taskConfig.map(({ webpackConfig }) => webpackConfig),
-    taskConfig: config,
+    webpackConfigs: contextConfig.map(({ webpackConfig }) => webpackConfig),
+    taskConfig,
     urls,
     commandArgs,
     command,

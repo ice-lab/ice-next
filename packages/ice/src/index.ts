@@ -10,7 +10,7 @@ import { createEsbuildCompiler } from './service/compile.js';
 import createWatch from './service/watchSource.js';
 import start from './commands/start.js';
 import build from './commands/build.js';
-import getTaskConfig from './utils/getTaskConfig.js';
+import getContextConfig from './utils/getContextConfig.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -79,8 +79,8 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
   generator.render();
   consola.debug('template render cost:', new Date().getTime() - renderStart);
 
-  const taskConfig = getTaskConfig(ctx);
-  const webTask = taskConfig.find(({ name }) => name === 'web');
+  const contextConfig = getContextConfig(ctx);
+  const webTask = contextConfig.find(({ name }) => name === 'web');
   const esbuildCompile = createEsbuildCompiler({
     alias: webTask.webpackConfig.resolve.alias as Record<string, string>,
     getTransformPlugins: webTask.getTransformPlugins,
@@ -89,9 +89,9 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
   return {
     run: async () => {
       if (command === 'start') {
-        return await start(ctx, taskConfig, esbuildCompile);
+        return await start(ctx, contextConfig, esbuildCompile);
       } else if (command === 'build') {
-        return await build(ctx, taskConfig, esbuildCompile);
+        return await build(ctx, contextConfig, esbuildCompile);
       }
     },
   };

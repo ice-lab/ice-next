@@ -27,20 +27,20 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption }) =>
 
   let outDir: string;
 
-  onHook(`before.${command as 'start' | 'build'}.run`, async ({ esbuildCompile, config }) => {
-    outDir = config.outputDir;
+  onHook(`before.${command as 'start' | 'build'}.run`, async ({ esbuildCompile, taskConfig }) => {
+    outDir = taskConfig.outputDir;
     // TODO: watch file changes and rebuild
     await esbuildCompile({
       entryPoints: [path.join(rootDir, 'src/document.tsx')],
-      outdir: path.join(rootDir, 'build'),
+      outdir: outDir,
       platform: 'node',
       external: ['./node_modules/*'],
     }, { isServer: true });
 
     if (command === 'build') {
       // generator html to outputDir
-      const htmlContent = renderDocument(path.join(config.outputDir, 'document.js'));
-      fs.writeFileSync(path.join(config.outputDir, 'index.html'), htmlContent);
+      const htmlContent = renderDocument(path.join(taskConfig.outputDir, 'document.js'));
+      fs.writeFileSync(path.join(taskConfig.outputDir, 'index.html'), htmlContent);
     }
   });
 

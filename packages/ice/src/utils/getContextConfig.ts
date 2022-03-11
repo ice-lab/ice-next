@@ -8,9 +8,9 @@ import type { UnpluginOptions } from 'unplugin';
 import { getWebpackConfig, getTransformPlugins as getBuiltInPlugins } from '@builder/webpack-config';
 import { builtInPlugins } from '../constant.js';
 
-export interface TaskConfig {
+export interface ContextConfig {
   name: string;
-  config: Config;
+  taskConfig: Config;
   webpackConfig: Configuration & {
     devServer?: DevServerConfiguration;
   };
@@ -18,13 +18,13 @@ export interface TaskConfig {
 }
 const require = createRequire(import.meta.url);
 
-function getTaskConfig(context: Context<Config>): TaskConfig[] {
+function getContextConfig(context: Context<Config>): ContextConfig[] {
   const { getConfig, rootDir } = context;
-  const taskConfig = getConfig();
-  if (!taskConfig.length) {
+  const contextConfig = getConfig();
+  if (!contextConfig.length) {
     throw new Error('Task config is not Found');
   }
-  const configs = taskConfig.map(({ config, name }) => {
+  const configs = contextConfig.map(({ config, name }) => {
     // add runtime alias for built-in plugins
     const builtInAlias = {};
     builtInPlugins.forEach((pluginName) => {
@@ -48,7 +48,7 @@ function getTaskConfig(context: Context<Config>): TaskConfig[] {
     };
     return {
       name,
-      config,
+      taskConfig: config,
       webpackConfig,
       getTransformPlugins,
     };
@@ -56,4 +56,4 @@ function getTaskConfig(context: Context<Config>): TaskConfig[] {
   return configs;
 }
 
-export default getTaskConfig;
+export default getContextConfig;

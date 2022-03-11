@@ -5,15 +5,15 @@ import type { Config } from '@ice/types';
 import type { EsbuildCompile } from '@ice/types/esm/plugin.js';
 import webpackCompiler from '../service/webpackCompiler.js';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
-import type { TaskConfig } from '../utils/getTaskConfig.js';
+import type { ContextConfig } from '../utils/getContextConfig.js';
 
-const build = async (context: Context<Config>, taskConfig: TaskConfig[], esbuildCompile: EsbuildCompile) => {
+const build = async (context: Context<Config>, contextConfig: ContextConfig[], esbuildCompile: EsbuildCompile) => {
   const { applyHook, commandArgs, command, rootDir } = context;
-  const webTask = taskConfig.find(({ name }) => name === 'web');
+  const webConfig = contextConfig.find(({ name }) => name === 'web');
   const compiler = await webpackCompiler({
     rootDir,
-    webpackConfigs: taskConfig.map(({ webpackConfig }) => webpackConfig),
-    taskConfig: webTask.config,
+    webpackConfigs: contextConfig.map(({ webpackConfig }) => webpackConfig),
+    taskConfig: webConfig.taskConfig,
     commandArgs,
     command,
     applyHook,
