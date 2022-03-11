@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { fileURLToPath } from 'url';
-import { analyzeImports, getImportPath, resolveId, type Alias } from '../src/service/preAnalyze';
+import { analyzeImports, getImportPath, resolveId, type Alias } from '../src/service/analyze';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
