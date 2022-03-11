@@ -14,8 +14,6 @@ function Document() {
       <body>
         <div id="root"></div>
         <script src="./main.js"></script>
-        <script src="./PagesIndex.js"></script>
-        <link rel="stylesheet" href="./PagesIndex.css" />
       </body>
     </html>
   );
