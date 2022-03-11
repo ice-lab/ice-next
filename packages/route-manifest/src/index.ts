@@ -15,7 +15,7 @@ const routeModuleExts = [
   '.jsx',
   '.ts',
   '.tsx',
-  // 暂不支持 md 文件，需要工程配合
+  // 暂不支持 .md/.mdx 文件，需要工程配合
   // '.md',
   // '.mdx',
 ];
@@ -157,58 +157,16 @@ function defineConventionalRoutes(
   return defineRoutes(defineNestedRoutes);
 }
 
-let escapeStart = '[';
-let escapeEnd = ']';
-
-export function createRoutePath(partialRouteId: string): string | undefined {
+export function createRoutePath(routeId: string): string | undefined {
   let result = '';
   let rawSegmentBuffer = '';
 
-  let inEscapeSequence = 0;
-  let skipSegment = false;
-
-  partialRouteId = removeLayoutStrFromId(partialRouteId);
-
+  const partialRouteId = removeLayoutStrFromId(routeId);
+  const validChar = ['-', '\\w'];
   for (let i = 0; i < partialRouteId.length; i++) {
     const char = partialRouteId.charAt(i);
-    const lastChar = i > 0 ? partialRouteId.charAt(i - 1) : undefined;
+
     const nextChar = i < partialRouteId.length - 1 ? partialRouteId.charAt(i + 1) : undefined;
-
-    function isNewEscapeSequence() {
-      return !inEscapeSequence && char === escapeStart && lastChar !== escapeStart;
-    }
-
-    function isCloseEscapeSequence() {
-      return inEscapeSequence && char === escapeEnd && nextChar !== escapeEnd;
-    }
-
-    // src/pages/__app/dashboard.tsx || src/pages/__app.tsx
-    function isStartOfLayoutSegment() {
-      return char === '_' && nextChar === '_' && !rawSegmentBuffer;
-    }
-
-    if (skipSegment) {
-      if (char === '/' || char === '.' || char === path.win32.sep) {
-        skipSegment = false;
-      }
-      continue;
-    }
-
-    if (isNewEscapeSequence()) {
-      inEscapeSequence++;
-      continue;
-    }
-
-    if (isCloseEscapeSequence()) {
-      inEscapeSequence--;
-      continue;
-    }
-
-    // if you want to mark resource route for a `/sitemap.xml`, add a route `src/pages/[sitemap.xml].tsx`
-    if (inEscapeSequence) {
-      result += char;
-      continue;
-    }
 
     if (char === '/' || char === path.win32.sep || char === '.') {
       if (rawSegmentBuffer === 'index' && result.endsWith('index')) {
@@ -220,16 +178,15 @@ export function createRoutePath(partialRouteId: string): string | undefined {
       continue;
     }
 
-    if (isStartOfLayoutSegment()) {
-      skipSegment = true;
-      continue;
-    }
-
     rawSegmentBuffer += char;
 
     if (char === '$') {
       result += typeof nextChar === 'undefined' ? '*' : ':';
       continue;
+    }
+
+    if (!RegExp(`[${validChar.join(',')}]`).test(char)) {
+      throw new Error(`invalid character ${char} in '${routeId}'. Only support char: ${validChar.join(', ')}`);
     }
 
     result += char;
@@ -246,13 +203,8 @@ function findParentRouteId(
   routeIds: string[],
   childRouteId: string,
 ): string | undefined {
-  // return routeIds.find((id) => childRouteId.startsWith(`${id}/`));
-
   return routeIds.find((id) => {
-    return (
-      // childRouteId.startsWith(`${id}/`)
-      childRouteId !== id && id.endsWith('layout') && childRouteId.startsWith(`${id.slice(0, id.length - '/layout'.length)}`)
-    );
+    return childRouteId !== id && id.endsWith('layout') && childRouteId.startsWith(`${id.slice(0, id.length - '/layout'.length)}`);
   });
 }
 
