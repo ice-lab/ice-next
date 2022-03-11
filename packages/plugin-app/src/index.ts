@@ -1,8 +1,8 @@
 import path from 'path';
 import fs from 'fs';
 import chalk from 'chalk';
-import openBrowser from './utils/openBrowser.js';
 import type { Plugin } from '@ice/types';
+import openBrowser from './utils/openBrowser.js';
 import { setupRenderServer } from './ssr/server.js';
 import renderDocument from './ssr/renderDocument.js';
 
@@ -27,10 +27,10 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption }) =>
 
   let outDir: string;
 
-  onHook(`before.${command as 'start' | 'build'}.run`, async ({ preCompile, config }) => {
+  onHook(`before.${command as 'start' | 'build'}.run`, async ({ esbuildCompile, config }) => {
     outDir = config.outputDir;
     // TODO: watch file changes and rebuild
-    await preCompile({
+    await esbuildCompile({
       entryPoints: [path.join(rootDir, 'src/document.tsx')],
       outdir: path.join(rootDir, 'build'),
       platform: 'node',

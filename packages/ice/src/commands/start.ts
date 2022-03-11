@@ -2,15 +2,15 @@ import WebpackDevServer from 'webpack-dev-server';
 import type { Configuration } from 'webpack-dev-server';
 import type { Context } from 'build-scripts';
 import lodash from '@builder/pack/deps/lodash/lodash.js';
+import type { Config } from '@ice/types';
+import type { EsbuildCompile } from '@ice/types/esm/plugin.js';
 import webpackCompiler from '../service/webpackCompiler.js';
 import prepareURLs from '../utils/prepareURLs.js';
-import type { Config } from '@ice/types';
 import type { TaskConfig } from '../utils/getTaskConfig.js';
-import type { PreCompile } from '@ice/types/esm/plugin.js';
 
 const { defaultsDeep } = lodash;
 
-const start = async (context: Context<Config>, taskConfig: TaskConfig[], preCompile: PreCompile) => {
+const start = async (context: Context<Config>, taskConfig: TaskConfig[], esbuildCompile: EsbuildCompile) => {
   const { applyHook, commandArgs, command, rootDir } = context;
 
   // TODO: task includes miniapp / kraken / pha
@@ -33,13 +33,13 @@ const start = async (context: Context<Config>, taskConfig: TaskConfig[], preComp
   );
   const compiler = await webpackCompiler({
     rootDir,
-    webpackConfig,
-    config,
+    webpackConfigs: taskConfig.map(({ webpackConfig }) => webpackConfig),
+    taskConfig: config,
     urls,
     commandArgs,
     command,
     applyHook,
-    preCompile,
+    esbuildCompile,
   });
   const devServer = new WebpackDevServer(devServerConfig, compiler);
   devServer.startCallback(() => {

@@ -5,15 +5,15 @@ import esbuild from 'esbuild';
 import { createUnplugin } from 'unplugin';
 import type { UnpluginOptions } from 'unplugin';
 import type { Config } from '@ice/types';
-import type { PreCompile } from '@ice/types/esm/plugin.js';
-import { resolveId } from './preAnalyze.js';
+import type { EsbuildCompile } from '@ice/types/esm/plugin.js';
+import { resolveId } from './analyze.js';
 
 export function createEsbuildCompiler(options: {
   alias?: Record<string, string>;
   getTransformPlugins?: (config: Partial<Config>) => UnpluginOptions[];
 }) {
   const { alias = {}, getTransformPlugins } = options;
-  const preCompile: PreCompile = async (buildOptions, customConfig) => {
+  const esbuildCompile: EsbuildCompile = async (buildOptions, customConfig) => {
     const startTime = new Date().getTime();
     consola.debug('[esbuild]', `start compile for: ${buildOptions.entryPoints}`);
     const transformPlugins = getTransformPlugins(customConfig);
@@ -51,5 +51,5 @@ export function createEsbuildCompiler(options: {
     consola.debug('[esbuild]', `time cost: ${new Date().getTime() - startTime}ms`);
     return buildResult;
   };
-  return preCompile;
+  return esbuildCompile;
 }

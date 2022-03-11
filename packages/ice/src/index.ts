@@ -3,14 +3,14 @@ import { fileURLToPath } from 'url';
 import { Context } from 'build-scripts';
 import consola from 'consola';
 import type { CommandArgs, CommandName, IGetBuiltInPlugins } from 'build-scripts';
+import type { ExportData } from '@ice/types/esm/generator.js';
+import type { ExtendsPluginAPI, Routes } from '@ice/types/esm/plugin.js';
 import Generator from './service/runtimeGenerator.js';
-import { createEsbuildCompiler } from './service/preCompile.js';
+import { createEsbuildCompiler } from './service/compile.js';
 import createWatch from './service/watchSource.js';
 import start from './commands/start.js';
 import build from './commands/build.js';
-import type { ExportData } from '@ice/types/esm/generator.js';
 import getTaskConfig from './utils/getTaskConfig.js';
-import type { ExtendsPluginAPI, Routes } from '@ice/types/esm/plugin.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -81,7 +81,7 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
 
   const taskConfig = getTaskConfig(ctx);
   const webTask = taskConfig.find(({ name }) => name === 'web');
-  const preCompile = createEsbuildCompiler({
+  const esbuildCompile = createEsbuildCompiler({
     alias: webTask.webpackConfig.resolve.alias as Record<string, string>,
     getTransformPlugins: webTask.getTransformPlugins,
   });
@@ -89,9 +89,9 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
   return {
     run: async () => {
       if (command === 'start') {
-        return await start(ctx, taskConfig, preCompile);
+        return await start(ctx, taskConfig, esbuildCompile);
       } else if (command === 'build') {
-        return await build(ctx, taskConfig, preCompile);
+        return await build(ctx, taskConfig, esbuildCompile);
       }
     },
   };

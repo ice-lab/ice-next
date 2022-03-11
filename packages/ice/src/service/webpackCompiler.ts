@@ -1,31 +1,31 @@
 import webpack from 'webpack';
 import consola from 'consola';
-import formatWebpackMessages from '../utils/formatWebpackMessages.js';
 import type { CommandArgs } from 'build-scripts';
 import type { Compiler, Configuration } from 'webpack';
-import type { Urls, PreCompile } from '@ice/types/esm/plugin.js';
+import type { Urls, EsbuildCompile } from '@ice/types/esm/plugin.js';
 import type { Config } from '@ice/types';
+import formatWebpackMessages from '../utils/formatWebpackMessages.js';
 
 async function webpackCompiler(options: {
-  webpackConfig: Configuration | Configuration[];
-  config: Config;
+  webpackConfigs: Configuration | Configuration[];
+  taskConfig: Config;
   command: string;
   commandArgs: CommandArgs;
   applyHook: (key: string, opts?: {}) => Promise<void>;
   rootDir: string;
   urls?: Urls;
-  preCompile: PreCompile;
+  esbuildCompile: EsbuildCompile;
 }) {
-  const { config, urls, applyHook, command, commandArgs, preCompile, webpackConfig } = options;
+  const { taskConfig, urls, applyHook, command, commandArgs, esbuildCompile, webpackConfigs } = options;
   await applyHook(`before.${command}.run`, {
     commandArgs,
-    config,
-    webpackConfig,
-    preCompile,
+    taskConfig,
+    webpackConfigs,
+    esbuildCompile,
   });
   let compiler: Compiler;
   try {
-    compiler = webpack(webpackConfig as Configuration);
+    compiler = webpack(webpackConfigs as Configuration);
   } catch (err) {
     consola.error('Failed to compile.');
     consola.log('');

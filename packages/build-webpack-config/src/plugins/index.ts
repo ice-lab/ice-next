@@ -1,6 +1,6 @@
-import swcPlugin from './swc.js';
 import type { Config } from '@ice/types';
 import type { UnpluginOptions } from 'unplugin';
+import swcPlugin from './swc.js';
 
 const getTransformPlugins = (rootDir: string, config: Config): UnpluginOptions[] => {
   const { sourceMap, transformPlugins = [], transforms = [], mode, isServer } = config;
