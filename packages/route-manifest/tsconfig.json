@@ -1,9 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": "./src",
     "rootDir": "src",
     "outDir": "esm"
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["tests"]
 }

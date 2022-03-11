@@ -165,7 +165,6 @@ export function createRoutePath(partialRouteId: string): string | undefined {
   let rawSegmentBuffer = '';
 
   let inEscapeSequence = 0;
-  let skipSegment = false;
 
   partialRouteId = removeLayoutStrFromId(partialRouteId);
 
@@ -180,18 +179,6 @@ export function createRoutePath(partialRouteId: string): string | undefined {
 
     function isCloseEscapeSequence() {
       return inEscapeSequence && char === escapeEnd && nextChar !== escapeEnd;
-    }
-
-    // src/pages/__app/dashboard.tsx || src/pages/__app.tsx
-    function isStartOfLayoutSegment() {
-      return char === '_' && nextChar === '_' && !rawSegmentBuffer;
-    }
-
-    if (skipSegment) {
-      if (char === '/' || char === '.' || char === path.win32.sep) {
-        skipSegment = false;
-      }
-      continue;
     }
 
     if (isNewEscapeSequence()) {
@@ -220,11 +207,6 @@ export function createRoutePath(partialRouteId: string): string | undefined {
       continue;
     }
 
-    if (isStartOfLayoutSegment()) {
-      skipSegment = true;
-      continue;
-    }
-
     rawSegmentBuffer += char;
 
     if (char === '$') {
@@ -246,13 +228,8 @@ function findParentRouteId(
   routeIds: string[],
   childRouteId: string,
 ): string | undefined {
-  // return routeIds.find((id) => childRouteId.startsWith(`${id}/`));
-
   return routeIds.find((id) => {
-    return (
-      // childRouteId.startsWith(`${id}/`)
-      childRouteId !== id && id.endsWith('layout') && childRouteId.startsWith(`${id.slice(0, id.length - '/layout'.length)}`)
-    );
+    return childRouteId !== id && id.endsWith('layout') && childRouteId.startsWith(`${id.slice(0, id.length - '/layout'.length)}`);
   });
 }
 
