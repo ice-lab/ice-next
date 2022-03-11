@@ -56,7 +56,6 @@ export type Routes = NestedRouteManifest[];
 
 export interface ExtendsPluginAPI {
   context: {
-    routes: Routes;
     webpack?: typeof webpack;
   };
   generator: {

@@ -1,5 +1,6 @@
 import {
   Link,
+  Outlet,
 } from 'react-router-dom';
 import Runtime from './runtime.js';
 import App from './App.js';
@@ -22,6 +23,7 @@ export {
   runServerApp,
   useAppContext,
   Link,
+  Outlet,
 
   // types
   RuntimePlugin,

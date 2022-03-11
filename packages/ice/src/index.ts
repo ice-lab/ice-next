@@ -11,7 +11,7 @@ import createWatch from './service/watchSource.js';
 import start from './commands/start.js';
 import build from './commands/build.js';
 import getContextConfig from './utils/getContextConfig.js';
-import { generateRoutesRenderData, getRoutesData } from './routes.js';
+import { generateRoutesRenderData } from './routes.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -24,36 +24,35 @@ interface CreateServiceOptions {
 
 async function createService({ rootDir, command, commandArgs, getBuiltInPlugins }: CreateServiceOptions) {
   const { addWatchEvent, removeWatchEvent } = createWatch(path.join(rootDir, 'src'), command);
+  const srcDir = path.join(rootDir, 'src');
   const tmpDirName = '.ice';
 
-  let { routes, routeManifest } = getRoutesData(rootDir);
-  const { componentsImportStr, routesStr } = generateRoutesRenderData(routes, routeManifest);
-
+  const routesRenderData = generateRoutesRenderData(rootDir);
   const generator = new Generator({
     rootDir,
     targetDir: tmpDirName,
     // TODO get default Data
     defaultRenderData: {
-      componentsImportStr,
-      routesStr,
+      ...routesRenderData,
     },
   });
 
-  // add default template of ice
+    // add default template of ice
   const templatePath = path.join(__dirname, '../template/');
   generator.addTemplateFiles(templatePath);
 
   addWatchEvent([
-    path.join(rootDir, 'src'),
-    () => {
-      // will update routes object in context
-      let { routes, routeManifest } = getRoutesData(rootDir);
-      const { componentsImportStr, routesStr } = generateRoutesRenderData(routes, routeManifest);
-      generator.renderFile(
-        path.join(templatePath, 'routes.ts.ejs'),
-        path.join(rootDir, tmpDirName, 'routes.ts'),
-        { routesStr, componentsImportStr },
-      );
+    srcDir,
+    (eventName) => {
+      if (eventName === 'add' || eventName === 'unlink') {
+        // TODO: only watch src/layout.tsx and src/pages/**
+        const routesRenderData = generateRoutesRenderData(rootDir);
+        generator.renderFile(
+          path.join(templatePath, 'routes.ts.ejs'),
+          path.join(rootDir, tmpDirName, 'routes.ts'),
+          { ...routesRenderData },
+        );
+      }
     },
   ]);
   const generatorAPI = {
@@ -79,9 +78,7 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
         addEvent: addWatchEvent,
         removeEvent: removeWatchEvent,
       },
-      context: {
-        routes,
-      },
+      context: {},
     },
     getBuiltInPlugins,
   });

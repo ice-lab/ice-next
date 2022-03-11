@@ -247,8 +247,5 @@ function findGlobalLayout(srcDir: string, basename: string): string | undefined 
  * /About/layout/index -> /About/layout/index
  */
 function removeLayoutStrFromId(id?: string) {
-  if (!id) {
-    return id;
-  }
-  return id.endsWith('/layout') ? id.slice(0, id.length - '/layout'.length) : id;
+  return id?.endsWith('/layout') ? id.slice(0, id.length - '/layout'.length) : id;
 }
