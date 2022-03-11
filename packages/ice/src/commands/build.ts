@@ -1,10 +1,14 @@
+import { createRequire } from 'module';
+import * as path from 'path';
 import consola from 'consola';
 import type { Context } from 'build-scripts';
 import type { StatsError } from 'webpack';
 import webpackCompiler from '../service/webpackCompiler.js';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
-import { getWebpackConfig, getTransformPlugins } from '@builder/webpack-config';
+import { getTransformPlugins } from '@builder/webpack-config';
 import type { Config } from '@ice/types';
+
+const require = createRequire(import.meta.url);
 
 const build = async (context: Context<Config>) => {
   const { getConfig, applyHook, commandArgs, command, rootDir } = context;
@@ -14,20 +18,21 @@ const build = async (context: Context<Config>) => {
     await applyHook('error', { err: new Error(errMsg) });
     return;
   }
-  // transform config to webpack config
-  const webpackConfig = configs.map((task) => {
-    return getWebpackConfig({
-      rootDir,
-      config: task.config,
-    });
-  });
-  const transformPlugins = getTransformPlugins(rootDir, configs.find(({ name }) => name === 'web').config);
+
+  const { config } = configs.find(({ name }) => name === 'web');
+  config.alias = {
+    ...config.alias,
+    '@ice/plugin-auth/runtime': path.join(require.resolve('@ice/plugin-auth'), '../../runtime'),
+  };
   const compiler = await webpackCompiler({
-    config: webpackConfig,
+    rootDir,
+    config,
     commandArgs,
     command,
     applyHook,
-    transformPlugins,
+    getTransformPlugins: (config) => {
+ return getTransformPlugins(rootDir, config);
+},
   });
   await new Promise((resolve, reject): void => {
     let messages: { errors: string[]; warnings: string[] };
