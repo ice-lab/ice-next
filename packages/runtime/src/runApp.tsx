@@ -1,8 +1,9 @@
 import Runtime from './runtime.js';
 import render from './render.js';
-import type { AppContext, InitialContext, AppConfig } from './types';
+import type { AppContext, AppConfig, RuntimeModules } from './types.js';
+import getInitialData from './getInitialData.js';
 
-export default async function runApp(config: AppConfig, runtimeModules, routes) {
+export default async function runApp(config: AppConfig, runtimeModules: RuntimeModules, routes: AppContext['routes']) {
   const appConfig: AppConfig = {
     ...config,
     app: {
@@ -21,24 +22,10 @@ export default async function runApp(config: AppConfig, runtimeModules, routes) 
     appConfig,
     initialData: null,
   };
-
-  // ssr enabled and the server has returned data
-  if ((window as any).__ICE_APP_DATA__) {
-    appContext.initialData = (window as any).__ICE_APP_DATA__;
-    // context.pageInitialProps = (window as any).__ICE_PAGE_PROPS__;
-  } else if (appConfig?.app?.getInitialData) {
-    const { href, origin, pathname, search } = window.location;
-    const path = href.replace(origin, '');
-    // const query = queryString.parse(search);
-    const query = {};
-    const ssrError = (window as any).__ICE_SSR_ERROR__;
-    const initialContext: InitialContext = {
-      pathname,
-      path,
-      query,
-      ssrError,
-    };
-    appContext.initialData = await appConfig.app.getInitialData(initialContext);
+  console.log('process.env.ICE_RUNTIME_INITIAL_DATA1', process.env.ICE_RUNTIME_INITIAL_DATA);
+  if (process.env.ICE_RUNTIME_INITIAL_DATA) {
+    console.log('process.env.ICE_RUNTIME_INITIAL_DATA', process.env.ICE_RUNTIME_INITIAL_DATA);
+    appContext.initialData = getInitialData(appConfig);
   }
 
   const runtime = new Runtime(appContext);
