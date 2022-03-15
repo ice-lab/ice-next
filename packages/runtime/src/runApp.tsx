@@ -22,9 +22,7 @@ export default async function runApp(config: AppConfig, runtimeModules: RuntimeM
     appConfig,
     initialData: null,
   };
-  console.log('process.env.ICE_RUNTIME_INITIAL_DATA1', process.env.ICE_RUNTIME_INITIAL_DATA);
   if (process.env.ICE_RUNTIME_INITIAL_DATA) {
-    console.log('process.env.ICE_RUNTIME_INITIAL_DATA', process.env.ICE_RUNTIME_INITIAL_DATA);
     appContext.initialData = getInitialData(appConfig);
   }
 
