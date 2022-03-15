@@ -159,7 +159,6 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
         ...defineStaticVariables,
         ...defineRuntimeVariables,
       }),
-      new webpack.ProvidePlugin({ process: 'process/browser' }),
       dev && new ReactRefreshWebpackPlugin({ esModule: true, forceEnable: true }),
     ].filter(Boolean),
     devServer: {
