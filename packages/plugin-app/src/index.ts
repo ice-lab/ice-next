@@ -48,7 +48,7 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, watc
         external: process.env.JEST_TEST === 'true' ? [] : ['./node_modules/*', 'react'],
       }, { isServer: true });
     };
-    documentCompiler();
+    await documentCompiler();
 
     if (command === 'build') {
       // generator html to outputDir
