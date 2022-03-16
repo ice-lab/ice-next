@@ -1,24 +1,15 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { HashRouter, BrowserRouter, matchRoutes } from 'react-router-dom';
+import { merge } from 'lodash-es';
+import defaultAppConfig from './defaultAppConfig.js';
 import Runtime from './runtime.js';
 import App from './App.js';
 import AppRoutes from './AppRoutes.js';
 import type { AppRouterProps, AppContext, InitialContext, AppConfig } from './types';
 
-export default async function runApp(config: AppConfig, runtimeModules, routes) {
-  const appConfig: AppConfig = {
-    ...config,
-    app: {
-      rootId: 'root',
-      strict: true,
-      ...(config?.app || {}),
-    },
-    router: {
-      type: 'browser',
-      ...(config?.router || {}),
-    },
-  };
+export default async function runBrowserApp(config: AppConfig, runtimeModules, routes) {
+  const appConfig: AppConfig = merge(defaultAppConfig, config);
 
   const appContext: AppContext = {
     routes,

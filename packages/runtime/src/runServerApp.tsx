@@ -1,6 +1,8 @@
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server.js';
 import { StaticRouter } from 'react-router-dom/server.js';
+import { merge } from 'lodash-es';
+import defaultAppConfig from './defaultAppConfig.js';
 import Runtime from './runtime.js';
 import App from './App.js';
 import AppRoutes from './AppRoutes.js';
@@ -14,18 +16,7 @@ export default async function runServerApp(
     Document,
     documentOnly: boolean,
   ) {
-  const appConfig: AppConfig = {
-    ...config,
-    app: {
-      rootId: 'root',
-      strict: true,
-      ...(config?.app || {}),
-    },
-    router: {
-      type: 'browser',
-      ...(config?.router || {}),
-    },
-  };
+  const appConfig: AppConfig = merge(defaultAppConfig, config);
 
   const appContext: AppContext = {
     routes,
