@@ -147,7 +147,6 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
         filename: '[name].css',
       }),
       new webpack.DefinePlugin(defineVariables),
-      new webpack.ProvidePlugin({ process: 'process/browser' }),
       dev && new ReactRefreshWebpackPlugin({ esModule: true, forceEnable: true }),
     ].filter(Boolean),
     devServer: {
