@@ -91,6 +91,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
       },
     },
     watchOptions: {
+      // add a delay before rebuilding once routes changed webpack can not found routes component after it is been deleted
+      aggregateTimeout: 200,
       ignored: watchIgnoredRegexp,
     },
     optimization: {

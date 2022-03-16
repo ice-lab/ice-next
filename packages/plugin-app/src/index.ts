@@ -13,7 +13,7 @@ const cliOptions = [
   },
 ];
 
-const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption }) => {
+const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, watch }) => {
   const { command, rootDir, commandArgs } = context;
   const mode = command === 'start' ? 'development' : 'production';
 
@@ -25,19 +25,30 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption }) =>
     '/about': '/src/pages/about',
     '/home': '/src/pages/home',
   };
+  let cache = new Map();
+  let documentCompiler = () => {};
+  watch.addEvent([/src\/document/, (eventName) => {
+    if (eventName !== 'unlink') {
+      documentCompiler();
+    }
+  }]);
 
   onHook(`before.${command as 'start' | 'build'}.run`, async ({ esbuildCompile, taskConfig }) => {
     const outDir = taskConfig.outputDir;
-    // TODO: watch file changes and rebuild
-    await esbuildCompile({
-      entryPoints: [path.join(rootDir, '.ice/entry.server')],
-      outdir: path.join(outDir, 'server'),
-      // platform: 'node',
-      format: 'esm',
-      outExtension: { '.js': '.mjs' },
-      // FIXME: https://github.com/ice-lab/ice-next/issues/27
-      external: process.env.JEST_TEST === 'true' ? [] : ['./node_modules/*', 'react'],
-    }, { isServer: true });
+    documentCompiler = async () => {
+      // timestamp for disable import cache
+      cache.set('version', new Date().getTime());
+      return await esbuildCompile({
+        entryPoints: [path.join(rootDir, '.ice/entry.server')],
+        outdir: path.join(outDir, 'server'),
+        // platform: 'node',
+        format: 'esm',
+        outExtension: { '.js': '.mjs' },
+        // FIXME: https://github.com/ice-lab/ice-next/issues/27
+        external: process.env.JEST_TEST === 'true' ? [] : ['./node_modules/*', 'react'],
+      }, { isServer: true });
+    };
+    documentCompiler();
 
     if (command === 'build') {
       // generator html to outputDir
@@ -98,6 +109,7 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption }) =>
         middleware: setupRenderServer({
           entry: path.resolve(outputDir, 'server/entry.mjs'),
           routeManifest,
+          cache,
         }),
       });
 
