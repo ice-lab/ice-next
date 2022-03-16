@@ -140,7 +140,6 @@ importers:
       '@builder/webpack-config': ^3.0.0
       '@ice/plugin-app': ^1.0.0
       '@ice/plugin-auth': ^1.0.0
-      '@ice/plugin-router': ^1.0.0
       '@ice/route-manifest': ^1.0.0
       '@ice/runtime': ^1.0.0
       '@ice/types': ^1.0.0
@@ -169,7 +168,6 @@ importers:
       '@builder/webpack-config': link:../build-webpack-config
       '@ice/plugin-app': link:../plugin-app
       '@ice/plugin-auth': link:../plugin-auth
-      '@ice/plugin-router': link:../plugin-router
       '@ice/route-manifest': link:../route-manifest
       '@ice/runtime': link:../runtime
       address: 1.1.2
@@ -222,12 +220,6 @@ importers:
     specifiers:
       '@ice/types': ^1.0.0
     dependencies:
-      '@ice/types': link:../types
-
-  packages/plugin-router:
-    specifiers:
-      '@ice/types': ^1.0.0
-    devDependencies:
       '@ice/types': link:../types
 
   packages/route-manifest:
