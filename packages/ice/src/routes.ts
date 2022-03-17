@@ -30,22 +30,23 @@ function generateRoutesStr(nestRouteManifest: NestedRouteManifest[], async?: boo
 
 function generateNestRoutesStr(nestRouteManifest: NestedRouteManifest[], async?: boolean) {
   return nestRouteManifest.reduce((prev, route) => {
-    const { children, path: routePath, index, componentName, file } = route;
+    const { children, path: routePath, index, componentName, file, id } = route;
 
-    let componentKV;
+    let elementKV;
     if (async) {
       const fileExtname = path.extname(file);
       const componentFile = file.replace(new RegExp(`${fileExtname}$`), '');
-      componentKV = `load: () => import(/* webpackChunkName: "${componentName}" */ '@/${componentFile}')`;
+      elementKV = `load: () => import(/* webpackChunkName: "${componentName}" */ '@/${componentFile}')`;
     } else {
-      componentKV = `component: ${componentName}`;
+      elementKV = `element: ${componentName}`;
     }
 
     let str = `{
       path: '${routePath || ''}',
-      ${componentKV},
+      ${elementKV},
       componentName: '${componentName}',
       index: ${index},
+      id: '${id}',
       exact: true,
     `;
     if (children) {

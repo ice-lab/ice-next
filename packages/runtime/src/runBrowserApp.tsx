@@ -8,7 +8,7 @@ import defaultAppConfig from './defaultAppConfig.js';
 import Runtime from './runtime.js';
 import App from './App.js';
 import DefaultAppRouter from './AppRouter.js';
-import type { AppRouterProps, AppContext, InitialContext, AppConfig, RouteItem } from './types';
+import type { AppContext, InitialContext, AppConfig, RouteItem } from './types';
 import { loadRouteModule } from './routes.js';
 
 export default async function runBrowserApp(config: AppConfig, runtimeModules, routes) {
@@ -83,7 +83,7 @@ function getAppMountNode(rootId: string): HTMLElement {
 
 function BrowserComponent({ runtime, routerType }: { runtime: Runtime; routerType: AppConfig['router']['type'] }) {
   const historyRef = useRef<HashHistory | BrowserHistory>();
-  if (historyRef.current == null) {
+  if (!historyRef.current) {
     historyRef.current = (routerType === 'hash' ? createHashHistory : createBrowserHistory)({ window });
   }
   const history = historyRef.current;
@@ -94,6 +94,7 @@ function BrowserComponent({ runtime, routerType }: { runtime: Runtime; routerTyp
       location: history.location,
     },
   );
+
   useLayoutEffect(() => history.listen(dispatch), [history]);
 
   const { action, location } = state;

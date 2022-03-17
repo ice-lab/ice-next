@@ -1,6 +1,5 @@
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server.js';
-import { StaticRouter } from 'react-router-dom/server.js';
 import type { Location, To } from 'history';
 import { Action, createPath } from 'history';
 import { merge } from 'lodash-es';
@@ -8,16 +7,7 @@ import defaultAppConfig from './defaultAppConfig.js';
 import Runtime from './runtime.js';
 import App from './App.js';
 import DefaultAppRouter from './AppRouter.js';
-import type { AppContext, AppConfig, AppRouterProps, RouteItem, RouteModules } from './types';
-
-function createRouteModules(routes: RouteItem[], routeModules: RouteModules) {
-  routes.forEach((route) => {
-    routeModules[route.componentName] = { default: route.component };
-    if (route.children) {
-      createRouteModules(route.children, routeModules);
-    }
-  });
-}
+import type { AppContext, AppConfig, RouteItem, RouteModules } from './types';
 
 export default async function runServerApp(
     requestContext,
@@ -130,10 +120,21 @@ async function render(
       runtime={runtime}
       location={location}
       navigator={staticNavigator}
+      static
     />,
   );
 
   const html = documentHtml.replace('<!--app-html-->', pageHtml);
 
   return html;
+}
+
+function createRouteModules(routes: RouteItem[], routeModules: RouteModules) {
+  routes.forEach((route) => {
+    // TODO: should get other object not only default from the module
+    routeModules[route.id] = { default: route.element };
+    if (route.children) {
+      createRouteModules(route.children, routeModules);
+    }
+  });
 }

@@ -26,8 +26,9 @@ export {
 
 export interface RouteItem {
   path: string;
-  component: ComponentType;
+  element: ComponentType;
   componentName: string;
+  id: string;
   index?: false;
   exact?: boolean;
   strict?: boolean;
@@ -90,7 +91,6 @@ export interface CommonJsRuntime {
 export type GetWrapperPageRegistration = () => PageWrapper<any>[];
 
 export interface AppRouterProps {
-  PageWrappers?: PageWrapper<any>[];
   action: Action;
   location: Location;
   navigator: Navigator;

@@ -1,17 +1,17 @@
 import type { RouteItem, RouteModules } from './types';
 
 export async function loadRouteModule(route: RouteItem, routeModulesCache: RouteModules) {
-  const { componentName, load } = route;
-  if (componentName in routeModulesCache) {
-    return routeModulesCache[componentName];
+  const { id, load } = route;
+  if (id in routeModulesCache) {
+    return routeModulesCache[id];
   }
 
   try {
-    // TODO: should get the chunkName from webpack stats manifest
     const routeModule = await load();
-    routeModulesCache[componentName] = routeModule;
+    routeModulesCache[id] = routeModule;
     return routeModule;
   } catch (error) {
-    window.location.reload();
+    console.log('error===>', error);
+    // window.location.reload();
   }
 }

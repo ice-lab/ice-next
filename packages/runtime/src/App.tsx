@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { matchRoutes as matchClientRoutes } from 'react-router-dom';
 import type { Action, Location } from 'history';
-import type { Navigator, RouteObject } from 'react-router-dom';
+import type { Navigator } from 'react-router-dom';
 import AppErrorBoundary from './AppErrorBoundary.js';
 import { AppContextProvider, useAppContext } from './AppContext.js';
 import type Runtime from './runtime.js';
@@ -14,10 +14,11 @@ interface Props {
   action: Action;
   location: Location;
   navigator: Navigator;
+  static?: boolean;
 }
 
 export default function App(props: Props) {
-  const { runtime, location, action, navigator } = props;
+  const { runtime, location: historyLocation, action, navigator, static: staticProp = false } = props;
   const appContext = runtime.getAppContext();
   const { appConfig, routes, routeModules } = appContext;
   const { strict } = appConfig.app;
@@ -33,18 +34,36 @@ export default function App(props: Props) {
 
   const clientRoutes = useMemo(
     () => createClientRoutes(routes, routeModules, PageWrappers),
-    [routes, PageWrappers, routeModules],
+    [routes, routeModules, PageWrappers],
   );
-  // TODO: update types
-  // @ts-expect-error
-  appContext.routes = clientRoutes;
+
+  const [transitionManager] = React.useState(() => {
+    return createTransitionManager({
+      routes: clientRoutes,
+      location: historyLocation,
+      routeModules,
+      onChange: (state) => {
+        setClientState({ ...state });
+      },
+    });
+  });
+  // waiting for the location change in the transitionManager, the UI will rerender
+  const { location } = transitionManager.getState();
+
+  useEffect(() => {
+    const state = transitionManager.getState();
+    if (state.location === historyLocation) {
+      return;
+    }
+
+    transitionManager.send({ location: historyLocation });
+  }, [transitionManager, historyLocation]);
 
   const [clientState, setClientState] = useState({});
-  appContext.appState = clientState;
 
   let element;
   if (routes.length === 1 && !routes[0].children) {
-    const PageComponent = routes[0].component;
+    const PageComponent = routes[0].element;
     element = <PageComponent />;
   } else {
     element = (
@@ -52,33 +71,14 @@ export default function App(props: Props) {
         action={action}
         location={location}
         navigator={navigator}
-        PageWrappers={PageWrappers}
+        static={staticProp}
       />
     );
   }
-
-  const [transitionManager] = React.useState(() => {
-    return createTransitionManager({
-      routes: clientRoutes,
-      location,
-      routeModules,
-      onChange: (state) => {
-        setClientState({ ...state });
-      },
-    });
-  });
-
-  useEffect(() => {
-    const state = transitionManager.getState();
-    if (state.location === location) {
-      return;
-    }
-    transitionManager.send({ location });
-  }, [transitionManager, location]);
   return (
     <StrictMode>
       <AppErrorBoundary>
-        <AppContextProvider value={appContext}>
+        <AppContextProvider value={{ ...appContext, routes: clientRoutes, appState: clientState }}>
           <AppProvider>
             {element}
           </AppProvider>
@@ -90,13 +90,17 @@ export default function App(props: Props) {
 
 function createTransitionManager(options: any) {
   const { routes, location, routeModules } = options;
-  const state = {
+  let state = {
     location,
     matchRoutes: undefined,
+    transition: {
+      state: 'idle',
+    },
   };
 
   function update(updates: any) {
-    options.onChange({ ...state, ...updates });
+    state = { ...state, ...updates };
+    options.onChange(state);
   }
 
   async function send({ location }) {
@@ -109,7 +113,7 @@ function createTransitionManager(options: any) {
     await Promise.all(matchRoutes.map(((matchRoute) => {
       return loadRouteModule(matchRoute.route as RouteItem, routeModules);
     })));
-    update({ matchRoutes });
+    update({ matchRoutes, location });
   }
 
   function getState() {
@@ -124,35 +128,22 @@ function createTransitionManager(options: any) {
 }
 
 function createClientRoutes(routes: RouteItem[], routeModules: RouteModules, PageWrappers?: PageWrapper<any>[]) {
-  return routes.map(({ path, component: PageComponent, children, index, componentName }: RouteItem) => {
-    let element;
-    if (PageComponent) {
-      element = (
-        <RouteWrapper PageComponent={PageComponent} PageWrappers={PageWrappers} />
-      );
-    } else {
-      element = <RouteComponent componentName={componentName} />;
-    }
-
-    // } else if (load) {
-    //   const LazyComponent = React.lazy(load);
-
-    //   // TODO: Remove Suspense
-    //   element = (
-    //     <React.Suspense fallback={<>loading chunk....</>}>
-    //       <RouteWrapper PageComponent={LazyComponent} PageWrappers={PageWrappers} />
-    //     </React.Suspense>
-    //   );
-    // } else {
-    //   element = 'Page Component is not found.';
-    // }
-
-    const route: RouteObject = {
+  return routes.map((routeItem: RouteItem) => {
+    const { path, children, index, id, ...rest } = routeItem;
+    const element = (
+      <RouteWrapper
+        PageComponent={(...props) => <RouteComponent id={id} {...props} />}
+        PageWrappers={PageWrappers}
+      />
+    );
+    // TODO: update types
+    const route: any = {
       path,
       element,
       index,
+      id,
+      ...rest,
     };
-
     if (children) {
       route.children = createClientRoutes(children, routeModules, PageWrappers);
     }
@@ -161,16 +152,15 @@ function createClientRoutes(routes: RouteItem[], routeModules: RouteModules, Pag
   });
 }
 
-function DefaultRouteComponent({ componentName }: { componentName: string }): JSX.Element {
+function DefaultRouteComponent({ id }: { id: string }): JSX.Element {
   throw new Error(
-    `Route "${componentName}" has no component! Please go add a \`default\` export in the route module file.\n` +
+    `Route "${id}" has no component! Please go add a \`default\` export in the route module file.\n` +
       'If you were trying to navigate or submit to a resource route, use `<a>` instead of `<Link>` or `<Form reloadDocument>`.',
   );
 }
 
-function RouteComponent({ componentName }: { componentName: string }) {
+function RouteComponent({ id, ...props }: { id: string }) {
   const { routeModules } = useAppContext();
-  const { default: Component } = routeModules[componentName];
-  const element = Component ? <Component /> : <DefaultRouteComponent componentName={componentName} />;
-  return element;
+  const { default: Component } = routeModules[id];
+  return Component ? <Component {...props} /> : <DefaultRouteComponent id={id} />;
 }
