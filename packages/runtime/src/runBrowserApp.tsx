@@ -1,22 +1,29 @@
-import * as React from 'react';
+import React, { useRef, useLayoutEffect, useReducer } from 'react';
 import * as ReactDOM from 'react-dom';
-import { HashRouter, BrowserRouter, matchRoutes } from 'react-router-dom';
+import type { HashHistory, BrowserHistory, Update } from 'history';
+import { createHashHistory, createBrowserHistory } from 'history';
+import { matchRoutes as matchClientRoutes } from 'react-router-dom';
 import { merge } from 'lodash-es';
 import defaultAppConfig from './defaultAppConfig.js';
 import Runtime from './runtime.js';
 import App from './App.js';
-import AppRoutes from './AppRoutes.js';
-import type { AppRouterProps, AppContext, InitialContext, AppConfig } from './types';
+import DefaultAppRouter from './AppRouter.js';
+import type { AppRouterProps, AppContext, InitialContext, AppConfig, RouteItem } from './types';
+import { loadRouteModule } from './routes.js';
 
 export default async function runBrowserApp(config: AppConfig, runtimeModules, routes) {
   const appConfig: AppConfig = merge(defaultAppConfig, config);
+
+  const matchRoutes = matchClientRoutes(routes, window.location);
+  const routeModules = {};
+  await Promise.all(matchRoutes.map(match => loadRouteModule(match.route as RouteItem, routeModules)));
 
   const appContext: AppContext = {
     routes,
     appConfig,
     initialData: null,
+    routeModules,
   };
-
   // ssr enabled and the server has returned data
   if ((window as any).__ICE_APP_DATA__) {
     appContext.initialData = (window as any).__ICE_APP_DATA__;
@@ -46,8 +53,8 @@ export default async function runBrowserApp(config: AppConfig, runtimeModules, r
 
 async function render(runtime: Runtime) {
   const appContext = runtime.getAppContext();
-  const { appConfig, routes } = appContext;
-  const { rootId } = appConfig.app;
+  const { appConfig } = appContext;
+  const { app: { rootId }, router: { type: routerType } } = appConfig;
 
   // TODO: set ssr by process env
   const isSSR = true;
@@ -55,35 +62,47 @@ async function render(runtime: Runtime) {
 
   let AppRouter = runtime.getAppRouter();
   if (!AppRouter) {
-    const Router = appConfig.router.type === 'hash' ? HashRouter : BrowserRouter;
-    AppRouter = (props: AppRouterProps) => (
-      <Router>
-        <AppRoutes PageWrappers={props.PageWrappers} />
-      </Router>
-    );
+    AppRouter = DefaultAppRouter;
     runtime.setAppRouter(AppRouter);
   }
 
-  const matchedRoutes = matchRoutes(routes, window.location);
-  await loadRouteChunks(matchedRoutes);
-
   const appMountNode = getAppMountNode(rootId);
 
-  // default ReactDOM.render
-  render((
-    <App
+  render(
+    <BrowserComponent
       runtime={runtime}
-    />
-  ), appMountNode);
+      routerType={routerType}
+    />,
+    appMountNode,
+  );
 }
 
 function getAppMountNode(rootId: string): HTMLElement {
   return rootId ? document.getElementById(rootId) : document.getElementById('ice-container');
 }
 
-async function loadRouteChunks(matchedRoutes) {
-  for (let i = 0, n = matchedRoutes.length; i < n; i++) {
-    const { route } = matchedRoutes[i];
-    route.component = (await route.load()).default;
+function BrowserComponent({ runtime, routerType }: { runtime: Runtime; routerType: AppConfig['router']['type'] }) {
+  const historyRef = useRef<HashHistory | BrowserHistory>();
+  if (historyRef.current == null) {
+    historyRef.current = (routerType === 'hash' ? createHashHistory : createBrowserHistory)({ window });
   }
+  const history = historyRef.current;
+  const [state, dispatch] = useReducer(
+    (_: Update, update: Update) => update,
+    {
+      action: history.action,
+      location: history.location,
+    },
+  );
+  useLayoutEffect(() => history.listen(dispatch), [history]);
+
+  const { action, location } = state;
+  return (
+    <App
+      runtime={runtime}
+      action={action}
+      location={location}
+      navigator={history}
+    />
+  );
 }

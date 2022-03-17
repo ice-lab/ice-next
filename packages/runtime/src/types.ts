@@ -1,3 +1,5 @@
+import type { Action, Location } from 'history';
+import type { Navigator } from 'react-router-dom';
 import type { ComponentType, ReactNode } from 'react';
 import type { Renderer } from 'react-dom';
 
@@ -51,10 +53,16 @@ export interface InitialContext {
   query: Record<string, any>;
   ssrError?: any;
 }
-
+export interface RouteModules {
+  [routeId: string]: {
+    default: ComponentType<any>;
+  };
+}
 export interface AppContext {
   // todo: 这是啥
   appManifest?: Record<string, any>;
+  routeModules: RouteModules;
+  appState?: any;
   routes?: RouteItem[];
   initialData?: any;
   appConfig: AppConfig;
@@ -83,4 +91,8 @@ export type GetWrapperPageRegistration = () => PageWrapper<any>[];
 
 export interface AppRouterProps {
   PageWrappers?: PageWrapper<any>[];
+  action: Action;
+  location: Location;
+  navigator: Navigator;
+  static?: boolean;
 }
