@@ -54,7 +54,7 @@ export default function App(props: Props) {
     if (state.location === historyLocation) {
       return;
     }
-    transitionManager.send({ location: historyLocation });
+    transitionManager.handleLoad(historyLocation);
   }, [transitionManager, historyLocation]);
 
   const [, setClientState] = useState({});

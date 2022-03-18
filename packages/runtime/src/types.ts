@@ -91,7 +91,7 @@ export type GetWrapperPageRegistration = () => PageWrapper<any>[];
 
 export interface AppRouterProps {
   action: Action;
-  location: Location;
+  location: Location | string;
   navigator: Navigator;
   static?: boolean;
 }
