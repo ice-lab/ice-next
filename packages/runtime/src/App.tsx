@@ -1,13 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { matchRoutes as matchClientRoutes } from 'react-router-dom';
 import type { Action, Location } from 'history';
 import type { Navigator } from 'react-router-dom';
 import AppErrorBoundary from './AppErrorBoundary.js';
-import { AppContextProvider, useAppContext } from './AppContext.js';
+import { AppContextProvider } from './AppContext.js';
 import type Runtime from './runtime.js';
-import type { PageWrapper, RouteItem, RouteModules } from './types.js';
-import RouteWrapper from './RouteWrapper.js';
-import { loadRouteModule } from './routes.js';
+import { createClientRoutes } from './routes.js';
+import { createTransitionManager } from './transition.js';
 
 interface Props {
   runtime: Runtime;
@@ -86,83 +84,4 @@ export default function App(props: Props) {
       </AppErrorBoundary>
     </StrictMode>
   );
-}
-
-function createTransitionManager(options: any) {
-  const { routes, location, routeModules } = options;
-  let state = {
-    location,
-    matchRoutes: undefined,
-    transition: {
-      state: 'idle',
-    },
-  };
-
-  function update(updates: any) {
-    state = { ...state, ...updates };
-    options.onChange(state);
-  }
-
-  async function send({ location }) {
-    let matchRoutes = matchClientRoutes(routes, location);
-
-    if (!matchRoutes) {
-      throw new Error('Routes not found.');
-    }
-
-    await Promise.all(matchRoutes.map(((matchRoute) => {
-      return loadRouteModule(matchRoute.route as RouteItem, routeModules);
-    })));
-    update({ matchRoutes, location });
-  }
-
-  function getState() {
-    return state;
-  }
-
-  return {
-    update,
-    send,
-    getState,
-  };
-}
-
-function createClientRoutes(routes: RouteItem[], routeModules: RouteModules, PageWrappers?: PageWrapper<any>[]) {
-  return routes.map((routeItem: RouteItem) => {
-    let { path, children, index, id, ...rest } = routeItem;
-    delete rest.element;
-
-    const element = (
-      <RouteWrapper
-        PageComponent={(...props) => <RouteComponent id={id} {...props} />}
-        PageWrappers={PageWrappers}
-      />
-    );
-    // TODO: update types
-    const route: any = {
-      path,
-      element,
-      index,
-      id,
-      ...rest,
-    };
-    if (children) {
-      route.children = createClientRoutes(children, routeModules, PageWrappers);
-    }
-
-    return route;
-  });
-}
-
-function DefaultRouteComponent({ id }: { id: string }): JSX.Element {
-  throw new Error(
-    `Route "${id}" has no component! Please go add a \`default\` export in the route module file.\n` +
-      'If you were trying to navigate or submit to a resource route, use `<a>` instead of `<Link>` or `<Form reloadDocument>`.',
-  );
-}
-
-function RouteComponent({ id, ...props }: { id: string }) {
-  const { routeModules } = useAppContext();
-  const { default: Component } = routeModules[id];
-  return Component ? <Component {...props} /> : <DefaultRouteComponent id={id} />;
 }
