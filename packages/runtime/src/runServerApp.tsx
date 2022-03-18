@@ -55,6 +55,7 @@ async function render(
     return documentHtml;
   }
   const { req } = requestContext;
+  // ref: https://github.com/remix-run/react-router/blob/main/packages/react-router-dom/server.tsx
   const locationProps = parsePath(req.url);
 
   const location: Location = {
