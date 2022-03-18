@@ -34,6 +34,9 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption }) =>
       outdir: path.join(outDir, 'server'),
       // platform: 'node',
       format: 'esm',
+      define: {
+        this: 'globalThis',
+      },
       outExtension: { '.js': '.mjs' },
       // FIXME: https://github.com/ice-lab/ice-next/issues/27
       external: process.env.JEST_TEST === 'true' ? [] : ['./node_modules/*', 'react'],

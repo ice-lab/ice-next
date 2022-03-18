@@ -13,7 +13,8 @@ function Document() {
       </head>
       <body>
         <div id="root" dangerouslySetInnerHTML={{ __html: '<!--app-html-->' }}></div>
-        <script src="./main.js"></script>
+        <script src="./runtime.js"></script>
+        <script src="./index.js"></script>
       </body>
     </html>
   );

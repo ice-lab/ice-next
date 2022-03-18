@@ -1,10 +1,14 @@
-import type { RuleSetRule } from 'webpack';
+import type { RuleSetRule, Configuration } from 'webpack';
 import type { ProxyConfigArray, ProxyConfigArrayItem, ProxyConfigMap, Middleware } from 'webpack-dev-server';
 import type { UnpluginOptions } from 'unplugin';
 import type Server from 'webpack-dev-server';
 
 export interface Config {
   mode: 'none' | 'development' | 'production';
+
+  define?: Record<string, string | boolean>;
+
+  experiments?: Configuration['experiments'];
 
   outputDir?: string;
 
