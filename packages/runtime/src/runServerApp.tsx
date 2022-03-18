@@ -22,7 +22,6 @@ export default async function runServerApp(
 
   const routeModules = {};
   await createRouteModules(routes, routeModules);
-  console.log('routeModules===>', routeModules);
 
   const appContext: AppContext = {
     routes,
