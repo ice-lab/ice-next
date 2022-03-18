@@ -6,6 +6,7 @@ import type { AppRouterProps } from './types.js';
 
 const AppRouter: React.ComponentType<AppRouterProps> = (props) => {
   const { action, location, navigator, static: staticProps } = props;
+  console.log('location====>', location);
   return (
     <Router
       navigationType={action}
@@ -18,9 +19,10 @@ const AppRouter: React.ComponentType<AppRouterProps> = (props) => {
   );
 };
 
-const AppRoutes: React.ComponentType<{}> = () => {
+export const AppRoutes: React.ComponentType<{}> = () => {
   const appContext = useAppContext();
   const { routes } = appContext;
+  console.log('routes====>', routes);
   return (
     <Routes routes={routes} />
   );

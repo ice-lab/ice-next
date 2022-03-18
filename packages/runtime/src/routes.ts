@@ -11,7 +11,6 @@ export async function loadRouteModule(route: RouteItem, routeModulesCache: Route
     routeModulesCache[id] = routeModule;
     return routeModule;
   } catch (error) {
-    console.log('error===>', error);
-    // window.location.reload();
+    window.location.reload();
   }
 }

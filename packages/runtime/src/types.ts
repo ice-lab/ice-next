@@ -63,7 +63,6 @@ export interface AppContext {
   // todo: 这是啥
   appManifest?: Record<string, any>;
   routeModules: RouteModules;
-  appState?: any;
   routes?: RouteItem[];
   initialData?: any;
   appConfig: AppConfig;

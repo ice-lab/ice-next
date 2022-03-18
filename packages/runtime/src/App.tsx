@@ -12,7 +12,7 @@ import { loadRouteModule } from './routes.js';
 interface Props {
   runtime: Runtime;
   action: Action;
-  location: Location;
+  location: Location | string;
   navigator: Navigator;
   static?: boolean;
 }
@@ -47,6 +47,7 @@ export default function App(props: Props) {
       },
     });
   });
+
   // waiting for the location change in the transitionManager, the UI will rerender
   const { location } = transitionManager.getState();
 
@@ -55,11 +56,10 @@ export default function App(props: Props) {
     if (state.location === historyLocation) {
       return;
     }
-
     transitionManager.send({ location: historyLocation });
   }, [transitionManager, historyLocation]);
 
-  const [clientState, setClientState] = useState({});
+  const [, setClientState] = useState({});
 
   let element;
   if (routes.length === 1 && !routes[0].children) {
@@ -78,7 +78,7 @@ export default function App(props: Props) {
   return (
     <StrictMode>
       <AppErrorBoundary>
-        <AppContextProvider value={{ ...appContext, routes: clientRoutes, appState: clientState }}>
+        <AppContextProvider value={{ ...appContext, routes: clientRoutes }}>
           <AppProvider>
             {element}
           </AppProvider>
@@ -129,7 +129,9 @@ function createTransitionManager(options: any) {
 
 function createClientRoutes(routes: RouteItem[], routeModules: RouteModules, PageWrappers?: PageWrapper<any>[]) {
   return routes.map((routeItem: RouteItem) => {
-    const { path, children, index, id, ...rest } = routeItem;
+    let { path, children, index, id, ...rest } = routeItem;
+    delete rest.element;
+
     const element = (
       <RouteWrapper
         PageComponent={(...props) => <RouteComponent id={id} {...props} />}

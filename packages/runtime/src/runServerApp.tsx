@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server.js';
 import type { Location, To } from 'history';
-import { Action, createPath } from 'history';
+import { Action, createPath, parsePath } from 'history';
 import { merge } from 'lodash-es';
 import defaultAppConfig from './defaultAppConfig.js';
 import Runtime from './runtime.js';
@@ -54,17 +54,12 @@ async function render(
     return documentHtml;
   }
   const { req } = requestContext;
-  let { _parsedUrl: { pathname, search, hash } } = req;
-  let AppRouter = runtime.getAppRouter();
-  if (!AppRouter) {
-    AppRouter = DefaultAppRouter;
-    runtime.setAppRouter(AppRouter);
-  }
+  const locationProps = parsePath(req.url);
 
   const location: Location = {
-    pathname: pathname,
-    search: search,
-    hash: hash,
+    pathname: locationProps.pathname || '/',
+    search: locationProps.search || '',
+    hash: locationProps.hash || '',
     state: null,
     key: 'default',
   };
@@ -114,6 +109,12 @@ async function render(
       );
     },
   };
+
+  let AppRouter = runtime.getAppRouter();
+  if (!AppRouter) {
+    runtime.setAppRouter(DefaultAppRouter);
+  }
+
   const pageHtml = ReactDOMServer.renderToString(
     <App
       action={Action.Pop}
@@ -131,7 +132,7 @@ async function render(
 
 function createRouteModules(routes: RouteItem[], routeModules: RouteModules) {
   routes.forEach((route) => {
-    // TODO: should get other object not only default from the module
+    // TODO: 获取模块其他导出的对象，并非只有 default 值(组件)
     routeModules[route.id] = { default: route.element };
     if (route.children) {
       createRouteModules(route.children, routeModules);
