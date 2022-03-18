@@ -26,7 +26,7 @@ export {
 
 export interface RouteItem {
   path: string;
-  element: ComponentType;
+  element: ReactNode;
   componentName: string;
   id: string;
   index?: false;

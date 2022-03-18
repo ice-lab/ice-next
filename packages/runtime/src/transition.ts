@@ -6,10 +6,6 @@ export function createTransitionManager(options: any) {
   const { routes, location, routeModules } = options;
   let state = {
     location,
-    matchRoutes: undefined,
-    transition: {
-      state: 'idle',
-    },
   };
 
   function update(updates: any) {
@@ -19,7 +15,6 @@ export function createTransitionManager(options: any) {
 
   async function send({ location }) {
     let matchRoutes = matchClientRoutes(routes, location);
-
     if (!matchRoutes) {
       throw new Error('Routes not found.');
     }
@@ -27,7 +22,7 @@ export function createTransitionManager(options: any) {
     await Promise.all(matchRoutes.map(((matchRoute) => {
       return loadRouteModule(matchRoute.route as RouteItem, routeModules);
     })));
-    update({ matchRoutes, location });
+    update({ location });
   }
 
   function getState() {

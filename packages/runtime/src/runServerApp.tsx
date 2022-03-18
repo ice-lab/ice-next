@@ -8,6 +8,7 @@ import Runtime from './runtime.js';
 import App from './App.js';
 import DefaultAppRouter from './AppRouter.js';
 import type { AppContext, AppConfig, RouteItem, RouteModules } from './types';
+import { loadRouteModule } from './routes.js';
 
 export default async function runServerApp(
     requestContext,
@@ -20,7 +21,8 @@ export default async function runServerApp(
   const appConfig: AppConfig = merge(defaultAppConfig, config);
 
   const routeModules = {};
-  createRouteModules(routes, routeModules);
+  await createRouteModules(routes, routeModules);
+  console.log('routeModules===>', routeModules);
 
   const appContext: AppContext = {
     routes,
@@ -130,12 +132,11 @@ async function render(
   return html;
 }
 
-function createRouteModules(routes: RouteItem[], routeModules: RouteModules) {
-  routes.forEach((route) => {
-    // TODO: 获取模块其他导出的对象，并非只有 default 值(组件)
-    routeModules[route.id] = { default: route.element };
+async function createRouteModules(routes: RouteItem[], routeModules: RouteModules) {
+  for (const route of routes) {
+    await loadRouteModule(route, routeModules);
     if (route.children) {
-      createRouteModules(route.children, routeModules);
+      await createRouteModules(route.children, routeModules);
     }
-  });
+  }
 }

@@ -14,23 +14,24 @@ export async function loadRouteModule(route: RouteItem, routeModulesCache: Route
     routeModulesCache[id] = routeModule;
     return routeModule;
   } catch (error) {
-    window.location.reload();
+    console.error(error);
+    if (typeof window !== 'undefined') {
+      window.location.reload();
+    }
   }
 }
 
 export function createClientRoutes(routes: RouteItem[], routeModules: RouteModules, PageWrappers?: PageWrapper<any>[]) {
   return routes.map((routeItem: RouteItem) => {
-    let { path, children, index, id, ...rest } = routeItem;
-    delete rest.element;
+    let { path, children, index, id, element, ...rest } = routeItem;
 
-    const element = (
+    element = (
       <RouteWrapper
         PageComponent={(...props) => <RouteComponent id={id} {...props} />}
         PageWrappers={PageWrappers}
       />
     );
-    // TODO: update types
-    const route: any = {
+    const route: RouteItem = {
       path,
       element,
       index,

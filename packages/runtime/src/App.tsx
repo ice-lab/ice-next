@@ -61,8 +61,7 @@ export default function App(props: Props) {
 
   let element;
   if (routes.length === 1 && !routes[0].children) {
-    const PageComponent = routes[0].element;
-    element = <PageComponent />;
+    element = routes[0].element;
   } else {
     element = (
       <AppRouter
