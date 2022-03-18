@@ -1,3 +1,4 @@
+// Based on https://github.com/remix-run/remix/blob/main/packages/remix-react/transition.ts
 import type { Location } from 'history';
 import { matchRoutes as matchClientRoutes } from 'react-router-dom';
 import { loadRouteModule } from './routes.js';
