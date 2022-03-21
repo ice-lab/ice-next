@@ -78,6 +78,12 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
       : JSON.stringify(defineVariables[key]);
   });
 
+  // formate alias
+  const aliasWithRoot = {};
+  Object.keys(alias).forEach((key) => {
+    aliasWithRoot[key] = alias[key].startsWith('.') ? path.join(rootDir, alias[key]) : alias[key];
+  });
+
   // create plugins
   const webpackPlugins = getTransformPlugins(rootDir, config).map((plugin) => createUnplugin(() => plugin).webpack());
 
@@ -136,7 +142,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
       ],
     },
     resolve: {
-      alias,
+      alias: aliasWithRoot,
       extensions: ['.ts', '.tsx', '.jsx', '...'],
       fallback: {
         // TODO: add more fallback module
