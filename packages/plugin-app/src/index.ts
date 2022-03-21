@@ -62,7 +62,7 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, regi
       // platform: 'node',
       format: 'esm',
       define: {
-        this: 'globalThis',
+        this: undefined,
       },
       outExtension: { '.js': '.mjs' },
       // FIXME: https://github.com/ice-lab/ice-next/issues/27
