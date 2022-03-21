@@ -13,7 +13,7 @@ import build from './commands/build.js';
 import getContextConfig from './utils/getContextConfig.js';
 import { generateRoutesRenderData } from './routes.js';
 import { getAppConfig } from './analyzeRuntime.js';
-import { setRuntimeEnv } from './utils/runtimeEnv.js';
+import { defineRuntimeEnv, updateRuntimeEnv } from './utils/runtimeEnv.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -29,7 +29,7 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
   const srcDir = path.join(rootDir, 'src');
   const tmpDirName = '.ice';
 
-  const routesRenderData = generateRoutesRenderData(rootDir);
+  const { routes, ...routesRenderData } = generateRoutesRenderData(rootDir);
   const generator = new Generator({
     rootDir,
     targetDir: tmpDirName,
@@ -91,6 +91,8 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
   const renderStart = new Date().getTime();
   generator.render();
   consola.debug('template render cost:', new Date().getTime() - renderStart);
+  // define runtime env before get webpack config
+  defineRuntimeEnv();
   const contextConfig = getContextConfig(ctx);
   const webTask = contextConfig.find(({ name }) => name === 'web');
   const esbuildCompile = createEsbuildCompiler({
@@ -101,12 +103,10 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
   return {
     run: async () => {
       if (command === 'start') {
-        // set default runtime env for command `start`
-        setRuntimeEnv();
         return await start(ctx, contextConfig, esbuildCompile);
       } else if (command === 'build') {
         const appConfig = getAppConfig({ esbuildCompile, rootDir });
-        setRuntimeEnv(appConfig);
+        updateRuntimeEnv(appConfig, routes);
         return await build(ctx, contextConfig, esbuildCompile);
       }
     },
