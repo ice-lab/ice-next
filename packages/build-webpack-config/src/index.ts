@@ -155,6 +155,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
           terserOptions,
         }),
         new CssMinimizerPlugin({
+          parallel: false,
           minimizerOptions,
         }),
       ],
