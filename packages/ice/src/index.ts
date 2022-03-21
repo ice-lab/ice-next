@@ -29,7 +29,7 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
   const srcDir = path.join(rootDir, 'src');
   const tmpDirName = '.ice';
 
-  const { routes, ...routesRenderData } = generateRoutesRenderData(rootDir);
+  const { routeManifest, ...routesRenderData } = generateRoutesRenderData(rootDir);
   const generator = new Generator({
     rootDir,
     targetDir: tmpDirName,
@@ -106,7 +106,7 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
         return await start(ctx, contextConfig, esbuildCompile);
       } else if (command === 'build') {
         const appConfig = getAppConfig({ esbuildCompile, rootDir });
-        updateRuntimeEnv(appConfig, routes);
+        updateRuntimeEnv(appConfig, routeManifest);
         return await build(ctx, contextConfig, esbuildCompile);
       }
     },
