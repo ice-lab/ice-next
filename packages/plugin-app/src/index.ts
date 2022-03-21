@@ -4,6 +4,7 @@ import type { Plugin } from '@ice/types';
 import openBrowser from './utils/openBrowser.js';
 import { setupRenderServer } from './ssr/server.js';
 import generateHtml from './ssr/generateHtml.js';
+import userConfig from './userConfig.js';
 
 // TODO: register more cli options
 const cliOptions = [
@@ -13,18 +14,44 @@ const cliOptions = [
   },
 ];
 
-const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption }) => {
+const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, registerUserConfig }) => {
   const { command, rootDir, commandArgs } = context;
-  const mode = command === 'start' ? 'development' : 'production';
-
-  registerCliOption(cliOptions);
-
+  const mode: 'development' | 'production' = command === 'start' ? 'development' : 'production';
+  const outputDir = path.join(rootDir, 'build');
   // TODO: get from routeManifest
   const routeManifest = {
     '/': '/src/pages/index',
     '/about': '/src/pages/about',
     '/home': '/src/pages/home',
   };
+
+  const defaultConfig = {
+    mode,
+    outputDir,
+    alias: {
+      ice: path.join(rootDir, '.ice', 'index.ts'),
+      '@': path.join(rootDir, 'src'),
+    },
+    middlewares: (middlewares, devServer) => {
+      if (!devServer) {
+        throw new Error('webpack-dev-server is not defined');
+      }
+      middlewares.push({
+        name: 'document-render-server',
+        middleware: setupRenderServer({
+          entry: path.resolve(outputDir, 'server/entry.mjs'),
+          routeManifest,
+        }),
+      });
+
+      return middlewares;
+    },
+  };
+
+  registerTask('web', defaultConfig);
+  registerCliOption(cliOptions);
+  // @ts-expect-error remove me when build-script fix type error
+  registerUserConfig(userConfig);
 
   onHook(`before.${command as 'start' | 'build'}.run`, async ({ esbuildCompile, taskConfig }) => {
     const outDir = taskConfig.outputDir;
@@ -82,31 +109,6 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption }) =>
       openBrowser(urls.localUrlForBrowser);
     });
   }
-
-  const outputDir = path.join(rootDir, 'build');
-  registerTask('web', {
-    mode,
-    outputDir,
-    alias: {
-      ice: path.join(rootDir, '.ice', 'index.ts'),
-      '@': path.join(rootDir, 'src'),
-    },
-    middlewares: (middlewares, devServer) => {
-      if (!devServer) {
-        throw new Error('webpack-dev-server is not defined');
-      }
-
-      middlewares.push({
-        name: 'document-render-server',
-        middleware: setupRenderServer({
-          entry: path.resolve(outputDir, 'server/entry.mjs'),
-          routeManifest,
-        }),
-      });
-
-      return middlewares;
-    },
-   });
 };
 
 export default plugin;

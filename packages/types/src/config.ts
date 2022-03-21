@@ -3,12 +3,25 @@ import type { ProxyConfigArray, ProxyConfigArrayItem, ProxyConfigMap, Middleware
 import type { UnpluginOptions } from 'unplugin';
 import type Server from 'webpack-dev-server';
 
+interface ConfigurationCtx extends Omit<Config, 'webpack'> {
+  supportedBrowsers: string[];
+  hashKey: string;
+}
+
+interface Experimental extends Pick<Configuration, 'experiments'> {
+  parallel: number | boolean;
+}
+
+export type ModifyWebpackConfig = (config: Configuration, ctx: ConfigurationCtx) => Configuration;
+
 export interface Config {
   mode: 'none' | 'development' | 'production';
 
   define?: Record<string, string | boolean>;
 
-  experiments?: Configuration['experiments'];
+  experimental?: Experimental;
+
+  configureWebpack?: ModifyWebpackConfig[];
 
   outputDir?: string;
 
@@ -20,13 +33,11 @@ export interface Config {
 
   publicPath?: string;
 
-  devPublicPath?: string;
-
   loaders?: (RuleSetRule | '...')[];
 
   alias?: Record<string, any>;
 
-  hash?: boolean;
+  hash?: boolean | string;
 
   transformPlugins?: UnpluginOptions[];
 

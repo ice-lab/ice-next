@@ -1,19 +1,19 @@
 import * as path from 'path';
 import { createRequire } from 'module';
 import fg from 'fast-glob';
+import consola from 'consola';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
-import MiniCssExtractPlugin from '@builder/pack/deps/mini-css-extract-plugin/cjs.js';
 import CssMinimizerPlugin from '@builder/pack/deps/css-minimizer-webpack-plugin/cjs.js';
-import safeParser from '@builder/pack/deps/postcss-safe-parser/safe-parse.js';
 import TerserPlugin from '@builder/pack/deps/terser-webpack-plugin/cjs.js';
 import webpack, { type Configuration } from 'webpack';
-import postcss from 'postcss';
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
 import type { Config } from '@ice/types';
 import type { CommandArgs } from 'build-scripts';
 import { createUnplugin } from 'unplugin';
 import browserslist from 'browserslist';
 import getTransformPlugins from './plugins/index.js';
+import configAssets from './config/assets.js';
+import configCss from './config/css.js';
 
 const require = createRequire(import.meta.url);
 
@@ -26,8 +26,6 @@ interface GetWebpackConfigOptions {
 }
 type WebpackConfig = Configuration & { devServer?: DevServerConfiguration };
 type GetWebpackConfig = (options: GetWebpackConfigOptions) => WebpackConfig;
-type CSSRuleConfig = [string, string?, Record<string, any>?];
-type AssetRuleConfig = [RegExp, Record<string, any>?];
 
 function getEntry(rootDir: string) {
   // check entry.client.ts
@@ -54,16 +52,20 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
     define,
     externals = {},
     publicPath = '/',
-    devPublicPath = '/',
     outputDir = path.join(rootDir, 'build'),
     loaders = [],
     alias = {},
     sourceMap,
     middlewares,
     proxy,
+    configureWebpack,
+    experimental,
+    hash,
   } = config;
 
   const dev = mode !== 'production';
+  const supportedBrowsers = getSupportedBrowsers(rootDir, dev);
+  const hashKey = hash === true ? 'hash:8' : (hash || '');
   const defineVariables = {
     ...define || {},
     'process.env.NODE_ENV': mode || 'development',
@@ -79,15 +81,49 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
   // create plugins
   const webpackPlugins = getTransformPlugins(rootDir, config).map((plugin) => createUnplugin(() => plugin).webpack());
 
-  const assetsRule = ([
-    [/\.woff2?$/, { mimetype: 'application/font-woff' }],
-    [/\.ttf$/, { mimetype: 'application/octet-stream' }],
-    [/\.eot$/, { mimetype: 'application/vnd.ms-fontobject' }],
-    [/\.svg$/, { mimetype: 'image/svg+xml' }],
-    [/\.(png|jpg|webp|jpeg|gif)$/i],
-  ] as AssetRuleConfig[]).map((config) => configAssetsRule(config));
+  const terserOptions: any = {
+    parse: {
+      ecma: 8,
+    },
+    compress: {
+      ecma: 5,
+      warnings: false,
+      unused: false,
+      // The following two options are known to break valid JavaScript code
+      // https://github.com/vercel/next.js/issues/7178#issuecomment-493048965
+      comparisons: false,
+      inline: 2,
+    },
+    mangle: {
+      safari10: true,
+    },
+    output: {
+      ecma: 5,
+      safari10: true,
+      comments: false,
+      // Fixes usage of Emoji and certain Regex
+      ascii_only: true,
+    },
+  };
 
-  const supportedBrowsers = getSupportedBrowsers(rootDir, dev);
+  const minimizerOptions = {
+    preset: [
+      'default',
+      {
+        discardComments: { removeAll: true },
+      },
+    ],
+    processorOptions: {
+      map: {
+        // `inline: false` generates the source map in a separate file.
+        inline: false,
+        // `annotation: false` skips appending the `sourceMappingURL`
+        // to the end of the CSS file. Webpack already handles this.
+        annotation: false,
+      },
+    },
+  };
+
   const webpackConfig: WebpackConfig = {
     mode,
     experiments: {
@@ -99,46 +135,17 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
     externals,
     output: {
       publicPath,
-      path: outputDir,
+      path: path.isAbsolute(outputDir) ? outputDir : path.join(rootDir, outputDir),
+      filename: hashKey ? `[name]-[${hashKey}].js` : '[name].js',
     },
     context: rootDir,
     module: {
-      parser: {
-        javascript: {
-          url: 'relative',
-        },
-      },
-      generator: {
-        asset: {
-          filename: 'assets/[name].[hash:8][ext]',
-        },
-      },
       rules: [
-        ...([
-          ['css'],
-          ['less', require.resolve('@builder/pack/deps/less-loader'), ({ lessOptions: { javascriptEnabled: true } })],
-          ['scss', require.resolve('@builder/pack/deps/sass-loader')],
-        ] as CSSRuleConfig[]).map((config) => configCSSRule(config, supportedBrowsers)).flat(),
-        ...assetsRule,
-        {
-          test: /\.(png|jpg|gif|jpeg|woff|woff2|eot|ttf|otf)$/,
-          use: [
-            {
-              loader: 'url-loader',
-              options: {
-                limit: 8192,
-                name: 'assets/[hash].[ext]',
-              },
-            },
-          ],
-        },
         ...loaders,
       ],
     },
     resolve: {
-      alias: {
-        ...alias,
-      },
+      alias,
       extensions: ['.ts', '.tsx', '.jsx', '...'],
       fallback: {
         // TODO: add more fallback module
@@ -150,36 +157,14 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
     },
     optimization: {
       minimizer: [
-        '...',
         new TerserPlugin({
           minify: TerserPlugin.esbuildMinify,
-          parallel: true,
+          parallel: experimental?.parallel || false,
           extractComments: false,
-          terserOptions: {
-            compress: {
-              unused: false,
-            },
-            output: {
-              ascii_only: true,
-              comments: 'some',
-              beautify: false,
-            },
-            mangle: true,
-          },
+          terserOptions,
         }),
         new CssMinimizerPlugin({
-          parallel: false,
-          minimizerOptions: {
-            preset: [
-              'default',
-              {
-                discardComments: { removeAll: true },
-              },
-            ],
-            processorOptions: {
-              parser: safeParser,
-            },
-          },
+          minimizerOptions,
         }),
       ],
     },
@@ -198,9 +183,6 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
     devtool: getDevtoolValue(sourceMap),
     plugins: [
        ...webpackPlugins,
-      new MiniCssExtractPlugin({
-        filename: '[name].css',
-      }),
       new webpack.DefinePlugin(defineVariables),
       dev && new ReactRefreshWebpackPlugin(),
     ].filter(Boolean),
@@ -216,7 +198,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
       compress: true,
       webSocketServer: 'ws',
       devMiddleware: {
-        publicPath: devPublicPath,
+        publicPath,
       },
       static: {
         watch: {
@@ -248,84 +230,19 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
     webpackConfig.stats = 'verbose';
   }
 
-  return webpackConfig;
+  // pipe webpack by built-in functions and custom functions
+  const ctx = {
+    ...config,
+    supportedBrowsers,
+    hashKey,
+  };
+  const finalWebpackConfig = [configCss, configAssets, ...(configureWebpack || [])].reduce((result, next) => {
+    return next(result, ctx);
+  }, webpackConfig);
+  consola.debug('[webpack]', finalWebpackConfig);
+
+  return finalWebpackConfig;
 };
-
-function configAssetsRule(config: AssetRuleConfig) {
-  const [test, dataUrl] = config;
-  return {
-    test,
-    generator: {
-      dataUrl,
-    },
-    parser: {
-      dataUrlCondition: {
-        maxSize: 8 * 1024, // 8kb
-      },
-    },
-  };
-}
-
-function configCSSRule(config: CSSRuleConfig, browsers: string[]) {
-  const [style, loader, loaderOptions] = config;
-  const cssLoaderOpts = {
-    sourceMap: true,
-  };
-  const cssModuleLoaderOpts = {
-    ...cssLoaderOpts,
-    modules: {
-      auto: (resourcePath: string) => resourcePath.endsWith(`.module.${style}`),
-      localIdentName: '[folder]--[local]--[hash:base64:7]',
-    },
-  };
-  const postcssOpts = {
-    // lock postcss version
-    implementation: postcss,
-    postcssOptions: {
-      config: false,
-      plugins: [
-        ['@builder/pack/deps/postcss-nested'],
-        ['@builder/pack/deps/postcss-preset-env', {
-          // Without any configuration options, PostCSS Preset Env enables Stage 2 features.
-          stage: 3,
-          autoprefixer: {
-            // Disable legacy flexbox support
-            flexbox: 'no-2009',
-          },
-          features: {
-            'custom-properties': false,
-          },
-          browsers,
-        }],
-      ],
-    },
-  };
-  return {
-    test: new RegExp(`\\.${style}$`),
-    use: [
-      {
-        loader: MiniCssExtractPlugin.loader,
-        // compatible with commonjs syntax: const styles = require('./index.module.less')
-        options: { esModule: false },
-      },
-      {
-        loader: require.resolve('@builder/pack/deps/css-loader'),
-        options: cssModuleLoaderOpts,
-      },
-      {
-        loader: require.resolve('@builder/pack/deps/postcss-loader'),
-        options: {
-          ...cssLoaderOpts,
-          ...postcssOpts,
-        },
-      },
-      loader && {
-        loader,
-        options: { ...cssLoaderOpts, ...loaderOptions },
-      },
-    ].filter(Boolean),
-  };
-}
 
 function getDevtoolValue(sourceMap: Config['sourceMap']) {
   if (typeof sourceMap === 'string') {
