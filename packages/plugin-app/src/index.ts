@@ -26,19 +26,15 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, watc
     '/home': '/src/pages/home',
   };
   let cache = new Map();
-  let documentCompiler = () => {};
-  watch.addEvent([/src\/document/, (eventName) => {
-    if (eventName !== 'unlink') {
-      documentCompiler();
-    }
-  }]);
+  let serverCompiler = async () => '';
 
   onHook(`before.${command as 'start' | 'build'}.run`, async ({ esbuildCompile, taskConfig }) => {
     const outDir = taskConfig.outputDir;
-    documentCompiler = async () => {
+    serverCompiler = async () => {
       // timestamp for disable import cache
       cache.set('version', new Date().getTime());
-      return await esbuildCompile({
+      const serverDir = path.join(outDir, 'server');
+      await esbuildCompile({
         entryPoints: [path.join(rootDir, '.ice/entry.server')],
         outdir: path.join(outDir, 'server'),
         // platform: 'node',
@@ -47,12 +43,13 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, watc
         // FIXME: https://github.com/ice-lab/ice-next/issues/27
         external: process.env.JEST_TEST === 'true' ? [] : ['./node_modules/*', 'react'],
       }, { isServer: true });
+      const serverEntry = `${path.join(serverDir, 'entry.mjs')}?version=${new Date().getTime() || 0}`;
+      return serverEntry;
     };
-    await documentCompiler();
 
     if (command === 'build') {
       // generator html to outputDir
-      const entryPath = path.resolve(outDir, 'server/entry.mjs');
+      const entryPath = await serverCompiler();
       await generateHtml(entryPath, outDir, routeManifest);
     }
   });
@@ -107,9 +104,8 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, watc
       middlewares.push({
         name: 'document-render-server',
         middleware: setupRenderServer({
-          entry: path.resolve(outputDir, 'server/entry.mjs'),
+          serverCompiler,
           routeManifest,
-          cache,
         }),
       });
 

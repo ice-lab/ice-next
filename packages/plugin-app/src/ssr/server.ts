@@ -1,25 +1,27 @@
 interface Options {
   routeManifest: Record<string, unknown>;
-  entry: string;
-  cache: Map<string, unknown>;
+  serverCompiler: () => Promise<string> | void;
 }
 
 export function setupRenderServer(options: Options) {
   const {
     routeManifest,
-    entry,
-    cache,
+    serverCompiler,
   } = options;
 
   return async (req, res) => {
     if (!routeManifest[req.path]) {
       return;
     }
-    const serverEntry = await import(`${entry}?version=${cache.get('version') || 0}`);
-    const html = await serverEntry.render({
-      req,
-      res,
-    });
+    const entry = await serverCompiler();
+    let html = '';
+    if (entry) {
+      const serverEntry = await import(entry);
+      html = await serverEntry.render({
+        req,
+        res,
+      });
+    }
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(html);
