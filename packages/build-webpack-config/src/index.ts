@@ -113,15 +113,6 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
         discardComments: { removeAll: true },
       },
     ],
-    processorOptions: {
-      map: {
-        // `inline: false` generates the source map in a separate file.
-        inline: false,
-        // `annotation: false` skips appending the `sourceMappingURL`
-        // to the end of the CSS file. Webpack already handles this.
-        annotation: false,
-      },
-    },
   };
 
   const webpackConfig: WebpackConfig = {
