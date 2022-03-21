@@ -97,12 +97,12 @@ const userConfig = [
   {
     name: 'webpack',
     validation: 'function',
-    setConfig: (config: Config, configWebpack: Config['configureWebpack'][0]) => {
-      if (configWebpack) {
+    setConfig: (config: Config, configureWebpack: Config['configureWebpack'][0]) => {
+      if (configureWebpack) {
         // create warning for user
         const customConfigWebpack: Config['configureWebpack'][0] = (...args) => {
-          console.log(chalk.yellowBright('[WARN]', 'It is not recommended to config webpack directly.'));
-          return configWebpack(...args);
+          console.log(chalk.yellowBright('[WARN]', 'It is not recommended to configure webpack directly.'));
+          return configureWebpack(...args);
         };
         config.configureWebpack = [...(config.configureWebpack || []), customConfigWebpack];
       }
