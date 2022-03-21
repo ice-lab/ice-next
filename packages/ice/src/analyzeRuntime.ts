@@ -2,7 +2,6 @@ import * as path from 'path';
 import { createRequire } from 'module';
 import consola from 'consola';
 import type { EsbuildCompile } from '@ice/types/esm/plugin.js';
-import { updateRuntimeEnv } from './utils/runtimeEnv.js';
 
 const require = createRequire(import.meta.url);
 
@@ -11,7 +10,7 @@ interface Options {
   rootDir: string;
 }
 
-const analyzeRuntime = async (options: Options): Promise<void> => {
+export const getAppConfig = async (options: Options): Promise<void> => {
   const { esbuildCompile, rootDir } = options;
   const outfile = path.join(rootDir, 'node_modules', 'entry.js');
   try {
@@ -25,10 +24,8 @@ const analyzeRuntime = async (options: Options): Promise<void> => {
 
     const appConfig = require(outfile).default;
     consola.debug('app config:', appConfig);
-    updateRuntimeEnv(appConfig);
+    return appConfig;
   } catch (err) {
     consola.error('[ERROR]', 'Fail to analyze app config', err);
   }
 };
-
-export default analyzeRuntime;

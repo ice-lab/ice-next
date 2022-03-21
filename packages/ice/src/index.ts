@@ -12,8 +12,8 @@ import start from './commands/start.js';
 import build from './commands/build.js';
 import getContextConfig from './utils/getContextConfig.js';
 import { generateRoutesRenderData } from './routes.js';
-import analyzeRuntime from './analyzeRuntime.js';
-import { defineRuntimeEnv } from './utils/runtimeEnv.js';
+import { getAppConfig } from './analyzeRuntime.js';
+import { setRuntimeEnv } from './utils/runtimeEnv.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -91,7 +91,6 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
   const renderStart = new Date().getTime();
   generator.render();
   consola.debug('template render cost:', new Date().getTime() - renderStart);
-  defineRuntimeEnv();
   const contextConfig = getContextConfig(ctx);
   const webTask = contextConfig.find(({ name }) => name === 'web');
   const esbuildCompile = createEsbuildCompiler({
@@ -102,9 +101,12 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
   return {
     run: async () => {
       if (command === 'start') {
+        // set default runtime env for command `start`
+        setRuntimeEnv();
         return await start(ctx, contextConfig, esbuildCompile);
       } else if (command === 'build') {
-        await analyzeRuntime({ esbuildCompile, rootDir });
+        const appConfig = getAppConfig({ esbuildCompile, rootDir });
+        setRuntimeEnv(appConfig);
         return await build(ctx, contextConfig, esbuildCompile);
       }
     },
