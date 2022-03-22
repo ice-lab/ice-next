@@ -57,12 +57,13 @@ function RouteComponent({ id, ...props }: { id: string }) {
   const { routeModules } = useAppContext();
   // get current route component from latest routeModules
   const { default: Component } = routeModules[id];
-  return Component ? <Component {...props} /> : <DefaultRouteComponent id={id} />;
-}
-
-function DefaultRouteComponent({ id }: { id: string }): JSX.Element {
-  throw new Error(
-    `Route "${id}" has no component! Please go add a \`default\` export in the route module file.\n` +
-      'If you were trying to navigate or submit to a resource route, use `<a>` instead of `<Link>` or `<Form reloadDocument>`.',
-  );
+  if (process.env.NODE_ENV === 'development') {
+    if (!Component) {
+      throw new Error(
+        `Route "${id}" has no component! Please go add a \`default\` export in the route module file.\n` +
+          'If you were trying to navigate or submit to a resource route, use `<a>` instead of `<Link>` or `<Form reloadDocument>`.',
+      );
+    }
+  }
+  return <Component {...props} />;
 }
