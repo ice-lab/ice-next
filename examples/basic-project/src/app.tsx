@@ -12,4 +12,9 @@ const appConfig: AppConfig = {
     },
   },
 };
+
+if (process.env.ICE_RUNTIME_ERROR_BOUNDARY) {
+  console.log('__REMOVED__');
+}
+
 export default appConfig;
