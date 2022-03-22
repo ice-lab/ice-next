@@ -21,6 +21,21 @@ export async function loadRouteModule(route: RouteItem, routeModulesCache: Route
   }
 }
 
+export async function loadRouteModules(routes: RouteItem[]) {
+  const routeModules: RouteModules = {};
+
+  async function recurRouteModules(routes: RouteItem[], routeModules: RouteModules) {
+    for (const route of routes) {
+      await loadRouteModule(route, routeModules);
+      if (route.children) {
+        await recurRouteModules(route.children, routeModules);
+      }
+    }
+  }
+  await recurRouteModules(routes, routeModules);
+  return routeModules;
+}
+
 /**
  * Create routes which will be consumed by react-router-dom
  */

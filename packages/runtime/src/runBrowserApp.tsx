@@ -5,7 +5,7 @@ import { matchRoutes } from 'react-router-dom';
 import Runtime from './runtime.js';
 import App from './App.js';
 import type { AppContext, InitialContext, AppConfig, RouteItem } from './types';
-import { loadRouteModule } from './routes.js';
+import { loadRouteModules } from './routes.js';
 import { getCurrentPageData, loadPageData } from './transition.js';
 
 export default async function runBrowserApp(
@@ -14,8 +14,7 @@ export default async function runBrowserApp(
   routes,
 ) {
   const matches = matchRoutes(routes, window.location);
-  const routeModules = {};
-  await Promise.all(matches.map(match => loadRouteModule(match.route as RouteItem, routeModules)));
+  const routeModules = await loadRouteModules(matches.map(match => match.route as RouteItem));
   const pageDataResults = await loadPageData({ matches, location: window.location, routeModules });
   const appContext: AppContext = {
     routes,

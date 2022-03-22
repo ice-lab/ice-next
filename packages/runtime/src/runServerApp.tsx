@@ -5,8 +5,8 @@ import { Action, createPath, parsePath } from 'history';
 import { matchRoutes } from 'react-router-dom';
 import Runtime from './runtime.js';
 import App from './App.js';
-import type { AppContext, AppConfig, RouteItem, RouteModules } from './types';
-import { loadRouteModule } from './routes.js';
+import type { AppContext, AppConfig, RouteItem } from './types';
+import { loadRouteModules } from './routes.js';
 import { getCurrentPageData, loadPageData } from './transition.js';
 
 export default async function runServerApp(
@@ -17,8 +17,7 @@ export default async function runServerApp(
   Document,
   documentOnly: boolean,
 ): Promise<string> {
-  const routeModules = {};
-  await createRouteModules(routes, routeModules);
+  const routeModules = await loadRouteModules(routes);
   const { req } = requestContext;
   // ref: https://github.com/remix-run/react-router/blob/main/packages/react-router-dom/server.tsx
   const locationProps = parsePath(req.url);
@@ -82,14 +81,6 @@ async function render(
   return html;
 }
 
-async function createRouteModules(routes: RouteItem[], routeModules: RouteModules) {
-  for (const route of routes) {
-    await loadRouteModule(route, routeModules);
-    if (route.children) {
-      await createRouteModules(route.children, routeModules);
-    }
-  }
-}
 
 function createStaticNavigator() {
   return {
