@@ -1,5 +1,5 @@
-import React, { useRef, useLayoutEffect, useReducer } from 'react';
-import type { HashHistory, BrowserHistory, Update } from 'history';
+import React, { useLayoutEffect, useReducer } from 'react';
+import type { Update } from 'history';
 import { createHashHistory, createBrowserHistory } from 'history';
 import { matchRoutes } from 'react-router-dom';
 import Runtime from './runtime.js';
@@ -68,11 +68,7 @@ async function render(runtime: Runtime) {
 }
 
 function BrowserEntry({ runtime, routerType }: { runtime: Runtime; routerType: AppConfig['router']['type'] }) {
-  const historyRef = useRef<HashHistory | BrowserHistory>();
-  if (!historyRef.current) {
-    historyRef.current = (routerType === 'hash' ? createHashHistory : createBrowserHistory)({ window });
-  }
-  const history = historyRef.current;
+  const history = (routerType === 'hash' ? createHashHistory : createBrowserHistory)({ window });
   const [state, dispatch] = useReducer(
     (_: Update, update: Update) => update,
     {
@@ -80,7 +76,7 @@ function BrowserEntry({ runtime, routerType }: { runtime: Runtime; routerType: A
       location: history.location,
     },
   );
-
+  // listen the history change and update the state which including the latest action and location
   useLayoutEffect(() => history.listen(dispatch), [history]);
 
   const { action, location } = state;
