@@ -230,20 +230,16 @@ importers:
 
   packages/runtime:
     specifiers:
-      '@types/lodash-es': ^4.17.6
       history: ^5.3.0
-      lodash-es: ^4.17.21
       react: ^17.0.2
       react-dom: ^17.0.2
       react-router-dom: ^6.2.2
       regenerator-runtime: ^0.13.9
     dependencies:
       history: 5.3.0
-      lodash-es: 4.17.21
       react-router-dom: 6.2.2_react-dom@17.0.2+react@17.0.2
       regenerator-runtime: 0.13.9
     devDependencies:
-      '@types/lodash-es': 4.17.6
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
 
@@ -1673,12 +1669,6 @@ packages:
 
   /@types/json5/0.0.29:
     resolution: {integrity: sha1-7ihweulOEdK4J7y+UnC86n8+ce4=}
-    dev: true
-
-  /@types/lodash-es/4.17.6:
-    resolution: {integrity: sha512-R+zTeVUKDdfoRxpAryaQNRKk3105Rrgx2CFRClIgRGaqDTdjsm8h6IYA8ir584W3ePzkZfst5xIgDwYrlh9HLg==}
-    dependencies:
-      '@types/lodash': 4.14.179
     dev: true
 
   /@types/lodash.debounce/4.0.6:
@@ -5534,10 +5524,6 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       p-locate: 5.0.0
-
-  /lodash-es/4.17.21:
-    resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
-    dev: false
 
   /lodash.memoize/4.1.2:
     resolution: {integrity: sha1-vMbEmkKihA7Zl/Mj6tpezRguC/4=}
