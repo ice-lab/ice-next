@@ -12,7 +12,7 @@ export default async function runApp(config: AppConfig, runtimeModules: RuntimeM
       ...(config?.app || {}),
     },
     router: {
-      type: 'hash',
+      type: 'browser',
       ...(config?.router || {}),
     },
   };
@@ -23,7 +23,7 @@ export default async function runApp(config: AppConfig, runtimeModules: RuntimeM
     initialData: null,
   };
   if (process.env.ICE_RUNTIME_INITIAL_DATA) {
-    appContext.initialData = getInitialData(appConfig);
+    appContext.initialData = await getInitialData(appConfig);
   }
 
   const runtime = new Runtime(appContext);
