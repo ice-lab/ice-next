@@ -2,16 +2,10 @@ import * as path from 'path';
 import { formatNestedRouteManifest, generateRouteManifest } from '@ice/route-manifest';
 import type { NestedRouteManifest } from '@ice/route-manifest';
 
-export function generateRoutesRenderData(rootDir: string) {
+export function generateRoutesStr(rootDir: string) {
   const routeManifest = generateRouteManifest(rootDir);
   const routes = formatNestedRouteManifest(routeManifest);
-  const routesStr = generateRoutesStr(routes);
-
-  return { routesStr };
-}
-
-function generateRoutesStr(nestRouteManifest: NestedRouteManifest[]) {
-  const str = generateNestRoutesStr(nestRouteManifest);
+  const str = generateNestRoutesStr(routes);
   return `[${str}]`;
 }
 

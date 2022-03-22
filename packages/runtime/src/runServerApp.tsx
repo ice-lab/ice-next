@@ -2,26 +2,21 @@ import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server.js';
 import type { Location, To } from 'history';
 import { Action, createPath, parsePath } from 'history';
-import { merge } from 'lodash-es';
 import { matchRoutes } from 'react-router-dom';
-import defaultAppConfig from './defaultAppConfig.js';
 import Runtime from './runtime.js';
 import App from './App.js';
-import DefaultAppRouter from './AppRouter.js';
 import type { AppContext, AppConfig, RouteItem, RouteModules } from './types';
 import { loadRouteModule } from './routes.js';
 import { getCurrentPageData, loadPageData } from './transition.js';
 
 export default async function runServerApp(
-    requestContext,
-    config: AppConfig,
-    runtimeModules,
-    routes: RouteItem[],
-    Document,
-    documentOnly: boolean,
-  ) {
-  const appConfig: AppConfig = merge(defaultAppConfig, config);
-
+  requestContext,
+  appConfig: AppConfig,
+  runtimeModules,
+  routes: RouteItem[],
+  Document,
+  documentOnly: boolean,
+): Promise<string> {
   const routeModules = {};
   await createRouteModules(routes, routeModules);
   const { req } = requestContext;
@@ -70,8 +65,34 @@ async function render(
     return documentHtml;
   }
 
+ const staticNavigator = createStaticNavigator();
 
- let staticNavigator = {
+  const pageHtml = ReactDOMServer.renderToString(
+    <App
+      action={Action.Pop}
+      runtime={runtime}
+      location={location}
+      navigator={staticNavigator}
+      static
+    />,
+  );
+
+  const html = documentHtml.replace('<!--app-html-->', pageHtml);
+
+  return html;
+}
+
+async function createRouteModules(routes: RouteItem[], routeModules: RouteModules) {
+  for (const route of routes) {
+    await loadRouteModule(route, routeModules);
+    if (route.children) {
+      await createRouteModules(route.children, routeModules);
+    }
+  }
+}
+
+function createStaticNavigator() {
+  return {
     createHref(to: To) {
       return typeof to === 'string' ? to : createPath(to);
     },
@@ -116,32 +137,4 @@ async function render(
       );
     },
   };
-
-  let AppRouter = runtime.getAppRouter();
-  if (!AppRouter) {
-    runtime.setAppRouter(DefaultAppRouter);
-  }
-
-  const pageHtml = ReactDOMServer.renderToString(
-    <App
-      action={Action.Pop}
-      runtime={runtime}
-      location={location}
-      navigator={staticNavigator}
-      static
-    />,
-  );
-
-  const html = documentHtml.replace('<!--app-html-->', pageHtml);
-
-  return html;
-}
-
-async function createRouteModules(routes: RouteItem[], routeModules: RouteModules) {
-  for (const route of routes) {
-    await loadRouteModule(route, routeModules);
-    if (route.children) {
-      await createRouteModules(route.children, routeModules);
-    }
-  }
 }

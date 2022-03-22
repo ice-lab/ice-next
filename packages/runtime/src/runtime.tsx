@@ -15,6 +15,7 @@ import type {
   GetWrapperPageRegistration,
   AppRouterProps,
 } from './types.js';
+import DefaultAppRouter from './AppRouter.js';
 import { usePageContext } from './PageContext.js';
 
 class Runtime {
@@ -32,13 +33,17 @@ class Runtime {
     this.AppProvider = [];
     this.appContext = appContext;
     this.render = ReactDOM.render;
-    this.AppRouter = null;
+    this.AppRouter = DefaultAppRouter;
     this.wrapperPageRegistration = [];
   }
 
   public getAppContext = () => this.appContext;
 
-  public getRender = () => this.render;
+  public getRender = () => {
+    // TODO: set ssr by process env
+    const isSSR = true;
+    return isSSR ? ReactDOM.hydrate : this.render;
+  };
 
   public getAppRouter = () => this.AppRouter;
 

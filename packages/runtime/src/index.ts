@@ -13,6 +13,7 @@ import {
   AppConfig,
   PageWrapper,
 } from './types.js';
+import defineAppConfig from './defineAppConfig.js';
 
 export {
   Runtime,
@@ -22,7 +23,7 @@ export {
   useAppContext,
   Link,
   Outlet,
-
+  defineAppConfig,
   // types
   RuntimePlugin,
   AppContext,

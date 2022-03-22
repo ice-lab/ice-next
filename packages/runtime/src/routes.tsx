@@ -2,7 +2,6 @@ import React from 'react';
 import RouteWrapper from './RouteWrapper.js';
 import type { RouteItem, RouteModules, PageWrapper } from './types';
 import { useAppContext } from './AppContext.js';
-import { PageContextProvider } from './PageContext.js';
 
 export async function loadRouteModule(route: RouteItem, routeModulesCache: RouteModules) {
   const { id, load } = route;
@@ -22,7 +21,10 @@ export async function loadRouteModule(route: RouteItem, routeModulesCache: Route
   }
 }
 
-export function createClientRoutes(routes: RouteItem[], routeModules: RouteModules, PageWrappers?: PageWrapper<any>[]) {
+/**
+ * Create routes which will be consumed by react-router-dom
+ */
+export function createRoutes(routes: RouteItem[], routeModules: RouteModules, PageWrappers?: PageWrapper<any>[]) {
   return routes.map((routeItem: RouteItem) => {
     let { path, children, index, id, element, ...rest } = routeItem;
     const idParts = id.split('/');
@@ -44,7 +46,7 @@ export function createClientRoutes(routes: RouteItem[], routeModules: RouteModul
       ...rest,
     };
     if (children) {
-      route.children = createClientRoutes(children, routeModules, PageWrappers);
+      route.children = createRoutes(children, routeModules, PageWrappers);
     }
 
     return route;
@@ -59,12 +61,7 @@ function DefaultRouteComponent({ id }: { id: string }): JSX.Element {
 }
 
 function RouteComponent({ id, ...props }: { id: string }) {
-  const { routeModules, pageData } = useAppContext();
+  const { routeModules } = useAppContext();
   const { default: Component } = routeModules[id];
-  const element = Component ? <Component {...props} /> : <DefaultRouteComponent id={id} />;
-  return (
-    <PageContextProvider value={{ ...pageData[id] }}>
-      {element}
-    </PageContextProvider>
-  );
+  return Component ? <Component {...props} /> : <DefaultRouteComponent id={id} />;
 }

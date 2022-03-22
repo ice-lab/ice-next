@@ -105,5 +105,10 @@ export interface AppRouterProps {
   action: Action;
   location: Location;
   navigator: Navigator;
+  routes: RouteItem[];
   static?: boolean;
+}
+
+export interface AppRouteProps {
+  routes: RouteItem[];
 }

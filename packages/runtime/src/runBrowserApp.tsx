@@ -1,20 +1,18 @@
 import React, { useRef, useLayoutEffect, useReducer } from 'react';
-import * as ReactDOM from 'react-dom';
 import type { HashHistory, BrowserHistory, Update } from 'history';
 import { createHashHistory, createBrowserHistory } from 'history';
 import { matchRoutes } from 'react-router-dom';
-import { merge } from 'lodash-es';
-import defaultAppConfig from './defaultAppConfig.js';
 import Runtime from './runtime.js';
 import App from './App.js';
-import DefaultAppRouter from './AppRouter.js';
 import type { AppContext, InitialContext, AppConfig, RouteItem } from './types';
 import { loadRouteModule } from './routes.js';
 import { getCurrentPageData, loadPageData } from './transition.js';
 
-export default async function runBrowserApp(config: AppConfig, runtimeModules, routes) {
-  const appConfig: AppConfig = merge(defaultAppConfig, config);
-
+export default async function runBrowserApp(
+  appConfig: AppConfig,
+  runtimeModules,
+  routes,
+) {
   const matches = matchRoutes(routes, window.location);
   const routeModules = {};
   await Promise.all(matches.map(match => loadRouteModule(match.route as RouteItem, routeModules)));
@@ -57,18 +55,8 @@ async function render(runtime: Runtime) {
   const appContext = runtime.getAppContext();
   const { appConfig } = appContext;
   const { app: { rootId }, router: { type: routerType } } = appConfig;
-
-  // TODO: set ssr by process env
-  const isSSR = true;
-  const render = isSSR ? ReactDOM.hydrate : runtime.getRender();
-
-  let AppRouter = runtime.getAppRouter();
-  if (!AppRouter) {
-    AppRouter = DefaultAppRouter;
-    runtime.setAppRouter(AppRouter);
-  }
-
-  const appMountNode = getAppMountNode(rootId);
+  const render = runtime.getRender();
+  const appMountNode = document.getElementById(rootId);
 
   render(
     <BrowserComponent
@@ -77,10 +65,6 @@ async function render(runtime: Runtime) {
     />,
     appMountNode,
   );
-}
-
-function getAppMountNode(rootId: string): HTMLElement {
-  return rootId ? document.getElementById(rootId) : document.getElementById('ice-container');
 }
 
 function BrowserComponent({ runtime, routerType }: { runtime: Runtime; routerType: AppConfig['router']['type'] }) {
