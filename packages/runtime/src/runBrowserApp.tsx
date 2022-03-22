@@ -59,7 +59,7 @@ async function render(runtime: Runtime) {
   const appMountNode = document.getElementById(rootId);
 
   render(
-    <BrowserComponent
+    <BrowserEntry
       runtime={runtime}
       routerType={routerType}
     />,
@@ -67,7 +67,7 @@ async function render(runtime: Runtime) {
   );
 }
 
-function BrowserComponent({ runtime, routerType }: { runtime: Runtime; routerType: AppConfig['router']['type'] }) {
+function BrowserEntry({ runtime, routerType }: { runtime: Runtime; routerType: AppConfig['router']['type'] }) {
   const historyRef = useRef<HashHistory | BrowserHistory>();
   if (!historyRef.current) {
     historyRef.current = (routerType === 'hash' ? createHashHistory : createBrowserHistory)({ window });

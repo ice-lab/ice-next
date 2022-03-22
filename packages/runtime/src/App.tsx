@@ -31,12 +31,13 @@ export default function App(props: Props) {
   const AppRouter = runtime.getAppRouter();
 
   const [, setClientState] = useState({});
+
   const routes = useMemo(
     () => createRoutes(originRoutes, routeModules, PageWrappers),
     [originRoutes, routeModules, PageWrappers],
   );
 
-  const [transitionManager] = React.useState(() => {
+  const [transitionManager] = useState(() => {
     return createTransitionManager({
       routes,
       location: historyLocation,
@@ -48,9 +49,6 @@ export default function App(props: Props) {
     });
   });
 
-  // waiting for the location change in the transitionManager, the UI will rerender
-  const { location, pageData } = transitionManager.getState();
-
   useEffect(() => {
     const state = transitionManager.getState();
     if (state.location === historyLocation) {
@@ -58,6 +56,9 @@ export default function App(props: Props) {
     }
     transitionManager.handleLoad(historyLocation);
   }, [transitionManager, historyLocation]);
+
+  // waiting for the location change in the transitionManager, the UI will rerender
+  const { location, pageData } = transitionManager.getState();
 
   let element;
   if (routes.length === 1 && !routes[0].children) {
