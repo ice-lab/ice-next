@@ -3,12 +3,14 @@ import * as ReactDOMServer from 'react-dom/server.js';
 import type { Location, To } from 'history';
 import { Action, createPath, parsePath } from 'history';
 import { merge } from 'lodash-es';
+import { matchRoutes } from 'react-router-dom';
 import defaultAppConfig from './defaultAppConfig.js';
 import Runtime from './runtime.js';
 import App from './App.js';
 import DefaultAppRouter from './AppRouter.js';
 import type { AppContext, AppConfig, RouteItem, RouteModules } from './types';
 import { loadRouteModule } from './routes.js';
+import { getCurrentPageData, loadPageData } from './transition.js';
 
 export default async function runServerApp(
     requestContext,
@@ -22,38 +24,6 @@ export default async function runServerApp(
 
   const routeModules = {};
   await createRouteModules(routes, routeModules);
-
-  const appContext: AppContext = {
-    routes,
-    appConfig,
-    initialData: null,
-    document: Document,
-    routeModules,
-  };
-
-  if (appConfig?.app?.getInitialData) {
-    appContext.initialData = await appConfig.app.getInitialData(requestContext);
-  }
-
-  const runtime = new Runtime(appContext);
-  runtimeModules.forEach(m => {
-    runtime.loadModule(m);
-  });
-
-  return render(runtime, requestContext, Document, documentOnly);
-}
-
-async function render(
-  runtime: Runtime,
-  requestContext,
-  Document,
-  documentOnly: boolean,
-) {
-  const documentHtml = ReactDOMServer.renderToString(<Document />);
-
-  if (documentOnly) {
-    return documentHtml;
-  }
   const { req } = requestContext;
   // ref: https://github.com/remix-run/react-router/blob/main/packages/react-router-dom/server.tsx
   const locationProps = parsePath(req.url);
@@ -65,6 +35,41 @@ async function render(
     state: null,
     key: 'default',
   };
+  const matches = matchRoutes(routes, location);
+  const pageDataResults = await loadPageData({ matches, location, routeModules });
+  const appContext: AppContext = {
+    routes,
+    appConfig,
+    initialData: null,
+    document: Document,
+    routeModules,
+    pageData: getCurrentPageData(pageDataResults),
+  };
+
+  if (appConfig?.app?.getInitialData) {
+    appContext.initialData = await appConfig.app.getInitialData(requestContext);
+  }
+
+  const runtime = new Runtime(appContext);
+  runtimeModules.forEach(m => {
+    runtime.loadModule(m);
+  });
+
+  return render(runtime, location, Document, documentOnly);
+}
+
+async function render(
+  runtime: Runtime,
+  location: Location,
+  Document,
+  documentOnly: boolean,
+) {
+  const documentHtml = ReactDOMServer.renderToString(<Document />);
+
+  if (documentOnly) {
+    return documentHtml;
+  }
+
 
  let staticNavigator = {
     createHref(to: To) {

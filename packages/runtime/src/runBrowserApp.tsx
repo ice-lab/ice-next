@@ -2,7 +2,7 @@ import React, { useRef, useLayoutEffect, useReducer } from 'react';
 import * as ReactDOM from 'react-dom';
 import type { HashHistory, BrowserHistory, Update } from 'history';
 import { createHashHistory, createBrowserHistory } from 'history';
-import { matchRoutes as matchClientRoutes } from 'react-router-dom';
+import { matchRoutes } from 'react-router-dom';
 import { merge } from 'lodash-es';
 import defaultAppConfig from './defaultAppConfig.js';
 import Runtime from './runtime.js';
@@ -10,19 +10,21 @@ import App from './App.js';
 import DefaultAppRouter from './AppRouter.js';
 import type { AppContext, InitialContext, AppConfig, RouteItem } from './types';
 import { loadRouteModule } from './routes.js';
+import { getCurrentPageData, loadPageData } from './transition.js';
 
 export default async function runBrowserApp(config: AppConfig, runtimeModules, routes) {
   const appConfig: AppConfig = merge(defaultAppConfig, config);
 
-  const matchRoutes = matchClientRoutes(routes, window.location);
+  const matches = matchRoutes(routes, window.location);
   const routeModules = {};
-  await Promise.all(matchRoutes.map(match => loadRouteModule(match.route as RouteItem, routeModules)));
-
+  await Promise.all(matches.map(match => loadRouteModule(match.route as RouteItem, routeModules)));
+  const pageDataResults = await loadPageData({ matches, location: window.location, routeModules });
   const appContext: AppContext = {
     routes,
     appConfig,
     initialData: null,
     routeModules,
+    pageData: getCurrentPageData(pageDataResults),
   };
   // ssr enabled and the server has returned data
   if ((window as any).__ICE_APP_DATA__) {

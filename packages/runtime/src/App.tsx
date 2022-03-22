@@ -10,7 +10,7 @@ import { createTransitionManager } from './transition.js';
 interface Props {
   runtime: Runtime;
   action: Action;
-  location: Location | string;
+  location: Location;
   navigator: Navigator;
   static?: boolean;
 }
@@ -18,7 +18,7 @@ interface Props {
 export default function App(props: Props) {
   const { runtime, location: historyLocation, action, navigator, static: staticProp = false } = props;
   const appContext = runtime.getAppContext();
-  const { appConfig, routes, routeModules } = appContext;
+  const { appConfig, routes, routeModules, pageData: initPageData } = appContext;
   const { strict } = appConfig.app;
   const StrictMode = strict ? React.StrictMode : React.Fragment;
 
@@ -43,11 +43,12 @@ export default function App(props: Props) {
       onChange: (state) => {
         setClientState({ ...state });
       },
+      pageData: initPageData,
     });
   });
 
   // waiting for the location change in the transitionManager, the UI will rerender
-  const { location } = transitionManager.getState();
+  const { location, pageData } = transitionManager.getState();
 
   useEffect(() => {
     const state = transitionManager.getState();
@@ -75,7 +76,13 @@ export default function App(props: Props) {
   return (
     <StrictMode>
       <AppErrorBoundary>
-        <AppContextProvider value={{ ...appContext, routes: clientRoutes }}>
+        <AppContextProvider
+          value={{
+            ...appContext,
+            routes: clientRoutes,
+            pageData,
+          }}
+        >
           <AppProvider>
             {element}
           </AppProvider>

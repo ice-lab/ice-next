@@ -15,6 +15,7 @@ import type {
   GetWrapperPageRegistration,
   AppRouterProps,
 } from './types.js';
+import { usePageContext } from './PageContext.js';
 
 class Runtime {
   private appContext: AppContext;
@@ -48,6 +49,7 @@ class Runtime {
       wrapperPageComponent: this.wrapperPageComponent,
       appContext: this.appContext,
       setAppRouter: this.setAppRouter,
+      usePageContext,
     };
 
     const runtimeModule = (module as CommonJsRuntime).default || module as RuntimePlugin;

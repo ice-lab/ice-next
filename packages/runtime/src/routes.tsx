@@ -2,6 +2,7 @@ import React from 'react';
 import RouteWrapper from './RouteWrapper.js';
 import type { RouteItem, RouteModules, PageWrapper } from './types';
 import { useAppContext } from './AppContext.js';
+import { PageContextProvider } from './PageContext.js';
 
 export async function loadRouteModule(route: RouteItem, routeModulesCache: RouteModules) {
   const { id, load } = route;
@@ -24,8 +25,12 @@ export async function loadRouteModule(route: RouteItem, routeModulesCache: Route
 export function createClientRoutes(routes: RouteItem[], routeModules: RouteModules, PageWrappers?: PageWrapper<any>[]) {
   return routes.map((routeItem: RouteItem) => {
     let { path, children, index, id, element, ...rest } = routeItem;
-
-    element = (
+    const idParts = id.split('/');
+    const isLayout = idParts[idParts.length - 1] === 'layout';
+    // Layout components don't need to wrap the Provider(for example: AuthProvider)
+    element = isLayout ? (
+      <RouteComponent id={id} />
+    ) : (
       <RouteWrapper
         PageComponent={(...props) => <RouteComponent id={id} {...props} />}
         PageWrappers={PageWrappers}
@@ -54,7 +59,12 @@ function DefaultRouteComponent({ id }: { id: string }): JSX.Element {
 }
 
 function RouteComponent({ id, ...props }: { id: string }) {
-  const { routeModules } = useAppContext();
+  const { routeModules, pageData } = useAppContext();
   const { default: Component } = routeModules[id];
-  return Component ? <Component {...props} /> : <DefaultRouteComponent id={id} />;
+  const element = Component ? <Component {...props} /> : <DefaultRouteComponent id={id} />;
+  return (
+    <PageContextProvider value={{ ...pageData[id] }}>
+      {element}
+    </PageContextProvider>
+  );
 }

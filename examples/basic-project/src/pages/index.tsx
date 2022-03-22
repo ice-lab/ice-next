@@ -15,6 +15,14 @@ export default function Home() {
   );
 }
 
-Home.pageConfig = {
-  auth: ['admin'],
-};
+export function getPageConfig() {
+  return {
+    auth: ['admin'],
+  };
+}
+
+export function getInitialData() {
+  return {
+    name: 'home',
+  };
+}
