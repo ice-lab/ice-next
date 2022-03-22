@@ -15,12 +15,12 @@ interface Options {
   sourceMap?: Config['sourceMap'];
 }
 
-const swcPlugin = (options: Options): UnpluginOptions => {
+const compilationPlugin = (options: Options): UnpluginOptions => {
   const { rootDir, sourceMap, mode, isServer } = options;
   const dev = mode !== 'production';
 
   return {
-    name: 'swc-plugin',
+    name: 'compilation-plugin',
     async transform(source: string, id: string) {
       // TODO specific runtime plugin name
       if ((/node_modules/.test(id) && !/[\\/]runtime[\\/]/.test(id))) {
@@ -138,4 +138,4 @@ function hasJsxRuntime(rootDir: string) {
   }
 }
 
-export default swcPlugin;
+export default compilationPlugin;

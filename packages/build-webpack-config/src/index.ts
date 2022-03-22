@@ -30,7 +30,7 @@ type GetWebpackConfig = (options: GetWebpackConfigOptions) => WebpackConfig;
 function getEntry(rootDir: string) {
   // check entry.client.ts
   let entryFile = fg.sync('entry.client.{tsx,ts,jsx.js}', {
-    cwd: rootDir,
+    cwd: path.join(rootDir, 'src'),
     absolute: true,
   })[0];
   if (!entryFile) {
@@ -127,6 +127,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
       layers: true,
       cacheUnaffected: true,
       topLevelAwait: true,
+      ...(experimental || {}),
     },
     entry: () => getEntry(rootDir),
     externals,
@@ -156,7 +157,6 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
       minimizer: [
         new TerserPlugin({
           minify: TerserPlugin.esbuildMinify,
-          parallel: experimental?.parallel || false,
           extractComments: false,
           terserOptions,
         }),
@@ -238,7 +238,6 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
     return next(result, ctx);
   }, webpackConfig);
   consola.debug('[webpack]', finalWebpackConfig);
-
   return finalWebpackConfig;
 };
 
@@ -262,7 +261,10 @@ function getSupportedBrowsers(
       path: dir,
       env: isDevelopment ? 'development' : 'production',
     });
-  } catch {}
+  } catch {
+    consola.debug('[browsers]', 'fail to load config of browsers');
+  }
+
   return browsers;
 }
 

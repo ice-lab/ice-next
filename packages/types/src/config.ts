@@ -9,7 +9,6 @@ interface ConfigurationCtx extends Omit<Config, 'webpack'> {
 }
 
 interface Experimental extends Pick<Configuration, 'experiments'> {
-  parallel: number | boolean;
 }
 
 export type ModifyWebpackConfig = (config: Configuration, ctx: ConfigurationCtx) => Configuration;

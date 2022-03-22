@@ -16,8 +16,8 @@ const cliOptions = [
 
 const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, registerUserConfig }) => {
   const { command, rootDir, commandArgs } = context;
-  const mode: 'development' | 'production' = command === 'start' ? 'development' : 'production';
   const outputDir = path.join(rootDir, 'build');
+  const mode = command === 'start' ? 'development' : 'production';
   // TODO: get from routeManifest
   const routeManifest = {
     '/': '/src/pages/index',
@@ -25,7 +25,7 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, regi
     '/home': '/src/pages/home',
   };
 
-  const defaultConfig = {
+  registerTask('web', {
     mode,
     outputDir,
     alias: {
@@ -46,9 +46,7 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, regi
 
       return middlewares;
     },
-  };
-
-  registerTask('web', defaultConfig);
+  });
   registerCliOption(cliOptions);
   // @ts-expect-error remove me when build-script fix type error
   registerUserConfig(userConfig);
