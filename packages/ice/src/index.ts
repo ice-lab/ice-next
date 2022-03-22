@@ -105,7 +105,7 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
       if (command === 'start') {
         return await start(ctx, contextConfig, esbuildCompile);
       } else if (command === 'build') {
-        const appConfig = getAppConfig({ esbuildCompile, rootDir });
+        const appConfig = await getAppConfig({ esbuildCompile, rootDir });
         updateRuntimeEnv(appConfig, routeManifest);
         return await build(ctx, contextConfig, esbuildCompile);
       }

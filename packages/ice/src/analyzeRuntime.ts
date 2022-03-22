@@ -2,6 +2,7 @@ import * as path from 'path';
 import { createRequire } from 'module';
 import consola from 'consola';
 import type { EsbuildCompile } from '@ice/types/esm/plugin.js';
+import type { AppConfig } from './utils/runtimeEnv.js';
 
 const require = createRequire(import.meta.url);
 
@@ -10,7 +11,7 @@ interface Options {
   rootDir: string;
 }
 
-export const getAppConfig = async (options: Options): Promise<void> => {
+export const getAppConfig = async (options: Options): Promise<AppConfig> => {
   const { esbuildCompile, rootDir } = options;
   const outfile = path.join(rootDir, 'node_modules', 'entry.js');
   try {

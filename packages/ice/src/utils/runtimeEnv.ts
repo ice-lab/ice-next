@@ -1,7 +1,7 @@
 import type { RouteManifest } from '@ice/route-manifest';
 import { runtimeEnvironment } from '../constant.js';
 
-type AppConfig = Record<string, any>;
+export type AppConfig = Record<string, any>;
 
 export const defineRuntimeEnv = () => {
   Object.keys(runtimeEnvironment).forEach((key) => {
