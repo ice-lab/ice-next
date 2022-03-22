@@ -10,7 +10,7 @@ type App = Partial<{
   rootId?: string;
   strict?: boolean;
   addProvider?: ({ children }: { children: ReactNode }) => ReactNode;
-  getInitialData?: (ctx?: any) => Promise<any>;
+  getInitialData?: (ctx?: InitialContext) => Promise<any>;
 } & Record<AppLifecycle, VoidFunction>>;
 
 export interface AppConfig extends Record<string, any> {
@@ -28,6 +28,19 @@ export {
 export interface PageConfig {
   auth?: string[];
 }
+
+export interface ServerContext {
+  req?: Request;
+  res?: Response;
+}
+
+export interface InitialContext extends ServerContext {
+  pathname: string;
+  path: string;
+  query: Record<string, any>;
+  ssrError?: any;
+}
+
 type InitialData = any;
 export interface PageComponent {
   default: ComponentType<any>;
@@ -53,13 +66,6 @@ export type SetAppRouter = (AppRouter: ComponentType<AppRouterProps>) => void;
 export type AddProvider = (Provider: ComponentType) => void;
 export type SetRender = (render: Renderer) => void;
 export type WrapperPageComponent = (pageWrapper: PageWrapper<any>) => void;
-
-export interface InitialContext {
-  pathname: string;
-  path: string;
-  query: Record<string, any>;
-  ssrError?: any;
-}
 
 export interface RouteModules {
   [routeId: string]: PageComponent;

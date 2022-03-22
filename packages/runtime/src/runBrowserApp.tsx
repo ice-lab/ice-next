@@ -1,7 +1,7 @@
 import React, { useLayoutEffect, useReducer } from 'react';
 import type { Update } from 'history';
 import { createHashHistory, createBrowserHistory } from 'history';
-import { matchRoutes } from 'react-router-dom';
+import { matchRoutes, createSearchParams } from 'react-router-dom';
 import Runtime from './runtime.js';
 import App from './App.js';
 import type { AppContext, InitialContext, AppConfig, RouteItem } from './types';
@@ -30,8 +30,7 @@ export default async function runBrowserApp(
   } else if (appConfig?.app?.getInitialData) {
     const { href, origin, pathname, search } = window.location;
     const path = href.replace(origin, '');
-    // const query = queryString.parse(search);
-    const query = {};
+    const query = Object.fromEntries(createSearchParams(search));
     const ssrError = (window as any).__ICE_SSR_ERROR__;
     const initialContext: InitialContext = {
       pathname,
