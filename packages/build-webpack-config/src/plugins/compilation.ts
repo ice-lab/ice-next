@@ -76,7 +76,7 @@ function getSwcTransformOptions({
       externalHelpers: false,
     },
     module: {
-      // @ts-expect-error
+      // @ts-expect-error module type only support cjs umd amd, fix me when @builder/swc fix type error
       type: 'es6',
       noInterop: false,
       // webpack will evaluate dynamic import, so there need preserve it
