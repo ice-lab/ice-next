@@ -1,10 +1,12 @@
 import path from 'path';
+import { createHash } from 'crypto';
 import { createRequire } from 'module';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import MiniCssExtractPlugin from '@builder/pack/deps/mini-css-extract-plugin/cjs.js';
 import CssMinimizerPlugin from '@builder/pack/deps/css-minimizer-webpack-plugin/cjs.js';
 import safeParser from '@builder/pack/deps/postcss-safe-parser/safe-parse.js';
 import TerserPlugin from '@builder/pack/deps/terser-webpack-plugin/cjs.js';
+import type { LoaderContext } from 'webpack';
 import webpack, { type Configuration } from 'webpack';
 import postcss from 'postcss';
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
@@ -142,7 +144,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
     performance: false,
     devtool: getDevtoolValue(sourceMap),
     plugins: [
-       ...webpackPlugins,
+      ...webpackPlugins,
       new MiniCssExtractPlugin({
         filename: '[name].css',
       }),
@@ -189,7 +191,11 @@ function configCSSRule(config: CSSRuleConfig) {
     ...cssLoaderOpts,
     modules: {
       auto: (resourcePath: string) => resourcePath.endsWith(`.module.${style}`),
-      localIdentName: '[folder]--[local]--[hash:base64:7]',
+      getLocalIdent: (context: LoaderContext<any>, localIdentName: string, localName: string) => {
+        const hash = createHash('md4');
+        hash.update(Buffer.from(context.resourcePath + localName, 'utf8'));
+        return `${localName}--${hash.digest('base64').slice(0, 8)}`;
+      },
     },
   };
   const postcssOpts = {

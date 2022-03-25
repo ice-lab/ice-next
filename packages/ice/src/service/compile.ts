@@ -1,11 +1,14 @@
 import * as path from 'path';
+import { createHash } from 'crypto';
 import consola from 'consola';
 import fg from 'fast-glob';
 import esbuild from 'esbuild';
 import { createUnplugin } from 'unplugin';
 import type { UnpluginOptions } from 'unplugin';
+import stylePlugin from 'esbuild-style-plugin';
 import type { Config } from '@ice/types';
 import type { EsbuildCompile } from '@ice/types/esm/plugin.js';
+import escapeLocalIdent from '../utils/escapeLocalIdent.js';
 import { resolveId } from './analyze.js';
 
 export function createEsbuildCompiler(options: {
@@ -26,6 +29,15 @@ export function createEsbuildCompiler(options: {
         this: undefined,
       },
       plugins: [
+        stylePlugin({
+          cssModulesOptions: {
+            generateScopedName: function (name: string, filename: string) {
+              const hash = createHash('md4');
+              hash.update(Buffer.from(filename + name, 'utf8'));
+              return escapeLocalIdent(`${name}--${hash.digest('base64').slice(0, 8)}`);
+            },
+          },
+        }),
         {
           name: 'esbuild-alias',
           setup(build) {
