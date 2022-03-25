@@ -73,6 +73,7 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
     rootDir,
     command,
     commandArgs,
+    configFile: ['ice.config.(js|ts|mjs|mts|cjs|cts)'],
     extendsPluginAPI: {
       generator: generatorAPI,
       watch: {
