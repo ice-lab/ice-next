@@ -19,11 +19,11 @@ export default {
   ],
   testEnvironment: 'node',
   transform: {
-    '^.+\\.jsx?$': 'babel-jest',
-    '^.+\\.tsx?$': 'ts-jest',
+    '\\.jsx?$': 'babel-jest',
+    '\\.tsx?$': 'ts-jest',
   },
   transformIgnorePatterns: [
-    '/node_modules/(?!(esbuild-style-plugin)/)',
+    'node_module/(?!(esbuild-style-plugin)/)',
   ],
   roots: [
     '<rootDir>/packages',

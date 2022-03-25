@@ -27,6 +27,8 @@
   "homepage": "https://next.ice.work",
   "devDependencies": {
     "@applint/spec": "^1.0.1",
+    "@babel/core": "^7.17.8",
+    "@babel/preset-env": "^7.16.11",
     "@commitlint/cli": "^16.1.0",
     "@types/eslint": "^8.4.1",
     "@types/fs-extra": "^9.0.13",
