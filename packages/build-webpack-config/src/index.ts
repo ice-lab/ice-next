@@ -6,9 +6,9 @@ import MiniCssExtractPlugin from '@builder/pack/deps/mini-css-extract-plugin/cjs
 import CssMinimizerPlugin from '@builder/pack/deps/css-minimizer-webpack-plugin/cjs.js';
 import safeParser from '@builder/pack/deps/postcss-safe-parser/safe-parse.js';
 import TerserPlugin from '@builder/pack/deps/terser-webpack-plugin/cjs.js';
-import type { LoaderContext } from 'webpack';
-import webpack, { type Configuration } from 'webpack';
+import webpack from 'webpack';
 import postcss from 'postcss';
+import type { LoaderContext, Configuration } from 'webpack';
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
 import type { Config } from '@ice/types';
 import type { CommandArgs } from 'build-scripts';
