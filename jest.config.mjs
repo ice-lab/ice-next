@@ -23,7 +23,7 @@ export default {
     '\\.tsx?$': 'ts-jest',
   },
   transformIgnorePatterns: [
-    'node_modules/.pnpm/esbuild-style-plugin@1.3.0/node_modules/(?!(esbuild-style-plugin)/)/dist/index.js',
+    'node_modules/(?!(esbuild-style-plugin)/)',
   ],
   roots: [
     '<rootDir>/packages',
