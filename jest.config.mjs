@@ -22,6 +22,9 @@ export default {
     '^.+\\.jsx?$': 'babel-jest',
     '^.+\\.tsx?$': 'ts-jest',
   },
+  transformIgnorePatterns: [
+    '/node_modules/(?!(esbuild-style-plugin)/)',
+  ],
   roots: [
     '<rootDir>/packages',
     '<rootDir>/tests',
@@ -30,10 +33,13 @@ export default {
     '/node_modules/',
     '/esm/',
     'create-cli-utils/',
-    '/tests/fixtures/'
+    '/tests/fixtures/',
   ],
   extensionsToTreatAsEsm: ['.ts'],
-  testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
+  testMatch: [
+    '**/__tests__/**/*.[jt]s?(x)',
+    '**/?(*.)+(spec|test).[jt]s?(x)',
+  ],
   globals: {
     'ts-jest': {
       // For ts-jest use rootDir's tsconfig.json, while unable to resolve references.
