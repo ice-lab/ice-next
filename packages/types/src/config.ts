@@ -8,8 +8,7 @@ interface ConfigurationCtx extends Omit<Config, 'webpack'> {
   hashKey: string;
 }
 
-interface Experimental extends Pick<Configuration, 'experiments'> {
-}
+type Experimental = Pick<Configuration, 'experiments'>;
 
 export type ModifyWebpackConfig = (config: Configuration, ctx: ConfigurationCtx) => Configuration;
 
