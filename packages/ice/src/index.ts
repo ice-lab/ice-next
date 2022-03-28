@@ -11,9 +11,9 @@ import createWatch from './service/watchSource.js';
 import start from './commands/start.js';
 import build from './commands/build.js';
 import getContextConfig from './utils/getContextConfig.js';
-import { generateRoutesRenderData } from './routes.js';
 import { getAppConfig } from './analyzeRuntime.js';
 import { defineRuntimeEnv, updateRuntimeEnv } from './utils/runtimeEnv.js';
+import { generateRoutesInfo } from './routes.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -28,14 +28,16 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
   const { addWatchEvent, removeWatchEvent } = createWatch(path.join(rootDir, 'src'), command);
   const srcDir = path.join(rootDir, 'src');
   const tmpDirName = '.ice';
+  const tmpDir = path.join(rootDir, tmpDirName);
 
-  const { routeManifest, ...routesRenderData } = generateRoutesRenderData(rootDir);
+  const { routeManifest, routes, routesStr } = generateRoutesInfo(rootDir);
   const generator = new Generator({
     rootDir,
     targetDir: tmpDirName,
     // TODO get default Data
     defaultRenderData: {
-      ...routesRenderData,
+      routesStr,
+      routes,
     },
   });
 
@@ -48,11 +50,16 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
     (eventName) => {
       if (eventName === 'add' || eventName === 'unlink') {
         // TODO: only watch src/layout.tsx and src/pages/**
-        const routesRenderData = generateRoutesRenderData(rootDir);
+        const { routes, routesStr } = generateRoutesInfo(rootDir);
         generator.renderFile(
           path.join(templatePath, 'routes.ts.ejs'),
-          path.join(rootDir, tmpDirName, 'routes.ts'),
-          { ...routesRenderData },
+          path.join(tmpDir, 'routes.ts'),
+          { routesStr },
+        );
+        generator.renderFile(
+          path.join(templatePath, 'route-manifest.json.ejs'),
+          path.join(tmpDir, 'route-manifest.json'),
+          { routes },
         );
       }
     },
