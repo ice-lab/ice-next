@@ -24,7 +24,7 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption }) =>
   const routeManifest = path.join(rootDir, '.ice/route-manifest.json');
   const serverEntry = path.join(outputDir, 'server/entry.mjs');
 
-  onHook(`after.${command as 'start' | 'build'}.compile`, async ({ esbuildCompile }) => {
+  onHook(`before.${command as 'start' | 'build'}.run`, async ({ esbuildCompile }) => {
     serverCompiler = async () => {
       await esbuildCompile({
         entryPoints: [path.join(rootDir, '.ice/entry.server')],
@@ -38,16 +38,15 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption }) =>
       // timestamp for disable import cache
       return `${serverEntry}?version=${new Date().getTime()}`;
     };
+  });
 
+  onHook('after.build.compile', async () => {
     await serverCompiler();
-
-    if (command === 'build') {
-      await generateHtml({
-        outDir: outputDir,
-        entry: serverEntry,
-        routeManifest,
-      });
-    }
+    await generateHtml({
+      outDir: outputDir,
+      entry: serverEntry,
+      routeManifest,
+    });
   });
 
   onHook('after.start.compile', ({ urls, stats, messages }) => {
