@@ -16,62 +16,37 @@ const cliOptions = [
 
 const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, registerUserConfig }) => {
   const { command, rootDir, commandArgs } = context;
-  const outputDir = path.join(rootDir, 'build');
   const mode = command === 'start' ? 'development' : 'production';
-  // TODO: get from routeManifest
-  const routeManifest = {
-    '/': '/src/pages/index',
-    '/about': '/src/pages/about',
-    '/home': '/src/pages/home',
-  };
 
-  registerTask('web', {
-    mode,
-    outputDir,
-    alias: {
-      ice: path.join(rootDir, '.ice', 'index.ts'),
-      '@': path.join(rootDir, 'src'),
-    },
-    middlewares: (middlewares, devServer) => {
-      if (!devServer) {
-        throw new Error('webpack-dev-server is not defined');
-      }
-      middlewares.push({
-        name: 'document-render-server',
-        middleware: setupRenderServer({
-          entry: path.resolve(outputDir, 'server/entry.mjs'),
-          routeManifest,
-        }),
-      });
+  let serverCompiler = async () => '';
 
-      return middlewares;
-    },
+  const outputDir = path.join(rootDir, 'build');
+  const routeManifest = path.join(rootDir, '.ice/route-manifest.json');
+  const serverEntry = path.join(outputDir, 'server/entry.mjs');
+
+  onHook(`before.${command as 'start' | 'build'}.run`, async ({ esbuildCompile }) => {
+    serverCompiler = async () => {
+      await esbuildCompile({
+        entryPoints: [path.join(rootDir, '.ice/entry.server')],
+        outdir: path.join(outputDir, 'server'),
+        // platform: 'node',
+        format: 'esm',
+        outExtension: { '.js': '.mjs' },
+        // FIXME: https://github.com/ice-lab/ice-next/issues/27
+        external: process.env.JEST_TEST === 'true' ? [] : ['./node_modules/*', 'react'],
+      }, { isServer: true });
+      // timestamp for disable import cache
+      return `${serverEntry}?version=${new Date().getTime()}`;
+    };
   });
-  registerCliOption(cliOptions);
-  // @ts-expect-error remove me when build-script fix type error
-  registerUserConfig(userConfig);
 
-  onHook(`before.${command as 'start' | 'build'}.run`, async ({ esbuildCompile, taskConfig }) => {
-    const outDir = taskConfig.outputDir;
-    // TODO: watch file changes and rebuild
-    await esbuildCompile({
-      entryPoints: [path.join(rootDir, '.ice/entry.server')],
-      outdir: path.join(outDir, 'server'),
-      // platform: 'node',
-      format: 'esm',
-      define: {
-        this: undefined,
-      },
-      outExtension: { '.js': '.mjs' },
-      // FIXME: https://github.com/ice-lab/ice-next/issues/27
-      external: process.env.JEST_TEST === 'true' ? [] : ['./node_modules/*', 'react'],
-    }, { isServer: true });
-
-    if (command === 'build') {
-      // generator html to outputDir
-      const entryPath = path.resolve(outDir, 'server/entry.mjs');
-      await generateHtml(entryPath, outDir, routeManifest);
-    }
+  onHook('after.build.compile', async () => {
+    await serverCompiler();
+    await generateHtml({
+      outDir: outputDir,
+      entry: serverEntry,
+      routeManifest,
+    });
   });
 
   onHook('after.start.compile', ({ urls, stats, messages }) => {
@@ -103,10 +78,40 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, regi
   });
 
   if (!commandArgs.disableOpen) {
-    onHook('after.start.devServer', ({ urls }: any) => {
-      openBrowser(urls.localUrlForBrowser);
+    // assets manifest will generate after client compile
+    onHook('after.start.compile', ({ urls, isFirstCompile }: any) => {
+      if (isFirstCompile) {
+        openBrowser(urls.localUrlForBrowser);
+      }
     });
   }
+
+  registerCliOption(cliOptions);
+  // @ts-expect-error remove me when build-script fix type error
+  registerUserConfig(userConfig);
+  registerTask('web', {
+    mode,
+    outputDir,
+    alias: {
+      ice: path.join(rootDir, '.ice', 'index.ts'),
+      '@': path.join(rootDir, 'src'),
+    },
+    middlewares: (middlewares, devServer) => {
+      if (!devServer) {
+        throw new Error('webpack-dev-server is not defined');
+      }
+
+      middlewares.push({
+        name: 'document-render-server',
+        middleware: setupRenderServer({
+          serverCompiler,
+          routeManifest,
+        }),
+      });
+
+      return middlewares;
+    },
+   });
 };
 
 export default plugin;

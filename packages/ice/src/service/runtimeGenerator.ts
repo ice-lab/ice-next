@@ -24,6 +24,7 @@ import type {
   RenderData,
   ExportData,
   Registration,
+  TemplateOptions,
 } from '@ice/types/esm/generator.js';
 import getRuntimeModules from '../utils/getRuntimeModules.js';
 import formatPath from '../utils/formatPath.js';
@@ -31,6 +32,13 @@ import formatPath from '../utils/formatPath.js';
 const { debounce } = lodash;
 
 const RENDER_WAIT = 150;
+
+interface Options {
+  rootDir: string;
+  targetDir: string;
+  defaultRenderData: RenderData;
+  templates?: (string | TemplateOptions)[];
+}
 
 export function generateExports(exportList: ExportData[]) {
   const importStatements = [];
@@ -105,7 +113,8 @@ export default class Generator {
 
   private plugins: any[];
 
-  public constructor({ rootDir, targetDir, defaultRenderData }) {
+  public constructor(options: Options) {
+    const { rootDir, targetDir, defaultRenderData, templates } = options;
     this.rootDir = rootDir;
     this.targetDir = targetDir;
     this.renderData = defaultRenderData;
@@ -119,6 +128,10 @@ export default class Generator {
     this.plugins = [];
     // empty .ice before render
     fse.emptyDirSync(path.join(rootDir, targetDir));
+    // add initial templates
+    if (templates) {
+      templates.forEach(template => this.addTemplateFiles(template));
+    }
   }
 
   public setPlugins: SetPlugins = (plugins) => {
@@ -261,7 +274,9 @@ export default class Generator {
   public renderFile: RenderFile = (templatePath, targetPath, extraData = {}) => {
     const renderExt = '.ejs';
     const realTargetPath = path.isAbsolute(targetPath) ? targetPath : path.join(this.rootDir, targetPath);
-    if (path.extname(templatePath) === '.ejs') {
+    // example: templatePath = 'routes.ts.ejs'
+    const { name, ext } = path.parse(templatePath);
+    if (ext === renderExt) {
       const templateContent = fse.readFileSync(templatePath, 'utf-8');
       let renderData = { ...this.renderData };
       if (typeof extraData === 'function') {
@@ -273,15 +288,19 @@ export default class Generator {
         };
       }
       let content = ejs.render(templateContent, renderData);
-      try {
-        content = prettier.format(content, {
-          parser: 'typescript',
-          singleQuote: true,
-        });
-      } catch (error) {
-        if (this.showPrettierError) {
-          consola.warn(`Prettier format error: ${error.message}`);
-          this.showPrettierError = false;
+      // example: name = 'routes.ts'
+      const realExtname = path.extname(name);
+      if (realExtname === '.ts' || realExtname === '.tsx') {
+        try {
+          content = prettier.format(content, {
+            parser: 'typescript',
+            singleQuote: true,
+          });
+        } catch (error) {
+          if (this.showPrettierError) {
+            consola.warn(`Prettier format error: ${error.message}`);
+            this.showPrettierError = false;
+          }
         }
       }
       fse.writeFileSync(realTargetPath.replace(renderExt, ''), content, 'utf-8');

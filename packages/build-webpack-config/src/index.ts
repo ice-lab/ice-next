@@ -11,9 +11,11 @@ import type { Config } from '@ice/types';
 import type { CommandArgs } from 'build-scripts';
 import { createUnplugin } from 'unplugin';
 import browserslist from 'browserslist';
-import getTransformPlugins from './plugins/index.js';
 import configAssets from './config/assets.js';
 import configCss from './config/css.js';
+import { getRuntimeEnvironment } from './clientEnv.js';
+import AssetsManifestPlugin from './webpackPlugins/AssetsManifestPlugin.js';
+import getTransformPlugins from './unPlugins/index.js';
 
 const require = createRequire(import.meta.url);
 
@@ -66,22 +68,29 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
   const dev = mode !== 'production';
   const supportedBrowsers = getSupportedBrowsers(rootDir, dev);
   const hashKey = hash === true ? 'hash:8' : (hash || '');
-  const defineVariables = {
+  // formate alias
+  const aliasWithRoot = {};
+  Object.keys(alias).forEach((key) => {
+    aliasWithRoot[key] = alias[key].startsWith('.') ? path.join(rootDir, alias[key]) : alias[key];
+  });
+
+  const defineStaticVariables = {
     ...define || {},
     'process.env.NODE_ENV': mode || 'development',
     'process.env.SERVER_PORT': commandArgs.port,
   };
   // formate define variables
-  Object.keys(defineVariables).forEach((key) => {
-    defineVariables[key] = typeof defineVariables[key] === 'boolean'
-      ? defineVariables[key]
-      : JSON.stringify(defineVariables[key]);
+  Object.keys(defineStaticVariables).forEach((key) => {
+    defineStaticVariables[key] = typeof defineStaticVariables[key] === 'boolean'
+      ? defineStaticVariables[key]
+      : JSON.stringify(defineStaticVariables[key]);
   });
-
-  // formate alias
-  const aliasWithRoot = {};
-  Object.keys(alias).forEach((key) => {
-    aliasWithRoot[key] = alias[key].startsWith('.') ? path.join(rootDir, alias[key]) : alias[key];
+  const runtimeEnv = getRuntimeEnvironment();
+  const defineRuntimeVariables = {};
+  Object.keys(runtimeEnv).forEach((key) => {
+    const runtimeValue = runtimeEnv[key];
+    // set true to flag the module as uncacheable
+    defineRuntimeVariables[key] = webpack.DefinePlugin.runtimeValue(runtimeValue, true);
   });
 
   // create plugins
@@ -151,6 +160,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
       },
     },
     watchOptions: {
+      // add a delay before rebuilding once routes changed webpack can not found routes component after it is been deleted
+      aggregateTimeout: 200,
       ignored: watchIgnoredRegexp,
     },
     optimization: {
@@ -181,8 +192,15 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
     devtool: getDevtoolValue(sourceMap),
     plugins: [
        ...webpackPlugins,
-      new webpack.DefinePlugin(defineVariables),
       dev && new ReactRefreshWebpackPlugin(),
+      new webpack.DefinePlugin({
+        ...defineStaticVariables,
+        ...defineRuntimeVariables,
+      }),
+      new AssetsManifestPlugin({
+        fileName: 'assets-manifest.json',
+        outputDir: path.join(rootDir, '.ice'),
+      }),
     ].filter(Boolean),
     devServer: {
       allowedHosts: 'all',
