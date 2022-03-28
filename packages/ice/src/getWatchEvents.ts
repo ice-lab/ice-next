@@ -38,7 +38,7 @@ const getWatchEvents = (options: Options): WatchEvent[] => {
     },
   ];
   const watchGlobalStyle: WatchEvent = [
-    /src\/global.(scss|less|styl|css)/,
+    /src\/global.(scss|less|css)/,
     (event: string, filePath: string) => {
       if (event === 'unlink' || event === 'add') {
         consola.debug('[event]', `style '${filePath}': ${event}`);
