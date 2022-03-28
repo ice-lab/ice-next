@@ -13,12 +13,15 @@ import type {
   SetRender,
   WrapperPageComponent,
   GetWrapperPageRegistration,
+  AppRouterProps,
 } from './types.js';
+import DefaultAppRouter from './AppRouter.js';
+import { usePageContext } from './PageContext.js';
 
 class Runtime {
   private appContext: AppContext;
 
-  private AppRouter: ComponentType;
+  private AppRouter: ComponentType<AppRouterProps>;
 
   private AppProvider: ComponentType[];
 
@@ -30,13 +33,17 @@ class Runtime {
     this.AppProvider = [];
     this.appContext = appContext;
     this.render = ReactDOM.render;
-    this.AppRouter = null;
+    this.AppRouter = DefaultAppRouter;
     this.wrapperPageRegistration = [];
   }
 
   public getAppContext = () => this.appContext;
 
-  public getRender = () => this.render;
+  public getRender = () => {
+    // TODO: set ssr by process env
+    const isSSR = true;
+    return isSSR ? ReactDOM.hydrate : this.render;
+  };
 
   public getAppRouter = () => this.AppRouter;
 
@@ -47,6 +54,7 @@ class Runtime {
       wrapperPageComponent: this.wrapperPageComponent,
       appContext: this.appContext,
       setAppRouter: this.setAppRouter,
+      usePageContext,
     };
 
     const runtimeModule = (module as CommonJsRuntime).default || module as RuntimePlugin;
@@ -83,7 +91,7 @@ class Runtime {
   };
 
   // for plugin-icestark
-  private setAppRouter: SetAppRouter = (AppRouter) => {
+  public setAppRouter: SetAppRouter = (AppRouter) => {
     this.AppRouter = AppRouter;
   };
 }

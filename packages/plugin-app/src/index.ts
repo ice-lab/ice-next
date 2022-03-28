@@ -19,38 +19,38 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, watc
 
   registerCliOption(cliOptions);
 
-  // TODO: get from routeManifest
-  const routeManifest = {
-    '/': '/src/pages/index',
-    '/about': '/src/pages/about',
-    '/home': '/src/pages/home',
-  };
   let cache = new Map();
   let serverCompiler = async () => '';
 
-  onHook(`before.${command as 'start' | 'build'}.run`, async ({ esbuildCompile, taskConfig }) => {
-    const outDir = taskConfig.outputDir;
+  const outputDir = path.join(rootDir, 'build');
+  const routeManifest = path.join(rootDir, '.ice/route-manifest.json');
+  const serverEntry = path.join(outputDir, 'server/entry.mjs');
+
+  onHook(`before.${command as 'start' | 'build'}.compile`, async ({ esbuildCompile, taskConfig }) => {
     serverCompiler = async () => {
       // timestamp for disable import cache
       cache.set('version', new Date().getTime());
-      const serverDir = path.join(outDir, 'server');
+      const serverDir = path.join(outputDir, 'server');
       await esbuildCompile({
         entryPoints: [path.join(rootDir, '.ice/entry.server')],
-        outdir: path.join(outDir, 'server'),
+        outdir: path.join(outputDir, 'server'),
         // platform: 'node',
         format: 'esm',
         outExtension: { '.js': '.mjs' },
         // FIXME: https://github.com/ice-lab/ice-next/issues/27
         external: process.env.JEST_TEST === 'true' ? [] : ['./node_modules/*', 'react'],
       }, { isServer: true });
-      const serverEntry = `${path.join(serverDir, 'entry.mjs')}?version=${new Date().getTime() || 0}`;
-      return serverEntry;
+      return `${serverEntry}?version=${new Date().getTime() || 0}`;
     };
 
+    await serverCompiler();
+
     if (command === 'build') {
-      // generator html to outputDir
-      const entryPath = await serverCompiler();
-      await generateHtml(entryPath, outDir, routeManifest);
+      await generateHtml({
+        outDir: outputDir,
+        entry: serverEntry,
+        routeManifest,
+      });
     }
   });
 
@@ -83,12 +83,14 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, watc
   });
 
   if (!commandArgs.disableOpen) {
-    onHook('after.start.devServer', ({ urls }: any) => {
-      openBrowser(urls.localUrlForBrowser);
+    // assets manifest will generate after client compile
+    onHook('after.start.compile', ({ urls, isFirstCompile }: any) => {
+      if (isFirstCompile) {
+        openBrowser(urls.localUrlForBrowser);
+      }
     });
   }
 
-  const outputDir = path.join(rootDir, 'build');
   registerTask('web', {
     mode,
     outputDir,

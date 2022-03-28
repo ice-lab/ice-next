@@ -11,8 +11,8 @@ import createWatch from './service/watchSource.js';
 import start from './commands/start.js';
 import build from './commands/build.js';
 import getContextConfig from './utils/getContextConfig.js';
-import { generateRoutesRenderData } from './routes.js';
 import getWatchEvents from './getWatchEvents.js';
+import { generateRoutesInfo } from './routes.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -29,9 +29,8 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
   const templateDir = path.join(__dirname, '../template/');
   const dataCache = new Map<string, string>();
 
-  const routesRenderData = generateRoutesRenderData(rootDir);
+  const routesRenderData = generateRoutesInfo(rootDir);
   dataCache.set('routes', JSON.stringify(routesRenderData));
-
   const generator = new Generator({
     rootDir,
     targetDir,
