@@ -1,1 +1,3 @@
-export default {};
+import { defineUserConfig } from '@ice/cli';
+
+export default defineUserConfig({});
