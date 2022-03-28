@@ -13,24 +13,19 @@ const cliOptions = [
   },
 ];
 
-const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, watch }) => {
+const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption }) => {
   const { command, rootDir, commandArgs } = context;
   const mode = command === 'start' ? 'development' : 'production';
 
   registerCliOption(cliOptions);
-
-  let cache = new Map();
   let serverCompiler = async () => '';
 
   const outputDir = path.join(rootDir, 'build');
   const routeManifest = path.join(rootDir, '.ice/route-manifest.json');
   const serverEntry = path.join(outputDir, 'server/entry.mjs');
 
-  onHook(`before.${command as 'start' | 'build'}.compile`, async ({ esbuildCompile, taskConfig }) => {
+  onHook(`before.${command as 'start' | 'build'}.compile`, async ({ esbuildCompile }) => {
     serverCompiler = async () => {
-      // timestamp for disable import cache
-      cache.set('version', new Date().getTime());
-      const serverDir = path.join(outputDir, 'server');
       await esbuildCompile({
         entryPoints: [path.join(rootDir, '.ice/entry.server')],
         outdir: path.join(outputDir, 'server'),
@@ -40,7 +35,8 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, watc
         // FIXME: https://github.com/ice-lab/ice-next/issues/27
         external: process.env.JEST_TEST === 'true' ? [] : ['./node_modules/*', 'react'],
       }, { isServer: true });
-      return `${serverEntry}?version=${new Date().getTime() || 0}`;
+      // timestamp for disable import cache
+      return `${serverEntry}?version=${new Date().getTime()}`;
     };
 
     await serverCompiler();
