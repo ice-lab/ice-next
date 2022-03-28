@@ -1,0 +1,144 @@
+import * as path from 'path';
+import fse from 'fs-extra';
+import temp from 'temp';
+import cssModules from 'postcss-modules';
+import less from 'less';
+import sass from 'sass';
+import postcss from 'postcss';
+import type { Plugin, PluginBuild, OnResolveArgs, OnResolveResult, OnLoadArgs, OnLoadResult } from 'esbuild';
+
+const styleFilter = /.\.(css|sass|scss|less)$/;
+const CSS_LOADER_NAMESPACE = 'css-loader-namespace';
+const STYLE_HANDLER_NAMESPACE = 'style-handler-namespace';
+
+type GenerateScopedNameFunction = (
+  name: string,
+  filename: string,
+  css: string
+) => string;
+
+interface PluginOptions {
+  extract?: false;
+  modules?: {
+    /** whether enable CSS Modules or not */
+    auto?: (path: string) => boolean;
+    localIdentName?: string;
+    generateLocalIndentName?: GenerateScopedNameFunction;
+  };
+}
+
+interface CSSModulesOptions {
+    generateScopedName?: string | GenerateScopedNameFunction;
+}
+
+const stylePlugin = (options: PluginOptions): Plugin => {
+  return {
+    name: 'esbuild-style',
+    setup: async (build: PluginBuild) => {
+      build.onResolve({ filter: styleFilter }, onResolve);
+
+      build.onLoad({ filter: /.*/, namespace: CSS_LOADER_NAMESPACE }, onCSSLoad);
+
+      build.onLoad({ filter: /.*/, namespace: STYLE_HANDLER_NAMESPACE }, onStyleLoad(options));
+    },
+  };
+};
+
+async function onResolve(args: OnResolveArgs): Promise<OnResolveResult> {
+  const { namespace, resolveDir } = args;
+  const absolutePath = path.resolve(resolveDir, args.path);
+  if (namespace === STYLE_HANDLER_NAMESPACE) {
+    return {
+      path: absolutePath,
+      namespace: CSS_LOADER_NAMESPACE,
+    };
+  }
+  return {
+    path: absolutePath,
+    namespace: STYLE_HANDLER_NAMESPACE,
+  };
+}
+
+async function onCSSLoad(args: OnLoadArgs): Promise<OnLoadResult> {
+  const data = (await fse.readFile(args.path)).toString();
+  return {
+    contents: data,
+    loader: 'css',
+  };
+}
+
+function onStyleLoad(options: PluginOptions) {
+  return async function (args: OnLoadArgs): Promise<OnLoadResult> {
+  const extract = options.extract === undefined ? true : options.extract;
+  const cssModule = (options.modules && options.modules.auto) ? options.modules.auto(args.path) : false;
+
+  let css = await renderStyle(args.path);
+
+  const plugins = [];
+  const data = { exportedClasses: '' };
+  let injectMapping = false;
+  let contents = '';
+
+  if (cssModule) {
+    const { modules: { localIdentName = '[hash:base64]', generateLocalIndentName } } = options;
+    const cssModulesOptions: CSSModulesOptions = {
+      generateScopedName: generateLocalIndentName || localIdentName,
+    };
+    plugins.push(handleCSSModules(data, cssModulesOptions));
+    injectMapping = true;
+  }
+
+  if (plugins.length > 0) {
+    const result = await postcss(plugins).process(css, { from: args.path });
+    css = result.css;
+
+    if (injectMapping) {
+      contents += `export default ${data.exportedClasses};`;
+    }
+  }
+
+  if (extract) {
+    const writestream = temp.createWriteStream({ suffix: '.css' });
+    writestream.write(css);
+    writestream.end();
+
+    // Inject import "new url path" so esbuild can resolve a new css file
+    contents += `import ${JSON.stringify(writestream.path)};`;
+  }
+
+  return {
+    resolveDir: path.dirname(args.path),
+    contents,
+  };
+  };
+}
+
+function handleCSSModules(data, options: CSSModulesOptions) {
+  return cssModules({
+    ...options,
+    getJSON: (cssFilename, json) => {
+      // Save exported classes
+      data.exportedClasses = JSON.stringify(json, null, 2);
+    },
+  });
+}
+
+async function renderStyle(filePath: string) {
+  const { ext } = path.parse(filePath);
+  const content = (await fse.readFile(filePath)).toString();
+  if (ext === '.css') {
+    return content;
+  }
+
+  if (ext === '.scss') {
+    return (await sass.compileStringAsync(content)).css;
+  }
+
+  if (ext === '.less') {
+    return (await less.render(content)).css;
+  }
+
+  throw new Error(`Can't render the style '${ext}'.`);
+}
+
+export default stylePlugin;
