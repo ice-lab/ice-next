@@ -4,8 +4,9 @@ import type { Navigator } from 'react-router-dom';
 import AppErrorBoundary from './AppErrorBoundary.js';
 import { AppContextProvider } from './AppContext.js';
 import type Runtime from './runtime.js';
-import { createRoutes } from './routes.js';
+import { createRoutes, matchRoutes } from './routes.js';
 import { createTransitionManager } from './transition.js';
+import type { RouteItem, RouteModules } from './types.js';
 
 interface Props {
   runtime: Runtime;
@@ -37,6 +38,8 @@ export default function App(props: Props) {
     [originRoutes, routeModules, PageWrappers],
   );
 
+  const loadModules = shouldLoadModules(routes, historyLocation, routeModules);
+
   const [transitionManager] = useState(() => {
     return createTransitionManager({
       routes,
@@ -51,11 +54,11 @@ export default function App(props: Props) {
 
   useEffect(() => {
     const state = transitionManager.getState();
-    if (state.location === historyLocation) {
+    if (state.location === historyLocation || !loadModules) {
       return;
     }
     transitionManager.handleLoad(historyLocation);
-  }, [transitionManager, historyLocation]);
+  }, [transitionManager, historyLocation, loadModules]);
 
   // waiting for the location change in the transitionManager, the UI will rerender
   const { location, pageData } = transitionManager.getState();
@@ -68,7 +71,7 @@ export default function App(props: Props) {
     element = (
       <AppRouter
         action={action}
-        location={location}
+        location={loadModules ? location : historyLocation}
         navigator={navigator}
         static={staticProp}
         routes={routes}
@@ -91,4 +94,27 @@ export default function App(props: Props) {
       </AppErrorBoundary>
     </StrictMode>
   );
+}
+
+/**
+ * whether or not execute `transitionManager.handleLoad` function
+ */
+function shouldLoadModules(routes: RouteItem[], location: Location, routeModules: RouteModules) {
+  const matches = matchRoutes(routes, location);
+  const loadedModules = matches.filter(match => {
+    const { route: { id } } = match;
+    return routeModules[id];
+  });
+
+  if (loadedModules.length !== matches.length) {
+    // 1. the modules have not been loaded
+    return true;
+  }
+
+  return matches.some((match) => {
+    const { route: { id } } = match;
+    const { getInitialData } = routeModules[id];
+    // 2. if the page route has the getInitialData function, should load page data again
+    return !!getInitialData;
+  });
 }

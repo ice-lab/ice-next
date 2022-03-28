@@ -5,11 +5,12 @@ import styles from './index.module.css';
 
 export default function Home() {
   // const appContext = useAppContext();
-
   return (
     <>
       <h2 className={styles.title}>Home Page</h2>
       <Link to="/about">about</Link>
+      <br />
+      <Link to="/detail">detail</Link>
     </>
   );
 }
