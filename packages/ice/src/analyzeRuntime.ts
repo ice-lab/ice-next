@@ -13,17 +13,17 @@ interface Options {
 
 export const getAppConfig = async (options: Options): Promise<AppConfig> => {
   const { esbuildCompile, rootDir } = options;
-  const outfile = path.join(rootDir, 'node_modules', 'entry.js');
+  const outfile = path.join(rootDir, 'node_modules', 'entry.mjs');
   try {
     await esbuildCompile({
       // TODO: detect src/app if it is exists
       entryPoints: [path.join(rootDir, 'src/app')],
       outfile,
-      platform: 'node',
+      format: 'esm',
       external: ['./node_modules/*'],
     }, { isServer: true });
 
-    const appConfig = require(outfile).default;
+    const appConfig = (await import(outfile)).default;
     consola.debug('app config:', appConfig);
     return appConfig;
   } catch (err) {

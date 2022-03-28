@@ -1,3 +1,4 @@
+import { createSearchParams } from 'react-router-dom';
 import type { AppContext, InitialContext, AppConfig } from './types';
 
 const getInitialData = async (appConfig: AppConfig): Promise<AppContext['initialData']> => {
@@ -8,8 +9,7 @@ const getInitialData = async (appConfig: AppConfig): Promise<AppContext['initial
   } else if (appConfig?.app?.getInitialData) {
     const { href, origin, pathname, search } = window.location;
     const path = href.replace(origin, '');
-    // const query = queryString.parse(search);
-    const query = {};
+    const query = Object.fromEntries(createSearchParams(search));
     const ssrError = (window as any).__ICE_SSR_ERROR__;
     const initialContext: InitialContext = {
       pathname,
@@ -19,6 +19,7 @@ const getInitialData = async (appConfig: AppConfig): Promise<AppContext['initial
     };
     return await appConfig.app.getInitialData(initialContext);
   }
+  return null;
 };
 
 export default getInitialData;
