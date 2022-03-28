@@ -24,7 +24,7 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption }) =>
   const routeManifest = path.join(rootDir, '.ice/route-manifest.json');
   const serverEntry = path.join(outputDir, 'server/entry.mjs');
 
-  onHook(`before.${command as 'start' | 'build'}.compile`, async ({ esbuildCompile }) => {
+  onHook(`after.${command as 'start' | 'build'}.compile`, async ({ esbuildCompile }) => {
     serverCompiler = async () => {
       await esbuildCompile({
         entryPoints: [path.join(rootDir, '.ice/entry.server')],

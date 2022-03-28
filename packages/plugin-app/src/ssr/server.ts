@@ -3,7 +3,7 @@ import { matchRoutes } from 'react-router-dom';
 
 interface Options {
   routeManifest: string;
-  serverCompiler: () => Promise<string> | void;
+  serverCompiler: () => Promise<string>;
 }
 
 export function setupRenderServer(options: Options) {
