@@ -43,6 +43,7 @@
     "sass": "^1.49.9",
     "semver": "^7.3.5",
     "temp": "^0.9.4",
+    "webpack": "^5.69.1",
     "webpack-dev-server": "^4.7.4",
     "yargs-parser": "^21.0.0"
   },
@@ -54,7 +55,6 @@
     "@types/sass": "^1.43.1",
     "@types/temp": "^0.9.1",
     "chokidar": "^3.5.3",
-    "unplugin": "^0.3.2",
-    "webpack": "^5.0.0"
+    "unplugin": "^0.3.2"
   }
 }
