@@ -1,15 +1,13 @@
-import * as path from 'path';
 import { createHash } from 'crypto';
 import consola from 'consola';
-import fg from 'fast-glob';
 import esbuild from 'esbuild';
 import { createUnplugin } from 'unplugin';
 import type { UnpluginOptions } from 'unplugin';
 import type { Config } from '@ice/types';
 import type { EsbuildCompile } from '@ice/types/esm/plugin.js';
 import escapeLocalIdent from '../utils/escapeLocalIdent.js';
-import stylePlugin from '../plugins/stylePlugin.js';
-import { resolveId } from './analyze.js';
+import stylePlugin from '../plugins/style.js';
+import aliasPlugin from '../plugins/alias.js';
 
 export function createEsbuildCompiler(options: {
   alias?: Record<string, string>;
@@ -32,37 +30,14 @@ export function createEsbuildCompiler(options: {
         stylePlugin({
           modules: {
             auto: (filePath) => /\.module\.\w+$/i.test(filePath),
-            generateLocalIndentName: function (name: string, filename: string) {
+            generateLocalIdentName: function (name: string, filename: string) {
               const hash = createHash('md4');
               hash.update(Buffer.from(filename + name, 'utf8'));
               return escapeLocalIdent(`${name}--${hash.digest('base64').slice(0, 8)}`);
             },
           },
         }),
-        {
-          name: 'esbuild-alias',
-          setup(build) {
-            build.onResolve({ filter: /.*/ }, (args) => {
-              const id = args.path;
-              const resolved = resolveId(id, alias);
-              if (resolved && resolved !== id) {
-                if (!path.extname(resolved)) {
-                  const basename = path.basename(resolved);
-                  const patterns = [`${basename}.{js,ts,jsx,tsx}`, `${basename}/index.{js,ts,jsx,tsx}`];
-                  const absoluteId = fg.sync(patterns, {
-                    cwd: path.dirname(resolved),
-                    absolute: true,
-                  })[0];
-                  if (absoluteId) {
-                    return {
-                      path: absoluteId,
-                    };
-                  }
-                }
-              }
-            });
-          },
-        },
+        aliasPlugin({ alias }),
         ...transformPlugins.map(plugin => createUnplugin(() => plugin).esbuild()),
       ],
     });

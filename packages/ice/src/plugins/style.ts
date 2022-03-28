@@ -11,19 +11,18 @@ const styleFilter = /.\.(css|sass|scss|less)$/;
 const CSS_LOADER_NAMESPACE = 'css-loader-namespace';
 const STYLE_HANDLER_NAMESPACE = 'style-handler-namespace';
 
-type GenerateScopedNameFunction = (
-  name: string,
-  filename: string,
-  css: string
-) => string;
+type GenerateScopedNameFunction = (name: string, filename: string, css: string) => string;
 
 interface PluginOptions {
+  /** extract css files, default is true */
   extract?: false;
   modules?: {
-    /** whether enable CSS Modules or not */
+    /** enable CSS Modules */
     auto?: (path: string) => boolean;
+    /** css classname identifier default is `[hash:base64]` */
     localIdentName?: string;
-    generateLocalIndentName?: GenerateScopedNameFunction;
+    /** the function to generate css classname */
+    generateLocalIdentName?: GenerateScopedNameFunction;
   };
 }
 
@@ -80,9 +79,9 @@ function onStyleLoad(options: PluginOptions) {
   let contents = '';
 
   if (cssModule) {
-    const { modules: { localIdentName = '[hash:base64]', generateLocalIndentName } } = options;
+    const { modules: { localIdentName = '[hash:base64]', generateLocalIdentName } } = options;
     const cssModulesOptions: CSSModulesOptions = {
-      generateScopedName: generateLocalIndentName || localIdentName,
+      generateScopedName: generateLocalIdentName || localIdentName,
     };
     plugins.push(handleCSSModules(data, cssModulesOptions));
     injectMapping = true;
