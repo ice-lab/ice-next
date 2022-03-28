@@ -3,7 +3,7 @@ import type { Update } from 'history';
 import { createHashHistory, createBrowserHistory } from 'history';
 import Runtime from './runtime.js';
 import App from './App.js';
-import type { AppContext, InitialContext, AppConfig, RouteItem } from './types';
+import type { AppContext, AppConfig, RouteItem } from './types';
 import { loadRouteModules, loadPageData, matchRoutes } from './routes.js';
 import getInitialData from './getInitialData.js';
 

@@ -1,10 +1,7 @@
 import * as path from 'path';
-import { createRequire } from 'module';
 import consola from 'consola';
 import type { EsbuildCompile } from '@ice/types/esm/plugin.js';
 import type { AppConfig } from './utils/runtimeEnv.js';
-
-const require = createRequire(import.meta.url);
 
 interface Options {
   esbuildCompile: EsbuildCompile;
