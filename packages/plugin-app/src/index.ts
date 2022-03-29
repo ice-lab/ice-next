@@ -32,7 +32,7 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, regi
         format: 'esm',
         outExtension: { '.js': '.mjs' },
         plugins: [{
-          name: 'esbuild-alias',
+          name: 'esbuild-external',
           setup(build) {
             build.onResolve({ filter: /.*/ }, (args) => {
               const id = args.path;
