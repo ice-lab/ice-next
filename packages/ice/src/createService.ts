@@ -26,9 +26,9 @@ interface CreateServiceOptions {
 }
 
 async function createService({ rootDir, command, commandArgs, getBuiltInPlugins }: CreateServiceOptions) {
-  const srcDir = path.join(rootDir, 'src');
   const targetDir = '.ice';
   const templateDir = path.join(__dirname, '../template/');
+  const configFile = 'ice.config.(mts|mjs|ts|js|cjs)';
   const dataCache = new Map<string, string>();
 
   const routesRenderData = generateRoutesInfo(rootDir);
@@ -45,13 +45,14 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
   });
 
   const { addWatchEvent, removeWatchEvent } = createWatch({
-    watchDir: srcDir,
+    watchDir: rootDir,
     command,
     watchEvents: getWatchEvents({
       generator,
       rootDir,
       targetDir,
       templateDir,
+      configFile,
       cache: dataCache,
     }),
   });
@@ -73,7 +74,7 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
     rootDir,
     command,
     commandArgs,
-    configFile: ['ice.config.(mts|mjs|ts|js|cjs)'],
+    configFile,
     extendsPluginAPI: {
       generator: generatorAPI,
       watch: {

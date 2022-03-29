@@ -1,3 +1,5 @@
 import { defineUserConfig } from '@ice/cli';
 
-export default defineUserConfig({});
+export default defineUserConfig({
+  publicPath: '/',
+});
