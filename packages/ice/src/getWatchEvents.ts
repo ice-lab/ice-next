@@ -52,7 +52,7 @@ const getWatchEvents = (options: Options): WatchEvent[] => {
     new RegExp(configFile),
     (event: string, filePath: string) => {
       if (event === 'change') {
-        consola.warn(`Found a change in ${path.basename(filePath)}.Restart the dev server to see the changes in effect.`);
+        consola.warn(`Found a change in ${path.basename(filePath)}. Restart the dev server to see the changes in effect.`);
       }
     },
   ];
