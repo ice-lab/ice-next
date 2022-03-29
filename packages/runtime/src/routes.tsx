@@ -143,7 +143,7 @@ export function matchRoutes(
 /**
  * whether or not execute `handleLoad` function in transition manager
  */
-export function shouldLoadModules(routes: RouteItem[], location: Location, routeModules: RouteModules) {
+export function checkModulesNeedToBeLoaded(routes: RouteItem[], location: Location, routeModules: RouteModules) {
   const matches = matchRoutes(routes, location);
   const loadedModules = matches.filter(match => {
     const { route: { id } } = match;

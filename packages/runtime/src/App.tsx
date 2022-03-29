@@ -4,7 +4,7 @@ import type { Navigator } from 'react-router-dom';
 import AppErrorBoundary from './AppErrorBoundary.js';
 import { AppContextProvider } from './AppContext.js';
 import type Runtime from './runtime.js';
-import { createRoutes, shouldLoadModules } from './routes.js';
+import { createRoutes, checkModulesNeedToBeLoaded } from './routes.js';
 import { createTransitionManager } from './transition.js';
 
 interface Props {
@@ -37,7 +37,10 @@ export default function App(props: Props) {
     [originRoutes, routeModules, PageWrappers],
   );
 
-  const loadModules = shouldLoadModules(routes, historyLocation, routeModules);
+  const shouldLoadModules = useMemo(
+    () => checkModulesNeedToBeLoaded(routes, historyLocation, routeModules),
+    [routes, historyLocation, routeModules],
+  );
 
   const [transitionManager] = useState(() => {
     return createTransitionManager({
@@ -53,11 +56,11 @@ export default function App(props: Props) {
 
   useEffect(() => {
     const state = transitionManager.getState();
-    if (state.location === historyLocation || !loadModules) {
+    if (state.location === historyLocation || !shouldLoadModules) {
       return;
     }
     transitionManager.handleLoad(historyLocation);
-  }, [transitionManager, historyLocation, loadModules]);
+  }, [transitionManager, historyLocation, shouldLoadModules]);
 
   // waiting for the location change in the transitionManager, the UI will rerender
   const { location, pageData } = transitionManager.getState();
@@ -70,7 +73,7 @@ export default function App(props: Props) {
     element = (
       <AppRouter
         action={action}
-        location={loadModules ? location : historyLocation}
+        location={shouldLoadModules ? location : historyLocation}
         navigator={navigator}
         static={staticProp}
         routes={routes}
