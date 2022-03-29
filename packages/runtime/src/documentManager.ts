@@ -1,3 +1,6 @@
+/**
+ * update page config to document
+ */
 export async function updatePageConfig(pageConfig) {
   const {
     title,
@@ -14,6 +17,9 @@ export async function updatePageConfig(pageConfig) {
   await loadScript(scripts);
 }
 
+/**
+ * find meta by 'next-meta-count' and update it
+ */
 function updateMeta(meta): void {
   const headEl = document.getElementsByTagName('head')[0];
   const headCountEl: HTMLMetaElement = headEl.querySelector(
@@ -51,6 +57,9 @@ const DOMAttributeNames: Record<string, string> = {
   noModule: 'noModule',
 };
 
+/**
+ * map element props to dom
+ */
 function reactElementToDOM(type, props): HTMLElement {
   const el: HTMLElement = document.createElement(type);
   for (const p in props) {
