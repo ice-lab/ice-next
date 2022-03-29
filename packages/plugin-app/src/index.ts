@@ -36,10 +36,8 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, regi
           setup(build) {
             build.onResolve({ filter: /.*/ }, (args) => {
               const id = args.path;
-              // 1. external ids which is third-party dependencies
-              // 2. make sure external @ice/runtime otherwise module can not found in pnpm mode,
-              //    such as react-router which is depended by @ice/runtime
-              if (id[0] !== '.' && !path.isAbsolute(id) || id.startsWith('@ice/runtime')) {
+              // external ids which is third-party dependencies
+              if (id[0] !== '.' && !path.isAbsolute(id)) {
                 return {
                   external: true,
                 };
