@@ -2,6 +2,7 @@
 import type { Location } from 'history';
 import { loadRouteModules, loadPageData, matchRoutes } from './routes.js';
 import type { PageData, RouteItem, RouteModules } from './types';
+import { updatePageConfig } from './documentManager.js';
 
 interface TransitionState {
   location: Location;
@@ -40,11 +41,12 @@ export function createTransitionManager(options: TransitionOptions) {
 
     const routeModules = await loadRouteModules(matches.map(match => match.route as RouteItem));
     const pageData = await loadPageData(matches, routeModules, {});
+    await updatePageConfig(pageData.pageConfig);
 
     update({
       location,
       pageData,
-     });
+    });
   }
 
   return {

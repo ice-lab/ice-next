@@ -25,7 +25,11 @@ export function Meta() {
 
   return (
     <>
-      {meta.map(([name, value]) => <meta key={name} name={name} content={value} />)}
+      {meta.map(item => <meta key={item.name} {...item} />)}
+      <meta
+        name="next-meta-count"
+        content={meta.length.toString()}
+      />
     </>
   );
 }
@@ -52,7 +56,7 @@ export function Links() {
       {
         blockLinks.map(link => {
           const { block, ...props } = link;
-          return <script key={link.href} {...props} />;
+          return <link key={link.href} {...props} />;
         })
       }
       {styles.map(style => <link key={style} rel="stylesheet" type="text/css" href={style} />)}

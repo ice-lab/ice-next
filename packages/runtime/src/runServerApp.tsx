@@ -5,7 +5,7 @@ import { Action, createPath, parsePath } from 'history';
 import { createSearchParams } from 'react-router-dom';
 import Runtime from './runtime.js';
 import App from './App.js';
-import { DocumentContextProvider } from './Document.js';
+import { DocumentContextProvider } from './document.js';
 import { loadRouteModules, loadPageData, matchRoutes } from './routes.js';
 import { getPageAssets, getEntryAssets } from './assets.js';
 import type { AppContext, InitialContext, RouteItem, ServerContext, AppConfig, RuntimePlugin, CommonJsRuntime, AssetsManifest } from './types';

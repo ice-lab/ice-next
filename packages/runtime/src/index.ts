@@ -13,7 +13,7 @@ import {
   Links,
   Scripts,
   Main,
-} from './Document.js';
+} from './document.js';
 import {
   RuntimePlugin,
   AppContext,
