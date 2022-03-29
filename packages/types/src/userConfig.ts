@@ -1,4 +1,4 @@
-import type { Config } from './config';
+import type { Config, ModifyWebpackConfig } from './config';
 
 export interface UserConfig {
   alias?: Record<string, string | false>;
@@ -10,5 +10,5 @@ export interface UserConfig {
   outputDir?: string;
   proxy?: Config['proxy'];
   filename?: string;
-  webpack?: Config['configureWebpack'][0];
+  webpack?: ModifyWebpackConfig;
 }
