@@ -29,11 +29,24 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, regi
       await esbuildCompile({
         entryPoints: [path.join(rootDir, '.ice/entry.server')],
         outdir: path.join(outputDir, 'server'),
-        // platform: 'node',
         format: 'esm',
         outExtension: { '.js': '.mjs' },
-        // FIXME: https://github.com/ice-lab/ice-next/issues/27
-        external: process.env.JEST_TEST === 'true' ? [] : ['./node_modules/*', 'react'],
+        plugins: [{
+          name: 'esbuild-alias',
+          setup(build) {
+            build.onResolve({ filter: /.*/ }, (args) => {
+              const id = args.path;
+              // 1. external ids which is third-party dependencies
+              // 2. make sure external @ice/runtime otherwise module can not found in pnpm mode,
+              //    such as react-router which is depended by @ice/runtime
+              if (id[0] !== '.' && !path.isAbsolute(id) || id.startsWith('@ice/runtime')) {
+                return {
+                  external: true,
+                };
+              }
+            });
+          },
+        }],
       }, { isServer: true });
       // timestamp for disable import cache
       return `${serverEntry}?version=${new Date().getTime()}`;

@@ -46,10 +46,14 @@ export function createEsbuildCompiler(options: {
                     };
                   }
                 }
+                return {
+                  path: resolved,
+                };
               }
             });
           },
         },
+        ...(buildOptions.plugins || []),
         ...transformPlugins.map(plugin => createUnplugin(() => plugin).esbuild()),
       ],
     });
