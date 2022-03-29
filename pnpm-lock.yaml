@@ -141,12 +141,12 @@ importers:
   packages/ice:
     specifiers:
       '@builder/pack': ^0.6.0
-      '@builder/webpack-config': ^3.0.0
       '@ice/plugin-app': ^1.0.0
       '@ice/plugin-auth': ^1.0.0
       '@ice/route-manifest': ^1.0.0
       '@ice/runtime': ^1.0.0
       '@ice/types': ^1.0.0
+      '@ice/webpack-config': ^1.0.0
       '@types/ejs': ^3.1.0
       '@types/lodash.debounce': ^4.0.6
       address: ^1.1.2
@@ -169,11 +169,11 @@ importers:
       yargs-parser: ^21.0.0
     dependencies:
       '@builder/pack': 0.6.0
-      '@builder/webpack-config': link:../build-webpack-config
       '@ice/plugin-app': link:../plugin-app
       '@ice/plugin-auth': link:../plugin-auth
       '@ice/route-manifest': link:../route-manifest
       '@ice/runtime': link:../runtime
+      '@ice/webpack-config': link:../build-webpack-config
       address: 1.1.2
       build-scripts: 2.0.0-14
       chalk: 4.1.2
