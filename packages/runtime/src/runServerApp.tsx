@@ -52,7 +52,7 @@ async function runServerApp(options: RunServerAppOptions): Promise<string> {
     throw new Error('No matched page found.');
   }
 
-  const routeModules = await loadRouteModules(matches.map(match => match.route as RouteItem));
+  await loadRouteModules(matches.map(match => match.route as RouteItem));
 
   const initialContext: InitialContext = {
     ...requestContext,
@@ -66,7 +66,7 @@ async function runServerApp(options: RunServerAppOptions): Promise<string> {
     initialData = await appConfig.app.getInitialData(initialContext);
   }
 
-  const pageData = await loadPageData(matches, routeModules, initialContext);
+  const pageData = await loadPageData(matches, initialContext);
 
   const appContext: AppContext = {
     matches,
@@ -76,7 +76,6 @@ async function runServerApp(options: RunServerAppOptions): Promise<string> {
     initialPageData: pageData,
     // pageData and initialPageData are the same when SSR/SSG
     pageData,
-    routeModules,
     assetsManifest,
   };
 

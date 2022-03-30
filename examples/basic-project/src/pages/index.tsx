@@ -31,6 +31,6 @@ export function getInitialData() {
       resolve({
         name: 'Home',
       });
-    }, 1 * 1000);
+    }, 1 * 100);
   });
 }

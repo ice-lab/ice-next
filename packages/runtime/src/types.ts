@@ -84,7 +84,6 @@ export interface AssetsManifest {
   }>;
 }
 export interface AppContext {
-  routeModules: RouteModules;
   appConfig: AppConfig;
   assetsManifest?: AssetsManifest;
   matches?: RouteMatch[];

@@ -3,7 +3,7 @@ import type { Action, Location } from 'history';
 import type { Navigator } from 'react-router-dom';
 import AppErrorBoundary from './AppErrorBoundary.js';
 import { AppContextProvider } from './AppContext.js';
-import { createRoutes } from './routes.js';
+import { modifyRouteElements } from './routes.js';
 import type { AppContext, PageWrapper, AppRouterProps } from './types';
 
 interface Props {
@@ -22,7 +22,7 @@ export default function App(props: Props) {
     location, action, navigator, static: staticProp = false,
     appContext, AppProvider, AppRouter, PageWrappers,
   } = props;
-  const { appConfig, routes: originRoutes, routeModules } = appContext;
+  const { appConfig, routes: originRoutes } = appContext;
   const { strict } = appConfig.app;
   const StrictMode = strict ? React.StrictMode : React.Fragment;
 
@@ -31,8 +31,10 @@ export default function App(props: Props) {
   }
 
   const routes = useMemo(
-    () => createRoutes(originRoutes, routeModules, PageWrappers),
-    [originRoutes, routeModules, PageWrappers],
+    () => modifyRouteElements(originRoutes, PageWrappers),
+    // `originRoutes` and `PageWrappers` will not be changed
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
   );
 
   let element;

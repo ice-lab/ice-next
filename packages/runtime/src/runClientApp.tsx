@@ -1,27 +1,20 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { createHashHistory, createBrowserHistory } from 'history';
-import { createSearchParams } from 'react-router-dom';
+import type { HashHistory, BrowserHistory } from 'history';
 import Runtime from './runtime.js';
 import App from './App.js';
-import type { AppContext, AppConfig, RouteItem, InitialContext, AppRouterProps, PageWrapper } from './types';
+import type { AppContext, AppConfig, RouteItem, AppRouterProps, PageWrapper, RuntimeModules } from './types';
 import { loadRouteModules, loadPageData, matchRoutes } from './routes.js';
+import getInitialContext from './getInitialContext.js';
 
-export default async function runBrowserApp(
+export default async function runClientApp(
   appConfig: AppConfig,
-  runtimeModules,
-  routes,
+  runtimeModules: RuntimeModules,
+  routes: RouteItem[],
 ) {
   const matches = matchRoutes(routes, window.location);
-  const routeModules = await loadRouteModules(matches.map(match => match.route as RouteItem));
-
-  const { href, origin, pathname, search } = window.location;
-  const path = href.replace(origin, '');
-  const query = Object.fromEntries(createSearchParams(search));
-  const initialContext: InitialContext = {
-    pathname,
-    path,
-    query,
-  };
+  await loadRouteModules(matches.map(match => match.route as RouteItem));
+  const initialContext = getInitialContext();
 
   let appData = (window as any).__ICE_APP_DATA__ || {};
   let { initialData } = appData;
@@ -31,12 +24,11 @@ export default async function runBrowserApp(
 
   let pageData = (window as any).__ICE_PAGE_DATA__ || {};
   if (!pageData) {
-    pageData = await loadPageData(matches, routeModules, initialContext);
+    pageData = await loadPageData(matches, initialContext);
   }
 
   const appContext: AppContext = {
     routes,
-    routeModules,
     appConfig,
     initialData,
     initialPageData: pageData,
@@ -59,10 +51,11 @@ async function render(runtime: Runtime) {
   const PageWrappers = runtime.getWrapperPageRegistration();
   const AppRouter = runtime.getAppRouter();
   const appMountNode = document.getElementById(rootId);
+  const history = (routerType === 'hash' ? createHashHistory : createBrowserHistory)({ window });
 
   render(
     <BrowserEntry
-      routerType={routerType}
+      history={history}
       appContext={appContext}
       AppProvider={AppProvider}
       PageWrappers={PageWrappers}
@@ -73,15 +66,14 @@ async function render(runtime: Runtime) {
 }
 
 interface BrowserEntryProps {
-  routerType: AppConfig['router']['type'];
+  history: HashHistory | BrowserHistory;
   appContext: AppContext;
   AppProvider: React.ComponentType<any>;
   PageWrappers: PageWrapper<{}>[];
   AppRouter: React.ComponentType<AppRouterProps>;
 }
 
-function BrowserEntry({ routerType, appContext, ...rest }: BrowserEntryProps) {
-  const history = (routerType === 'hash' ? createHashHistory : createBrowserHistory)({ window });
+function BrowserEntry({ history, appContext, ...rest }: BrowserEntryProps) {
   const { routes, initialPageData } = appContext;
   const [historyState, setHistoryState] = useState({
     action: history.action,
@@ -89,8 +81,6 @@ function BrowserEntry({ routerType, appContext, ...rest }: BrowserEntryProps) {
     pageData: initialPageData,
   });
   const { action, location, pageData } = historyState;
-
-  console.log('renderrr');
 
   // listen the history change and update the state which including the latest action and location
   useLayoutEffect(() => {
@@ -101,15 +91,16 @@ function BrowserEntry({ routerType, appContext, ...rest }: BrowserEntryProps) {
       }
 
       loadRouteModules(matches.map(match => match.route as RouteItem))
-        .then((routeModules) => {
-          return loadPageData(matches, routeModules, {});
+        .then(() => {
+          const initialContext = getInitialContext();
+          return loadPageData(matches, initialContext);
         })
         .then((pageData) => {
           // just re-render once, so add pageData to historyState :(
           setHistoryState({ action, location, pageData });
         });
     });
-  }, [history, routes]);
+  }, []);
 
   return (
     <App
