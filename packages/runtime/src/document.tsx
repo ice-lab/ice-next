@@ -96,7 +96,7 @@ export function Scripts() {
       {
         deferredScripts.map(script => {
           const { block, ...props } = script;
-          return <script key={script.src} defer="true" {...props} />;
+          return <script key={script.src} defer {...props} />;
         })
       }
     </>

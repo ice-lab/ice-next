@@ -26,8 +26,7 @@ export function getPageConfig() {
       block: true,
     }],
     scripts: [{
-      src: 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js',
-      block: true,
+      src: 'https://cdn.jsdelivr.net/npm/lodash@2.4.1/dist/lodash.min.js',
     }],
     auth: ['admin'],
   };
