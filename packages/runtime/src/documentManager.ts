@@ -59,11 +59,11 @@ const DOMAttributeNames: Record<string, string> = {
 
 /**
  * map element props to dom
+ * https://github.com/vercel/next.js/blob/canary/packages/next/client/head-manager.ts#L9
  */
 function reactElementToDOM(type, props): HTMLElement {
   const el: HTMLElement = document.createElement(type);
   for (const p in props) {
-    if (!props.hasOwnProperty(p)) continue;
     if (p === 'children' || p === 'dangerouslySetInnerHTML') continue;
 
     // we don't render undefined props to the DOM
