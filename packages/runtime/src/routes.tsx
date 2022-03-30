@@ -3,18 +3,20 @@ import type { Location } from 'history';
 import type { RouteObject } from 'react-router-dom';
 import { matchRoutes as originMatchRoutes } from 'react-router-dom';
 import PageWrapper from './PageWrapper.js';
-import type { RouteItem, RouteModules, PageWrapper as IPageWrapper, RouteMatch, ServerContext, InitialContext } from './types';
-import { useAppContext } from './AppContext.js';
+import type { RouteItem, RouteModules, PageWrapper as IPageWrapper, RouteMatch, InitialContext } from './types';
 
-export async function loadRouteModule(route: RouteItem, routeModulesCache: RouteModules) {
+// global route modules cache
+const routeModules: RouteModules = {};
+
+export async function loadRouteModule(route: RouteItem) {
   const { id, load } = route;
-  if (id in routeModulesCache) {
-    return routeModulesCache[id];
+  if (id in routeModules) {
+    return routeModules[id];
   }
 
   try {
     const routeModule = await load();
-    routeModulesCache[id] = routeModule;
+    routeModules[id] = routeModule;
     return routeModule;
   } catch (error) {
     console.error(error);
@@ -24,9 +26,9 @@ export async function loadRouteModule(route: RouteItem, routeModulesCache: Route
   }
 }
 
-export async function loadRouteModules(routes: RouteItem[], routeModules: RouteModules = {}) {
+export async function loadRouteModules(routes: RouteItem[]) {
   for (const route of routes) {
-    await loadRouteModule(route, routeModules);
+    await loadRouteModule(route);
   }
   return routeModules;
 }
@@ -34,7 +36,7 @@ export async function loadRouteModules(routes: RouteItem[], routeModules: RouteM
 /**
 * get data for the matched pages
 */
-export async function loadPageData(matches: RouteMatch[], routeModules: RouteModules, initialContext: InitialContext) {
+export async function loadPageData(matches: RouteMatch[], initialContext: InitialContext) {
   // use the last matched route as the page entry
   const last = matches.length - 1;
   const { route } = matches[last];
@@ -65,7 +67,7 @@ export async function loadPageData(matches: RouteMatch[], routeModules: RouteMod
 /**
  * Create routes which will be consumed by react-router-dom
  */
-export function createRoutes(routes: RouteItem[], PageWrappers?: IPageWrapper<any>[]) {
+export function modifyRouteElements(routes: RouteItem[], PageWrappers?: IPageWrapper<any>[]) {
   return routes.map((routeItem: RouteItem) => {
     let { path, children, index, id, element, ...rest } = routeItem;
     const idParts = id.split('/');
@@ -87,7 +89,7 @@ export function createRoutes(routes: RouteItem[], PageWrappers?: IPageWrapper<an
       ...rest,
     };
     if (children) {
-      route.children = createRoutes(children, PageWrappers);
+      route.children = modifyRouteElements(children, PageWrappers);
     }
 
     return route;
@@ -95,7 +97,6 @@ export function createRoutes(routes: RouteItem[], PageWrappers?: IPageWrapper<an
 }
 
 function RouteComponent({ id, ...props }: { id: string }) {
-  const { routeModules } = useAppContext();
   // get current route component from latest routeModules
   const { default: Component } = routeModules[id];
   if (process.env.NODE_ENV === 'development') {

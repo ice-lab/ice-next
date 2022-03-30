@@ -12,7 +12,7 @@ export default async function runClientApp(
   routes: RouteItem[],
 ) {
   const matches = matchRoutes(routes, window.location);
-  const routeModules = await loadRouteModules(matches.map(match => match.route as RouteItem));
+  await loadRouteModules(matches.map(match => match.route as RouteItem));
   const initialContext = getInitialContext();
 
   let appData = (window as any).__ICE_APP_DATA__ || {};
@@ -23,12 +23,11 @@ export default async function runClientApp(
 
   let pageData = (window as any).__ICE_PAGE_DATA__ || {};
   if (!pageData) {
-    pageData = await loadPageData(matches, routeModules, initialContext);
+    pageData = await loadPageData(matches, initialContext);
   }
 
   const appContext: AppContext = {
     routes,
-    routeModules,
     appConfig,
     initialData,
     initialPageData: pageData,
@@ -78,7 +77,7 @@ function BrowserEntry({
   ...rest
 }: Props) {
   const history = (routerType === 'hash' ? createHashHistory : createBrowserHistory)({ window });
-  const { routes, initialPageData, routeModules } = appContext;
+  const { routes, initialPageData } = appContext;
   const [historyState, setHistoryState] = useState({
     action: history.action,
     location: history.location,
@@ -94,10 +93,10 @@ function BrowserEntry({
         throw new Error(`Routes not found in location ${location}.`);
       }
 
-      loadRouteModules(matches.map(match => match.route as RouteItem), routeModules)
-        .then((routeModules) => {
+      loadRouteModules(matches.map(match => match.route as RouteItem))
+        .then(() => {
           const initialContext = getInitialContext();
-          return loadPageData(matches, routeModules, initialContext);
+          return loadPageData(matches, initialContext);
         })
         .then((pageData) => {
           // TODO: 这里会触发两次 rerender
@@ -105,7 +104,7 @@ function BrowserEntry({
           setHistoryState({ action, location });
         });
     });
-  }, [history, routes, routeModules]);
+  }, [history, routes]);
 
   return (
     <App
