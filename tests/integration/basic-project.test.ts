@@ -48,23 +48,13 @@ describe(`start ${example}`, () => {
     browser = res.browser;
 
     expect(
-      await page.$$eval(
-        'meta[name="theme-color"]',
-        (els) => {
-          return els.map(el => el.getAttribute('content'))
-        }
-      )
+      await page.$$attr('meta[name="theme-color"]', 'content')
     ).toStrictEqual(['#000']);
 
     await page.click('a[href="/about"]');
 
     expect(
-      await page.$$eval(
-        'meta[name="theme-color"]',
-        (els) => {
-          return els.map(el => el.getAttribute('content'))
-        }
-      )
+      await page.$$attr('meta[name="theme-color"]', 'content')
     ).toStrictEqual(['#eee']);
   }, 120000);
 
