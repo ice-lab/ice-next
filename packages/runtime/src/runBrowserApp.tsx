@@ -72,7 +72,7 @@ async function render(runtime: Runtime) {
   );
 }
 
-interface Props {
+interface BrowserEntryProps {
   routerType: AppConfig['router']['type'];
   appContext: AppContext;
   AppProvider: React.ComponentType<any>;
@@ -80,17 +80,17 @@ interface Props {
   AppRouter: React.ComponentType<AppRouterProps>;
 }
 
-function BrowserEntry({
-  routerType, appContext, ...rest
-}: Props) {
+function BrowserEntry({ routerType, appContext, ...rest }: BrowserEntryProps) {
   const history = (routerType === 'hash' ? createHashHistory : createBrowserHistory)({ window });
   const { routes, initialPageData } = appContext;
   const [historyState, setHistoryState] = useState({
     action: history.action,
     location: history.location,
+    pageData: initialPageData,
   });
-  const [pageData, setPageData] = useState(initialPageData);
-  const { action, location } = historyState;
+  const { action, location, pageData } = historyState;
+
+  console.log('renderrr');
 
   // listen the history change and update the state which including the latest action and location
   useLayoutEffect(() => {
@@ -105,9 +105,8 @@ function BrowserEntry({
           return loadPageData(matches, routeModules, {});
         })
         .then((pageData) => {
-          // TODO: 这里会触发两次 rerender
-          setPageData(pageData);
-          setHistoryState({ action, location });
+          // just re-render once, so add pageData to historyState :(
+          setHistoryState({ action, location, pageData });
         });
     });
   }, [history, routes]);
