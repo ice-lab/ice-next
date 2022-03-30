@@ -17,6 +17,6 @@ export function getInitialData() {
       resolve({
         name: 'About',
       });
-    }, 1 * 1000);
+    }, 1 * 100);
   });
 }

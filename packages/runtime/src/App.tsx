@@ -22,7 +22,7 @@ export default function App(props: Props) {
     location, action, navigator, static: staticProp = false,
     appContext, AppProvider, AppRouter, PageWrappers,
   } = props;
-  const { appConfig, routes: originRoutes, routeModules } = appContext;
+  const { appConfig, routes: originRoutes } = appContext;
   const { strict } = appConfig.app;
   const StrictMode = strict ? React.StrictMode : React.Fragment;
 
@@ -31,8 +31,8 @@ export default function App(props: Props) {
   }
 
   const routes = useMemo(
-    () => createRoutes(originRoutes, routeModules, PageWrappers),
-    [originRoutes, routeModules, PageWrappers],
+    () => createRoutes(originRoutes, PageWrappers),
+    [originRoutes, PageWrappers],
   );
 
   let element;

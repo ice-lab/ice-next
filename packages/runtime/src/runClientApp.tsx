@@ -1,27 +1,19 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { createHashHistory, createBrowserHistory } from 'history';
-import { createSearchParams } from 'react-router-dom';
 import Runtime from './runtime.js';
 import App from './App.js';
-import type { AppContext, AppConfig, RouteItem, InitialContext, AppRouterProps, PageWrapper } from './types';
+import type { AppContext, AppConfig, RouteItem, AppRouterProps, PageWrapper, RuntimeModules } from './types';
 import { loadRouteModules, loadPageData, matchRoutes } from './routes.js';
+import getInitialContext from './getInitialContext.js';
 
-export default async function runBrowserApp(
+export default async function runClientApp(
   appConfig: AppConfig,
-  runtimeModules,
-  routes,
+  runtimeModules: RuntimeModules,
+  routes: RouteItem[],
 ) {
   const matches = matchRoutes(routes, window.location);
   const routeModules = await loadRouteModules(matches.map(match => match.route as RouteItem));
-
-  const { href, origin, pathname, search } = window.location;
-  const path = href.replace(origin, '');
-  const query = Object.fromEntries(createSearchParams(search));
-  const initialContext: InitialContext = {
-    pathname,
-    path,
-    query,
-  };
+  const initialContext = getInitialContext();
 
   let appData = (window as any).__ICE_APP_DATA__ || {};
   let { initialData } = appData;
@@ -81,10 +73,12 @@ interface Props {
 }
 
 function BrowserEntry({
-  routerType, appContext, ...rest
+  routerType,
+  appContext,
+  ...rest
 }: Props) {
   const history = (routerType === 'hash' ? createHashHistory : createBrowserHistory)({ window });
-  const { routes, initialPageData } = appContext;
+  const { routes, initialPageData, routeModules } = appContext;
   const [historyState, setHistoryState] = useState({
     action: history.action,
     location: history.location,
@@ -100,9 +94,10 @@ function BrowserEntry({
         throw new Error(`Routes not found in location ${location}.`);
       }
 
-      loadRouteModules(matches.map(match => match.route as RouteItem))
+      loadRouteModules(matches.map(match => match.route as RouteItem), routeModules)
         .then((routeModules) => {
-          return loadPageData(matches, routeModules, {});
+          const initialContext = getInitialContext();
+          return loadPageData(matches, routeModules, initialContext);
         })
         .then((pageData) => {
           // TODO: 这里会触发两次 rerender
@@ -110,7 +105,7 @@ function BrowserEntry({
           setHistoryState({ action, location });
         });
     });
-  }, [history, routes]);
+  }, [history, routes, routeModules]);
 
   return (
     <App
