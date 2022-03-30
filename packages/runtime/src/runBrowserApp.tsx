@@ -105,6 +105,7 @@ function BrowserEntry({
           return loadPageData(matches, routeModules, {});
         })
         .then((pageData) => {
+          // TODO: 这里会触发两次 rerender
           setPageData(pageData);
           setHistoryState({ action, location });
         });

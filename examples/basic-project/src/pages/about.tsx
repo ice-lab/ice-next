@@ -12,7 +12,11 @@ export function getPageConfig() {
 }
 
 export function getInitialData() {
-  return {
-    name: 'about',
-  };
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        name: 'About',
+      });
+    }, 1 * 1000);
+  });
 }
