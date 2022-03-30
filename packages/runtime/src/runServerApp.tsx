@@ -73,6 +73,8 @@ async function runServerApp(options: RunServerAppOptions): Promise<string> {
     routes,
     appConfig,
     initialData,
+    initialPageData: pageData,
+    // pageData and initialPageData are the same when SSR/SSG
     pageData,
     routeModules,
     assetsManifest,
@@ -101,7 +103,23 @@ async function render(
   let html = '';
 
   if (!documentOnly) {
-    html = renderApp(runtime, location);
+    const staticNavigator = createStaticNavigator();
+    const AppProvider = runtime.composeAppProvider() || React.Fragment;
+    const PageWrappers = runtime.getWrapperPageRegistration();
+    const AppRouter = runtime.getAppRouter();
+
+    html = ReactDOMServer.renderToString(
+      <App
+        action={Action.Pop}
+        location={location}
+        navigator={staticNavigator}
+        static
+        appContext={appContext}
+        AppProvider={AppProvider}
+        PageWrappers={PageWrappers}
+        AppRouter={AppRouter}
+      />,
+    );
   }
 
   const pageAssets = getPageAssets(matches, assetsManifest);
@@ -126,22 +144,6 @@ async function render(
   );
 
   return result;
-}
-
-function renderApp(runtime, location) {
-  const staticNavigator = createStaticNavigator();
-
-  const html = ReactDOMServer.renderToString(
-    <App
-      action={Action.Pop}
-      runtime={runtime}
-      location={location}
-      navigator={staticNavigator}
-      static
-    />,
-  );
-
-  return html;
 }
 
 function createStaticNavigator() {

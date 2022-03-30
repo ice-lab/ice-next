@@ -88,9 +88,10 @@ export interface AppContext {
   appConfig: AppConfig;
   assetsManifest?: AssetsManifest;
   matches?: RouteMatch[];
-  pageData: PageData;
   routes?: RouteItem[];
   initialData?: InitialData;
+  pageData?: PageData;
+  initialPageData?: PageData;
 }
 
 export interface AppData {

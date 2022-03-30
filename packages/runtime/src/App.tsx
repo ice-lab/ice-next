@@ -1,24 +1,28 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import type { Action, Location } from 'history';
 import type { Navigator } from 'react-router-dom';
 import AppErrorBoundary from './AppErrorBoundary.js';
 import { AppContextProvider } from './AppContext.js';
-import type Runtime from './runtime.js';
 import { createRoutes } from './routes.js';
-import { createTransitionManager } from './transition.js';
+import type { AppContext, PageWrapper, AppRouterProps } from './types';
 
 interface Props {
-  runtime: Runtime;
   action: Action;
   location: Location;
   navigator: Navigator;
   static?: boolean;
+  appContext: AppContext;
+  AppProvider: React.ComponentType<any>;
+  PageWrappers: PageWrapper<{}>[];
+  AppRouter: React.ComponentType<AppRouterProps>;
 }
 
 export default function App(props: Props) {
-  const { runtime, location: historyLocation, action, navigator, static: staticProp = false } = props;
-  const appContext = runtime.getAppContext();
-  const { appConfig, routes: originRoutes, routeModules, pageData: initPageData } = appContext;
+  const {
+    location, action, navigator, static: staticProp = false,
+    appContext, AppProvider, AppRouter, PageWrappers,
+  } = props;
+  const { appConfig, routes: originRoutes, routeModules } = appContext;
   const { strict } = appConfig.app;
   const StrictMode = strict ? React.StrictMode : React.Fragment;
 
@@ -26,39 +30,10 @@ export default function App(props: Props) {
     throw new Error('Please add routes(like pages/index.tsx) to your app.');
   }
 
-  const AppProvider = runtime.composeAppProvider() || React.Fragment;
-  const PageWrappers = runtime.getWrapperPageRegistration();
-  const AppRouter = runtime.getAppRouter();
-
-  const [, setClientState] = useState({});
-
   const routes = useMemo(
     () => createRoutes(originRoutes, routeModules, PageWrappers),
     [originRoutes, routeModules, PageWrappers],
   );
-
-  const [transitionManager] = useState(() => {
-    return createTransitionManager({
-      routes,
-      location: historyLocation,
-      routeModules,
-      onChange: (state) => {
-        setClientState({ ...state });
-      },
-      pageData: initPageData,
-    });
-  });
-
-  useEffect(() => {
-    const state = transitionManager.getState();
-    if (state.location === historyLocation) {
-      return;
-    }
-    transitionManager.handleLoad(historyLocation);
-  }, [transitionManager, historyLocation]);
-
-  // waiting for the location change in the transitionManager, the UI will rerender
-  const { location, pageData } = transitionManager.getState();
 
   let element;
   if (routes.length === 1 && !routes[0].children) {
@@ -79,10 +54,7 @@ export default function App(props: Props) {
     <StrictMode>
       <AppErrorBoundary>
         <AppContextProvider
-          value={{
-            ...appContext,
-            pageData,
-          }}
+          value={appContext}
         >
           <AppProvider>
             {element}

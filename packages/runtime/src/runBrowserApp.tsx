@@ -1,10 +1,9 @@
-import React, { useLayoutEffect, useReducer } from 'react';
-import type { Update } from 'history';
+import React, { useLayoutEffect, useState } from 'react';
 import { createHashHistory, createBrowserHistory } from 'history';
 import { createSearchParams } from 'react-router-dom';
 import Runtime from './runtime.js';
 import App from './App.js';
-import type { AppContext, AppConfig, RouteItem, InitialContext } from './types';
+import type { AppContext, AppConfig, RouteItem, InitialContext, AppRouterProps, PageWrapper } from './types';
 import { loadRouteModules, loadPageData, matchRoutes } from './routes.js';
 
 export default async function runBrowserApp(
@@ -40,7 +39,7 @@ export default async function runBrowserApp(
     routeModules,
     appConfig,
     initialData,
-    pageData,
+    initialPageData: pageData,
   };
 
   const runtime = new Runtime(appContext);
@@ -56,36 +55,72 @@ async function render(runtime: Runtime) {
   const { appConfig } = appContext;
   const { app: { rootId }, router: { type: routerType } } = appConfig;
   const render = runtime.getRender();
+  const AppProvider = runtime.composeAppProvider() || React.Fragment;
+  const PageWrappers = runtime.getWrapperPageRegistration();
+  const AppRouter = runtime.getAppRouter();
   const appMountNode = document.getElementById(rootId);
 
   render(
     <BrowserEntry
-      runtime={runtime}
       routerType={routerType}
+      appContext={appContext}
+      AppProvider={AppProvider}
+      PageWrappers={PageWrappers}
+      AppRouter={AppRouter}
     />,
     appMountNode,
   );
 }
 
-function BrowserEntry({ runtime, routerType }: { runtime: Runtime; routerType: AppConfig['router']['type'] }) {
-  const history = (routerType === 'hash' ? createHashHistory : createBrowserHistory)({ window });
-  const [state, dispatch] = useReducer(
-    (_: Update, update: Update) => update,
-    {
-      action: history.action,
-      location: history.location,
-    },
-  );
-  // listen the history change and update the state which including the latest action and location
-  useLayoutEffect(() => history.listen(dispatch), [history]);
+interface Props {
+  routerType: AppConfig['router']['type'];
+  appContext: AppContext;
+  AppProvider: React.ComponentType<any>;
+  PageWrappers: PageWrapper<{}>[];
+  AppRouter: React.ComponentType<AppRouterProps>;
+}
 
-  const { action, location } = state;
+function BrowserEntry({
+  routerType, appContext, ...rest
+}: Props) {
+  const history = (routerType === 'hash' ? createHashHistory : createBrowserHistory)({ window });
+  const { routes, initialPageData } = appContext;
+  const [historyState, setHistoryState] = useState({
+    action: history.action,
+    location: history.location,
+  });
+  const [pageData, setPageData] = useState(initialPageData);
+  const { action, location } = historyState;
+
+  // listen the history change and update the state which including the latest action and location
+  useLayoutEffect(() => {
+    history.listen(({ action, location }) => {
+      const matches = matchRoutes(routes, location);
+      if (!matches) {
+        throw new Error(`Routes not found in location ${location}.`);
+      }
+
+      loadRouteModules(matches.map(match => match.route as RouteItem))
+        .then((routeModules) => {
+          return loadPageData(matches, routeModules, {});
+        })
+        .then((pageData) => {
+          setPageData(pageData);
+          setHistoryState({ action, location });
+        });
+    });
+  }, [history, routes]);
+
   return (
     <App
-      runtime={runtime}
       action={action}
       location={location}
       navigator={history}
+      appContext={{
+        ...appContext,
+        pageData,
+      }}
+      {...rest}
     />
   );
 }
