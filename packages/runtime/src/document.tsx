@@ -28,7 +28,7 @@ export function Meta() {
     <>
       {meta.map(item => <meta key={item.name} {...item} />)}
       <meta
-        name="next-meta-count"
+        name="ice-meta-count"
         content={meta.length.toString()}
       />
     </>

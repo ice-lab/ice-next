@@ -1,7 +1,9 @@
+import type { PageConfig } from './types';
+
 /**
  * update page config to document
  */
-export async function updatePageConfig(pageConfig) {
+export async function updatePageConfig(pageConfig: PageConfig) {
   const {
     title,
     meta,
@@ -21,18 +23,18 @@ export async function updatePageConfig(pageConfig) {
  * find meta by 'next-meta-count' and update it
  */
 function updateMeta(meta): void {
-  const headEl = document.getElementsByTagName('head')[0];
-  const headCountEl: HTMLMetaElement = headEl.querySelector(
-    'meta[name=next-meta-count]',
+  const headEl = document.head;
+  const metaCountEl: HTMLMetaElement = headEl.querySelector(
+    'meta[name=ice-meta-count]',
   ) as HTMLMetaElement;
 
-  const headCount = Number(headCountEl.content);
+  const headCount = Number(metaCountEl.content);
   const oldTags: Element[] = [];
 
   for (
-    let i = 0, j = headCountEl.previousElementSibling;
+    let i = 0, j = metaCountEl.previousElementSibling;
     i < headCount;
-    i++, j = j!.previousElementSibling
+    i++, j = j?.previousElementSibling
   ) {
     if (j?.tagName?.toLowerCase() === 'meta') {
       oldTags.push(j!);
@@ -44,9 +46,9 @@ function updateMeta(meta): void {
   });
 
   oldTags.forEach((t) => t.parentNode!.removeChild(t));
-  newTags.forEach((t) => headEl.insertBefore(t, headCountEl));
+  newTags.forEach((t) => headEl.insertBefore(t, metaCountEl));
 
-  headCountEl.content = (newTags.length).toString();
+  metaCountEl.content = (newTags.length).toString();
 }
 
 const DOMAttributeNames: Record<string, string> = {
