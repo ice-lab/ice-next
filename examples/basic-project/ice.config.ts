@@ -9,5 +9,5 @@ export default defineUserConfig({
     }
     return webpackConfig;
   },
-  plugins: ['@ice/plugin-auth'],
+  // plugins: ['@ice/plugin-auth'],
 });
