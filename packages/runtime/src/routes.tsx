@@ -8,7 +8,9 @@ import type { RouteItem, RouteModules, PageWrapper as IPageWrapper, RouteMatch, 
 // global route modules cache
 const routeModules: RouteModules = {};
 
-export async function loadRouteModule(route: RouteItem) {
+type RouteModule = Pick<RouteItem, 'id' | 'load'>;
+
+export async function loadRouteModule(route: RouteModule) {
   const { id, load } = route;
   if (id in routeModules) {
     return routeModules[id];
@@ -26,7 +28,7 @@ export async function loadRouteModule(route: RouteItem) {
   }
 }
 
-export async function loadRouteModules(routes: RouteItem[]) {
+export async function loadRouteModules(routes: RouteModule[]) {
   for (const route of routes) {
     await loadRouteModule(route);
   }
@@ -65,9 +67,9 @@ export async function loadPageData(matches: RouteMatch[], initialContext: Initia
 }
 
 /**
- * Create routes which will be consumed by react-router-dom
+ * Create elements in routes which will be consumed by react-router-dom
  */
-export function modifyRouteElements(routes: RouteItem[], PageWrappers?: IPageWrapper<any>[]) {
+export function createRouteElements(routes: RouteItem[], PageWrappers?: IPageWrapper<any>[]) {
   return routes.map((routeItem: RouteItem) => {
     let { path, children, index, id, element, ...rest } = routeItem;
     const idParts = id.split('/');
@@ -89,7 +91,7 @@ export function modifyRouteElements(routes: RouteItem[], PageWrappers?: IPageWra
       ...rest,
     };
     if (children) {
-      route.children = modifyRouteElements(children, PageWrappers);
+      route.children = createRouteElements(children, PageWrappers);
     }
 
     return route;

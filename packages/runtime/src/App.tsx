@@ -3,7 +3,7 @@ import type { Action, Location } from 'history';
 import type { Navigator } from 'react-router-dom';
 import AppErrorBoundary from './AppErrorBoundary.js';
 import { AppContextProvider } from './AppContext.js';
-import { modifyRouteElements } from './routes.js';
+import { createRouteElements } from './routes.js';
 import type { AppContext, PageWrapper, AppRouterProps } from './types';
 
 interface Props {
@@ -31,13 +31,13 @@ export default function App(props: Props) {
   }
 
   const routes = useMemo(
-    () => modifyRouteElements(originRoutes, PageWrappers),
+    () => createRouteElements(originRoutes, PageWrappers),
     // `originRoutes` and `PageWrappers` will not be changed
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 
-  let element;
+  let element: React.ReactNode;
   if (routes.length === 1 && !routes[0].children) {
     // TODO: 去除 react-router-dom history 等依赖
     element = routes[0].element;

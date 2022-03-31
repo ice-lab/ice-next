@@ -12,7 +12,7 @@ export default async function runClientApp(
   routes: RouteItem[],
 ) {
   const matches = matchRoutes(routes, window.location);
-  await loadRouteModules(matches.map(match => match.route as RouteItem));
+  await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
   const initialContext = getInitialContext();
 
   let appData = (window as any).__ICE_APP_DATA__ || {};
@@ -93,7 +93,7 @@ function BrowserEntry({
         throw new Error(`Routes not found in location ${location}.`);
       }
 
-      loadRouteModules(matches.map(match => match.route as RouteItem))
+      loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })))
         .then(() => {
           const initialContext = getInitialContext();
           return loadPageData(matches, initialContext);
