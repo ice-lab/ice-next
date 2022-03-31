@@ -1,6 +1,6 @@
 // based on https://github.com/remix-run/remix/blob/main/packages/remix-dev/config/routes.ts
 
-import { win32 } from 'path';
+import { win32, join } from 'path';
 
 export interface ConfigRoute {
   /**
@@ -100,16 +100,17 @@ export function defineRoutes(
       // route(path, file, options)
       options = optionsOrChildren || {};
     }
-    const id = createRouteId(file);
+    const pageFilePath = join('pages', file);
+    const id = createRouteId(pageFilePath);
     const route: ConfigRoute = {
-      path: path || undefined,
+      path: path || '/',
       index: options.index ? true : undefined,
       id,
       parentId:
         parentRoutes.length > 0
           ? parentRoutes[parentRoutes.length - 1].id
           : undefined,
-      file,
+      file: pageFilePath,
       componentName: createComponentName(id),
     };
 

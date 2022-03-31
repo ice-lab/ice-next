@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <>
       <h2 className={styles.title}>Home Page</h2>
-      <Link to="/about">about</Link>
+      <Link to="/about-me">about</Link>
     </>
   );
 }

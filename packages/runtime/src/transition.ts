@@ -34,8 +34,8 @@ export function createTransitionManager(options: TransitionOptions) {
 
   async function handleLoad(location: Location) {
     const matches = matchRoutes(routes, location);
-    if (!matches) {
-      throw new Error(`Routes not found in location ${location}.`);
+    if (!matches.length) {
+      throw new Error(`Routes not found in location ${location.pathname}.`);
     }
 
     const routeModules = await loadRouteModules(matches.map(match => match.route as RouteItem));

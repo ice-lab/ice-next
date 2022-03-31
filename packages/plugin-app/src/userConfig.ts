@@ -108,6 +108,10 @@ const userConfig = [
       }
     },
   },
+  {
+    name: 'routes',
+    validation: 'object',
+  },
 ];
 
 export default userConfig;

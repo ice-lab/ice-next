@@ -36,7 +36,7 @@ const RENDER_WAIT = 150;
 interface Options {
   rootDir: string;
   targetDir: string;
-  defaultRenderData: RenderData;
+  defaultRenderData?: RenderData;
   templates?: (string | TemplateOptions)[];
 }
 
@@ -114,7 +114,7 @@ export default class Generator {
   private plugins: any[];
 
   public constructor(options: Options) {
-    const { rootDir, targetDir, defaultRenderData, templates } = options;
+    const { rootDir, targetDir, defaultRenderData = {}, templates } = options;
     this.rootDir = rootDir;
     this.targetDir = targetDir;
     this.renderData = defaultRenderData;

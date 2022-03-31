@@ -31,15 +31,9 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
   const configFile = 'ice.config.(mts|mjs|ts|js|cjs|json)';
   const dataCache = new Map<string, string>();
 
-  const routesRenderData = generateRoutesInfo(rootDir);
-  dataCache.set('routes', JSON.stringify(routesRenderData));
-
   const generator = new Generator({
     rootDir,
     targetDir,
-    defaultRenderData: {
-      ...routesRenderData,
-    },
     // add default template of ice
     templates: [templateDir],
   });
@@ -86,6 +80,14 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
     getBuiltInPlugins,
   });
   await ctx.resolveConfig();
+  const { userConfig: { routes: routesConfig } } = ctx;
+  const routesRenderData = generateRoutesInfo(rootDir, routesConfig);
+  generator.modifyRenderData((renderData) => ({
+    ...renderData,
+    ...routesRenderData,
+  }));
+  dataCache.set('routes', JSON.stringify(routesRenderData));
+
   generator.setPlugins(ctx.getAllPlugin());
   await ctx.setup();
   // render template before webpack compile

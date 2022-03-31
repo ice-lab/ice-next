@@ -1,3 +1,4 @@
+import type { DefineRouteFunction } from '@ice/route-manifest';
 import type { Config, ModifyWebpackConfig } from './config';
 
 export interface UserConfig {
@@ -11,4 +12,8 @@ export interface UserConfig {
   proxy?: Config['proxy'];
   filename?: string;
   webpack?: ModifyWebpackConfig;
+  routes?: {
+    ignoreFiles?: string[];
+    defineRoutes?: (defineRoute: DefineRouteFunction) => void;
+  };
 }

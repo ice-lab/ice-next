@@ -5,9 +5,10 @@ import minimatch from 'minimatch';
 import { createRouteId, defineRoutes } from './routes.js';
 import type { RouteManifest, DefineRouteFunction, NestedRouteManifest } from './routes.js';
 
-export {
+export type {
   RouteManifest,
   NestedRouteManifest,
+  DefineRouteFunction,
 };
 
 const validRouteChar = ['-', '\\w', '/', ':', '*'];
@@ -26,7 +27,11 @@ export function isRouteModuleFile(filename: string): boolean {
   return routeModuleExts.includes(path.extname(filename));
 }
 
-export function generateRouteManifest(rootDir: string) {
+export function generateRouteManifest(
+  rootDir: string,
+  ignoreFiles: string[] = [],
+  defineExtraRoutes?: (defineRoute: DefineRouteFunction) => void,
+  ) {
   const srcDir = path.join(rootDir, 'src');
   const routeManifest: RouteManifest = {};
   // 1. find global layout
@@ -43,7 +48,7 @@ export function generateRouteManifest(rootDir: string) {
   if (fs.existsSync(path.resolve(srcDir, 'pages'))) {
     const conventionalRoutes = defineConventionalRoutes(
       rootDir,
-      [], // TODO: add ignoredFilePatterns defined in ice.config.js
+      ignoreFiles,
     );
 
     for (const key of Object.keys(conventionalRoutes)) {
@@ -54,7 +59,19 @@ export function generateRouteManifest(rootDir: string) {
       };
     }
   }
-
+  // 3. add custom routes
+  // TODO:
+  if (defineExtraRoutes) {
+    const extraRoutes = defineRoutes(defineExtraRoutes);
+    console.log(extraRoutes);
+    for (const key of Object.keys(extraRoutes)) {
+      const route = extraRoutes[key];
+      routeManifest[route.id] = {
+        ...route,
+        parentId: route.parentId || (globalLayoutFile && 'layout') || undefined,
+      };
+    }
+  }
   return routeManifest;
 }
 
@@ -76,7 +93,6 @@ function defineConventionalRoutes(
   ignoredFilePatterns?: string[],
 ): RouteManifest {
   const files: { [routeId: string]: string } = {};
-
   // 1. find all route components in src/pages
   visitFiles(
     path.join(rootDir, 'src', 'pages'),
@@ -88,10 +104,9 @@ function defineConventionalRoutes(
         return;
       }
 
-      const filePath = path.join('pages', file);
       if (isRouteModuleFile(file)) {
-        let routeId = createRouteId(filePath);
-        files[routeId] = filePath;
+        let routeId = createRouteId(file);
+        files[routeId] = file;
         return;
       }
     },
@@ -113,13 +128,13 @@ function defineConventionalRoutes(
 
     for (let routeId of childRouteIds) {
       const routePath: string | undefined = createRoutePath(
-        routeId.slice((removeLayoutStrFromId(parentId) || 'pages').length),
+        routeId.slice((removeLayoutStrFromId(parentId) || '').length),
       );
       if (RegExp(`[^${validRouteChar.join(',')}]`).test(routePath)) {
-        throw new Error(`invalid character in '${routeId}'. Only support char: ${validRouteChar.join(', ')}`);
+        throw new Error(`invalid character in '${path.join('src', 'pages', files[routeId])}'. Only support char: ${validRouteChar.join(', ')}`);
       }
       const isIndexRoute = routeId.endsWith('/index');
-      let fullPath = createRoutePath(routeId.slice('pages'.length + 1));
+      let fullPath = createRoutePath(routeId);
       let uniqueRouteId = (fullPath || '') + (isIndexRoute ? '?index' : '');
 
       if (uniqueRouteId) {
