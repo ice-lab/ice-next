@@ -84,10 +84,9 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
       },
       context: {},
     },
-    // @ts-expect-error
-    getBuiltInPlugins: () => {
+    /* getBuiltInPlugins: () => {
       return [webPlugin, configPlugin];
-    },
+    }, */
   });
   await ctx.resolveConfig();
   generator.setPlugins(ctx.getAllPlugin());
