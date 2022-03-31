@@ -48,8 +48,8 @@ export function generateExports(exportList: ExportData[]) {
     const specifiers = isDefaultImport ? [specifier] : specifier;
     const symbol = type ? ';' : ',';
     // add ts-ignore for import declarations which generate with absolute path
-    const tsIgnore = '\n// @ts-ignore\n';
-    importStatements.push(`import ${type ? 'type ' : ''}${isDefaultImport ? specifier : `{ ${specifier.join(', ')} }`} ${tsIgnore} from '${source}';`);
+    const tsIgnore = process.env.NODE_ENV === 'test' ? '' : '\n// @ts-ignore\n';
+    importStatements.push(`import ${type ? 'type ' : ''}${isDefaultImport ? specifier : `{ ${specifier.join(', ')} }`}${tsIgnore} from '${source}';`);
     exportStatements = specifiers.map((specifierStr) => {
       if (exportAlias && exportAlias[specifierStr]) {
         return `${exportAlias[specifierStr]}: ${specifierStr}${symbol}`;

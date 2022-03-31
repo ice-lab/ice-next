@@ -2,7 +2,7 @@ import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { Context } from 'build-scripts';
 import consola from 'consola';
-import type { CommandArgs, CommandName, IGetBuiltInPlugins } from 'build-scripts';
+import type { CommandArgs, CommandName } from 'build-scripts';
 import type { ExportData } from '@ice/types/esm/generator.js';
 import type { ExtendsPluginAPI } from '@ice/types/esm/plugin.js';
 import Generator from './service/runtimeGenerator.js';
@@ -24,7 +24,6 @@ interface CreateServiceOptions {
   rootDir: string;
   command: CommandName;
   commandArgs: CommandArgs;
-  getBuiltInPlugins: IGetBuiltInPlugins;
 }
 
 async function createService({ rootDir, command, commandArgs }: CreateServiceOptions) {
