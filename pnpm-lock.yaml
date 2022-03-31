@@ -143,7 +143,6 @@ importers:
   packages/ice:
     specifiers:
       '@builder/pack': ^0.6.0
-      '@ice/plugin-auth': ^1.0.0
       '@ice/route-manifest': ^1.0.0
       '@ice/runtime': ^1.0.0
       '@ice/types': ^1.0.0
@@ -170,7 +169,6 @@ importers:
       yargs-parser: ^21.0.0
     dependencies:
       '@builder/pack': 0.6.0
-      '@ice/plugin-auth': link:../plugin-auth
       '@ice/route-manifest': link:../route-manifest
       '@ice/runtime': link:../runtime
       '@ice/webpack-config': link:../build-webpack-config
