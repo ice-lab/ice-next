@@ -1,6 +1,6 @@
 import consola from 'consola';
 import type { UserConfig, Config, Plugin } from '@ice/types';
-import type { Context } from 'build-scripts';
+import type { UserConfigContext } from 'build-scripts';
 
 const mergeDefaultValue = <T>(config: Config, key: string, value: T): Config => {
   if (value) {
@@ -38,14 +38,14 @@ const userConfig = [
   {
     name: 'devPublicPath',
     validation: 'string',
-    setConfig: (config: Config, publicPath: UserConfig['publicPath'], context: Context) => {
+    setConfig: (config: Config, publicPath: UserConfig['publicPath'], context: UserConfigContext<Config>) => {
       return mergeDefaultValue(config, 'publicPath', context.command === 'start' && publicPath);
     },
   },
   {
     name: 'publicPath',
     validation: 'string',
-    setConfig: (config: Config, publicPath: UserConfig['publicPath'], context: Context) => {
+    setConfig: (config: Config, publicPath: UserConfig['publicPath'], context: UserConfigContext<Config>) => {
       return mergeDefaultValue(config, 'publicPath', context.command === 'build' && publicPath);
     },
   },
@@ -114,7 +114,6 @@ const cliOptions = [
 ];
 
 const configPlugin: Plugin = ({ registerUserConfig, registerCliOption }) => {
-  // @ts-expect-error remove me when build-script fix type error
   registerUserConfig(userConfig);
   registerCliOption(cliOptions);
 };

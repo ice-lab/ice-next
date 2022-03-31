@@ -84,7 +84,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
       },
       context: {},
     },
-    // @ts-expect-error
     getBuiltInPlugins: () => {
       return [webPlugin, configPlugin];
     },

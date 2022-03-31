@@ -1,4 +1,4 @@
-import { defineUserConfig } from '@ice/cli';
+import { defineUserConfig } from '@ice/app';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 export default defineUserConfig({
