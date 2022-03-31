@@ -1,7 +1,0 @@
-{
-  "isSSR": true,
-  "isSSG": false,
-  "alias": {
-    "$$": "./.ice"
-  }
-}

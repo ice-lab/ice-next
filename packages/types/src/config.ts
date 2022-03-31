@@ -48,4 +48,8 @@ export interface Config {
   proxy?: ProxyConfigArrayItem | ProxyConfigMap | ProxyConfigArray | undefined;
 
   isServer?: boolean;
+
+  isSSR?: boolean;
+
+  isSSG?: boolean;
 }

@@ -53,7 +53,7 @@ export default async function runServerApp(requestContext: ServerContext, render
     return render404();
   }
 
-  const routeModules = await loadRouteModules(matches.map(match => match.route as RouteItem));
+  await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   let isFallback;
   let initialData;
@@ -73,7 +73,7 @@ export default async function runServerApp(requestContext: ServerContext, render
       initialData = await appConfig.app.getInitialData(initialContext);
     }
 
-    pageData = await loadPageData(matches, routeModules, initialContext, documentOnly);
+    pageData = await loadPageData(matches, initialContext, documentOnly);
     pageAssets = getPageAssets(matches, assetsManifest);
 
     if (!documentOnly) {
@@ -82,8 +82,9 @@ export default async function runServerApp(requestContext: ServerContext, render
         routes,
         appConfig,
         initialData,
+        initialPageData: pageData,
+        // pageData and initialPageData are the same when SSR/SSG
         pageData,
-        routeModules,
         assetsManifest,
       };
 
@@ -92,7 +93,7 @@ export default async function runServerApp(requestContext: ServerContext, render
         runtime.loadModule(m);
       });
 
-      html = renderApp(runtime, location);
+      html = renderApp(runtime, location, appContext);
     }
   } catch (err) {
     console.error(err);
@@ -130,16 +131,22 @@ async function renderDocument(Document, documentContext) {
   return html;
 }
 
-function renderApp(runtime, location) {
+function renderApp(runtime, location, appContext) {
   const staticNavigator = createStaticNavigator();
+  const AppProvider = runtime.composeAppProvider() || React.Fragment;
+  const PageWrappers = runtime.getWrapperPageRegistration();
+  const AppRouter = runtime.getAppRouter();
 
   const html = ReactDOMServer.renderToString(
     <App
       action={Action.Pop}
-      runtime={runtime}
       location={location}
       navigator={staticNavigator}
       static
+      appContext={appContext}
+      AppProvider={AppProvider}
+      PageWrappers={PageWrappers}
+      AppRouter={AppRouter}
     />,
   );
 
