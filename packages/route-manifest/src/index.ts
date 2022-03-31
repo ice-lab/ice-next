@@ -125,7 +125,7 @@ function defineConventionalRoutes(
     });
 
     for (let routeId of childRouteIds) {
-      const routePath: string = createRoutePath(
+      const routePath: string | undefined = createRoutePath(
         routeId.slice((removeLastLayoutStrFromId(parentId) || '').length),
       );
       const routeFilePath = path.join('src', 'pages', files[routeId]);
@@ -134,7 +134,7 @@ function defineConventionalRoutes(
       }
       const isIndexRoute = routeId === 'index' || routeId.endsWith('/index');
       const fullPath = createRoutePath(routeId);
-      const uniqueRouteId = fullPath + (isIndexRoute ? '?index' : '');
+      const uniqueRouteId = (fullPath || '') + (isIndexRoute ? '?index' : '');
 
       if (uniqueRouteId) {
         if (uniqueRoutes.has(uniqueRouteId)) {
