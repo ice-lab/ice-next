@@ -1,5 +1,6 @@
 import webpack from 'webpack';
 import consola from 'consola';
+import chalk from 'chalk';
 import type { CommandArgs } from 'build-scripts';
 import type { Compiler, Configuration } from 'webpack';
 import type { Urls, EsbuildCompile } from '@ice/types/esm/plugin.js';
@@ -70,8 +71,19 @@ async function webpackCompiler(options: {
       consola.warn('Compiled with warnings.\n');
       consola.warn(messages.warnings.join('\n\n'));
     }
-    // compiler.hooks.done is AsyncSeriesHook which does not support async function
     if (command === 'start') {
+      if (isSuccessful) {
+        console.log();
+        console.log(chalk.green(' Starting the development server at:'));
+        if (process.env.CLOUDIDE_ENV) {
+          console.log('   - IDE server: ', `https://${process.env.WORKSPACE_UUID}-${commandArgs.port}.${process.env.WORKSPACE_HOST}`);
+        } else {
+          console.log('   - Local  : ', chalk.underline.white(urls.localUrlForBrowser));
+          console.log('   - Network: ', chalk.underline.white(urls.lanUrlForTerminal));
+        }
+        console.log();
+      }
+      // compiler.hooks.done is AsyncSeriesHook which does not support async function
       await applyHook('after.start.compile', {
         stats,
         isSuccessful,

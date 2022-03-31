@@ -21,8 +21,12 @@ import {
   PageWrapper,
 } from './types.js';
 import defineAppConfig from './defineAppConfig.js';
+import { matchRoutes } from './routes.js';
 
+// export types
+export * from './types.js';
 export {
+  matchRoutes,
   Runtime,
   App,
   runBrowserApp,

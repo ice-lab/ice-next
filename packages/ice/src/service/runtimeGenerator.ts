@@ -12,7 +12,6 @@ import type {
   AddContent,
   GetExportStr,
   ParseRenderData,
-  GenerateImportStr,
   Render,
   RenderFile,
   ModifyRenderData,
@@ -48,7 +47,9 @@ export function generateExports(exportList: ExportData[]) {
     const isDefaultImport = !Array.isArray(specifier);
     const specifiers = isDefaultImport ? [specifier] : specifier;
     const symbol = type ? ';' : ',';
-    importStatements.push(`import ${type ? 'type ' : ''}${isDefaultImport ? specifier : `{ ${specifier.join(', ')} }`} from '${source}';`);
+    // add ts-ignore for import declarations which generate with absolute path
+    const tsIgnore = '\n// @ts-ignore\n';
+    importStatements.push(`import ${type ? 'type ' : ''}${isDefaultImport ? specifier : `{ ${specifier.join(', ')} }`} ${tsIgnore} from '${source}';`);
     exportStatements = specifiers.map((specifierStr) => {
       if (exportAlias && exportAlias[specifierStr]) {
         return `${exportAlias[specifierStr]}: ${specifierStr}${symbol}`;
@@ -200,14 +201,6 @@ export default class Generator {
       staticConfig: staticConfig.length && staticConfig[0],
       globalStyle: globalStyles.length && formatPath(path.relative(path.join(this.targetDir, 'core'), globalStyles[0])),
     };
-  };
-
-  public generateImportStr: GenerateImportStr = (apiName) => {
-    const imports = this.contentRegistration[apiName] || [];
-    return imports.map(({ source, specifier }) => {
-      return specifier
-        ? `import ${specifier} from '${source}';` : `import '${source}'`;
-    }).join('\n');
   };
 
   public render: Render = () => {

@@ -15,6 +15,8 @@ import getWatchEvents from './getWatchEvents.js';
 import { getAppConfig } from './analyzeRuntime.js';
 import { defineRuntimeEnv, updateRuntimeEnv } from './utils/runtimeEnv.js';
 import { generateRoutesInfo } from './routes.js';
+import webPlugin from './tasks/web.js';
+import configPlugin from './userConfig.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -25,7 +27,7 @@ interface CreateServiceOptions {
   getBuiltInPlugins: IGetBuiltInPlugins;
 }
 
-async function createService({ rootDir, command, commandArgs, getBuiltInPlugins }: CreateServiceOptions) {
+async function createService({ rootDir, command, commandArgs }: CreateServiceOptions) {
   const targetDir = '.ice';
   const templateDir = path.join(__dirname, '../template/');
   const configFile = 'ice.config.(mts|mjs|ts|js|cjs|json)';
@@ -83,7 +85,10 @@ async function createService({ rootDir, command, commandArgs, getBuiltInPlugins 
       },
       context: {},
     },
-    getBuiltInPlugins,
+    // @ts-expect-error
+    getBuiltInPlugins: () => {
+      return [webPlugin, configPlugin];
+    },
   });
   await ctx.resolveConfig();
   generator.setPlugins(ctx.getAllPlugin());
