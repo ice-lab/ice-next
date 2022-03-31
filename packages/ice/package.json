@@ -1,5 +1,5 @@
 {
-  "name": "@ice/cli",
+  "name": "@ice/app",
   "version": "3.0.0",
   "description": "provide scripts and configuration used by web framework ice",
   "type": "module",
