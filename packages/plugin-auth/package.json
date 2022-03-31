@@ -8,8 +8,8 @@
   "exports": {
     ".": "./esm/index.js",
     "./runtime": "./runtime",
-    "./runtime/Auth": "./esm/index.js",
-    "./runtime/types": "./esm/index.js"
+    "./runtime/Auth": "./runtime/Auth.tsx",
+    "./runtime/types": "./runtime/types.ts"
   },
   "files": [
     "esm",
