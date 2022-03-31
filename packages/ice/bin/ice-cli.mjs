@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 import { program } from 'commander';
 import parse from 'yargs-parser';
 // hijack webpack before import other modules
-import '../esm/requireHook.js';
+// import '../esm/requireHook.js';
 import createService from '../esm/createService.js';
 import checkNodeVersion from './checkNodeVersion.mjs';
 
