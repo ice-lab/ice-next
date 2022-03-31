@@ -125,24 +125,22 @@ function defineConventionalRoutes(
     });
 
     for (let routeId of childRouteIds) {
-      const routePath: string | undefined = createRoutePath(
-        routeId.slice((removeLayoutStrFromId(parentId) || '').length),
+      const routePath: string = createRoutePath(
+        routeId.slice((removeLastLayoutStrFromId(parentId) || '').length),
       );
+      const routeFilePath = path.join('src', 'pages', files[routeId]);
       if (RegExp(`[^${validRouteChar.join(',')}]`).test(routePath)) {
-        throw new Error(`invalid character in '${path.join('src', 'pages', files[routeId])}'. Only support char: ${validRouteChar.join(', ')}`);
+        throw new Error(`invalid character in '${routeFilePath}'. Only support char: ${validRouteChar.join(', ')}`);
       }
-      const isIndexRoute = routeId.endsWith('/index');
-      let fullPath = createRoutePath(routeId);
-      let uniqueRouteId = (fullPath || '') + (isIndexRoute ? '?index' : '');
+      const isIndexRoute = routeId === 'index' || routeId.endsWith('/index');
+      const fullPath = createRoutePath(routeId);
+      const uniqueRouteId = fullPath + (isIndexRoute ? '?index' : '');
 
       if (uniqueRouteId) {
         if (uniqueRoutes.has(uniqueRouteId)) {
           throw new Error(
-            `Path ${JSON.stringify(fullPath)} defined by route ${JSON.stringify(
-              routeId,
-            )} conflicts with route ${JSON.stringify(
-              uniqueRoutes.get(uniqueRouteId),
-            )}`,
+            `Path ${JSON.stringify(fullPath)} defined by route ${JSON.stringify(routeFilePath)} 
+            conflicts with route ${JSON.stringify(uniqueRoutes.get(uniqueRouteId))}`,
           );
         } else {
           uniqueRoutes.set(uniqueRouteId, routeId);
@@ -178,7 +176,7 @@ export function createRoutePath(routeId: string): string | undefined {
   let result = '';
   let rawSegmentBuffer = '';
 
-  const partialRouteId = removeLayoutStrFromId(routeId);
+  const partialRouteId = removeLastLayoutStrFromId(routeId);
 
   for (let i = 0; i < partialRouteId.length; i++) {
     const char = partialRouteId.charAt(i);
@@ -208,8 +206,8 @@ export function createRoutePath(routeId: string): string | undefined {
   if (rawSegmentBuffer === 'index' && result.endsWith('index')) {
     result = result.replace(/\/?index$/, '');
   }
-
-  return result || undefined;
+  result = result.startsWith('/') ? result : `/${result}`;
+  return result;
 }
 
 function findParentRouteId(
@@ -259,6 +257,6 @@ function findGlobalLayout(srcDir: string, basename: string): string | undefined 
  * /About/layout -> /About
  * /About/layout/index -> /About/layout/index
  */
-function removeLayoutStrFromId(id?: string) {
+function removeLastLayoutStrFromId(id?: string) {
   return id?.endsWith('/layout') ? id.slice(0, id.length - '/layout'.length) : id;
 }

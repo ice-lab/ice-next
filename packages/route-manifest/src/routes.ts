@@ -103,7 +103,7 @@ export function defineRoutes(
     const pageFilePath = join('pages', file);
     const id = createRouteId(pageFilePath);
     const route: ConfigRoute = {
-      path: path || '/',
+      path,
       index: options.index ? true : undefined,
       id,
       parentId:

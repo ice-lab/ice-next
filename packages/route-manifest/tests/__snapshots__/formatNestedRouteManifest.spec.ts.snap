@@ -32,7 +32,7 @@ Array [
     "id": "pages/index",
     "index": true,
     "parentId": undefined,
-    "path": undefined,
+    "path": "/",
   },
 ]
 `;
