@@ -206,8 +206,8 @@ export function createRoutePath(routeId: string): string | undefined {
   if (rawSegmentBuffer === 'index' && result.endsWith('index')) {
     result = result.replace(/\/?index$/, '');
   }
-  result = result.startsWith('/') ? result : `/${result}`;
-  return result;
+
+  return result || undefined;
 }
 
 function findParentRouteId(

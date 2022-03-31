@@ -8,7 +8,7 @@ Array [
     "id": "pages/blog/index",
     "index": true,
     "parentId": undefined,
-    "path": "/blog",
+    "path": "blog",
   },
   Object {
     "componentName": "PagesBlog$id",
@@ -16,7 +16,7 @@ Array [
     "id": "pages/blog/$id",
     "index": undefined,
     "parentId": undefined,
-    "path": "/blog/:id",
+    "path": "blog/:id",
   },
   Object {
     "componentName": "PagesAbout",
@@ -24,7 +24,7 @@ Array [
     "id": "pages/about",
     "index": undefined,
     "parentId": undefined,
-    "path": "/about",
+    "path": "about",
   },
   Object {
     "componentName": "PagesIndex",
@@ -32,7 +32,7 @@ Array [
     "id": "pages/index",
     "index": true,
     "parentId": undefined,
-    "path": "/",
+    "path": undefined,
   },
 ]
 `;

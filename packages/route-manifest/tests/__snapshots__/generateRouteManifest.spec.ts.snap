@@ -14,7 +14,7 @@ Object {
     "id": "pages/About/index",
     "index": true,
     "parentId": "layout",
-    "path": "/About",
+    "path": "About",
   },
   "pages/About/me/index": Object {
     "componentName": "PagesAboutMeIndex",
@@ -22,7 +22,7 @@ Object {
     "id": "pages/About/me/index",
     "index": true,
     "parentId": "layout",
-    "path": "/About/me",
+    "path": "About/me",
   },
   "pages/home": Object {
     "componentName": "PagesHome",
@@ -30,7 +30,7 @@ Object {
     "id": "pages/home",
     "index": undefined,
     "parentId": "layout",
-    "path": "/home",
+    "path": "home",
   },
   "pages/index": Object {
     "componentName": "PagesIndex",
@@ -38,7 +38,7 @@ Object {
     "id": "pages/index",
     "index": true,
     "parentId": "layout",
-    "path": "/",
+    "path": undefined,
   },
 }
 `;
@@ -65,7 +65,7 @@ Object {
     "id": "pages/About/me/index",
     "index": true,
     "parentId": "layout",
-    "path": "/About/me",
+    "path": "About/me",
   },
   "pages/home": Object {
     "componentName": "PagesHome",
@@ -73,7 +73,7 @@ Object {
     "id": "pages/home",
     "index": undefined,
     "parentId": "layout",
-    "path": "/home",
+    "path": "home",
   },
   "pages/index": Object {
     "componentName": "PagesIndex",
@@ -81,7 +81,7 @@ Object {
     "id": "pages/index",
     "index": true,
     "parentId": "layout",
-    "path": "/",
+    "path": undefined,
   },
 }
 `;
@@ -100,7 +100,7 @@ Object {
     "id": "pages/home.news",
     "index": undefined,
     "parentId": "layout",
-    "path": "/home/news",
+    "path": "home/news",
   },
 }
 `;
@@ -113,7 +113,7 @@ Object {
     "id": "pages/about",
     "index": undefined,
     "parentId": undefined,
-    "path": "/about",
+    "path": "about",
   },
   "pages/blog/$id": Object {
     "componentName": "PagesBlog$id",
@@ -121,7 +121,7 @@ Object {
     "id": "pages/blog/$id",
     "index": undefined,
     "parentId": undefined,
-    "path": "/blog/:id",
+    "path": "blog/:id",
   },
   "pages/blog/index": Object {
     "componentName": "PagesBlogIndex",
@@ -129,7 +129,7 @@ Object {
     "id": "pages/blog/index",
     "index": true,
     "parentId": undefined,
-    "path": "/blog",
+    "path": "blog",
   },
   "pages/index": Object {
     "componentName": "PagesIndex",
@@ -137,7 +137,7 @@ Object {
     "id": "pages/index",
     "index": true,
     "parentId": undefined,
-    "path": "/",
+    "path": undefined,
   },
 }
 `;
@@ -156,7 +156,7 @@ Object {
     "id": "pages/About/me/index",
     "index": true,
     "parentId": "layout",
-    "path": "/About/me",
+    "path": "About/me",
   },
   "pages/home": Object {
     "componentName": "PagesHome",
@@ -164,7 +164,7 @@ Object {
     "id": "pages/home",
     "index": undefined,
     "parentId": "layout",
-    "path": "/home",
+    "path": "home",
   },
   "pages/index": Object {
     "componentName": "PagesIndex",
@@ -172,7 +172,7 @@ Object {
     "id": "pages/index",
     "index": true,
     "parentId": "layout",
-    "path": "/",
+    "path": undefined,
   },
 }
 `;
@@ -191,7 +191,7 @@ Object {
     "id": "pages/about",
     "index": undefined,
     "parentId": "layout",
-    "path": "/about",
+    "path": "about",
   },
   "pages/blog/$id": Object {
     "componentName": "PagesBlog$id",
@@ -207,7 +207,7 @@ Object {
     "id": "pages/blog/index",
     "index": true,
     "parentId": "pages/blog/layout",
-    "path": "/",
+    "path": undefined,
   },
   "pages/blog/layout": Object {
     "componentName": "PagesBlogLayout",
@@ -215,7 +215,7 @@ Object {
     "id": "pages/blog/layout",
     "index": undefined,
     "parentId": "layout",
-    "path": "/blog",
+    "path": "blog",
   },
   "pages/home/index": Object {
     "componentName": "PagesHomeIndex",
@@ -223,7 +223,7 @@ Object {
     "id": "pages/home/index",
     "index": true,
     "parentId": "pages/home/layout",
-    "path": "/",
+    "path": undefined,
   },
   "pages/home/layout": Object {
     "componentName": "PagesHomeLayout",
@@ -231,7 +231,7 @@ Object {
     "id": "pages/home/layout",
     "index": undefined,
     "parentId": "layout",
-    "path": "/home",
+    "path": "home",
   },
   "pages/home/layout/index": Object {
     "componentName": "PagesHomeLayoutIndex",
@@ -247,7 +247,7 @@ Object {
     "id": "pages/index",
     "index": true,
     "parentId": "layout",
-    "path": "/",
+    "path": undefined,
   },
 }
 `;
@@ -266,7 +266,7 @@ Object {
     "id": "pages/$",
     "index": undefined,
     "parentId": "layout",
-    "path": "/*",
+    "path": "*",
   },
   "pages/home": Object {
     "componentName": "PagesHome",
@@ -274,7 +274,7 @@ Object {
     "id": "pages/home",
     "index": undefined,
     "parentId": "layout",
-    "path": "/home",
+    "path": "home",
   },
 }
 `;
