@@ -59,11 +59,9 @@ export function generateRouteManifest(
       };
     }
   }
-  // 3. add custom routes
-  // TODO:
+  // 3. add extra routes from ice.config
   if (defineExtraRoutes) {
     const extraRoutes = defineRoutes(defineExtraRoutes);
-    console.log(extraRoutes);
     for (const key of Object.keys(extraRoutes)) {
       const route = extraRoutes[key];
       routeManifest[route.id] = {
