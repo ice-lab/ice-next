@@ -7,7 +7,7 @@ export default function About() {
 
 export function getPageConfig() {
   return {
-    auth: ['guest'],
+    // auth: ['guest'],
   };
 }
 

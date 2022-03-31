@@ -1,5 +1,6 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { createHashHistory, createBrowserHistory } from 'history';
+import type { HashHistory, BrowserHistory } from 'history';
 import Runtime from './runtime.js';
 import App from './App.js';
 import type { AppContext, AppConfig, RouteItem, AppRouterProps, PageWrapper, RuntimeModules } from './types';
@@ -50,10 +51,11 @@ async function render(runtime: Runtime) {
   const PageWrappers = runtime.getWrapperPageRegistration();
   const AppRouter = runtime.getAppRouter();
   const appMountNode = document.getElementById(rootId);
+  const history = (routerType === 'hash' ? createHashHistory : createBrowserHistory)({ window });
 
   render(
     <BrowserEntry
-      routerType={routerType}
+      history={history}
       appContext={appContext}
       AppProvider={AppProvider}
       PageWrappers={PageWrappers}
@@ -63,27 +65,22 @@ async function render(runtime: Runtime) {
   );
 }
 
-interface Props {
-  routerType: AppConfig['router']['type'];
+interface BrowserEntryProps {
+  history: HashHistory | BrowserHistory;
   appContext: AppContext;
   AppProvider: React.ComponentType<any>;
   PageWrappers: PageWrapper<{}>[];
   AppRouter: React.ComponentType<AppRouterProps>;
 }
 
-function BrowserEntry({
-  routerType,
-  appContext,
-  ...rest
-}: Props) {
-  const history = (routerType === 'hash' ? createHashHistory : createBrowserHistory)({ window });
+function BrowserEntry({ history, appContext, ...rest }: BrowserEntryProps) {
   const { routes, initialPageData } = appContext;
   const [historyState, setHistoryState] = useState({
     action: history.action,
     location: history.location,
+    pageData: initialPageData,
   });
-  const [pageData, setPageData] = useState(initialPageData);
-  const { action, location } = historyState;
+  const { action, location, pageData } = historyState;
 
   // listen the history change and update the state which including the latest action and location
   useLayoutEffect(() => {
@@ -99,12 +96,11 @@ function BrowserEntry({
           return loadPageData(matches, initialContext);
         })
         .then((pageData) => {
-          // TODO: 这里会触发两次 rerender
-          setPageData(pageData);
-          setHistoryState({ action, location });
+          // just re-render once, so add pageData to historyState :(
+          setHistoryState({ action, location, pageData });
         });
     });
-  }, [history, routes]);
+  }, []);
 
   return (
     <App
