@@ -2,8 +2,8 @@
   "name": "basic-project",
   "version": "1.0.0",
   "scripts": {
-    "start": "ice start",
-    "build": "ice build"
+    "start": "CONSOLA_LEVEL=4 ice start",
+    "build": "CONSOLA_LEVEL=4 ice build"
   },
   "description": "",
   "author": "",
