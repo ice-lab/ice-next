@@ -15,8 +15,8 @@ import getWatchEvents from './getWatchEvents.js';
 import { getAppConfig } from './analyzeRuntime.js';
 import { defineRuntimeEnv, updateRuntimeEnv } from './utils/runtimeEnv.js';
 import { generateRoutesInfo } from './routes.js';
-import webPlugin from './tasks/web.js';
-import configPlugin from './userConfig.js';
+import webPlugin from './plugins/web/index.js';
+import configPlugin from './plugins/config.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

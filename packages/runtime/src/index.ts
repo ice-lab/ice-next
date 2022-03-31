@@ -19,12 +19,11 @@ import {
   AppContext,
   AppConfig,
   PageWrapper,
+  RouteItem,
 } from './types.js';
 import defineAppConfig from './defineAppConfig.js';
 import { matchRoutes } from './routes.js';
 
-// export types
-export * from './types.js';
 export {
   matchRoutes,
   Runtime,
@@ -45,4 +44,5 @@ export {
   AppContext,
   AppConfig,
   PageWrapper,
+  RouteItem,
 };

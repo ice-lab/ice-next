@@ -17,8 +17,6 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
         // platform: 'node',
         format: 'esm',
         outExtension: { '.js': '.mjs' },
-        // FIXME: https://github.com/ice-lab/ice-next/issues/27
-        external: process.env.JEST_TEST === 'true' ? [] : ['./node_modules/*', 'react'],
       }, { isServer: true });
       // timestamp for disable import cache
       return `${serverEntry}?version=${new Date().getTime()}`;
