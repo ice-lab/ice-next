@@ -16,7 +16,7 @@ export async function updatePageConfig(pageConfig: PageConfig) {
   updateMeta(meta);
 
   await loadLinks(links);
-  await loadScript(scripts);
+  await loadScripts(scripts);
 }
 
 /**
@@ -125,7 +125,7 @@ async function loadLinks(links = []) {
   });
 }
 
-async function loadScript(scripts = []) {
+async function loadScripts(scripts = []) {
   const tags = [];
   const blockTags = [];
 
