@@ -14,22 +14,23 @@ interface RunServerAppOptions {
   requestContext: ServerContext;
   appConfig: AppConfig;
   routes: RouteItem[];
-  documentOnly: boolean;
   runtimeModules: (RuntimePlugin | CommonJsRuntime)[];
-  Document: React.ComponentType<{}>;
+  documentComponent: React.ComponentType<{}>;
+  documentOnly: boolean;
   assetsManifest: AssetsManifest;
+  isSSG?: boolean;
 }
 
-async function runServerApp(options: RunServerAppOptions): Promise<string> {
+export default async function runServerApp(requestContext: ServerContext, renderOpts: RunServerAppOptions) {
   const {
-    appConfig,
-    assetsManifest,
-    Document,
-    documentOnly,
-    requestContext,
-    runtimeModules,
     routes,
-  } = options;
+    assetsManifest,
+    appConfig,
+    runtimeModules,
+    documentComponent: Document,
+    documentOnly,
+    isSSG,
+  } = renderOpts;
 
   const { req } = requestContext;
   const { url } = req;
@@ -47,67 +48,62 @@ async function runServerApp(options: RunServerAppOptions): Promise<string> {
 
   const matches = matchRoutes(routes, location);
 
-  // TODO: error handling
   if (!matches.length) {
-    throw new Error('No matched page found.');
+    console.error('No matched page found.', url);
+    return render404();
   }
 
   const routeModules = await loadRouteModules(matches.map(match => match.route as RouteItem));
 
-  const initialContext: InitialContext = {
-    ...requestContext,
-    pathname: location.pathname,
-    query: Object.fromEntries(createSearchParams(location.search)),
-    path: url,
-  };
-
+  let isFallback;
   let initialData;
-  if (appConfig.app?.getInitialData) {
-    initialData = await appConfig.app.getInitialData(initialContext);
+  let pageData;
+  let pageAssets;
+  let html;
+
+  try {
+    const initialContext: InitialContext = {
+      ...requestContext,
+      pathname: location.pathname,
+      query: Object.fromEntries(createSearchParams(location.search)),
+      path: url,
+    };
+
+    if (appConfig.app?.getInitialData && documentOnly) {
+      initialData = await appConfig.app.getInitialData(initialContext);
+    }
+
+    pageData = await loadPageData(matches, routeModules, initialContext, documentOnly);
+    pageAssets = getPageAssets(matches, assetsManifest);
+
+    if (!documentOnly) {
+      const appContext: AppContext = {
+        matches,
+        routes,
+        appConfig,
+        initialData,
+        pageData,
+        routeModules,
+        assetsManifest,
+      };
+
+      const runtime = new Runtime(appContext);
+      runtimeModules.forEach(m => {
+        runtime.loadModule(m);
+      });
+
+      html = renderApp(runtime, location);
+    }
+  } catch (err) {
+    console.error(err);
+    isFallback = true;
   }
 
-  const pageData = await loadPageData(matches, routeModules, initialContext);
-
-  const appContext: AppContext = {
-    matches,
-    routes,
-    appConfig,
-    initialData,
-    pageData,
-    routeModules,
-    assetsManifest,
-  };
-
-  const runtime = new Runtime(appContext);
-  runtimeModules.forEach(m => {
-    runtime.loadModule(m);
-  });
-
-  const html = render(Document, runtime, location, documentOnly);
-  return html;
-}
-
-export default runServerApp;
-
-async function render(
-  Document,
-  runtime: Runtime,
-  location: Location,
-  documentOnly: boolean,
-) {
-  const appContext = runtime.getAppContext();
-  const { matches, initialData, pageData, assetsManifest } = appContext;
-
-  let html = '';
-
-  if (!documentOnly) {
-    html = renderApp(runtime, location);
-  }
-
-  const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
 
   const appData = {
+    isSSG,
+    isFallback,
     initialData,
   };
 
@@ -119,13 +115,19 @@ async function render(
     html,
   };
 
-  const result = ReactDOMServer.renderToString(
+  const result = renderDocument(Document, documentContext);
+
+  return result;
+}
+
+async function renderDocument(Document, documentContext) {
+  const html = ReactDOMServer.renderToString(
     <DocumentContextProvider value={documentContext}>
       <Document />
     </DocumentContextProvider>,
   );
 
-  return result;
+  return html;
 }
 
 function renderApp(runtime, location) {
@@ -142,6 +144,10 @@ function renderApp(runtime, location) {
   );
 
   return html;
+}
+
+function render404() {
+  // TODO: error handling
 }
 
 function createStaticNavigator() {

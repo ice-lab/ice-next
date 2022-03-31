@@ -6,6 +6,7 @@ export default async function generateHTML(options) {
     entry,
     routeManifest,
     outDir,
+    isSSG,
   } = options;
 
   const serverEntry = await import(entry);
@@ -21,6 +22,9 @@ export default async function generateHTML(options) {
         url: routePath,
         path: routePath,
       },
+    }, {
+      isSSG,
+      documentOnly: !isSSG,
     });
 
     const fileName = routePath === '/' ? 'index.html' : `${routePath}.html`;

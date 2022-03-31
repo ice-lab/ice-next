@@ -5,14 +5,14 @@ import Document from '@/document';
 import assetsManifest from './assets-manifest.json';
 import routes from './routes';
 
-export async function render(requestContext, documentOnly = false) {
-  return await runServerApp({
+export async function render(requestContext, renderOpts) {
+  return await runServerApp(requestContext, {
+    appConfig,
+    assetsManifest,
+    documentComponent: Document,
+    routes,
     requestContext,
     runtimeModules,
-    appConfig,
-    routes,
-    assetsManifest,
-    Document,
-    documentOnly,
+    ...renderOpts
   });
 }
