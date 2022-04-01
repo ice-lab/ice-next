@@ -99,7 +99,7 @@ async function render(
   const appContext = runtime.getAppContext();
   const { matches, initialData, pageData, assetsManifest } = appContext;
 
-  let html = '';
+  let appElement = null;
 
   if (!documentOnly) {
     const staticNavigator = createStaticNavigator();
@@ -107,7 +107,7 @@ async function render(
     const PageWrappers = runtime.getWrapperPageRegistration();
     const AppRouter = runtime.getAppRouter();
 
-    html = ReactDOMServer.renderToString(
+    appElement = (
       <App
         action={Action.Pop}
         location={location}
@@ -117,7 +117,7 @@ async function render(
         AppProvider={AppProvider}
         PageWrappers={PageWrappers}
         AppRouter={AppRouter}
-      />,
+      />
     );
   }
 
@@ -133,7 +133,8 @@ async function render(
     pageData,
     pageAssets,
     entryAssets,
-    html,
+    appElement,
+    assetsManifest,
   };
 
   const result = ReactDOMServer.renderToString(

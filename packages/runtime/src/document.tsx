@@ -7,6 +7,8 @@ interface DocumentContext {
   pageAssets?: string[];
   pageData?: PageData;
   appData?: AppData;
+  appElement?: any;
+  assetsManifest?: any;
 }
 
 const Context = React.createContext<DocumentContext>(null);
@@ -65,7 +67,7 @@ export function Links() {
 }
 
 export function Scripts() {
-  const { pageData, pageAssets, entryAssets, appData } = useDocumentContext();
+  const { pageData, pageAssets, entryAssets, appData, assetsManifest } = useDocumentContext();
   const { links: customLinks = [], scripts: customScripts = [] } = pageData.pageConfig;
 
   const scripts = pageAssets.concat(entryAssets).filter(path => path.indexOf('.js') > -1);
@@ -76,6 +78,7 @@ export function Scripts() {
 
   return (
     <>
+      <script dangerouslySetInnerHTML={{ __html: `window.__ICE_ASSETS_MANIFEST__=${JSON.stringify(assetsManifest)}` }} />
       <script dangerouslySetInnerHTML={{ __html: `window.__ICE_APP_DATA__=${JSON.stringify(appData)}` }} />
       <script dangerouslySetInnerHTML={{ __html: `window.__ICE_PAGE_DATA__=${JSON.stringify(pageData)}` }} />
       {
@@ -92,13 +95,14 @@ export function Scripts() {
       {
         deferredLinks.map(link => {
           const { block, ...props } = link;
-          return <script key={link.href} {...props} data-custom-link />;
+          return <link key={link.href} {...props} data-custom-link />;
         })
       }
       {
         deferredScripts.map(script => {
           const { block, ...props } = script;
-          return <script key={script.src} defer {...props} data-custom-script />;
+          // TODO： defer 属性会导致 CSR 、SSR 渲染不一致，先移除
+          return <script key={script.src} {...props} data-custom-script />;
         })
       }
     </>
@@ -106,9 +110,11 @@ export function Scripts() {
 }
 
 export function Main() {
-  const { html } = useDocumentContext();
+  const { appElement } = useDocumentContext();
 
-  // TODO: set id from config
-  // eslint-disable-next-line react/self-closing-comp
-  return <div id="ice-container" dangerouslySetInnerHTML={{ __html: html || '' }}></div>;
+  return (
+    <div id="ice-container">
+      {appElement}
+    </div>
+  );
 }
