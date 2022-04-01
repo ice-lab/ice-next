@@ -49,14 +49,14 @@ export function generateRouteManifest(
       };
     }
   }
-  // 3. add extra routes from ice.config
+  // 3. add extra routes from user config
   if (defineExtraRoutes) {
     const extraRoutes = defineRoutes(defineExtraRoutes);
     for (const key of Object.keys(extraRoutes)) {
       const route = extraRoutes[key];
       routeManifest[route.id] = {
         ...route,
-        parentId: route.parentId || (globalLayoutFile && 'layout') || undefined,
+        parentId: route.parentId || undefined,
       };
     }
   }
