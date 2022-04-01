@@ -115,8 +115,11 @@ function defineConventionalRoutes(
     });
 
     for (let routeId of childRouteIds) {
+      const parentRoutePath = removeLastLayoutStrFromId(parentId) || '';
       const routePath: string | undefined = createRoutePath(
-        routeId.slice((removeLastLayoutStrFromId(parentId) || '').length),
+        // parentRoutePath = 'home', routeId = 'home/me', the new routeId is 'me'
+        // in order to escape the child route path is absolute path
+        routeId.slice(parentRoutePath.length + (parentRoutePath ? 1 : 0)),
       );
       const routeFilePath = path.join('src', 'pages', files[routeId]);
       if (RegExp(`[^${validRouteChar.join(',')}]`).test(routePath)) {
@@ -240,5 +243,8 @@ function visitFiles(
  * 'About/layout/index' -> 'About/layout/index'
  */
 function removeLastLayoutStrFromId(id?: string) {
-  return id?.endsWith('layout') ? id.slice(0, id.length - 'layout'.length) : id;
+  const layoutStrs = ['/layout', 'layout'];
+  const currentLayoutStr = layoutStrs.find(layoutStr => id?.endsWith(layoutStr));
+  return currentLayoutStr ? id.slice(0, id.length - currentLayoutStr.length) : id;
+  // return id?.endsWith('layout') ? id.slice(0, id.length - 'layout'.length) : id;
 }

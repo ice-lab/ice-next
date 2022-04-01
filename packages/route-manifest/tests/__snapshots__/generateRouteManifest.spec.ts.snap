@@ -217,7 +217,7 @@ Object {
     "id": "blog/layout",
     "index": undefined,
     "parentId": "layout",
-    "path": "blog/",
+    "path": "blog",
   },
   "home/index": Object {
     "componentName": "home-index",
@@ -233,7 +233,7 @@ Object {
     "id": "home/layout",
     "index": undefined,
     "parentId": "layout",
-    "path": "home/",
+    "path": "home",
   },
   "home/layout/index": Object {
     "componentName": "home-layout-index",

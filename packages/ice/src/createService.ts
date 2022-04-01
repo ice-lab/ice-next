@@ -41,15 +41,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const { addWatchEvent, removeWatchEvent } = createWatch({
     watchDir: rootDir,
     command,
-    // watchEvents: getWatchEvents({
-    //   generator,
-    //   rootDir,
-    //   targetDir,
-    //   templateDir,
-    //   configFile,
-    //   cache: dataCache,
-    //   getCtx,
-    // }),
   });
 
   const generatorAPI = {
