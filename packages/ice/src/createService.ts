@@ -5,7 +5,6 @@ import consola from 'consola';
 import type { CommandArgs, CommandName } from 'build-scripts';
 import type { ExportData } from '@ice/types/esm/generator.js';
 import type { ExtendsPluginAPI } from '@ice/types/esm/plugin.js';
-import type { Config } from '@ice/types';
 import Generator from './service/runtimeGenerator.js';
 import { createEsbuildCompiler } from './service/compile.js';
 import createWatch from './service/watchSource.js';
