@@ -56,7 +56,7 @@ export function Links() {
       {
         blockLinks.map(link => {
           const { block, ...props } = link;
-          return <link key={link.href} {...props} />;
+          return <link key={link.href} {...props} data-custom-link />;
         })
       }
       {styles.map(style => <link key={style} rel="stylesheet" type="text/css" href={style} />)}
@@ -81,7 +81,7 @@ export function Scripts() {
       {
         blockScripts.map(script => {
           const { block, ...props } = script;
-          return <script key={script.src} {...props} />;
+          return <script key={script.src} {...props} data-custom-script />;
         })
       }
       {
@@ -92,13 +92,13 @@ export function Scripts() {
       {
         deferredLinks.map(link => {
           const { block, ...props } = link;
-          return <script key={link.href} {...props} />;
+          return <script key={link.href} {...props} data-custom-link />;
         })
       }
       {
         deferredScripts.map(script => {
           const { block, ...props } = script;
-          return <script key={script.src} defer {...props} />;
+          return <script key={script.src} defer {...props} data-custom-script />;
         })
       }
     </>

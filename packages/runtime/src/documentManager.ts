@@ -15,8 +15,8 @@ export async function updatePageConfig(pageConfig: PageConfig) {
 
   updateMeta(meta);
 
-  await loadLinks(links);
-  await loadScripts(scripts);
+  await updateLinks(links);
+  await updateScripts(scripts);
 }
 
 /**
@@ -96,19 +96,45 @@ function reactElementToDOM(type, props): HTMLElement {
   return el;
 }
 
-async function loadLinks(links = []) {
+const looseToArray = <T extends {}>(input: any): T[] => [].slice.call(input);
+
+/**
+ * Load links for current page.
+ * If link already exists, don't load it again.
+ * Remove links for the last page.
+ */
+async function updateLinks(links = []) {
   const tags = [];
   const blockTags = [];
 
+  const oldStyleTags: HTMLStyleElement[] = looseToArray<HTMLStyleElement>(
+    document.querySelectorAll('link[data-custom-link]'),
+  );
+
+  const oldStyleMap = new Map();
+
+  oldStyleTags.forEach((tag) => {
+    const href = tag.getAttribute('href');
+    oldStyleMap.set(href, tag);
+  });
+
   links.forEach(item => {
     const { block, ...props } = item;
+    const { href } = props;
 
-    const tag = reactElementToDOM('link', props);
-
-    if (block) {
-      blockTags.push(tag);
+    if (oldStyleMap.has(href)) {
+      // If already loaded, delete from the map.
+      oldStyleMap.delete(href);
     } else {
-      tags.push(tag);
+      // Create link tags for the new page.
+      const tag = reactElementToDOM('link', props);
+      tag.setAttribute('data-custom-link', 'true');
+
+      if (block) {
+        blockTags.push(tag);
+      } else {
+        tags.push(tag);
+      }
     }
   });
 
@@ -120,24 +146,47 @@ async function loadLinks(links = []) {
     }));
   }
 
+  // Delete style for the last page.
+  oldStyleMap.forEach((tag) => {
+    tag.parentNode!.removeChild(tag);
+  });
+
   tags.forEach((tag) => {
     headEl.appendChild(tag);
   });
 }
 
-async function loadScripts(scripts = []) {
+/**
+ * Load scripts for current page.
+ * If script already exists, don't load it again.
+ * Script tags for the last page, has no need to be removed,
+ * because they will not be unload by the javascript runtime.
+ */
+async function updateScripts(scripts = []) {
   const tags = [];
   const blockTags = [];
 
+  const oldTags: HTMLScriptElement[] = looseToArray<HTMLScriptElement>(
+    document.querySelectorAll('script[data-custom-script]'),
+  );
+
+  const oldScripts: Set<string | null> = new Set(
+    oldTags.map((tag) => tag.getAttribute('src')),
+  );
+
   scripts.forEach(item => {
     const { block, ...props } = item;
+    const { src } = props;
 
-    const tag = reactElementToDOM('script', props);
+    if (!oldScripts.has(src)) {
+      const tag = reactElementToDOM('script', props);
+      tag.setAttribute('data-custom-script', 'true');
 
-    if (block) {
-      blockTags.push(tag);
-    } else {
-      tags.push(tag);
+      if (block) {
+        blockTags.push(tag);
+      } else {
+        tags.push(tag);
+      }
     }
   });
 
