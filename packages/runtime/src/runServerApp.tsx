@@ -84,14 +84,14 @@ async function runServerApp(options: RunServerAppOptions): Promise<string> {
     runtime.loadModule(m);
   });
 
-  const html = render(Document, runtime, location, documentOnly);
+  const html = await render(Document, runtime, location, documentOnly);
   return html;
 }
 
 export default runServerApp;
 
 async function render(
-  Document,
+  Document: React.ComponentType<{}>,
   runtime: Runtime,
   location: Location,
   documentOnly: boolean,
