@@ -73,15 +73,15 @@ async function webpackCompiler(options: {
     }
     if (command === 'start') {
       if (isSuccessful) {
-        console.log();
-        console.log(chalk.green(' Starting the development server at:'));
+        consola.log('');
+        consola.log(chalk.green(' Starting the development server at:'));
         if (process.env.CLOUDIDE_ENV) {
-          console.log('   - IDE server: ', `https://${process.env.WORKSPACE_UUID}-${commandArgs.port}.${process.env.WORKSPACE_HOST}`);
+          consola.log('   - IDE server: ', `https://${process.env.WORKSPACE_UUID}-${commandArgs.port}.${process.env.WORKSPACE_HOST}`);
         } else {
-          console.log('   - Local  : ', chalk.underline.white(urls.localUrlForBrowser));
-          console.log('   - Network: ', chalk.underline.white(urls.lanUrlForTerminal));
+          consola.log('   - Local  : ', chalk.underline.white(urls.localUrlForBrowser));
+          consola.log('   - Network: ', chalk.underline.white(urls.lanUrlForTerminal));
         }
-        console.log();
+        consola.log('');
       }
       // compiler.hooks.done is AsyncSeriesHook which does not support async function
       await applyHook('after.start.compile', {
