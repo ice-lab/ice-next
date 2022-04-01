@@ -47,8 +47,8 @@ export interface PageComponent {
 export interface RouteItem {
   id: string;
   path: string;
-  componentName: string;
   element?: ReactNode;
+  componentName: string;
   index?: false;
   exact?: boolean;
   strict?: boolean;

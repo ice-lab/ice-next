@@ -1,4 +1,4 @@
-import { defineUserConfig } from '@ice/cli';
+import { defineUserConfig } from '@ice/app';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 export default defineUserConfig({
@@ -15,4 +15,5 @@ export default defineUserConfig({
       route('/about-me', 'about.tsx');
     },
   },
+  plugins: ['@ice/plugin-auth'],
 });

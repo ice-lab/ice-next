@@ -18,7 +18,7 @@ const routeModuleExts = [
   '.jsx',
   '.ts',
   '.tsx',
-  // 暂不支持 .md/.mdx 文件，需要工程配合
+  // TODO: 暂不支持 .md/.mdx 文件，需要工程配合
   // '.md',
   // '.mdx',
 ];
@@ -34,16 +34,6 @@ export function generateRouteManifest(
   ) {
   const srcDir = path.join(rootDir, 'src');
   const routeManifest: RouteManifest = {};
-  // 1. find global layout
-  const globalLayoutFile = findGlobalLayout(srcDir, 'layout');
-  if (globalLayoutFile) {
-    routeManifest['layout'] = {
-      path: '',
-      id: 'layout',
-      componentName: 'Layout',
-      file: globalLayoutFile,
-    };
-  }
   // 2. find routes in `src/pages` directory
   if (fs.existsSync(path.resolve(srcDir, 'pages'))) {
     const conventionalRoutes = defineConventionalRoutes(
@@ -55,7 +45,7 @@ export function generateRouteManifest(
       const route = conventionalRoutes[key];
       routeManifest[route.id] = {
         ...route,
-        parentId: route.parentId || (globalLayoutFile && 'layout') || undefined,
+        parentId: route.parentId || undefined,
       };
     }
   }
@@ -215,6 +205,8 @@ function findParentRouteId(
   childRouteId: string,
 ): string | undefined {
   return routeIds.find((id) => {
+    // childRouteId is `pages/about` and id is `pages/layout` will match
+    // childRouteId is `pages/about/index` and id is `pages/about/layout` will match
     return childRouteId !== id && id.endsWith('layout') && childRouteId.startsWith(`${id.slice(0, id.length - '/layout'.length)}`);
   });
 }
@@ -238,17 +230,6 @@ function visitFiles(
       visitor(path.relative(baseDir, file));
     }
   }
-}
-
-const entryExts = ['.js', '.jsx', '.ts', '.tsx'];
-
-function findGlobalLayout(srcDir: string, basename: string): string | undefined {
-  for (let ext of entryExts) {
-    let file = path.resolve(srcDir, basename + ext);
-    if (fs.existsSync(file)) return path.relative(srcDir, file);
-  }
-
-  return undefined;
 }
 
 /**

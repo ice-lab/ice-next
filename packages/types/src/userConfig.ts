@@ -1,4 +1,5 @@
 import type { DefineRouteFunction } from '@ice/route-manifest';
+import type { IPluginList } from 'build-scripts';
 import type { Config, ModifyWebpackConfig } from './config';
 
 export interface UserConfig {
@@ -16,4 +17,5 @@ export interface UserConfig {
     ignoreFiles?: string[];
     defineRoutes?: (defineRoute: DefineRouteFunction) => void;
   };
+  plugins?: IPluginList;
 }
