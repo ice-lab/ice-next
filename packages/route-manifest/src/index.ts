@@ -207,7 +207,7 @@ function findParentRouteId(
   return routeIds.find((id) => {
     // childRouteId is `pages/about` and id is `pages/layout` will match
     // childRouteId is `pages/about/index` and id is `pages/about/layout` will match
-    return childRouteId !== id && id.endsWith('layout') && childRouteId.startsWith(`${id.slice(0, id.length - '/layout'.length)}`);
+    return childRouteId !== id && id.endsWith('layout') && childRouteId.startsWith(`${id.slice(0, id.length - 'layout'.length)}`);
   });
 }
 
@@ -239,5 +239,5 @@ function visitFiles(
  * /About/layout/index -> /About/layout/index
  */
 function removeLastLayoutStrFromId(id?: string) {
-  return id?.endsWith('/layout') ? id.slice(0, id.length - '/layout'.length) : id;
+  return id?.endsWith('layout') ? id.slice(0, id.length - 'layout'.length) : id;
 }

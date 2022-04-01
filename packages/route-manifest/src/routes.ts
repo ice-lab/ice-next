@@ -100,8 +100,8 @@ export function defineRoutes(
       // route(path, file, options)
       options = optionsOrChildren || {};
     }
-    const pageFilePath = join('pages', file);
-    const id = createRouteId(pageFilePath);
+
+    const id = createRouteId(file);
     const route: ConfigRoute = {
       path,
       index: options.index ? true : undefined,
@@ -110,7 +110,7 @@ export function defineRoutes(
         parentRoutes.length > 0
           ? parentRoutes[parentRoutes.length - 1].id
           : undefined,
-      file: pageFilePath,
+      file,
       componentName: createComponentName(id),
     };
 
@@ -144,7 +144,7 @@ function stripFileExtension(file: string) {
 
 function createComponentName(id: string) {
   return id.replace('.', '/') // 'pages/home.news' -> pages/home/news
-  .split('/')
-    .map((item: string) => item[0].toUpperCase() + item.slice(1, item.length))
-    .join('');
+    .split('/')
+    .map((item: string) => item.toLowerCase())
+    .join('-');
 }
