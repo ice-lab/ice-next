@@ -11,10 +11,7 @@ export default function Home(props) {
   return (
     <>
       <h2 className={styles.title}>Home Page</h2>
-      <ul>
-        <li><Link to="/about-me">about</Link></li>
-        <li><Link to="/detail">detail</Link></li>
-      </ul>
+      <Link to="/about">about</Link>
     </>
   );
 }

@@ -3,7 +3,7 @@ import { formatNestedRouteManifest, generateRouteManifest } from '@ice/route-man
 import type { NestedRouteManifest } from '@ice/route-manifest';
 import type { UserConfig } from '@ice/types';
 
-export function generateRoutesInfo(rootDir: string, routesConfig?: UserConfig['routes']) {
+export function generateRoutesInfo(rootDir: string, routesConfig: UserConfig['routes'] = {}) {
   const routeManifest = generateRouteManifest(rootDir, routesConfig.ignoreFiles, routesConfig.defineRoutes);
   const routes = formatNestedRouteManifest(routeManifest);
   const str = generateNestRoutesStr(routes);

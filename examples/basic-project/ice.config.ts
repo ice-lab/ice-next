@@ -9,11 +9,5 @@ export default defineUserConfig({
     }
     return webpackConfig;
   },
-  routes: {
-    ignoreFiles: ['about.tsx'],
-    defineRoutes: (route) => {
-      route('/about-me', 'about.tsx');
-    },
-  },
   plugins: ['@ice/plugin-auth'],
 });

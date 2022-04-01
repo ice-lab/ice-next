@@ -246,5 +246,4 @@ function removeLastLayoutStrFromId(id?: string) {
   const layoutStrs = ['/layout', 'layout'];
   const currentLayoutStr = layoutStrs.find(layoutStr => id?.endsWith(layoutStr));
   return currentLayoutStr ? id.slice(0, id.length - currentLayoutStr.length) : id;
-  // return id?.endsWith('layout') ? id.slice(0, id.length - 'layout'.length) : id;
 }

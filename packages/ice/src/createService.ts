@@ -81,7 +81,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     ...renderData,
     ...routesRenderData,
   }));
-  dataCache.set('routes', JSON.stringify(routesRenderData));
+  dataCache.set('routes', JSON.stringify(routesRenderData.routeManifest));
 
   generator.setPlugins(ctx.getAllPlugin());
   await ctx.setup();
