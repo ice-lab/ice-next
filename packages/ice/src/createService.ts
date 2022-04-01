@@ -5,6 +5,7 @@ import consola from 'consola';
 import type { CommandArgs, CommandName } from 'build-scripts';
 import type { ExportData } from '@ice/types/esm/generator.js';
 import type { ExtendsPluginAPI } from '@ice/types/esm/plugin.js';
+import type { Config } from '@ice/types';
 import Generator from './service/runtimeGenerator.js';
 import { createEsbuildCompiler } from './service/compile.js';
 import createWatch from './service/watchSource.js';
@@ -31,7 +32,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const templateDir = path.join(__dirname, '../template/');
   const configFile = 'ice.config.(mts|mjs|ts|js|cjs|json)';
   const dataCache = new Map<string, string>();
-
   const generator = new Generator({
     rootDir,
     targetDir,
@@ -42,14 +42,15 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const { addWatchEvent, removeWatchEvent } = createWatch({
     watchDir: rootDir,
     command,
-    watchEvents: getWatchEvents({
-      generator,
-      rootDir,
-      targetDir,
-      templateDir,
-      configFile,
-      cache: dataCache,
-    }),
+    // watchEvents: getWatchEvents({
+    //   generator,
+    //   rootDir,
+    //   targetDir,
+    //   templateDir,
+    //   configFile,
+    //   cache: dataCache,
+    //   getCtx,
+    // }),
   });
 
   const generatorAPI = {
@@ -65,6 +66,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     addRenderFile: generator.addRenderFile,
     addRenderTemplate: generator.addTemplateFiles,
   };
+
   const ctx = new Context<any, ExtendsPluginAPI>({
     rootDir,
     command,
@@ -93,12 +95,21 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
 
   generator.setPlugins(ctx.getAllPlugin());
   await ctx.setup();
+
   // render template before webpack compile
   const renderStart = new Date().getTime();
+
   generator.render();
+
+  addWatchEvent(
+    ...getWatchEvents({ generator, targetDir, templateDir, cache: dataCache, ctx }),
+  );
+
   consola.debug('template render cost:', new Date().getTime() - renderStart);
+
   // define runtime env before get webpack config
   defineRuntimeEnv();
+
   const contextConfig = getContextConfig(ctx);
   const webTask = contextConfig.find(({ name }) => name === 'web');
   const esbuildCompile = createEsbuildCompiler({

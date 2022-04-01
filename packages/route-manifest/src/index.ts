@@ -235,8 +235,9 @@ function visitFiles(
 /**
  * remove `/layout` str if the routeId has it
  *
- * /About/layout -> /About
- * /About/layout/index -> /About/layout/index
+ * 'layout' -> ''
+ * 'About/layout' -> 'About'
+ * 'About/layout/index' -> 'About/layout/index'
  */
 function removeLastLayoutStrFromId(id?: string) {
   return id?.endsWith('layout') ? id.slice(0, id.length - 'layout'.length) : id;
