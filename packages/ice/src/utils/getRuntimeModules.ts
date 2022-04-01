@@ -9,7 +9,7 @@ export interface RuntimeModule {
 }
 
 export interface Plugin {
-  pluginPath: string;
+  pluginPath?: string;
 }
 
 function getRuntimeModules(plugins: Plugin[]) {
