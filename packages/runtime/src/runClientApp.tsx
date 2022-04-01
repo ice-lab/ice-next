@@ -20,7 +20,7 @@ export default async function runClientApp(
   const initialContext = getInitialContext();
 
   let appData = (window as any).__ICE_APP_DATA__ || {};
-  let { initialData } = appData;
+  let { initialData, isSSR } = appData;
   if (!initialData && appConfig.app?.getInitialData) {
     initialData = await appConfig.app.getInitialData(initialContext);
   }
@@ -30,11 +30,16 @@ export default async function runClientApp(
     pageData = await loadPageData(matches, initialContext);
   }
 
+  const assetsManifest = (window as any).__ICE_ASSETS_MANIFEST__ || {};
+
   const appContext: AppContext = {
+    isSSR,
     routes,
     appConfig,
     initialData,
     initialPageData: pageData,
+    assetsManifest,
+    matches,
   };
 
   const runtime = new Runtime(appContext);
@@ -42,10 +47,10 @@ export default async function runClientApp(
     runtime.loadModule(m);
   });
 
-  render(runtime, Document, initialData, matches);
+  render(runtime, Document);
 }
 
-async function render(runtime: Runtime, Document, initialData, matches) {
+async function render(runtime: Runtime, Document) {
   const appContext = runtime.getAppContext();
   const { appConfig } = appContext;
   const { router: { type: routerType } } = appConfig;
@@ -64,8 +69,6 @@ async function render(runtime: Runtime, Document, initialData, matches) {
       PageWrappers={PageWrappers}
       AppRouter={AppRouter}
       Document={Document}
-      matches={matches}
-      initialData={initialData}
     />,
     document,
   );
@@ -77,27 +80,25 @@ interface BrowserEntryProps {
   AppProvider: React.ComponentType<any>;
   PageWrappers: PageWrapper<{}>[];
   AppRouter: React.ComponentType<AppRouterProps>;
-  Document: any;
-  matches: any;
-  initialData: any;
+  Document: React.ComponentType<{}>;
 }
 
-function BrowserEntry({ history, appContext, initialData, matches: oMatches, Document, ...rest }: BrowserEntryProps) {
-  const { routes, initialPageData } = appContext;
+function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryProps) {
+  const { routes, initialData, initialPageData, assetsManifest, matches: originMatches, isSSR } = appContext;
   const [historyState, setHistoryState] = useState({
     action: history.action,
     location: history.location,
     pageData: initialPageData,
-    matches: oMatches,
+    matches: originMatches,
   });
   const { action, location, pageData, matches } = historyState;
 
-  const [showApp, setShowApp] = useState(true);
+  const [showApp, setShowApp] = useState(isSSR);
 
-  // 如果是 CSR, 首次需要先不渲染 App，避免节点不一致
-  // useEffect(() => {
-  //   setShowApp(true);
-  // }, []);
+  // If is not ssr, should first hydrate empty document
+  useEffect(() => {
+    !isSSR && setShowApp(true);
+  }, []);
 
   // listen the history change and update the state which including the latest action and location
   useLayoutEffect(() => {
@@ -120,7 +121,7 @@ function BrowserEntry({ history, appContext, initialData, matches: oMatches, Doc
     });
   }, []);
 
-  const element = (
+  const appElement = showApp ? (
     <App
       action={action}
       location={location}
@@ -131,9 +132,7 @@ function BrowserEntry({ history, appContext, initialData, matches: oMatches, Doc
       }}
       {...rest}
     />
-  );
-
-  const assetsManifest = (window as any).__ICE_ASSETS_MANIFEST__ || {};
+  ) : null;
 
   const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
@@ -145,7 +144,7 @@ function BrowserEntry({ history, appContext, initialData, matches: oMatches, Doc
     pageData,
     pageAssets,
     entryAssets,
-    appElement: showApp ? element : null,
+    appElement,
     assetsManifest,
   };
 

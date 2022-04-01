@@ -125,6 +125,7 @@ async function render(
   const entryAssets = getEntryAssets(assetsManifest);
 
   const appData = {
+    isSSR: !documentOnly,
     initialData,
   };
 
