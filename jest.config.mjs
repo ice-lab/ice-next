@@ -30,7 +30,7 @@ export default {
     '/node_modules/',
     '/esm/',
     'create-cli-utils/',
-    '/tests/fixtures/'
+    '/tests/fixtures/',
   ],
   extensionsToTreatAsEsm: ['.ts'],
   testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],

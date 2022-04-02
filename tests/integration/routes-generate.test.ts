@@ -1,3 +1,4 @@
+import { expect, test, describe, afterAll } from 'vitest';
 import { buildFixture, setupBrowser } from '../utils/build';
 import { startFixture, setupStartBrowser } from '../utils/start';
 import { Page } from '../utils/browser';
