@@ -77,11 +77,9 @@ export interface RouteModules {
 }
 
 export interface AssetsManifest {
-  publicPath?: string;
-  bundles?: Record<string, {
-    files: string[];
-    isEntry: boolean;
-  }>;
+  publicPath: string;
+  entries: string[];
+  pages: string[];
 }
 export interface AppContext {
   isSSR?: boolean;

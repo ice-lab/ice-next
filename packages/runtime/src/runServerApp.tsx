@@ -7,7 +7,6 @@ import Runtime from './runtime.js';
 import App from './App.js';
 import { DocumentContextProvider } from './document.js';
 import { loadRouteModules, loadPageData, matchRoutes } from './routes.js';
-import { getPageAssets, getEntryAssets } from './assets.js';
 import type { AppContext, InitialContext, RouteItem, ServerContext, AppConfig, RuntimePlugin, CommonJsRuntime, AssetsManifest } from './types';
 
 interface RunServerAppOptions {
@@ -121,9 +120,6 @@ async function render(
     );
   }
 
-  const pageAssets = getPageAssets(matches, assetsManifest);
-  const entryAssets = getEntryAssets(assetsManifest);
-
   const appData = {
     isSSR: !documentOnly,
     initialData,
@@ -132,9 +128,8 @@ async function render(
   const documentContext = {
     appData,
     pageData,
-    pageAssets,
-    entryAssets,
     appElement,
+    matches,
     assetsManifest,
   };
 

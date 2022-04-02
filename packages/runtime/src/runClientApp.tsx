@@ -6,7 +6,6 @@ import App from './App.js';
 import type { AppContext, AppConfig, RouteItem, AppRouterProps, PageWrapper, RuntimeModules } from './types';
 import { loadRouteModules, loadPageData, matchRoutes } from './routes.js';
 import getInitialContext from './getInitialContext.js';
-import { getPageAssets, getEntryAssets } from './assets.js';
 import { DocumentContextProvider } from './document.js';
 
 export default async function runClientApp(
@@ -134,17 +133,13 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
     />
   ) : null;
 
-  const pageAssets = getPageAssets(matches, assetsManifest);
-  const entryAssets = getEntryAssets(assetsManifest);
-
   const documentContext = {
     appData: {
       initialData,
     },
     pageData,
-    pageAssets,
-    entryAssets,
     appElement,
+    matches,
     assetsManifest,
   };
 

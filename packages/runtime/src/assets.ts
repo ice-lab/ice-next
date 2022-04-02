@@ -6,14 +6,14 @@ import type { AssetsManifest, RouteMatch } from './types';
  * @returns
  */
  export function getPageAssets(matches: RouteMatch[], assetsManifest: AssetsManifest): string[] {
-  const { bundles, publicPath } = assetsManifest;
+  const { pages, publicPath } = assetsManifest;
 
   let result = [];
 
   matches.forEach(match => {
     const { componentName } = match.route;
-    const assets = bundles[componentName];
-    assets && assets?.files.forEach(filePath => {
+    const assets = pages[componentName];
+    assets && assets.forEach(filePath => {
       result.push(`${publicPath}${filePath}`);
     });
   });
@@ -22,13 +22,12 @@ import type { AssetsManifest, RouteMatch } from './types';
 }
 
 export function getEntryAssets(assetsManifest: AssetsManifest): string[] {
-  const { bundles, publicPath } = assetsManifest;
-  const assets = [];
-  Object.keys(bundles).forEach(key => {
-    const { isEntry, files } = bundles[key];
-    if (isEntry) {
-      assets.push(...files);
-    }
+  const { entries, publicPath } = assetsManifest;
+  let result = [];
+
+  Object.values(entries).forEach(assets => {
+    result = result.concat(assets);
   });
-  return assets.map(filePath => `${publicPath}${filePath}`);
+
+  return result.map(filePath => `${publicPath}${filePath}`);
 }

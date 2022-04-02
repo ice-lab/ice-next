@@ -1,5 +1,6 @@
 import * as React from 'react';
 import type { PageData, AppData } from './types';
+import { getPageAssets, getEntryAssets } from './assets.js';
 
 interface DocumentContext {
   html?: string;
@@ -9,6 +10,7 @@ interface DocumentContext {
   appData?: AppData;
   appElement?: any;
   assetsManifest?: any;
+  matches: any;
 }
 
 const Context = React.createContext<DocumentContext>(null);
@@ -47,7 +49,11 @@ export function Title() {
 }
 
 export function Links() {
-  const { pageAssets, entryAssets, pageData } = useDocumentContext();
+  const { pageData, matches, assetsManifest } = useDocumentContext();
+
+  const pageAssets = getPageAssets(matches, assetsManifest);
+  const entryAssets = getEntryAssets(assetsManifest);
+
   const customLinks = pageData.pageConfig.links || [];
   const blockLinks = customLinks.filter((link) => link.block);
 
@@ -67,7 +73,11 @@ export function Links() {
 }
 
 export function Scripts() {
-  const { pageData, pageAssets, entryAssets, appData, assetsManifest } = useDocumentContext();
+  const { pageData, appData, matches, assetsManifest } = useDocumentContext();
+
+  const pageAssets = getPageAssets(matches, assetsManifest);
+  const entryAssets = getEntryAssets(assetsManifest);
+
   const { links: customLinks = [], scripts: customScripts = [] } = pageData.pageConfig;
 
   const scripts = pageAssets.concat(entryAssets).filter(path => path.indexOf('.js') > -1);
