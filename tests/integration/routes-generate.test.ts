@@ -55,52 +55,52 @@ describe(`build ${example}`, () => {
   });
 });
 
-describe(`start ${example}`, () => {
-  let page: Page = null;
-  let browser = null;
+// describe(`start ${example}`, () => {
+//   let page: Page = null;
+//   let browser = null;
 
-  test('setup devServer', async () => {
-    const { devServer, port } = await startFixture(example);
-    const res = await setupStartBrowser({ server: devServer, port });
-    page = res.page;
-    browser = res.browser;
-    expect(await page.$$text('h1')).toStrictEqual(['Layout']);
-    expect(await page.$$text('h2')).toStrictEqual(['Home']);
-  }, 120000);
+//   test('setup devServer', async () => {
+//     const { devServer, port } = await startFixture(example);
+//     const res = await setupStartBrowser({ server: devServer, port });
+//     page = res.page;
+//     browser = res.browser;
+//     expect(await page.$$text('h1')).toStrictEqual(['Layout']);
+//     expect(await page.$$text('h2')).toStrictEqual(['Home']);
+//   }, 120000);
 
-  test('define extra routes', async () => {
-    await page.push('about-me');
-    expect(await page.$$text('h1')).toStrictEqual([]);
-    expect(await page.$$text('h2')).toStrictEqual(['About']);
+//   test('define extra routes', async () => {
+//     await page.push('about-me');
+//     expect(await page.$$text('h1')).toStrictEqual([]);
+//     expect(await page.$$text('h2')).toStrictEqual(['About']);
 
-    await page.push('product');
-    expect(await page.$$text('h1')).toStrictEqual(['Layout']);
-    expect(await page.$$text('h2')).toStrictEqual(['Products Page']);
-  });
+//     await page.push('product');
+//     expect(await page.$$text('h1')).toStrictEqual(['Layout']);
+//     expect(await page.$$text('h2')).toStrictEqual(['Products Page']);
+//   });
 
-  test('page layout', async () => {
-    await page.push('dashboard/a');
-    expect(await page.$$text('h1')).toStrictEqual(['Layout']);
-    expect(await page.$$text('h2')).toStrictEqual(['Dashboard']);
-    expect(await page.$$text('h3')).toStrictEqual(['A page']);
+//   test('page layout', async () => {
+//     await page.push('dashboard/a');
+//     expect(await page.$$text('h1')).toStrictEqual(['Layout']);
+//     expect(await page.$$text('h2')).toStrictEqual(['Dashboard']);
+//     expect(await page.$$text('h3')).toStrictEqual(['A page']);
 
-    await page.push('dashboard/b');
-    expect(await page.$$text('h1')).toStrictEqual(['Layout']);
-    expect(await page.$$text('h2')).toStrictEqual(['Dashboard']);
-    expect(await page.$$text('h3')).toStrictEqual(['B page']);
-  });
+//     await page.push('dashboard/b');
+//     expect(await page.$$text('h1')).toStrictEqual(['Layout']);
+//     expect(await page.$$text('h2')).toStrictEqual(['Dashboard']);
+//     expect(await page.$$text('h3')).toStrictEqual(['B page']);
+//   });
 
-  test('dynamic routes layout', async () => {
-    await page.push('detail/a');
-    expect(await page.$$text('h1')).toStrictEqual(['Layout']);
-    expect(await page.$$text('h2')).toStrictEqual(['Detail id: a']);
+//   test('dynamic routes layout', async () => {
+//     await page.push('detail/a');
+//     expect(await page.$$text('h1')).toStrictEqual(['Layout']);
+//     expect(await page.$$text('h2')).toStrictEqual(['Detail id: a']);
 
-    await page.push('detail/b');
-    expect(await page.$$text('h1')).toStrictEqual(['Layout']);
-    expect(await page.$$text('h2')).toStrictEqual(['Detail id: b']);
-  });
+//     await page.push('detail/b');
+//     expect(await page.$$text('h1')).toStrictEqual(['Layout']);
+//     expect(await page.$$text('h2')).toStrictEqual(['Detail id: b']);
+//   });
 
-  afterAll(async () => {
-    await browser.close();
-  });
-});
+//   afterAll(async () => {
+//     await browser.close();
+//   });
+// });
