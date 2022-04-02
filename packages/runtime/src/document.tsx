@@ -119,12 +119,10 @@ export function Scripts() {
   );
 }
 
-export function Main() {
-  const { appElement } = useDocumentContext();
-
+export function Main(props) {
   return (
     <div id="ice-container">
-      {appElement}
+      {props.children}
     </div>
   );
 }

@@ -138,14 +138,15 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
       initialData,
     },
     pageData,
-    appElement,
     matches,
     assetsManifest,
   };
 
   return (
     <DocumentContextProvider value={documentContext}>
-      <Document />
+      <Document>
+        {appElement}
+      </Document>
     </DocumentContextProvider>
   );
 }

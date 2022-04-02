@@ -128,14 +128,15 @@ async function render(
   const documentContext = {
     appData,
     pageData,
-    appElement,
     matches,
     assetsManifest,
   };
 
   const result = ReactDOMServer.renderToString(
     <DocumentContextProvider value={documentContext}>
-      <Document />
+      <Document>
+        {appElement}
+      </Document>
     </DocumentContextProvider>,
   );
 
