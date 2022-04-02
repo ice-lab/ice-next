@@ -5,7 +5,7 @@ import { Action, createPath, parsePath } from 'history';
 import { createSearchParams } from 'react-router-dom';
 import Runtime from './runtime.js';
 import App from './App.js';
-import { DocumentContextProvider } from './document.js';
+import { AppContextProvider } from './AppContext.js';
 import { loadRouteModules, loadPageData, matchRoutes } from './routes.js';
 import type { AppContext, InitialContext, RouteItem, ServerContext, AppConfig, RuntimePlugin, CommonJsRuntime, AssetsManifest } from './types';
 
@@ -96,9 +96,8 @@ async function render(
   documentOnly: boolean,
 ) {
   const appContext = runtime.getAppContext();
-  const { matches, initialData, pageData, assetsManifest } = appContext;
 
-  let appElement = null;
+  let app = null;
 
   if (!documentOnly) {
     const staticNavigator = createStaticNavigator();
@@ -106,13 +105,12 @@ async function render(
     const PageWrappers = runtime.getWrapperPageRegistration();
     const AppRouter = runtime.getAppRouter();
 
-    appElement = (
+    app = (
       <App
         action={Action.Pop}
         location={location}
         navigator={staticNavigator}
         static
-        appContext={appContext}
         AppProvider={AppProvider}
         PageWrappers={PageWrappers}
         AppRouter={AppRouter}
@@ -120,24 +118,12 @@ async function render(
     );
   }
 
-  const appData = {
-    isSSR: !documentOnly,
-    initialData,
-  };
-
-  const documentContext = {
-    appData,
-    pageData,
-    matches,
-    assetsManifest,
-  };
-
   const result = ReactDOMServer.renderToString(
-    <DocumentContextProvider value={documentContext}>
+    <AppContextProvider value={appContext}>
       <Document>
-        {appElement}
+        {app}
       </Document>
-    </DocumentContextProvider>,
+    </AppContextProvider>,
   );
 
   return result;

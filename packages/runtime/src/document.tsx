@@ -1,31 +1,9 @@
 import * as React from 'react';
-import type { PageData, AppData } from './types';
 import { getPageAssets, getEntryAssets } from './assets.js';
-
-interface DocumentContext {
-  html?: string;
-  entryAssets?: string[];
-  pageAssets?: string[];
-  pageData?: PageData;
-  appData?: AppData;
-  appElement?: any;
-  assetsManifest?: any;
-  matches: any;
-}
-
-const Context = React.createContext<DocumentContext>(null);
-
-Context.displayName = 'DocumentContext';
-
-export const useDocumentContext = () => {
-  const value = React.useContext(Context);
-  return value;
-};
-
-export const DocumentContextProvider = Context.Provider;
+import { useAppContext } from './AppContext.js';
 
 export function Meta() {
-  const { pageData } = useDocumentContext();
+  const { pageData } = useAppContext();
   const meta = pageData.pageConfig.meta || [];
 
   return (
@@ -40,7 +18,7 @@ export function Meta() {
 }
 
 export function Title() {
-  const { pageData } = useDocumentContext();
+  const { pageData } = useAppContext();
   const title = pageData.pageConfig.title || [];
 
   return (
@@ -49,7 +27,7 @@ export function Title() {
 }
 
 export function Links() {
-  const { pageData, matches, assetsManifest } = useDocumentContext();
+  const { pageData, matches, assetsManifest } = useAppContext();
 
   const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
@@ -64,7 +42,7 @@ export function Links() {
       {
         blockLinks.map(link => {
           const { block, ...props } = link;
-          return <link key={link.href} {...props} data-custom-link />;
+          return <link key={link.href} {...props} />;
         })
       }
       {styles.map(style => <link key={style} rel="stylesheet" type="text/css" href={style} />)}
@@ -73,7 +51,7 @@ export function Links() {
 }
 
 export function Scripts() {
-  const { pageData, appData, matches, assetsManifest } = useDocumentContext();
+  const { pageData, initialData, matches, assetsManifest } = useAppContext();
 
   const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
@@ -86,15 +64,20 @@ export function Scripts() {
   const deferredScripts = customScripts.filter(script => !script.block);
   const deferredLinks = customLinks.filter(link => !link.block);
 
+  const appContext = {
+    initialData,
+    pageData,
+    matches,
+    assetsManifest,
+  };
+
   return (
     <>
-      <script dangerouslySetInnerHTML={{ __html: `window.__ICE_ASSETS_MANIFEST__=${JSON.stringify(assetsManifest)}` }} />
-      <script dangerouslySetInnerHTML={{ __html: `window.__ICE_APP_DATA__=${JSON.stringify(appData)}` }} />
-      <script dangerouslySetInnerHTML={{ __html: `window.__ICE_PAGE_DATA__=${JSON.stringify(pageData)}` }} />
+      <script dangerouslySetInnerHTML={{ __html: `window.__ICE_APP_CONTEXT__=${JSON.stringify(appContext)}` }} />
       {
         blockScripts.map(script => {
           const { block, ...props } = script;
-          return <script key={script.src} {...props} data-custom-script />;
+          return <script key={script.src} {...props} />;
         })
       }
       {
@@ -105,16 +88,16 @@ export function Scripts() {
       {
         deferredLinks.map(link => {
           const { block, ...props } = link;
-          return <link key={link.href} {...props} data-custom-link />;
+          return <link key={link.href} {...props} />;
         })
       }
-      {
+      {/* {
         deferredScripts.map(script => {
           const { block, ...props } = script;
           // TODO： defer 属性会导致 CSR 、SSR 渲染不一致，先移除
-          return <script key={script.src} {...props} data-custom-script />;
+          return <script key={script.src} {...props} />;
         })
-      }
+      } */}
     </>
   );
 }

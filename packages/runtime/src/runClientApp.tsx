@@ -3,10 +3,10 @@ import { createHashHistory, createBrowserHistory } from 'history';
 import type { HashHistory, BrowserHistory } from 'history';
 import Runtime from './runtime.js';
 import App from './App.js';
+import { AppContextProvider } from './AppContext.js';
 import type { AppContext, AppConfig, RouteItem, AppRouterProps, PageWrapper, RuntimeModules } from './types';
 import { loadRouteModules, loadPageData, matchRoutes } from './routes.js';
 import getInitialContext from './getInitialContext.js';
-import { DocumentContextProvider } from './document.js';
 
 export default async function runClientApp(
   appConfig: AppConfig,
@@ -16,20 +16,19 @@ export default async function runClientApp(
 ) {
   const matches = matchRoutes(routes, window.location);
   await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
+
+  const appContextFromServer = (window as any).__ICE_APP_CONTEXT__ || {};
+  let { isSSR, initialData, pageData, assetsManifest } = appContextFromServer;
+
   const initialContext = getInitialContext();
 
-  let appData = (window as any).__ICE_APP_DATA__ || {};
-  let { initialData, isSSR } = appData;
   if (!initialData && appConfig.app?.getInitialData) {
     initialData = await appConfig.app.getInitialData(initialContext);
   }
 
-  let pageData = (window as any).__ICE_PAGE_DATA__ || {};
   if (!pageData) {
     pageData = await loadPageData(matches, initialContext);
   }
-
-  const assetsManifest = (window as any).__ICE_ASSETS_MANIFEST__ || {};
 
   const appContext: AppContext = {
     isSSR,
@@ -83,7 +82,8 @@ interface BrowserEntryProps {
 }
 
 function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryProps) {
-  const { routes, initialData, initialPageData, assetsManifest, matches: originMatches, isSSR } = appContext;
+  const { routes, initialPageData, matches: originMatches, isSSR } = appContext;
+
   const [historyState, setHistoryState] = useState({
     action: history.action,
     location: history.location,
@@ -92,7 +92,7 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
   });
   const { action, location, pageData, matches } = historyState;
 
-  const [showApp, setShowApp] = useState(isSSR);
+  const [showApp, setShowApp] = useState(true);
 
   // If is not ssr, should first hydrate empty document
   useEffect(() => {
@@ -120,33 +120,23 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
     });
   }, []);
 
-  const appElement = showApp ? (
+  const app = showApp ? (
     <App
       action={action}
       location={location}
       navigator={history}
-      appContext={{
-        ...appContext,
-        pageData,
-      }}
       {...rest}
     />
   ) : null;
 
-  const documentContext = {
-    appData: {
-      initialData,
-    },
-    pageData,
-    matches,
-    assetsManifest,
-  };
+  appContext.matches = matches;
+  appContext.pageData = pageData;
 
   return (
-    <DocumentContextProvider value={documentContext}>
+    <AppContextProvider value={appContext}>
       <Document>
-        {appElement}
+        {app}
       </Document>
-    </DocumentContextProvider>
+    </AppContextProvider>
   );
 }
