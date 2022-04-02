@@ -1,5 +1,5 @@
 import { mkdirSync, writeFileSync } from 'fs';
-import { dirname, resolve, extname } from 'path';
+import { dirname, resolve } from 'path';
 import webpack from 'webpack';
 import type { Compiler, Compilation } from 'webpack';
 

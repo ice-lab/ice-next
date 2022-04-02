@@ -12,16 +12,16 @@ export default async function runClientApp(
   appConfig: AppConfig,
   runtimeModules: RuntimeModules,
   routes: RouteItem[],
-  Document,
+  documentComponent: React.ComponentType<any>,
 ) {
   const matches = matchRoutes(routes, window.location);
   await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   const appContextFromServer = (window as any).__ICE_APP_CONTEXT__ || {};
+
   let { isSSR, initialData, pageData, assetsManifest } = appContextFromServer;
 
   const initialContext = getInitialContext();
-
   if (!initialData && appConfig.app?.getInitialData) {
     initialData = await appConfig.app.getInitialData(initialContext);
   }
@@ -38,17 +38,19 @@ export default async function runClientApp(
     initialPageData: pageData,
     assetsManifest,
     matches,
+    documentComponent,
   };
 
+  // TODO: provide useAppContext for runtime modules
   const runtime = new Runtime(appContext);
   runtimeModules.forEach(m => {
     runtime.loadModule(m);
   });
 
-  render(runtime, Document);
+  render(runtime);
 }
 
-async function render(runtime: Runtime, Document) {
+async function render(runtime: Runtime) {
   const appContext = runtime.getAppContext();
   const { appConfig } = appContext;
   const { router: { type: routerType } } = appConfig;
@@ -66,7 +68,6 @@ async function render(runtime: Runtime, Document) {
       AppProvider={AppProvider}
       PageWrappers={PageWrappers}
       AppRouter={AppRouter}
-      Document={Document}
     />,
     document,
   );
@@ -78,11 +79,10 @@ interface BrowserEntryProps {
   AppProvider: React.ComponentType<any>;
   PageWrappers: PageWrapper<{}>[];
   AppRouter: React.ComponentType<AppRouterProps>;
-  Document: React.ComponentType<{}>;
 }
 
-function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryProps) {
-  const { routes, initialPageData, matches: originMatches, isSSR } = appContext;
+function BrowserEntry({ history, appContext, ...rest }: BrowserEntryProps) {
+  const { routes, initialPageData, matches: originMatches, isSSR, documentComponent: Document } = appContext;
 
   const [historyState, setHistoryState] = useState({
     action: history.action,
@@ -90,11 +90,12 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
     pageData: initialPageData,
     matches: originMatches,
   });
+
   const { action, location, pageData, matches } = historyState;
 
   const [showApp, setShowApp] = useState(true);
 
-  // If is not ssr, should first hydrate empty document
+  // don't show app first if not ssr, otherwise hydrate will fail.
   useEffect(() => {
     !isSSR && setShowApp(true);
   }, []);
@@ -120,22 +121,25 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
     });
   }, []);
 
-  const app = showApp ? (
-    <App
-      action={action}
-      location={location}
-      navigator={history}
-      {...rest}
-    />
-  ) : null;
-
-  appContext.matches = matches;
-  appContext.pageData = pageData;
+  // update app content for the current route.
+  Object.assign(appContext, {
+    matches,
+    pageData,
+  });
 
   return (
     <AppContextProvider value={appContext}>
       <Document>
-        {app}
+        {
+          showApp ? (
+            <App
+              action={action}
+              location={location}
+              navigator={history}
+              {...rest}
+            />
+          ) : null
+        }
       </Document>
     </AppContextProvider>
   );

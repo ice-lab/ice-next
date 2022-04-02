@@ -13,9 +13,9 @@ interface RunServerAppOptions {
   requestContext: ServerContext;
   appConfig: AppConfig;
   routes: RouteItem[];
+  documentComponent: React.ComponentType<{}>;
   documentOnly: boolean;
   runtimeModules: (RuntimePlugin | CommonJsRuntime)[];
-  Document: React.ComponentType<{}>;
   assetsManifest: AssetsManifest;
 }
 
@@ -23,7 +23,7 @@ async function runServerApp(options: RunServerAppOptions): Promise<string> {
   const {
     appConfig,
     assetsManifest,
-    Document,
+    documentComponent,
     documentOnly,
     requestContext,
     runtimeModules,
@@ -76,6 +76,7 @@ async function runServerApp(options: RunServerAppOptions): Promise<string> {
     // pageData and initialPageData are the same when SSR/SSG
     pageData,
     assetsManifest,
+    documentComponent,
   };
 
   const runtime = new Runtime(appContext);
@@ -83,19 +84,19 @@ async function runServerApp(options: RunServerAppOptions): Promise<string> {
     runtime.loadModule(m);
   });
 
-  const html = render(Document, runtime, location, documentOnly);
+  const html = render(runtime, location, documentOnly);
   return html;
 }
 
 export default runServerApp;
 
 async function render(
-  Document,
   runtime: Runtime,
   location: Location,
   documentOnly: boolean,
 ) {
   const appContext = runtime.getAppContext();
+  const { documentComponent: Document } = appContext;
 
   let app = null;
 

@@ -90,11 +90,9 @@ export interface AppContext {
   initialData?: InitialData;
   pageData?: PageData;
   initialPageData?: PageData;
+  documentComponent?: ComponentType<any>;
 }
 
-export interface AppData {
-  initialData?: InitialData;
-}
 
 export interface PageData {
   pageConfig: PageConfig;
