@@ -18,7 +18,6 @@
     "lint:fix": "npm run lint -- --fix",
     "publish:alpha": "PUBLISH_TYPE=alpha esmo ./scripts/publishPackageWithDistTag.ts",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --forceExit --config ./jest.config.mjs",
-    "test:ci": "npm run test -- --ci",
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch --config ./jest.config.mjs"
   },
   "author": "ice-admin@alibaba-inc.com",
