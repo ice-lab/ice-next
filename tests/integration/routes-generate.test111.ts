@@ -98,7 +98,6 @@ describe(`start ${example}`, () => {
     await page.push('detail/b');
     expect(await page.$$text('h1')).toStrictEqual(['Layout']);
     expect(await page.$$text('h2')).toStrictEqual(['Detail id: b']);
-
   });
 
   afterAll(async () => {
