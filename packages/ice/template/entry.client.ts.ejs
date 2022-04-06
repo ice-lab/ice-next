@@ -4,4 +4,9 @@ import runtimeModules from './runtimeModules';
 import routes from './routes';
 import Document from '@/document';
 
-runClientApp(appConfig, runtimeModules, routes, Document);
+runClientApp({
+  appConfig,
+  runtimeModules,
+  routes,
+  Document
+});

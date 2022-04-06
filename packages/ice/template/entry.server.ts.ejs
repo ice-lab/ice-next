@@ -11,13 +11,12 @@ export async function render(requestContext, renderOptions) {
     isSSG
   } = renderOptions;
 
-  return await runServerApp({
-    requestContext,
+  return await runServerApp(requestContext, {
     runtimeModules,
     appConfig,
     routes,
     assetsManifest,
-    documentComponent: Document,
+    Document,
     isSSR,
     isSSG
   });

@@ -13,23 +13,22 @@ interface RunServerAppOptions {
   requestContext: ServerContext;
   appConfig: AppConfig;
   routes: RouteItem[];
-  documentComponent: React.ComponentType<{}>;
   isSSR: boolean;
   isSSG: boolean;
   runtimeModules: (RuntimePlugin | CommonJsRuntime)[];
   assetsManifest: AssetsManifest;
+  Document: React.ComponentType<{}>;
 }
 
-async function runServerApp(options: RunServerAppOptions): Promise<string> {
+async function runServerApp(requestContext, options: RunServerAppOptions): Promise<string> {
   const {
     appConfig,
     assetsManifest,
-    documentComponent,
     isSSR,
     isSSG,
-    requestContext,
     runtimeModules,
     routes,
+    Document,
   } = options;
 
   const { req } = requestContext;
@@ -80,7 +79,6 @@ async function runServerApp(options: RunServerAppOptions): Promise<string> {
     assetsManifest,
     isSSR,
     isSSG,
-    documentComponent,
   };
 
   const runtime = new Runtime(appContext);
@@ -88,7 +86,7 @@ async function runServerApp(options: RunServerAppOptions): Promise<string> {
     runtime.loadModule(m);
   });
 
-  const html = render(runtime, location);
+  const html = render(runtime, location, Document);
   return html;
 }
 
@@ -97,9 +95,10 @@ export default runServerApp;
 async function render(
   runtime: Runtime,
   location: Location,
+  Document: React.ComponentType<any>,
 ) {
   const appContext = runtime.getAppContext();
-  const { documentComponent: Document, isSSR, isSSG } = appContext;
+  const { isSSR, isSSG } = appContext;
 
   let app = null;
 
