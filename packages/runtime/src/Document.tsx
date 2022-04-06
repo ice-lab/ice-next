@@ -93,6 +93,7 @@ export function Scripts() {
       {
         deferredLinks.map(link => {
           const { block, ...props } = link;
+          // FIXME: links is not deferred.
           return <link key={link.href} {...props} />;
         })
       }
