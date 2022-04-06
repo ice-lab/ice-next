@@ -4,12 +4,16 @@ import { matchRoutes } from 'react-router-dom';
 interface Options {
   routeManifest: string;
   serverCompiler: () => Promise<string>;
+  isSSR?: boolean;
+  isSSG?: boolean;
 }
 
 export function setupRenderServer(options: Options) {
   const {
     routeManifest,
     serverCompiler,
+    isSSR,
+    isSSG,
   } = options;
 
   return async (req, res) => {
@@ -25,6 +29,9 @@ export function setupRenderServer(options: Options) {
     const html = await serverEntry.render({
       req,
       res,
+    }, {
+      isSSR,
+      isSSG,
     });
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');

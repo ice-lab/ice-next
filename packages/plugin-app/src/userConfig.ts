@@ -95,6 +95,20 @@ const userConfig = [
     },
   },
   {
+    name: 'isSSG',
+    validation: 'boolean',
+    setConfig: (config: Config, isSSG: Config['isSSG']) => {
+      return mergeDefaultValue(config, 'isSSG', isSSG);
+    },
+  },
+  {
+    name: 'isSSR',
+    validation: 'boolean',
+    setConfig: (config: Config, isSSR: Config['isSSR']) => {
+      return mergeDefaultValue(config, 'isSSR', isSSR);
+    },
+  },
+  {
     name: 'webpack',
     validation: 'function',
     setConfig: (config: Config, configureWebpack: Config['configureWebpack'][0]) => {

@@ -5,7 +5,12 @@ import Document from '@/document';
 import assetsManifest from './assets-manifest.json';
 import routes from './routes';
 
-export async function render(requestContext, documentOnly = false) {
+export async function render(requestContext, renderOptions) {
+  const { 
+    isSSR = true,
+    isSSG
+  } = renderOptions;
+
   return await runServerApp({
     requestContext,
     runtimeModules,
@@ -13,6 +18,7 @@ export async function render(requestContext, documentOnly = false) {
     routes,
     assetsManifest,
     documentComponent: Document,
-    documentOnly,
+    isSSR,
+    isSSG
   });
 }

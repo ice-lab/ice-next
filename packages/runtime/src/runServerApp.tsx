@@ -14,7 +14,8 @@ interface RunServerAppOptions {
   appConfig: AppConfig;
   routes: RouteItem[];
   documentComponent: React.ComponentType<{}>;
-  documentOnly: boolean;
+  isSSR: boolean;
+  isSSG: boolean;
   runtimeModules: (RuntimePlugin | CommonJsRuntime)[];
   assetsManifest: AssetsManifest;
 }
@@ -24,7 +25,8 @@ async function runServerApp(options: RunServerAppOptions): Promise<string> {
     appConfig,
     assetsManifest,
     documentComponent,
-    documentOnly,
+    isSSR,
+    isSSG,
     requestContext,
     runtimeModules,
     routes,
@@ -76,6 +78,8 @@ async function runServerApp(options: RunServerAppOptions): Promise<string> {
     // pageData and initialPageData are the same when SSR/SSG
     pageData,
     assetsManifest,
+    isSSR,
+    isSSG,
     documentComponent,
   };
 
@@ -84,7 +88,7 @@ async function runServerApp(options: RunServerAppOptions): Promise<string> {
     runtime.loadModule(m);
   });
 
-  const html = render(runtime, location, documentOnly);
+  const html = render(runtime, location);
   return html;
 }
 
@@ -93,12 +97,13 @@ export default runServerApp;
 async function render(
   runtime: Runtime,
   location: Location,
-  documentOnly: boolean,
 ) {
   const appContext = runtime.getAppContext();
-  const { documentComponent: Document } = appContext;
+  const { documentComponent: Document, isSSR, isSSG } = appContext;
 
   let app = null;
+
+  const documentOnly = !isSSR && !isSSG;
 
   if (!documentOnly) {
     const staticNavigator = createStaticNavigator();

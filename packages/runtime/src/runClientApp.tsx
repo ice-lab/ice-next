@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { createHashHistory, createBrowserHistory } from 'history';
 import type { HashHistory, BrowserHistory } from 'history';
 import Runtime from './runtime.js';
@@ -19,7 +19,7 @@ export default async function runClientApp(
 
   const appContextFromServer = (window as any).__ICE_APP_CONTEXT__ || {};
 
-  let { isSSR, initialData, pageData, assetsManifest } = appContextFromServer;
+  let { isSSR, isSSG, initialData, pageData, assetsManifest } = appContextFromServer;
 
   const initialContext = getInitialContext();
   if (!initialData && appConfig.app?.getInitialData) {
@@ -32,6 +32,7 @@ export default async function runClientApp(
 
   const appContext: AppContext = {
     isSSR,
+    isSSG,
     routes,
     appConfig,
     initialData,
@@ -82,7 +83,7 @@ interface BrowserEntryProps {
 }
 
 function BrowserEntry({ history, appContext, ...rest }: BrowserEntryProps) {
-  const { routes, initialPageData, matches: originMatches, isSSR, documentComponent: Document } = appContext;
+  const { routes, initialPageData, matches: originMatches, documentComponent: Document } = appContext;
 
   const [historyState, setHistoryState] = useState({
     action: history.action,
@@ -92,13 +93,6 @@ function BrowserEntry({ history, appContext, ...rest }: BrowserEntryProps) {
   });
 
   const { action, location, pageData, matches } = historyState;
-
-  const [showApp, setShowApp] = useState(true);
-
-  // don't show app first if not ssr, otherwise hydrate will fail.
-  useEffect(() => {
-    !isSSR && setShowApp(true);
-  }, []);
 
   // listen the history change and update the state which including the latest action and location
   useLayoutEffect(() => {
@@ -130,16 +124,12 @@ function BrowserEntry({ history, appContext, ...rest }: BrowserEntryProps) {
   return (
     <AppContextProvider value={appContext}>
       <Document>
-        {
-          showApp ? (
-            <App
-              action={action}
-              location={location}
-              navigator={history}
-              {...rest}
-            />
-          ) : null
-        }
+        <App
+          action={action}
+          location={location}
+          navigator={history}
+          {...rest}
+        />
       </Document>
     </AppContextProvider>
   );

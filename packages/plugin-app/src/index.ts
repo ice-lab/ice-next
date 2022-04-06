@@ -15,7 +15,7 @@ const cliOptions = [
 ];
 
 const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, registerUserConfig }) => {
-  const { command, rootDir, commandArgs } = context;
+  const { command, rootDir, commandArgs, userConfig: buildConfig } = context;
   const mode = command === 'start' ? 'development' : 'production';
 
   let serverCompiler = async () => '';
@@ -46,6 +46,7 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, regi
       outDir: outputDir,
       entry: serverEntry,
       routeManifest,
+      isSSG: buildConfig.isSSG,
     });
   });
 
@@ -93,6 +94,8 @@ const plugin: Plugin = ({ registerTask, context, onHook, registerCliOption, regi
         middleware: setupRenderServer({
           serverCompiler,
           routeManifest,
+          isSSR: buildConfig.isSSR,
+          isSSG: buildConfig.isSSG,
         }),
       });
 

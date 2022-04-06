@@ -83,6 +83,7 @@ export interface AssetsManifest {
 }
 export interface AppContext {
   isSSR?: boolean;
+  isSSG?: boolean;
   appConfig: AppConfig;
   assetsManifest?: AssetsManifest;
   matches?: RouteMatch[];
