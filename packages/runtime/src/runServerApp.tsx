@@ -6,7 +6,7 @@ import { createSearchParams } from 'react-router-dom';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
-import { loadRouteModules, loadPageData, matchRoutes } from './routes.js';
+import { loadRouteModules, loadPageData, loadPageConfig, matchRoutes } from './routes.js';
 import type { AppContext, InitialContext, RouteItem, ServerContext, AppConfig, RuntimePlugin, CommonJsRuntime, AssetsManifest } from './types';
 
 interface RunServerAppOptions {
@@ -20,22 +20,11 @@ interface RunServerAppOptions {
   Document: React.ComponentType<{}>;
 }
 
-async function runServerApp(requestContext, options: RunServerAppOptions): Promise<string> {
-  const {
-    appConfig,
-    assetsManifest,
-    isSSR,
-    isSSG,
-    runtimeModules,
-    routes,
-    Document,
-  } = options;
-
+export default async function runServerApp(requestContext, options: RunServerAppOptions): Promise<string> {
   const { req } = requestContext;
-  const { url } = req;
 
   // ref: https://github.com/remix-run/react-router/blob/main/packages/react-router-dom/server.tsx
-  const locationProps = parsePath(url);
+  const locationProps = parsePath(req.url);
 
   const location: Location = {
     pathname: locationProps.pathname || '/',
@@ -45,14 +34,46 @@ async function runServerApp(requestContext, options: RunServerAppOptions): Promi
     key: 'default',
   };
 
+  const { Document, runtimeModules, ...appContext } = options;
+  const { routes, isSSG, isSSR } = appContext;
+
   const matches = matchRoutes(routes, location);
 
-  // TODO: error handling
   if (!matches.length) {
+    // TODO: Render 404
     throw new Error('No matched page found.');
   }
 
   await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
+
+  Object.assign(appContext, {
+    matches,
+  });
+
+  let html;
+
+  if (!isSSR && !isSSG) {
+    html = await renderDocument(Document, matches, appContext);
+    return html;
+  }
+
+  try {
+    html = await renderServerApp(Document, matches, appContext, runtimeModules, requestContext, location);
+  } catch (error) {
+    console.error(error);
+    // Downgrade to CSR.
+    html = await renderDocument(Document, matches, appContext);
+  }
+
+  return html;
+}
+
+/**
+ * Render App by SSR.
+ */
+async function renderServerApp(Document, matches, appContext, runtimeModules, requestContext, location) {
+  const { req } = requestContext;
+  const { url } = req;
 
   const initialContext: InitialContext = {
     ...requestContext,
@@ -61,6 +82,8 @@ async function runServerApp(requestContext, options: RunServerAppOptions): Promi
     path: url,
   };
 
+  const { appConfig } = appContext;
+
   let initialData;
   if (appConfig.app?.getInitialData) {
     initialData = await appConfig.app.getInitialData(initialContext);
@@ -68,66 +91,60 @@ async function runServerApp(requestContext, options: RunServerAppOptions): Promi
 
   const pageData = await loadPageData(matches, initialContext);
 
-  const appContext: AppContext = {
-    matches,
-    routes,
-    appConfig,
+  const context: AppContext = {
+    ...appContext,
     initialData,
     initialPageData: pageData,
     // pageData and initialPageData are the same when SSR/SSG
     pageData,
-    assetsManifest,
-    isSSR,
-    isSSG,
   };
 
-  const runtime = new Runtime(appContext);
+  const runtime = new Runtime(context);
   runtimeModules.forEach(m => {
     runtime.loadModule(m);
   });
 
-  const html = render(runtime, location, Document);
-  return html;
-}
-
-export default runServerApp;
-
-async function render(
-  runtime: Runtime,
-  location: Location,
-  Document: React.ComponentType<any>,
-) {
-  const appContext = runtime.getAppContext();
-  const { isSSR, isSSG } = appContext;
-
-  let app = null;
-
-  const documentOnly = !isSSR && !isSSG;
-
-  if (!documentOnly) {
-    const staticNavigator = createStaticNavigator();
-    const AppProvider = runtime.composeAppProvider() || React.Fragment;
-    const PageWrappers = runtime.getWrapperPageRegistration();
-    const AppRouter = runtime.getAppRouter();
-
-    app = (
-      <App
-        action={Action.Pop}
-        location={location}
-        navigator={staticNavigator}
-        static
-        AppProvider={AppProvider}
-        PageWrappers={PageWrappers}
-        AppRouter={AppRouter}
-      />
-    );
-  }
+  const staticNavigator = createStaticNavigator();
+  const AppProvider = runtime.composeAppProvider() || React.Fragment;
+  const PageWrappers = runtime.getWrapperPageRegistration();
+  const AppRouter = runtime.getAppRouter();
 
   const result = ReactDOMServer.renderToString(
-    <AppContextProvider value={appContext}>
+    <AppContextProvider value={context}>
       <Document>
-        {app}
+        <App
+          action={Action.Pop}
+          location={location}
+          navigator={staticNavigator}
+          static
+          AppProvider={AppProvider}
+          PageWrappers={PageWrappers}
+          AppRouter={AppRouter}
+        />
       </Document>
+    </AppContextProvider>,
+  );
+
+  return result;
+}
+
+/**
+ * Render Document for CSR.
+ */
+async function renderDocument(Document, matches, appContext) {
+  const pageConfig = await loadPageConfig(matches);
+  const pageData = {
+    pageConfig,
+  };
+
+  const context: AppContext = {
+    ...appContext,
+    pageData,
+  };
+
+  const result = ReactDOMServer.renderToString(
+    <AppContextProvider value={context}>
+      <Document />
     </AppContextProvider>,
   );
 

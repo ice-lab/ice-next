@@ -67,6 +67,20 @@ export async function loadPageData(matches: RouteMatch[], initialContext: Initia
 }
 
 /**
+ * Load page config without initial data.
+ */
+export async function loadPageConfig(matches: RouteMatch[]) {
+  const last = matches.length - 1;
+  const { route } = matches[last];
+  const { id } = route;
+
+  const routeModule = routeModules[id];
+
+  const { getPageConfig } = routeModule;
+  return getPageConfig({ initialData: null });
+}
+
+/**
  * Create elements in routes which will be consumed by react-router-dom
  */
 export function createRouteElements(routes: RouteItem[], PageWrappers?: IPageWrapper<any>[]) {
