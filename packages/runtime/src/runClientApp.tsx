@@ -1,12 +1,12 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { createHashHistory, createBrowserHistory } from 'history';
 import type { HashHistory, BrowserHistory } from 'history';
+import { createSearchParams } from 'react-router-dom';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
-import type { AppContext, AppConfig, RouteItem, AppRouterProps, PageWrapper, RuntimeModules } from './types';
+import type { AppContext, AppConfig, RouteItem, AppRouterProps, PageWrapper, RuntimeModules, InitialContext } from './types';
 import { loadRouteModules, loadPageData, matchRoutes } from './routes.js';
-import getInitialContext from './getInitialContext.js';
 
 interface RunClientAppOptions {
   appConfig: AppConfig;
@@ -143,4 +143,17 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
       </Document>
     </AppContextProvider>
   );
+}
+
+function getInitialContext() {
+  const { href, origin, pathname, search } = window.location;
+  const path = href.replace(origin, '');
+  const query = Object.fromEntries(createSearchParams(search));
+  const initialContext: InitialContext = {
+    pathname,
+    path,
+    query,
+  };
+
+  return initialContext;
 }
