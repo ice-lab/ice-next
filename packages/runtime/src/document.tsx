@@ -77,12 +77,17 @@ export function Scripts() {
       {
         blockScripts.map(script => {
           const { block, ...props } = script;
-          return <script key={script.src} {...props} />;
+          return <script key={script.src} defer {...props} />;
         })
       }
+      {/*
+       * Script must be deferred.
+       * If there are other dom after this tag, and hydrate before parsed all dom,
+       * hydrate will fail due to inconsistent dom nodes.
+       */}
       {
         scripts.map(script => {
-          return <script key={script} src={script} />;
+          return <script key={script} defer src={script} />;
         })
       }
       {
@@ -91,13 +96,12 @@ export function Scripts() {
           return <link key={link.href} {...props} />;
         })
       }
-      {/* {
+      {
         deferredScripts.map(script => {
           const { block, ...props } = script;
-          // TODO： defer 属性会导致 CSR 、SSR 渲染不一致，先移除
-          return <script key={script.src} {...props} />;
+          return <script key={script.src} defer {...props} />;
         })
-      } */}
+      }
     </>
   );
 }
