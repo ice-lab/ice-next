@@ -17,7 +17,7 @@
     "lint": "eslint --cache --ext .js,.jsx,.ts,.tsx ./",
     "lint:fix": "npm run lint -- --fix",
     "publish:alpha": "PUBLISH_TYPE=alpha esmo ./scripts/publishPackageWithDistTag.ts",
-    "test": "vitest run",
+    "test": "vitest run --coverage",
     "test:watch": "vitest"
   },
   "author": "ice-admin@alibaba-inc.com",
@@ -34,6 +34,7 @@
     "@types/node": "^17.0.13",
     "@types/semver": "^7.3.9",
     "build-scripts": "^2.0.0-15",
+    "c8": "^7.11.0",
     "chalk": "^4.1.2",
     "chokidar": "^3.5.3",
     "dependency-check": "^4.1.0",
