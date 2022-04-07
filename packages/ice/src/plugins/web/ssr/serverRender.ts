@@ -5,17 +5,17 @@ import type { Request, Response } from 'express';
 interface Options {
   routeManifest: string;
   serverCompiler: () => Promise<string>;
-  isSSR?: boolean;
-  isSSG?: boolean;
+  ssg?: boolean;
 }
 
 export function setupRenderServer(options: Options) {
   const {
     routeManifest,
     serverCompiler,
-    isSSR,
-    isSSG,
+    ssg,
   } = options;
+
+  console.log(ssg);
 
   return async (req: Request, res: Response) => {
     // Read the latest routes info.
@@ -27,13 +27,12 @@ export function setupRenderServer(options: Options) {
 
     const entry = await serverCompiler();
     const serverEntry = await import(entry);
-    const html = await serverEntry.render({
+    const requestContext = {
       req,
       res,
-    }, {
-      isSSR,
-      isSSG,
-    });
+    };
+
+    const html = await serverEntry[ssg ? 'render' : 'renderDocument'](requestContext);
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(html);

@@ -69,7 +69,7 @@ export async function loadPageData(matches: RouteMatch[], initialContext: Initia
 /**
  * Load page config without initial data.
  */
-export async function loadPageConfig(matches: RouteMatch[]) {
+export function loadPageConfig(matches: RouteMatch[]) {
   const last = matches.length - 1;
   const { route } = matches[last];
   const { id } = route;

@@ -6,7 +6,7 @@ interface Options {
   entry: string;
   routeManifest: string;
   outDir: string;
-  isSSG: boolean;
+  ssg: boolean;
 }
 
 export default async function generateHTML(options: Options) {
@@ -14,7 +14,7 @@ export default async function generateHTML(options: Options) {
     entry,
     routeManifest,
     outDir,
-    isSSG,
+    ssg,
   } = options;
 
   const serverEntry = await import(entry);
@@ -23,18 +23,17 @@ export default async function generateHTML(options: Options) {
 
   for (let i = 0, n = paths.length; i < n; i++) {
     const routePath = paths[i];
-    const htmlContent = await serverEntry.render({
+    const requestContext = {
       req: {
         url: routePath,
         path: routePath,
       },
-    }, {
-      isSSR: false,
-      isSSG,
-    });
+    };
+
+    const html = await serverEntry[ssg ? 'render' : 'renderDocument'](requestContext);
 
     const fileName = routePath === '/' ? 'index.html' : `${routePath}.html`;
-    fs.writeFileSync(path.join(outDir, fileName), htmlContent);
+    fs.writeFileSync(path.join(outDir, fileName), html);
   }
 }
 

@@ -4,7 +4,8 @@ import generateHTML from './ssr/generateHtml.js';
 import { setupRenderServer } from './ssr/serverRender.js';
 
 const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
-  const { command, rootDir, userConfig: buildConfig } = context;
+  const { command, rootDir, userConfig } = context;
+  const { ssg = true } = userConfig;
   const outputDir = path.join(rootDir, 'build');
   const routeManifest = path.join(rootDir, '.ice/route-manifest.json');
   const serverEntry = path.join(outputDir, 'server/entry.mjs');
@@ -28,7 +29,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
       outDir: outputDir,
       entry: serverEntry,
       routeManifest,
-      isSSG: buildConfig.isSSG,
+      ssg,
     });
   });
   const mode = command === 'start' ? 'development' : 'production';
@@ -48,8 +49,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
         middleware: setupRenderServer({
           serverCompiler,
           routeManifest,
-          isSSR: buildConfig.isSSR,
-          isSSG: buildConfig.isSSG,
+          ssg,
         }),
       });
 
