@@ -11,7 +11,7 @@ export default defineConfig({
     alias: { ...moduleNameMapper },
   },
   test: {
-    threads: false,
+    maxThreads: 3,
     exclude: [
       '**/node_modules/**',
       '**/esm/**',
