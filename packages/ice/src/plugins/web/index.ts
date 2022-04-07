@@ -1,6 +1,6 @@
 import * as path from 'path';
 import type { Plugin } from '@ice/types';
-import generateHTML from './ssr/generateHtml.js';
+import generateHTML from './ssr/generateHTML.js';
 import { setupRenderServer } from './ssr/serverRender.js';
 
 const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
