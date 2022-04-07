@@ -12,7 +12,7 @@ export default defineConfig({
   },
   test: {
     // disable threads to avoid `Segmentation fault (core dumped)` error: https://github.com/vitest-dev/vitest/issues/317
-    // threads: false,
+    threads: false,
     exclude: [
       '**/node_modules/**',
       '**/esm/**',
