@@ -14,7 +14,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
   const icePackageInfo = JSON.parse(await fs.readFile(path.join(__dirname, '../package.json'), 'utf-8'));
   checkNodeVersion(icePackageInfo.engines.node, icePackageInfo.name);
   process.env.__ICE_VERSION__ = icePackageInfo.version;
-
+  const cwd = process.cwd();
   program
     .version(icePackageInfo.version)
     .usage('<command> [options]');
@@ -24,7 +24,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     .description('build project')
     .allowUnknownOption()
     .option('--config <config>', 'use custom config')
-    .option('--rootDir <rootDir>', 'project root directory', process.cwd())
+    .option('--rootDir <rootDir>', 'project root directory', cwd)
     .action(async ({ rootDir, ...commandArgs }) => {
       const service = await createService({ rootDir, command: 'build', commandArgs });
       service.run();
@@ -37,7 +37,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     .option('--config <config>', 'use custom config')
     .option('-h, --host <host>', 'dev server host', '0.0.0.0')
     .option('-p, --port <port>', 'dev server port')
-    .option('--rootDir <rootDir>', 'project root directory', process.cwd())
+    .option('--rootDir <rootDir>', 'project root directory', cwd)
     .action(async ({ rootDir, ...commandArgs }) => {
       const service = await createService({ rootDir, command: 'start', commandArgs });
       service.run();
@@ -48,7 +48,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     .description('run tests with jest')
     .allowUnknownOption() // allow jest config
     .option('--config <config>', 'use custom config')
-    .option('--rootDir <rootDir>', 'project root directory', process.cwd())
+    .option('--rootDir <rootDir>', 'project root directory', cwd)
     .action(async ({ rootDir, ...commandArgs }) => {
       await createService({ rootDir, command: 'test', commandArgs });
     });
