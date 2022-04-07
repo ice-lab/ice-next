@@ -23,7 +23,6 @@ export function getPageConfig() {
     links: [{
       href: 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css',
       rel: 'stylesheet',
-      block: true,
     }],
     scripts: [{
       src: 'https://cdn.jsdelivr.net/npm/lodash@2.4.1/dist/lodash.min.js',

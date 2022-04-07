@@ -29,18 +29,16 @@ export function Title() {
 export function Links() {
   const { pageData, matches, assetsManifest } = useAppContext();
 
+  const customLinks = pageData.pageConfig.links || [];
+
   const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
-
-  const customLinks = pageData.pageConfig.links || [];
-  const blockLinks = customLinks.filter((link) => link.block);
-
   const styles = pageAssets.concat(entryAssets).filter(path => path.indexOf('.css') > -1);
 
   return (
     <>
       {
-        blockLinks.map(link => {
+        customLinks.map(link => {
           const { block, ...props } = link;
           return <link key={link.href} {...props} />;
         })
@@ -51,25 +49,18 @@ export function Links() {
 }
 
 export function Scripts() {
-  const { pageData, initialData, matches, assetsManifest, isSSR, isSSG } = useAppContext();
+  const { pageData, initialData, matches, assetsManifest } = useAppContext();
 
   const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
 
-  const { links: customLinks = [], scripts: customScripts = [] } = pageData.pageConfig;
+  const { scripts: customScripts = [] } = pageData.pageConfig;
 
   const scripts = pageAssets.concat(entryAssets).filter(path => path.indexOf('.js') > -1);
 
-  const blockScripts = customScripts.filter(script => script.block);
-  const deferredScripts = customScripts.filter(script => !script.block);
-  const deferredLinks = customLinks.filter(link => !link.block);
-
   const appContext = {
-    isSSR,
-    isSSG,
     initialData,
     pageData,
-    matches,
     assetsManifest,
   };
 
@@ -77,7 +68,7 @@ export function Scripts() {
     <>
       <script dangerouslySetInnerHTML={{ __html: `window.__ICE_APP_CONTEXT__=${JSON.stringify(appContext)}` }} />
       {
-        blockScripts.map(script => {
+        customScripts.map(script => {
           const { block, ...props } = script;
           return <script key={script.src} defer {...props} />;
         })
@@ -90,19 +81,6 @@ export function Scripts() {
       {
         scripts.map(script => {
           return <script key={script} defer src={script} />;
-        })
-      }
-      {
-        deferredLinks.map(link => {
-          const { block, ...props } = link;
-          // FIXME: links is not deferred.
-          return <link key={link.href} {...props} />;
-        })
-      }
-      {
-        deferredScripts.map(script => {
-          const { block, ...props } = script;
-          return <script key={script.src} defer {...props} />;
         })
       }
     </>
