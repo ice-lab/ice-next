@@ -73,6 +73,7 @@ export async function renderServerApp(requestContext: ServerContext, options: Re
     pageData,
     matches,
     routes,
+    isSSR: true,
   };
 
   const runtime = new Runtime(appContext);
