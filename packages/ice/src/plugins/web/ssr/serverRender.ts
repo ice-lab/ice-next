@@ -15,8 +15,6 @@ export function setupRenderServer(options: Options) {
     ssg,
   } = options;
 
-  console.log(ssg);
-
   return async (req: Request, res: Response) => {
     // Read the latest routes info.
     const routes = JSON.parse(fs.readFileSync(routeManifest, 'utf8'));
