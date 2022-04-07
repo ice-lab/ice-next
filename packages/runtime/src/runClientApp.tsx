@@ -117,8 +117,7 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
           const initialContext = getInitialContext();
           return loadPageData(matches, initialContext);
         })
-        .then(async (pageData) => {
-          // await updatePageConfig(pageData.pageConfig);
+        .then((pageData) => {
           // just re-render once, so add pageData to historyState :(
           setHistoryState({ action, location, pageData, matches });
         });
