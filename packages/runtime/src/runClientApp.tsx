@@ -7,6 +7,7 @@ import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
 import type { AppContext, AppConfig, RouteItem, AppRouterProps, PageWrapper, RuntimeModules, InitialContext } from './types';
 import { loadRouteModules, loadPageData, matchRoutes } from './routes.js';
+import { loadStyleLinks, loadScripts } from './assets.js';
 
 interface RunClientAppOptions {
   appConfig: AppConfig;
@@ -110,16 +111,10 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
         throw new Error(`Routes not found in location ${location}.`);
       }
 
-      loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })))
-        .then(() => {
-          const initialContext = getInitialContext();
-          return loadPageData(matches, initialContext);
-        })
-        .then((pageData) => {
-          // TODO: load links and scripts for page
-          // just re-render once, so add pageData to historyState :(
-          setHistoryState({ action, location, pageData, matches });
-        });
+      loadNextPage(matches, (pageData) => {
+        // just re-render once, so add pageData to historyState :(
+        setHistoryState({ action, location, pageData, matches });
+      });
     });
   }, []);
 
@@ -141,6 +136,25 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
       </Document>
     </AppContextProvider>
   );
+}
+
+/**
+ * Prepare for the next pages.
+ * Load modules、getPageData and preLoad the custom assets.
+ */
+async function loadNextPage(matches, callback) {
+  await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
+
+  const initialContext = getInitialContext();
+  const pageData = await loadPageData(matches, initialContext);
+
+  const { pageConfig } = pageData;
+  await Promise.all([
+    loadStyleLinks(pageConfig.links),
+    loadScripts(pageConfig.scripts),
+  ]);
+
+  callback(pageData);
 }
 
 function getInitialContext() {

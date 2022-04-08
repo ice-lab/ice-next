@@ -3,7 +3,7 @@ import type { Location } from 'history';
 import type { RouteObject } from 'react-router-dom';
 import { matchRoutes as originMatchRoutes } from 'react-router-dom';
 import PageWrapper from './PageWrapper.js';
-import type { RouteItem, RouteModules, PageWrapper as IPageWrapper, RouteMatch, InitialContext } from './types';
+import type { RouteItem, RouteModules, PageWrapper as IPageWrapper, RouteMatch, InitialContext, PageConfig } from './types';
 
 // global route modules cache
 const routeModules: RouteModules = {};
@@ -48,7 +48,7 @@ export async function loadPageData(matches: RouteMatch[], initialContext: Initia
 
   const { getInitialData, getPageConfig } = routeModule;
   let initialData;
-  let pageConfig = {};
+  let pageConfig: PageConfig = {};
 
   if (getInitialData) {
     initialData = await getInitialData(initialContext);

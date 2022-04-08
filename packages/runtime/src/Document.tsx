@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useAppContext } from './AppContext.js';
-import type { AssetsManifest, RouteMatch } from './types';
+import { getPageAssets, getEntryAssets } from './assets.js';
 
 export function Meta() {
   const { pageData } = useAppContext();
@@ -98,35 +98,4 @@ export function Main(props) {
       {props.children}
     </div>
   );
-}
-
-/**
- * merge assets info for matched page
- */
- export function getPageAssets(matches: RouteMatch[], assetsManifest: AssetsManifest): string[] {
-  // TODO：publicPath from runtime
-  const { pages, publicPath } = assetsManifest;
-
-  let result = [];
-
-  matches.forEach(match => {
-    const { componentName } = match.route;
-    const assets = pages[componentName];
-    assets && assets.forEach(filePath => {
-      result.push(`${publicPath}${filePath}`);
-    });
-  });
-
-  return result;
-}
-
-export function getEntryAssets(assetsManifest: AssetsManifest): string[] {
-  const { entries, publicPath } = assetsManifest;
-  let result = [];
-
-  Object.values(entries).forEach(assets => {
-    result = result.concat(assets);
-  });
-
-  return result.map(filePath => `${publicPath}${filePath}`);
 }
