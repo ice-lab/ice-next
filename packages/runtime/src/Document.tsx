@@ -104,6 +104,7 @@ export function Main(props) {
  * merge assets info for matched page
  */
  export function getPageAssets(matches: RouteMatch[], assetsManifest: AssetsManifest): string[] {
+  // TODO：publicPath from runtime
   const { pages, publicPath } = assetsManifest;
 
   let result = [];
