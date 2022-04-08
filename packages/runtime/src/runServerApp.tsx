@@ -102,6 +102,7 @@ export async function renderServerApp(requestContext: ServerContext, options: Re
     </AppContextProvider>,
   );
 
+  // TODO: send html in render function.
   return result;
 }
 
