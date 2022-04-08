@@ -31,7 +31,7 @@ export function generateRouteManifest(
   rootDir: string,
   ignoreFiles: string[] = [],
   defineExtraRoutes?: (defineRoute: DefineRouteFunction) => void,
-  ) {
+) {
   const srcDir = path.join(rootDir, 'src');
   const routeManifest: RouteManifest = {};
   // 2. find routes in `src/pages` directory

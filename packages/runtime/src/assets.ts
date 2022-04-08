@@ -5,7 +5,7 @@ import type { AssetsManifest, RouteMatch } from './types';
  * @param assetsManifest
  * @returns
  */
- export function getPageAssets(matches: RouteMatch[], assetsManifest: AssetsManifest): string[] {
+export function getPageAssets(matches: RouteMatch[], assetsManifest: AssetsManifest): string[] {
   const { bundles, publicPath } = assetsManifest;
 
   let result = [];
