@@ -7,7 +7,6 @@ import type { usePageContext } from './PageContext';
 type VoidFunction = () => void;
 type AppLifecycle = 'onShow' | 'onHide' | 'onPageNotFound' | 'onShareAppMessage' | 'onUnhandledRejection' | 'onLaunch' | 'onError' | 'onTabItemClick';
 type App = Partial<{
-  rootId?: string;
   strict?: boolean;
   addProvider?: ({ children }: { children: ReactNode }) => ReactNode;
   getInitialData?: (ctx?: InitialContext) => Promise<any>;
