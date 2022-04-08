@@ -5,7 +5,8 @@ import type { Request, Response } from 'express';
 interface Options {
   routeManifest: string;
   serverCompiler: () => Promise<string>;
-  ssg?: boolean;
+  ssg: boolean;
+  ssr: boolean;
 }
 
 export function setupRenderServer(options: Options) {
@@ -13,6 +14,7 @@ export function setupRenderServer(options: Options) {
     routeManifest,
     serverCompiler,
     ssg,
+    ssr,
   } = options;
 
   return async (req: Request, res: Response) => {
@@ -31,7 +33,7 @@ export function setupRenderServer(options: Options) {
     };
 
     let html;
-    if (ssg) {
+    if (ssg || ssr) {
       html = await serverEntry.render(requestContext);
     } else {
       html = await serverEntry.renderDocument(requestContext);

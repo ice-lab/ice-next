@@ -5,7 +5,7 @@ import { setupRenderServer } from './ssr/serverRender.js';
 
 const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
   const { command, rootDir, userConfig } = context;
-  const { ssg = true } = userConfig;
+  const { ssg = true, ssr = true } = userConfig;
   const outputDir = path.join(rootDir, 'build');
   const routeManifest = path.join(rootDir, '.ice/route-manifest.json');
   const serverEntry = path.join(outputDir, 'server/entry.mjs');
@@ -30,6 +30,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
       entry: serverEntry,
       routeManifest,
       ssg,
+      ssr,
     });
   });
   const mode = command === 'start' ? 'development' : 'production';
@@ -50,6 +51,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
           serverCompiler,
           routeManifest,
           ssg,
+          ssr,
         }),
       });
 

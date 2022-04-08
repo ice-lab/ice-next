@@ -95,6 +95,10 @@ const userConfig = [
     validation: 'boolean',
   },
   {
+    name: 'ssr',
+    validation: 'boolean',
+  },
+  {
     name: 'webpack',
     validation: 'function',
     setConfig: (config: Config, configureWebpack: UserConfig['webpack']) => {

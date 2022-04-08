@@ -7,6 +7,7 @@ interface Options {
   routeManifest: string;
   outDir: string;
   ssg: boolean;
+  ssr: boolean;
 }
 
 export default async function generateHTML(options: Options) {
@@ -15,6 +16,7 @@ export default async function generateHTML(options: Options) {
     routeManifest,
     outDir,
     ssg,
+    ssr,
   } = options;
 
   const serverEntry = await import(entry);
@@ -31,7 +33,7 @@ export default async function generateHTML(options: Options) {
     };
 
     let html;
-    if (ssg) {
+    if (ssg || ssr) {
       html = await serverEntry.render(requestContext);
     } else {
       html = await serverEntry.renderDocument(requestContext);
