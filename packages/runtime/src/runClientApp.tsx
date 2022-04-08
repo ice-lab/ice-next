@@ -57,7 +57,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
   render(runtime, Document);
 }
 
-async function render(runtime: Runtime, Document) {
+async function render(runtime: Runtime, Document: React.ComponentType<{}>) {
   const appContext = runtime.getAppContext();
   const { appConfig } = appContext;
   const { router: { type: routerType } } = appConfig;
