@@ -51,7 +51,18 @@ async function render(runtime: Runtime) {
   const PageWrappers = runtime.getWrapperPageRegistration();
   const AppRouter = runtime.getAppRouter();
   const appMountNode = document.getElementById(rootId);
-  const history = (routerType === 'hash' ? createHashHistory : createBrowserHistory)({ window });
+
+  let history: HashHistory | BrowserHistory | null;
+  if (
+    typeof process.env.ICE_RUNTIME_ROUTER === 'string' && process.env.ICE_RUNTIME_ROUTER === 'true' ||
+    typeof process.env.ICE_RUNTIME_ROUTER === 'boolean' && process.env.ICE_RUNTIME_ROUTER === true
+  ) {
+    console.log('init history');
+    history = (routerType === 'hash' ? createHashHistory : createBrowserHistory)({ window });
+  } else {
+    console.log('no history');
+    history = null;
+  }
 
   render(
     <BrowserEntry
@@ -66,7 +77,7 @@ async function render(runtime: Runtime) {
 }
 
 interface BrowserEntryProps {
-  history: HashHistory | BrowserHistory;
+  history: HashHistory | BrowserHistory | null;
   appContext: AppContext;
   AppProvider: React.ComponentType<any>;
   PageWrappers: PageWrapper<{}>[];
@@ -76,30 +87,32 @@ interface BrowserEntryProps {
 function BrowserEntry({ history, appContext, ...rest }: BrowserEntryProps) {
   const { routes, initialPageData } = appContext;
   const [historyState, setHistoryState] = useState({
-    action: history.action,
-    location: history.location,
+    action: history?.action,
+    location: history?.location,
     pageData: initialPageData,
   });
   const { action, location, pageData } = historyState;
 
   // listen the history change and update the state which including the latest action and location
   useLayoutEffect(() => {
-    history.listen(({ action, location }) => {
-      const matches = matchRoutes(routes, location);
-      if (!matches) {
-        throw new Error(`Routes not found in location ${location}.`);
-      }
+    if (history) {
+      history.listen(({ action, location }) => {
+        const matches = matchRoutes(routes, location);
+        if (!matches) {
+          throw new Error(`Routes not found in location ${location}.`);
+        }
 
-      loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })))
-        .then(() => {
-          const initialContext = getInitialContext();
-          return loadPageData(matches, initialContext);
-        })
-        .then((pageData) => {
-          // just re-render once, so add pageData to historyState :(
-          setHistoryState({ action, location, pageData });
-        });
-    });
+        loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })))
+          .then(() => {
+            const initialContext = getInitialContext();
+            return loadPageData(matches, initialContext);
+          })
+          .then((pageData) => {
+            // just re-render once, so add pageData to historyState :(
+            setHistoryState({ action, location, pageData });
+          });
+      });
+    }
   }, []);
 
   return (

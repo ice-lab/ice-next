@@ -1,4 +1,4 @@
-import { createSearchParams } from 'react-router-dom';
+import { createSearchParams } from './utils/react-router-dom.js';
 import type { InitialContext } from './types';
 
 export default function getInitialContext() {

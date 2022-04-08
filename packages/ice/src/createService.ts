@@ -107,10 +107,11 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   return {
     run: async () => {
       if (command === 'start') {
+        updateRuntimeEnv(routesRenderData.routeManifest);
         return await start(ctx, contextConfig, esbuildCompile);
       } else if (command === 'build') {
         const appConfig = await getAppConfig({ esbuildCompile, rootDir });
-        updateRuntimeEnv(appConfig, routesRenderData.routeManifest);
+        updateRuntimeEnv(routesRenderData.routeManifest, appConfig);
         return await build(ctx, contextConfig, esbuildCompile);
       }
     },

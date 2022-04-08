@@ -14,7 +14,7 @@ export const defineRuntimeEnv = () => {
   });
 };
 
-export const updateRuntimeEnv = (appConfig?: AppConfig, routeManifest?: RouteManifest) => {
+export const updateRuntimeEnv = (routeManifest?: RouteManifest, appConfig?: AppConfig) => {
   if (!appConfig?.app?.getInitialData) {
     process.env['ICE_RUNTIME_INITIAL_DATA'] = 'false';
   }

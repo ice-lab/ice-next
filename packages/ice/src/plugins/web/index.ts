@@ -34,6 +34,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
   registerTask('web', {
     mode,
     outputDir,
+    sourceMap: command === 'start' ? 'cheap-source-map' : false,
     alias: {
       ice: path.join(rootDir, '.ice', 'index.ts'),
       '@': path.join(rootDir, 'src'),

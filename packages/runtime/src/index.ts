@@ -1,7 +1,7 @@
 import {
   Link,
   Outlet,
-} from 'react-router-dom';
+} from './utils/react-router-dom.js';
 import Runtime from './runtime.js';
 import App from './App.js';
 import runClientApp from './runClientApp.js';
