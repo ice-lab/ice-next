@@ -30,7 +30,12 @@ export function setupRenderServer(options: Options) {
       res,
     };
 
-    const html = await serverEntry[ssg ? 'render' : 'renderDocument'](requestContext);
+    let html;
+    if (ssg) {
+      html = await serverEntry.render(requestContext);
+    } else {
+      html = await serverEntry.renderDocument(requestContext);
+    }
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(html);

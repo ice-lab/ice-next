@@ -30,7 +30,12 @@ export default async function generateHTML(options: Options) {
       },
     };
 
-    const html = await serverEntry[ssg ? 'render' : 'renderDocument'](requestContext);
+    let html;
+    if (ssg) {
+      html = await serverEntry.render(requestContext);
+    } else {
+      html = await serverEntry.renderDocument(requestContext);
+    }
 
     const fileName = routePath === '/' ? 'index.html' : `${routePath}.html`;
     fs.writeFileSync(path.join(outDir, fileName), html);

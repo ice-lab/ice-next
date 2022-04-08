@@ -28,7 +28,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
 
   const appContextFromServer = (window as any).__ICE_APP_CONTEXT__ || {};
 
-  let { isSSR, initialData, pageData, assetsManifest } = appContextFromServer;
+  let { initialData, pageData, assetsManifest } = appContextFromServer;
 
   const initialContext = getInitialContext();
   if (!initialData && appConfig.app?.getInitialData) {
@@ -40,7 +40,6 @@ export default async function runClientApp(options: RunClientAppOptions) {
   }
 
   const appContext: AppContext = {
-    isSSR,
     routes,
     appConfig,
     initialData,

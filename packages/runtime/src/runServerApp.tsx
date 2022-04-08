@@ -73,7 +73,7 @@ export async function renderServerApp(requestContext: ServerContext, options: Re
     pageData,
     matches,
     routes,
-    isSSR: true,
+    ssr: true,
   };
 
   const runtime = new Runtime(appContext);
