@@ -11,10 +11,9 @@ export default defineConfig({
     alias: { ...moduleNameMapper },
   },
   test: {
-    // To avoid error `Segmentation fault (core dumped)` in CI environment, must set the threads number
+    // To avoid error `Segmentation fault (core dumped)` in CI environment, disable threads
     // ref: https://github.com/vitest-dev/vitest/issues/317
-    maxThreads: 1,
-    minThreads: 1,
+    threads: false,
     exclude: [
       '**/node_modules/**',
       '**/esm/**',
