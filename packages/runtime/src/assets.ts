@@ -84,6 +84,7 @@ async function preLoadAssets(type, props): Promise<void> {
 
     tag.onload = () => {
       // FIXME: Style link reloads on real DOM rendering if caching is disabled.
+      // ISSUE: https://github.com/ice-lab/ice-next/issues/90
       removeTag();
       resolve();
     };
