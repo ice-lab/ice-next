@@ -16,7 +16,7 @@ describe(`build ${example}`, () => {
     browser = res.browser;
     expect(await page.$$text('h1')).toStrictEqual(['Layout']);
     expect(await page.$$text('h2')).toStrictEqual(['Home']);
-  });
+  }, 120000);
 
   test('define extra routes', async () => {
     let res = await setupBrowser({ example, defaultHtml: 'about-me.html' });
@@ -49,6 +49,7 @@ describe(`build ${example}`, () => {
   });
 
   // TODO: dynamic-routes test
+  test.todo('dynamic routes', async () => {});
 
   afterAll(async () => {
     await browser.close();

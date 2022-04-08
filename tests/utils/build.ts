@@ -24,7 +24,6 @@ interface ReturnValue {
 export const buildFixture = async function(example: string) {
   const rootDir = path.join(__dirname, `../../examples/${example}`);
   process.env.DISABLE_FS_CACHE = 'true';
-  process.env.JEST_TEST = 'true';
   const service = await createService({ rootDir, command: 'build', commandArgs: {} });
   await service.run();
 }

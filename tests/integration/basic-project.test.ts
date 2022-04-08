@@ -22,7 +22,7 @@ describe(`build ${example}`, () => {
     expect(await page.$$text('h2')).toStrictEqual(['Home Page']);
     const bundleContent = fs.readFileSync(path.join(__dirname, `../../examples/${example}/build/index.js`), 'utf-8');
     expect(bundleContent.includes('__REMOVED__')).toBe(false);
-  });
+  }, 120000);
 
   afterAll(async () => {
     await browser.close();

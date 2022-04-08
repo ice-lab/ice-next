@@ -25,7 +25,7 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
 
   return {
     name: 'compilation-plugin',
-    // @ts-expect-error
+    // @ts-expect-error TODO: source map types
     async transform(source: string, id: string) {
       // TODO specific runtime plugin name
       if ((/node_modules/.test(id) && !/[\\/]runtime[\\/]/.test(id))) {
@@ -62,14 +62,14 @@ function getSwcTransformOptions({
   dev,
   isServer,
 }: {
-    suffix: JSXSuffix;
-    rootDir: string;
-    dev: boolean;
-    isServer?: boolean;
-  }) {
+  suffix: JSXSuffix;
+  rootDir: string;
+  dev: boolean;
+  isServer?: boolean;
+}) {
   const baseReactTransformConfig = {
     refresh: dev && !isServer,
-   };
+  };
   const reactTransformConfig = merge(baseReactTransformConfig, hasJsxRuntime(rootDir) ? { runtime: 'automatic' } : {});
 
   const commonOptions: SwcConfig = {

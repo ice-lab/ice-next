@@ -1,8 +1,8 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1
 
-exports[`generateRouteManifest function basic-routes 1`] = `
-Object {
-  "About/index": Object {
+exports[`generateRouteManifest function > basic-routes 1`] = `
+{
+  "About/index": {
     "componentName": "about-index",
     "file": "About/index.tsx",
     "id": "About/index",
@@ -10,7 +10,7 @@ Object {
     "parentId": "layout",
     "path": "About",
   },
-  "About/me/index": Object {
+  "About/me/index": {
     "componentName": "about-me-index",
     "file": "About/me/index.tsx",
     "id": "About/me/index",
@@ -18,7 +18,7 @@ Object {
     "parentId": "layout",
     "path": "About/me",
   },
-  "home": Object {
+  "home": {
     "componentName": "home",
     "file": "home.tsx",
     "id": "home",
@@ -26,7 +26,7 @@ Object {
     "parentId": "layout",
     "path": "home",
   },
-  "index": Object {
+  "index": {
     "componentName": "index",
     "file": "index.tsx",
     "id": "index",
@@ -34,7 +34,7 @@ Object {
     "parentId": "layout",
     "path": undefined,
   },
-  "layout": Object {
+  "layout": {
     "componentName": "layout",
     "file": "layout.tsx",
     "id": "layout",
@@ -45,9 +45,9 @@ Object {
 }
 `;
 
-exports[`generateRouteManifest function define-extra-routes 1`] = `
-Object {
-  "About/index": Object {
+exports[`generateRouteManifest function > define-extra-routes 1`] = `
+{
+  "About/index": {
     "componentName": "about-index",
     "file": "About/index.tsx",
     "id": "About/index",
@@ -55,7 +55,7 @@ Object {
     "parentId": undefined,
     "path": "/about-me",
   },
-  "About/me/index": Object {
+  "About/me/index": {
     "componentName": "about-me-index",
     "file": "About/me/index.tsx",
     "id": "About/me/index",
@@ -63,7 +63,7 @@ Object {
     "parentId": "layout",
     "path": "About/me",
   },
-  "home": Object {
+  "home": {
     "componentName": "home",
     "file": "home.tsx",
     "id": "home",
@@ -71,7 +71,7 @@ Object {
     "parentId": "layout",
     "path": "home",
   },
-  "index": Object {
+  "index": {
     "componentName": "index",
     "file": "index.tsx",
     "id": "index",
@@ -79,7 +79,7 @@ Object {
     "parentId": "layout",
     "path": undefined,
   },
-  "layout": Object {
+  "layout": {
     "componentName": "layout",
     "file": "layout.tsx",
     "id": "layout",
@@ -90,9 +90,9 @@ Object {
 }
 `;
 
-exports[`generateRouteManifest function doc-delimeters-routes 1`] = `
-Object {
-  "home.news": Object {
+exports[`generateRouteManifest function > doc-delimeters-routes 1`] = `
+{
+  "home.news": {
     "componentName": "home-news",
     "file": "home.news.tsx",
     "id": "home.news",
@@ -100,7 +100,7 @@ Object {
     "parentId": "layout",
     "path": "home/news",
   },
-  "layout": Object {
+  "layout": {
     "componentName": "layout",
     "file": "layout.tsx",
     "id": "layout",
@@ -111,9 +111,9 @@ Object {
 }
 `;
 
-exports[`generateRouteManifest function dynamic-routes 1`] = `
-Object {
-  "about": Object {
+exports[`generateRouteManifest function > dynamic-routes 1`] = `
+{
+  "about": {
     "componentName": "about",
     "file": "about.tsx",
     "id": "about",
@@ -121,7 +121,7 @@ Object {
     "parentId": undefined,
     "path": "about",
   },
-  "blog/$id": Object {
+  "blog/$id": {
     "componentName": "blog-$id",
     "file": "blog/$id.tsx",
     "id": "blog/$id",
@@ -129,7 +129,7 @@ Object {
     "parentId": undefined,
     "path": "blog/:id",
   },
-  "blog/index": Object {
+  "blog/index": {
     "componentName": "blog-index",
     "file": "blog/index.tsx",
     "id": "blog/index",
@@ -137,7 +137,7 @@ Object {
     "parentId": undefined,
     "path": "blog",
   },
-  "index": Object {
+  "index": {
     "componentName": "index",
     "file": "index.tsx",
     "id": "index",
@@ -148,9 +148,9 @@ Object {
 }
 `;
 
-exports[`generateRouteManifest function ignore-routes 1`] = `
-Object {
-  "About/me/index": Object {
+exports[`generateRouteManifest function > ignore-routes 1`] = `
+{
+  "About/me/index": {
     "componentName": "about-me-index",
     "file": "About/me/index.tsx",
     "id": "About/me/index",
@@ -158,7 +158,7 @@ Object {
     "parentId": "layout",
     "path": "About/me",
   },
-  "home": Object {
+  "home": {
     "componentName": "home",
     "file": "home.tsx",
     "id": "home",
@@ -166,7 +166,7 @@ Object {
     "parentId": "layout",
     "path": "home",
   },
-  "index": Object {
+  "index": {
     "componentName": "index",
     "file": "index.tsx",
     "id": "index",
@@ -174,7 +174,7 @@ Object {
     "parentId": "layout",
     "path": undefined,
   },
-  "layout": Object {
+  "layout": {
     "componentName": "layout",
     "file": "layout.tsx",
     "id": "layout",
@@ -185,9 +185,9 @@ Object {
 }
 `;
 
-exports[`generateRouteManifest function layout-routes 1`] = `
-Object {
-  "about": Object {
+exports[`generateRouteManifest function > layout-routes 1`] = `
+{
+  "about": {
     "componentName": "about",
     "file": "about.tsx",
     "id": "about",
@@ -195,7 +195,7 @@ Object {
     "parentId": "layout",
     "path": "about",
   },
-  "blog/$id": Object {
+  "blog/$id": {
     "componentName": "blog-$id",
     "file": "blog/$id.tsx",
     "id": "blog/$id",
@@ -203,7 +203,7 @@ Object {
     "parentId": "blog/layout",
     "path": ":id",
   },
-  "blog/index": Object {
+  "blog/index": {
     "componentName": "blog-index",
     "file": "blog/index.tsx",
     "id": "blog/index",
@@ -211,7 +211,7 @@ Object {
     "parentId": "blog/layout",
     "path": undefined,
   },
-  "blog/layout": Object {
+  "blog/layout": {
     "componentName": "blog-layout",
     "file": "blog/layout.tsx",
     "id": "blog/layout",
@@ -219,7 +219,7 @@ Object {
     "parentId": "layout",
     "path": "blog",
   },
-  "home/index": Object {
+  "home/index": {
     "componentName": "home-index",
     "file": "home/index.tsx",
     "id": "home/index",
@@ -227,7 +227,7 @@ Object {
     "parentId": "home/layout",
     "path": undefined,
   },
-  "home/layout": Object {
+  "home/layout": {
     "componentName": "home-layout",
     "file": "home/layout.tsx",
     "id": "home/layout",
@@ -235,7 +235,7 @@ Object {
     "parentId": "layout",
     "path": "home",
   },
-  "home/layout/index": Object {
+  "home/layout/index": {
     "componentName": "home-layout-index",
     "file": "home/layout/index.tsx",
     "id": "home/layout/index",
@@ -243,7 +243,7 @@ Object {
     "parentId": "home/layout",
     "path": "layout",
   },
-  "index": Object {
+  "index": {
     "componentName": "index",
     "file": "index.tsx",
     "id": "index",
@@ -251,7 +251,7 @@ Object {
     "parentId": "layout",
     "path": undefined,
   },
-  "layout": Object {
+  "layout": {
     "componentName": "layout",
     "file": "layout.tsx",
     "id": "layout",
@@ -262,9 +262,9 @@ Object {
 }
 `;
 
-exports[`generateRouteManifest function splat-routes 1`] = `
-Object {
-  "$": Object {
+exports[`generateRouteManifest function > splat-routes 1`] = `
+{
+  "$": {
     "componentName": "$",
     "file": "$.tsx",
     "id": "$",
@@ -272,7 +272,7 @@ Object {
     "parentId": "layout",
     "path": "*",
   },
-  "home": Object {
+  "home": {
     "componentName": "home",
     "file": "home.tsx",
     "id": "home",
@@ -280,7 +280,7 @@ Object {
     "parentId": "layout",
     "path": "home",
   },
-  "layout": Object {
+  "layout": {
     "componentName": "layout",
     "file": "layout.tsx",
     "id": "layout",
