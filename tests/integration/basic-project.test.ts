@@ -20,7 +20,7 @@ describe(`build ${example}`, () => {
     const res = await setupBrowser({ example });
     page = res.page;
     browser = res.browser;
-    expect(await page.$$textnb('h2')).toStrictEqual(['Home Page']);
+    expect(await page.$$text('h2')).toStrictEqual(['Home Page']);
     const bundleContent = fs.readFileSync(path.join(__dirname, `../../examples/${example}/build/index.js`), 'utf-8');
     expect(bundleContent.includes('__REMOVED__')).toBe(false);
   }, 120000);
