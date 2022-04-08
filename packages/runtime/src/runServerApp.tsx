@@ -16,24 +16,26 @@ interface RunServerAppOptions {
   routes: RouteItem[];
   documentOnly: boolean;
   runtimeModules: (RuntimePlugin | CommonJsRuntime)[];
-  Document: React.ComponentType<any>;
+  Document: React.ComponentType<{}>;
   assetsManifest: AssetsManifest;
 }
 
-export default async function runServerApp(options: RunServerAppOptions): Promise<string> {
+async function runServerApp(options: RunServerAppOptions): Promise<string> {
   const {
-    requestContext,
     appConfig,
-    runtimeModules,
-    routes,
+    assetsManifest,
     Document,
     documentOnly,
-    assetsManifest,
+    requestContext,
+    runtimeModules,
+    routes,
   } = options;
 
   const { req } = requestContext;
+  const { url } = req;
+
   // ref: https://github.com/remix-run/react-router/blob/main/packages/react-router-dom/server.tsx
-  const locationProps = parsePath(req.url);
+  const locationProps = parsePath(url);
 
   const location: Location = {
     pathname: locationProps.pathname || '/',
@@ -44,28 +46,36 @@ export default async function runServerApp(options: RunServerAppOptions): Promis
   };
 
   const matches = matchRoutes(routes, location);
-  const routeModules = await loadRouteModules(matches.map(match => match.route as RouteItem));
-  const pageData = await loadPageData(matches, routeModules, requestContext);
+
+  // TODO: error handling
+  if (!matches.length) {
+    throw new Error('No matched page found.');
+  }
+
+  await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   const initialContext: InitialContext = {
     ...requestContext,
     pathname: location.pathname,
     query: Object.fromEntries(createSearchParams(location.search)),
-    path: req.url,
+    path: url,
   };
 
   let initialData;
-  if (appConfig?.app?.getInitialData) {
+  if (appConfig.app?.getInitialData) {
     initialData = await appConfig.app.getInitialData(initialContext);
   }
+
+  const pageData = await loadPageData(matches, initialContext);
 
   const appContext: AppContext = {
     matches,
     routes,
     appConfig,
     initialData,
+    initialPageData: pageData,
+    // pageData and initialPageData are the same when SSR/SSG
     pageData,
-    routeModules,
     assetsManifest,
   };
 
@@ -74,32 +84,53 @@ export default async function runServerApp(options: RunServerAppOptions): Promis
     runtime.loadModule(m);
   });
 
-  const html = render(runtime, location, Document, documentOnly);
+  const html = render(Document, runtime, location, documentOnly);
   return html;
 }
 
+export default runServerApp;
+
 async function render(
+  Document,
   runtime: Runtime,
   location: Location,
-  Document,
   documentOnly: boolean,
 ) {
   const appContext = runtime.getAppContext();
-  const { matches, pageData = {}, assetsManifest } = appContext;
+  const { matches, initialData, pageData, assetsManifest } = appContext;
 
   let html = '';
 
   if (!documentOnly) {
-    html = renderApp(runtime, location);
-  }
+    const staticNavigator = createStaticNavigator();
+    const AppProvider = runtime.composeAppProvider() || React.Fragment;
+    const PageWrappers = runtime.getWrapperPageRegistration();
+    const AppRouter = runtime.getAppRouter();
 
-  const { pageConfig } = pageData;
+    html = ReactDOMServer.renderToString(
+      <App
+        action={Action.Pop}
+        location={location}
+        navigator={staticNavigator}
+        static
+        appContext={appContext}
+        AppProvider={AppProvider}
+        PageWrappers={PageWrappers}
+        AppRouter={AppRouter}
+      />,
+    );
+  }
 
   const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
 
+  const appData = {
+    initialData,
+  };
+
   const documentContext = {
-    pageConfig,
+    appData,
+    pageData,
     pageAssets,
     entryAssets,
     html,
@@ -112,22 +143,6 @@ async function render(
   );
 
   return result;
-}
-
-function renderApp(runtime, location) {
-  const staticNavigator = createStaticNavigator();
-
-  const html = ReactDOMServer.renderToString(
-    <App
-      action={Action.Pop}
-      runtime={runtime}
-      location={location}
-      navigator={staticNavigator}
-      static
-    />,
-  );
-
-  return html;
 }
 
 function createStaticNavigator() {

@@ -47,7 +47,7 @@ export interface PageComponent {
 export interface RouteItem {
   id: string;
   path: string;
-  element: ReactNode;
+  element?: ReactNode;
   componentName: string;
   index?: false;
   exact?: boolean;
@@ -84,17 +84,21 @@ export interface AssetsManifest {
   }>;
 }
 export interface AppContext {
-  routeModules: RouteModules;
   appConfig: AppConfig;
   assetsManifest?: AssetsManifest;
   matches?: RouteMatch[];
-  pageData: PageData;
   routes?: RouteItem[];
+  initialData?: InitialData;
+  pageData?: PageData;
+  initialPageData?: PageData;
+}
+
+export interface AppData {
   initialData?: InitialData;
 }
 
 export interface PageData {
-  pageConfig?: PageConfig;
+  pageConfig: PageConfig;
   initialData?: InitialData;
 }
 

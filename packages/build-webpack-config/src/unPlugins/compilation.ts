@@ -1,4 +1,5 @@
 import path from 'path';
+import { createRequire } from 'module';
 import { transform, type Config as SwcConfig } from '@builder/swc';
 import type { UnpluginOptions } from 'unplugin';
 import lodash from '@builder/pack/deps/lodash/lodash.js';
@@ -15,12 +16,16 @@ interface Options {
   sourceMap?: Config['sourceMap'];
 }
 
+const require = createRequire(import.meta.url);
+const regeneratorRuntimePath = require.resolve('regenerator-runtime');
+
 const compilationPlugin = (options: Options): UnpluginOptions => {
   const { rootDir, sourceMap, mode, isServer } = options;
   const dev = mode !== 'production';
 
   return {
     name: 'compilation-plugin',
+    // @ts-expect-error TODO: source map types
     async transform(source: string, id: string) {
       // TODO specific runtime plugin name
       if ((/node_modules/.test(id) && !/[\\/]runtime[\\/]/.test(id))) {
@@ -57,14 +62,14 @@ function getSwcTransformOptions({
   dev,
   isServer,
 }: {
-    suffix: JSXSuffix;
-    rootDir: string;
-    dev: boolean;
-    isServer?: boolean;
-  }) {
+  suffix: JSXSuffix;
+  rootDir: string;
+  dev: boolean;
+  isServer?: boolean;
+}) {
   const baseReactTransformConfig = {
     refresh: dev && !isServer,
-   };
+  };
   const reactTransformConfig = merge(baseReactTransformConfig, hasJsxRuntime(rootDir) ? { runtime: 'automatic' } : {});
 
   const commonOptions: SwcConfig = {
@@ -72,6 +77,10 @@ function getSwcTransformOptions({
       transform: {
         react: reactTransformConfig,
         legacyDecorator: true,
+        // @ts-expect-error fix me when @builder/swc fix type error
+        regenerator: {
+          importPath: regeneratorRuntimePath,
+        },
       },
       externalHelpers: false,
     },

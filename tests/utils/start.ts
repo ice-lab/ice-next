@@ -2,8 +2,7 @@ import path from 'path';
 import getPort from 'get-port';
 import Browser, { Page } from './browser';
 import { Server } from 'http';
-import getBuiltInPlugins from '../../packages/ice/src/getBuiltInPlugins';
-import createService from '../../packages/ice/src';
+import createService from '../../packages/ice/src/createService';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -22,11 +21,10 @@ export const startFixture = async function (example: string) {
   const port = await getPort();
   const rootDir = path.join(__dirname, `../../examples/${example}`);
   process.env.DISABLE_FS_CACHE = 'true';
-  process.env.JEST_TEST = 'true';
   const service = await createService({ rootDir, command: 'start', commandArgs: {
     port,
     disableOpen: true,
-  }, getBuiltInPlugins });
+  }});
 
   // @ts-ignore
   const { compiler, devServer } = await service.run();
