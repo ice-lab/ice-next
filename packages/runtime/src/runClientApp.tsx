@@ -123,7 +123,7 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
     });
   }, []);
 
-  // update app content for the current route.
+  // update app context for the current route.
   Object.assign(appContext, {
     matches,
     pageData,
