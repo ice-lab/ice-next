@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { matchRoutes } from '@ice/runtime';
+import matchRoutes from '../../../utils/matchRoutes.js';
 import type { Request, Response } from 'express';
 
 interface Options {

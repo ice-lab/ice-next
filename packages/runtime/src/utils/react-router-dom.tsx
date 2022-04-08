@@ -24,10 +24,8 @@ let useRoutes: typeof originUseRoutes;
 let createHashHistory: typeof originCreateHashHistory;
 let createBrowserHistory: typeof originCreateBrowserHistory;
 
-if (
-  typeof process.env.ICE_RUNTIME_ROUTER === 'string' && process.env.ICE_RUNTIME_ROUTER === 'true' ||
-  typeof process.env.ICE_RUNTIME_ROUTER === 'boolean' && process.env.ICE_RUNTIME_ROUTER === true
-) {
+// @ts-expect-error
+if (process.env.ICE_RUNTIME_ROUTER === true) {
   Link = OriginLink;
   Outlet = OriginOutlet;
   matchRoutes = originMatchRoutes;
@@ -37,6 +35,7 @@ if (
   createHashHistory = originCreateHashHistory;
   createBrowserHistory = originCreateBrowserHistory;
 } else {
+  console.debug('History disabled, process.env.ICE_RUNTIME_ROUTER', process.env.ICE_RUNTIME_ROUTER);
   Link = React.forwardRef(() => null);
   Outlet = () => null;
 

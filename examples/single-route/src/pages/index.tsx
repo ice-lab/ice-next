@@ -4,5 +4,5 @@ import { Link } from 'ice';
 console.log('Link', Link);
 
 export default function Home() {
-  return <div>home</div>;
+  return <div>home <h2>Home Page</h2></div>;
 }

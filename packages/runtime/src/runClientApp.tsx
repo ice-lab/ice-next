@@ -102,6 +102,8 @@ function BrowserEntry({ history, appContext, ...rest }: BrowserEntryProps) {
           });
       });
     }
+    // just trigger once
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -24,6 +24,14 @@ export function createEsbuildCompiler(options: Options) {
   const esbuildCompile: EsbuildCompile = async (buildOptions) => {
     const startTime = new Date().getTime();
     consola.debug('[esbuild]', `start compile for: ${buildOptions.entryPoints}`);
+
+    const ICE_PREFIX = /^ICE_/i;
+    const raw = Object.keys({ ...process.env }).filter(key => ICE_PREFIX.test(key))
+      .reduce((env, key) => {
+        env[`process.env.${key}`] = process.env[key];
+        return env;
+      }, {});
+
     const buildResult = await esbuild.build({
       bundle: true,
       target: 'node12.19.0',
@@ -32,6 +40,7 @@ export function createEsbuildCompiler(options: Options) {
         // ref: https://github.com/evanw/esbuild/blob/master/CHANGELOG.md#01117
         // in esm, this in the global should be undefined. Set the following config to avoid warning
         this: undefined,
+        ...raw,
       },
       plugins: [
         {
@@ -60,8 +69,10 @@ export function createEsbuildCompiler(options: Options) {
             });
             build.onResolve({ filter: /.*/ }, (args) => {
               const id = args.path;
+
               // external ids which is third-party dependencies
-              if (id[0] !== '.' && !path.isAbsolute(id) &&
+              // @ice/runtime 需要被编译以使用 define 注入的变量
+              if (id !== '@ice/runtime' && id[0] !== '.' && !path.isAbsolute(id) &&
                 // runtime folder need to been bundled while it is not compiled
                 !compileRegex.some((regex) => regex.test(id))) {
                 return {
