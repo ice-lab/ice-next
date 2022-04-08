@@ -116,6 +116,7 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
           return loadPageData(matches, initialContext);
         })
         .then((pageData) => {
+          // TODO: load links and scripts for page
           // just re-render once, so add pageData to historyState :(
           setHistoryState({ action, location, pageData, matches });
         });
