@@ -35,7 +35,8 @@ function escape(string: string) {
     output = `\\-${output.slice(1)}`;
   } else if (/\d/.test(firstChar)) {
     output = `\\3${firstChar} ${output.slice(1)}`;
-  } // Remove spaces after `\HEX` escapes that are not followed by a hex digit,
+  }
+  // Remove spaces after `\HEX` escapes that are not followed by a hex digit,
   // since they’re redundant. Note that this is only possible if the escape
   // sequence isn’t preceded by an odd number of backslashes.
 

@@ -6,8 +6,8 @@ import type { UnpluginOptions } from 'unplugin';
 import type { Config } from '@ice/types';
 import type { EsbuildCompile } from '@ice/types/esm/plugin.js';
 import escapeLocalIdent from '../utils/escapeLocalIdent.js';
-import stylePlugin from '../plugins/esbuild/style.js';
-import aliasPlugin from '../plugins/esbuild/alias.js';
+import stylePlugin from '../esbuild/style.js';
+import aliasPlugin from '../esbuild/alias.js';
 
 export function createEsbuildCompiler(options: {
   alias?: Record<string, string>;
