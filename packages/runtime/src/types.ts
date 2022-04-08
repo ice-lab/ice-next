@@ -81,7 +81,6 @@ export interface AssetsManifest {
   pages: string[];
 }
 export interface AppContext {
-  ssr?: boolean;
   appConfig: AppConfig;
   assetsManifest?: AssetsManifest;
   matches?: RouteMatch[];
@@ -89,6 +88,7 @@ export interface AppContext {
   initialData?: InitialData;
   pageData?: PageData;
   initialPageData?: PageData;
+  documentOnly?: boolean;
 }
 
 export interface PageData {

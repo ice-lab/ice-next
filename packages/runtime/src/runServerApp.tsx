@@ -73,7 +73,6 @@ export async function renderServerApp(requestContext: ServerContext, options: Re
     pageData,
     matches,
     routes,
-    ssr: true,
   };
 
   const runtime = new Runtime(appContext);
@@ -140,6 +139,7 @@ export async function renderDocument(requestContext: ServerContext, options: Ren
     pageData,
     matches,
     routes,
+    documentOnly: true,
   };
 
   const result = ReactDOMServer.renderToString(
