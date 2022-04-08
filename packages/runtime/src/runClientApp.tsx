@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useState } from 'react';
-import { createHashHistory, createBrowserHistory } from 'history';
 import type { HashHistory, BrowserHistory } from 'history';
+import { createHashHistory, createBrowserHistory } from './utils/react-router-dom.js';
 import Runtime from './runtime.js';
 import App from './App.js';
 import type { AppContext, AppConfig, RouteItem, AppRouterProps, PageWrapper, RuntimeModules } from './types';
@@ -51,18 +51,7 @@ async function render(runtime: Runtime) {
   const PageWrappers = runtime.getWrapperPageRegistration();
   const AppRouter = runtime.getAppRouter();
   const appMountNode = document.getElementById(rootId);
-
-  let history: HashHistory | BrowserHistory | null;
-  if (
-    typeof process.env.ICE_RUNTIME_ROUTER === 'string' && process.env.ICE_RUNTIME_ROUTER === 'true' ||
-    typeof process.env.ICE_RUNTIME_ROUTER === 'boolean' && process.env.ICE_RUNTIME_ROUTER === true
-  ) {
-    console.log('init history');
-    history = (routerType === 'hash' ? createHashHistory : createBrowserHistory)({ window });
-  } else {
-    console.log('no history');
-    history = null;
-  }
+  const history = (routerType === 'hash' ? createHashHistory : createBrowserHistory)({ window });
 
   render(
     <BrowserEntry

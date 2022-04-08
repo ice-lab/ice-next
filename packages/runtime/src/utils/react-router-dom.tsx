@@ -10,6 +10,10 @@ import {
   Router as OriginRouter,
   useRoutes as originUseRoutes,
 } from 'react-router-dom';
+import {
+  createHashHistory as originCreateHashHistory,
+  createBrowserHistory as originCreateBrowserHistory,
+} from 'history';
 
 let Link: typeof OriginLink;
 let Outlet: typeof OriginOutlet;
@@ -17,6 +21,8 @@ let createSearchParams: typeof originCreateSearchParams;
 let matchRoutes: typeof originMatchRoutes;
 let Router: typeof OriginRouter;
 let useRoutes: typeof originUseRoutes;
+let createHashHistory: typeof originCreateHashHistory;
+let createBrowserHistory: typeof originCreateBrowserHistory;
 
 if (
   typeof process.env.ICE_RUNTIME_ROUTER === 'string' && process.env.ICE_RUNTIME_ROUTER === 'true' ||
@@ -28,6 +34,8 @@ if (
   createSearchParams = originCreateSearchParams;
   Router = OriginRouter;
   useRoutes = originUseRoutes;
+  createHashHistory = originCreateHashHistory;
+  createBrowserHistory = originCreateBrowserHistory;
 } else {
   Link = React.forwardRef(() => null);
   Outlet = () => null;
@@ -63,6 +71,8 @@ if (
   Router = (props) => {
     return <>{props.children}</>;
   };
+  createHashHistory = () => null;
+  createBrowserHistory = () => null;
 }
 
 export {
@@ -72,4 +82,6 @@ export {
   createSearchParams,
   Router,
   useRoutes,
+  createHashHistory,
+  createBrowserHistory,
 };
