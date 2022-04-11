@@ -1,0 +1,10 @@
+{
+  "name": "@ice/bundles",
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": "ICE",
+  "description": "basic dependencies for ice",
+  "devDependencies": {
+    "webpack": "5.72.0"
+  }
+}
