@@ -9,6 +9,7 @@ export default function escapeLocalIdent(localident: string) {
     .replace(/^((-?[0-9])|--)/, '_$1').replace(filenameReservedRegex, '-').replace(/[\u0000-\u001f\u0080-\u009f]/g, '-').replace(/\./g, '-'));
 }
 
+/** transform and remove some special characters */
 function escape(string: string) {
   let output = '';
   let counter = 0;
