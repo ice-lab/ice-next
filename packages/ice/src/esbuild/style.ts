@@ -66,12 +66,15 @@ async function onCSSLoad(args: OnLoadArgs): Promise<OnLoadResult> {
   };
 }
 
+/**
+ * parse less/scss/css-modules to css
+ */
 function onStyleLoad(options: PluginOptions) {
   return async function (args: OnLoadArgs): Promise<OnLoadResult> {
     const extract = options.extract === undefined ? true : options.extract;
     const cssModule = (options.modules && options.modules.auto) ? options.modules.auto(args.path) : false;
 
-    let css = await renderStyle(args.path);
+    let css = await parseStyle(args.path);
 
     const plugins = [];
     const data = { exportedClasses: '' };
@@ -122,7 +125,7 @@ function handleCSSModules(data, options: CSSModulesOptions) {
   });
 }
 
-async function renderStyle(filePath: string) {
+async function parseStyle(filePath: string) {
   const { ext } = path.parse(filePath);
   const content = (await fse.readFile(filePath)).toString();
   if (ext === '.css') {
@@ -137,7 +140,7 @@ async function renderStyle(filePath: string) {
     return (await less.render(content)).css;
   }
 
-  throw new Error(`Can't render the style '${ext}'.`);
+  throw new Error(`Can't parse the style '${ext}'.`);
 }
 
 export default stylePlugin;
