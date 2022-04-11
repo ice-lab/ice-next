@@ -1,6 +1,6 @@
 // based on https://github.com/remix-run/remix/blob/main/packages/remix-dev/config/routes.ts
 
-import { win32, join } from 'path';
+import { win32 } from 'path';
 
 export interface ConfigRoute {
   /**
