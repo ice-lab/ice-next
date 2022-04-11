@@ -18,9 +18,6 @@ export function createEsbuildCompiler(options: Options) {
   const { task, rootDir } = options;
   const { taskConfig, webpackConfig } = task;
   const alias = (webpackConfig.resolve?.alias || {}) as Record<string, string | false>;
-  const compileRegex = (taskConfig.compileIncludes || []).map((includeRule) => {
-    return includeRule instanceof RegExp ? includeRule : new RegExp(includeRule);
-  });
   const transformPlugins = getTransformPlugins(rootDir, taskConfig);
   const esbuildCompile: EsbuildCompile = async (buildOptions) => {
     const startTime = new Date().getTime();
@@ -33,6 +30,8 @@ export function createEsbuildCompiler(options: Options) {
         // ref: https://github.com/evanw/esbuild/blob/master/CHANGELOG.md#01117
         // in esm, this in the global should be undefined. Set the following config to avoid warning
         this: undefined,
+        // TOOD: sync ice runtime env
+        'process.env.ICE_RUNTIME_SERVER': 'true',
       },
       plugins: [
         stylePlugin({
@@ -47,7 +46,9 @@ export function createEsbuildCompiler(options: Options) {
         }),
         aliasPlugin({
           alias,
-          compileRegex,
+          compileRegex: (taskConfig.compileIncludes || []).map((includeRule) => {
+            return includeRule instanceof RegExp ? includeRule : new RegExp(includeRule);
+          }),
         }),
         ...transformPlugins
           // ignore compilation-plugin while esbuild has it's own transform
