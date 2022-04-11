@@ -2,28 +2,36 @@ import { createHash } from 'crypto';
 import consola from 'consola';
 import esbuild from 'esbuild';
 import { createUnplugin } from 'unplugin';
-import type { UnpluginOptions } from 'unplugin';
-import type { Config } from '@ice/types';
 import type { EsbuildCompile } from '@ice/types/esm/plugin.js';
+import { getTransformPlugins } from '@ice/webpack-config';
 import escapeLocalIdent from '../utils/escapeLocalIdent.js';
 import stylePlugin from '../esbuild/style.js';
 import aliasPlugin from '../esbuild/alias.js';
+import type { ContextConfig } from '../utils/getContextConfig.js';
 
-export function createEsbuildCompiler(options: {
-  alias?: Record<string, string>;
-  getTransformPlugins?: (config: Partial<Config>) => UnpluginOptions[];
-}) {
-  const { alias = {}, getTransformPlugins } = options;
-  const esbuildCompile: EsbuildCompile = async (buildOptions, customConfig) => {
+interface Options {
+  rootDir: string;
+  task: ContextConfig;
+}
+
+export function createEsbuildCompiler(options: Options) {
+  const { task, rootDir } = options;
+  const { taskConfig, webpackConfig } = task;
+  const alias = (webpackConfig.resolve?.alias || {}) as Record<string, string | false>;
+  const compileRegex = (taskConfig.compileIncludes || []).map((includeRule) => {
+    return includeRule instanceof RegExp ? includeRule : new RegExp(includeRule);
+  });
+  const transformPlugins = getTransformPlugins(rootDir, taskConfig);
+  const esbuildCompile: EsbuildCompile = async (buildOptions) => {
     const startTime = new Date().getTime();
     consola.debug('[esbuild]', `start compile for: ${buildOptions.entryPoints}`);
-    const transformPlugins = getTransformPlugins(customConfig);
     const buildResult = await esbuild.build({
       bundle: true,
+      target: 'node12.19.0',
       ...buildOptions,
-      // ref: https://github.com/evanw/esbuild/blob/master/CHANGELOG.md#01117
-      // in esm, this in the global should be undefined. Set the following config to avoid warning
       define: {
+        // ref: https://github.com/evanw/esbuild/blob/master/CHANGELOG.md#01117
+        // in esm, this in the global should be undefined. Set the following config to avoid warning
         this: undefined,
       },
       plugins: [
@@ -37,8 +45,14 @@ export function createEsbuildCompiler(options: {
             },
           },
         }),
-        aliasPlugin({ alias }),
-        ...transformPlugins.map(plugin => createUnplugin(() => plugin).esbuild()),
+        aliasPlugin({
+          alias,
+          compileRegex,
+        }),
+        ...transformPlugins
+          // ignore compilation-plugin while esbuild has it's own transform
+          .filter(({ name }) => name !== 'compilation-plugin')
+          .map(plugin => createUnplugin(() => plugin).esbuild()),
       ],
     });
     consola.debug('[esbuild]', `time cost: ${new Date().getTime() - startTime}ms`);

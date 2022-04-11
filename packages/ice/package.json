@@ -20,9 +20,9 @@
   "homepage": "https://next.ice.work",
   "dependencies": {
     "@builder/pack": "^0.6.0",
-    "@ice/webpack-config": "^1.0.0",
     "@ice/route-manifest": "^1.0.0",
     "@ice/runtime": "^1.0.0",
+    "@ice/webpack-config": "^1.0.0",
     "address": "^1.1.2",
     "build-scripts": "^2.0.0-15",
     "chalk": "^4.0.0",
@@ -37,6 +37,7 @@
     "less": "^4.1.2",
     "postcss": "^8.4.7",
     "postcss-modules": "^4.3.1",
+    "lodash.merge": "^4.6.2",
     "prettier": "^2.5.1",
     "sass": "^1.49.9",
     "semver": "^7.3.5",
@@ -51,6 +52,7 @@
     "@types/lodash.debounce": "^4.0.6",
     "@types/sass": "^1.43.1",
     "@types/temp": "^0.9.1",
+    "@types/lodash.merge": "^4.6.6",
     "chokidar": "^3.5.3",
     "unplugin": "^0.3.2"
   }

@@ -4,16 +4,18 @@ import fg from 'fast-glob';
 import { resolveId } from '../service/analyze.js';
 
 interface PluginOptions {
-  alias: Record<string, string>;
+  alias: Record<string, string | false>;
+  compileRegex: RegExp[];
 }
 
 const aliasPlugin = (options: PluginOptions): Plugin => {
-  const { alias } = options;
+  const { alias, compileRegex } = options;
   return {
     name: 'esbuild-alias',
-    setup: async (build: PluginBuild) => {
+    setup(build: PluginBuild) {
       build.onResolve({ filter: /.*/ }, (args) => {
         const id = args.path;
+        // ice do not support alias with config onlyModule
         const resolved = resolveId(id, alias);
         if (resolved && resolved !== id) {
           if (!path.extname(resolved)) {
@@ -29,6 +31,18 @@ const aliasPlugin = (options: PluginOptions): Plugin => {
               };
             }
           }
+          return { path: resolved };
+        }
+      });
+      build.onResolve({ filter: /.*/ }, (args) => {
+        const id = args.path;
+        // external ids which is third-party dependencies
+        if (id[0] !== '.' && !path.isAbsolute(id) &&
+                // runtime folder need to been bundled while it is not compiled
+                !compileRegex.some((regex) => regex.test(id))) {
+          return {
+            external: true,
+          };
         }
       });
     },
