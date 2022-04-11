@@ -3,6 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { program } from 'commander';
+import parse from 'yargs-parser';
 // hijack webpack before import other modules
 import '../esm/requireHook.js';
 import createService from '../esm/createService.js';
@@ -15,6 +16,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
   checkNodeVersion(icePackageInfo.engines.node, icePackageInfo.name);
   process.env.__ICE_VERSION__ = icePackageInfo.version;
   const cwd = process.cwd();
+  // get all command args including the custom args defined by the plugins
+  // will merge with the inner command args
+  const allCommandArgs = parse(
+    process.argv.slice(2), {
+    configuration: { 'strip-dashed': true },
+  });
+  // ignore `_` in argv
+  delete allCommandArgs._;
+
   program
     .version(icePackageInfo.version)
     .usage('<command> [options]');
@@ -26,7 +36,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     .option('--config <config>', 'use custom config')
     .option('--rootDir <rootDir>', 'project root directory', cwd)
     .action(async ({ rootDir, ...commandArgs }) => {
-      const service = await createService({ rootDir, command: 'build', commandArgs });
+      const service = await createService({ rootDir, command: 'build', commandArgs: { ...allCommandArgs, ...commandArgs } });
       service.run();
     });
 
@@ -36,10 +46,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     .allowUnknownOption()
     .option('--config <config>', 'use custom config')
     .option('-h, --host <host>', 'dev server host', '0.0.0.0')
-    .option('-p, --port <port>', 'dev server port')
+    .option('-p, --port <port>', 'dev server port', 3333)
+    .option('--disable-open', 'disable open browser', false)
     .option('--rootDir <rootDir>', 'project root directory', cwd)
     .action(async ({ rootDir, ...commandArgs }) => {
-      const service = await createService({ rootDir, command: 'start', commandArgs });
+      const service = await createService({ rootDir, command: 'start', commandArgs: { ...allCommandArgs, ...commandArgs } });
       service.run();
     });
 
@@ -50,7 +61,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     .option('--config <config>', 'use custom config')
     .option('--rootDir <rootDir>', 'project root directory', cwd)
     .action(async ({ rootDir, ...commandArgs }) => {
-      await createService({ rootDir, command: 'test', commandArgs });
+      await createService({ rootDir, command: 'test', commandArgs: { ...allCommandArgs, ...commandArgs } });
     });
 
   program.parse(process.argv);

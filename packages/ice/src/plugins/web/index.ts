@@ -1,8 +1,8 @@
 import * as path from 'path';
 import type { Plugin } from '@ice/types';
+import openBrowser from '../../utils/openBrowser.js';
 import generateHTML from './ssr/generateHTML.js';
 import { setupRenderServer } from './ssr/serverRender.js';
-import openBrowser from '../../utils/openBrowser.js';
 
 const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
   const { command, rootDir, userConfig, commandArgs } = context;
