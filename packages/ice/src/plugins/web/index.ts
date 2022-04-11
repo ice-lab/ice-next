@@ -2,6 +2,7 @@ import * as path from 'path';
 import type { Plugin } from '@ice/types';
 import generateHTML from './ssr/generateHTML.js';
 import { setupRenderServer } from './ssr/serverRender.js';
+import openBrowser from '../../utils/openBrowser.js';
 
 const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
   const { command, rootDir, userConfig } = context;
@@ -23,6 +24,14 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
       return `${serverEntry}?version=${new Date().getTime()}`;
     };
   });
+
+  onHook('after.start.compile', ({ urls, isFirstCompile }) => {
+    if (!isFirstCompile) {
+      return;
+    }
+    openBrowser(urls.localUrlForBrowser);
+  });
+
   onHook('after.build.compile', async () => {
     await serverCompiler();
     await generateHTML({

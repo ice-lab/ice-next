@@ -147,6 +147,7 @@ importers:
       '@ice/runtime': ^1.0.0
       '@ice/types': ^1.0.0
       '@ice/webpack-config': ^1.0.0
+      '@types/cross-spawn': ^6.0.2
       '@types/ejs': ^3.1.0
       '@types/lodash.merge': ^4.6.6
       address: ^1.1.2
@@ -155,6 +156,7 @@ importers:
       chokidar: ^3.5.3
       commander: ^9.0.0
       consola: ^2.15.3
+      cross-spawn: ^7.0.3
       ejs: ^3.1.6
       es-module-lexer: ^0.10.0
       esbuild: ^0.14.23
@@ -162,6 +164,7 @@ importers:
       find-up: ^5.0.0
       fs-extra: ^10.0.0
       lodash.merge: ^4.6.2
+      open: ^8.4.0
       prettier: ^2.5.1
       semver: ^7.3.5
       unplugin: ^0.3.2
@@ -177,6 +180,7 @@ importers:
       chalk: 4.1.2
       commander: 9.0.0
       consola: 2.15.3
+      cross-spawn: 7.0.3
       ejs: 3.1.6
       es-module-lexer: 0.10.0
       esbuild: 0.14.23
@@ -184,12 +188,14 @@ importers:
       find-up: 5.0.0
       fs-extra: 10.0.1
       lodash.merge: 4.6.2
+      open: 8.4.0
       prettier: 2.5.1
       semver: 7.3.5
       webpack: 5.69.1_esbuild@0.14.23
       webpack-dev-server: 4.7.4_webpack@5.69.1
     devDependencies:
       '@ice/types': link:../types
+      '@types/cross-spawn': 6.0.2
       '@types/ejs': 3.1.0
       '@types/lodash.merge': 4.6.6
       chokidar: 3.5.3
@@ -1214,6 +1220,12 @@ packages:
     resolution: {integrity: sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==}
     dependencies:
       '@types/node': 17.0.19
+
+  /@types/cross-spawn/6.0.2:
+    resolution: {integrity: sha512-KuwNhp3eza+Rhu8IFI5HUXRP0LIhqH5cAjubUvGXXthh4YYBuP2ntwEX+Cz8GJoZUHlKo247wPWOfA9LYEq4cw==}
+    dependencies:
+      '@types/node': 17.0.19
+    dev: true
 
   /@types/ejs/3.1.0:
     resolution: {integrity: sha512-DCg+Ka+uDQ31lJ/UtEXVlaeV3d6t81gifaVWKJy4MYVVgvJttyX/viREy+If7fz+tK/gVxTGMtyrFPnm4gjrVA==}
