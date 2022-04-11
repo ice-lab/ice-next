@@ -169,7 +169,7 @@ importers:
       '@ice/types': ^1.0.0
       '@ice/webpack-config': ^1.0.0
       '@types/ejs': ^3.1.0
-      '@types/lodash.debounce': ^4.0.6
+      '@types/lodash.merge': ^4.6.6
       address: ^1.1.2
       build-scripts: ^2.0.0-16
       chalk: ^4.0.0
@@ -182,6 +182,7 @@ importers:
       fast-glob: ^3.2.11
       find-up: ^5.0.0
       fs-extra: ^10.0.0
+      lodash.merge: ^4.6.2
       prettier: ^2.5.1
       semver: ^7.3.5
       unplugin: ^0.3.2
@@ -203,6 +204,7 @@ importers:
       fast-glob: 3.2.11
       find-up: 5.0.0
       fs-extra: 10.0.1
+      lodash.merge: 4.6.2
       prettier: 2.6.2
       semver: 7.3.6
       webpack: 5.72.0_esbuild@0.14.34
@@ -210,7 +212,7 @@ importers:
     devDependencies:
       '@ice/types': link:../types
       '@types/ejs': 3.1.0
-      '@types/lodash.debounce': 4.0.6
+      '@types/lodash.merge': 4.6.6
       chokidar: 3.5.3
       unplugin: 0.3.3_esbuild@0.14.34+webpack@5.72.0
 
@@ -1289,8 +1291,8 @@ packages:
     resolution: {integrity: sha1-7ihweulOEdK4J7y+UnC86n8+ce4=}
     dev: true
 
-  /@types/lodash.debounce/4.0.6:
-    resolution: {integrity: sha512-4WTmnnhCfDvvuLMaF3KV4Qfki93KebocUF45msxhYyjMttZDQYzHkO639ohhk8+oco2cluAFL3t5+Jn4mleylQ==}
+  /@types/lodash.merge/4.6.6:
+    resolution: {integrity: sha512-IB90krzMf7YpfgP3u/EvZEdXVvm4e3gJbUvh5ieuI+o+XqiNEt6fCzqNRaiLlPVScLI59RxIGZMQ3+Ko/DJ8vQ==}
     dependencies:
       '@types/lodash': 4.14.181
     dev: true
@@ -4285,7 +4287,6 @@ packages:
 
   /lodash.merge/4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
-    dev: true
 
   /lodash.truncate/4.4.2:
     resolution: {integrity: sha1-WjUNoLERO4N+z//VgSy+WNbq4ZM=}
@@ -6344,7 +6345,7 @@ packages:
       mime-types: 2.1.35
       range-parser: 1.2.1
       schema-utils: 4.0.0
-      webpack: 5.72.0_esbuild@0.14.34
+      webpack: 5.72.0_@swc+core@1.2.164
 
   /webpack-dev-server/4.8.1_webpack@5.72.0:
     resolution: {integrity: sha512-dwld70gkgNJa33czmcj/PlKY/nOy/BimbrgZRaR9vDATBQAYgLzggR0nxDtPLJiLrMgZwbE6RRfJ5vnBBasTyg==}
@@ -6384,7 +6385,7 @@ packages:
       serve-index: 1.9.1
       sockjs: 0.3.24
       spdy: 4.0.2
-      webpack: 5.72.0_esbuild@0.14.34
+      webpack: 5.72.0_@swc+core@1.2.164
       webpack-dev-middleware: 5.3.1_webpack@5.72.0
       ws: 8.5.0
     transitivePeerDependencies:
