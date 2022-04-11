@@ -5,7 +5,7 @@ import { setupRenderServer } from './ssr/serverRender.js';
 import openBrowser from '../../utils/openBrowser.js';
 
 const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
-  const { command, rootDir, userConfig } = context;
+  const { command, rootDir, userConfig, commandArgs } = context;
   const { ssg = true, ssr = true } = userConfig;
   const outputDir = path.join(rootDir, 'build');
   const routeManifest = path.join(rootDir, '.ice/route-manifest.json');
@@ -25,12 +25,14 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
     };
   });
 
-  onHook('after.start.compile', ({ urls, isFirstCompile }) => {
-    if (!isFirstCompile) {
-      return;
-    }
-    openBrowser(urls.localUrlForBrowser);
-  });
+  if (!commandArgs.disableOpen) {
+    onHook('after.start.compile', ({ urls, isFirstCompile }) => {
+      if (!isFirstCompile) {
+        return;
+      }
+      openBrowser(urls.localUrlForBrowser);
+    });
+  }
 
   onHook('after.build.compile', async () => {
     await serverCompiler();
