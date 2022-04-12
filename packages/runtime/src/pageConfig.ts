@@ -37,7 +37,7 @@ function getAndMerge(key, matches: RouteMatch[], pageConfig: RoutePageConfig) {
  * if multi route has same key, return the last value.
  */
 function get(key, matches: RouteMatch[], pageConfig: RoutePageConfig) {
-  let value = [];
+  let value;
   for (let match of matches) {
     let routeId = match.route.id;
     let data = pageConfig[routeId];
