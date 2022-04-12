@@ -13,7 +13,7 @@ export default () => {
 
 export function getPageConfig(): PageConfig {
   return {
-    title: 'Repo',
+    title: 'Layout',
     meta: [
       {
         name: 'layout-color',
@@ -28,7 +28,7 @@ export function getInitialData() {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
-        name: 'Repo',
+        layout: true,
       });
     }, 1 * 100);
   });

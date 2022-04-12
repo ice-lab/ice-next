@@ -5,7 +5,6 @@ import { getMeta, getTitle, getLinks, getScripts } from './pageConfig.js';
 
 export function Meta() {
   const { matches, pageConfig } = useAppContext();
-
   const meta = getMeta(matches, pageConfig);
 
   return (
@@ -17,7 +16,6 @@ export function Meta() {
 
 export function Title() {
   const { matches, pageConfig } = useAppContext();
-
   const title = getTitle(matches, pageConfig);
 
   return (
@@ -29,7 +27,6 @@ export function Links() {
   const { pageConfig, matches, assetsManifest } = useAppContext();
 
   const customLinks = getLinks(matches, pageConfig);
-
   const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
   const styles = pageAssets.concat(entryAssets).filter(path => path.indexOf('.css') > -1);
@@ -51,7 +48,6 @@ export function Scripts() {
   const { pageData, pageConfig, initialData, matches, assetsManifest, documentOnly } = useAppContext();
 
   const customScripts = getScripts(matches, pageConfig);
-
   const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
   const scripts = pageAssets.concat(entryAssets).filter(path => path.indexOf('.js') > -1);
