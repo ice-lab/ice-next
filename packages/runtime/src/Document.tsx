@@ -1,25 +1,24 @@
 import * as React from 'react';
 import { useAppContext } from './AppContext.js';
 import { getPageAssets, getEntryAssets } from './assets.js';
+import { getMeta, getTitle, getLinks, getScripts } from './pageConfig.js';
 
 export function Meta() {
-  const { pageData } = useAppContext();
-  const meta = pageData.pageConfig.meta || [];
+  const { matches, pageConfig } = useAppContext();
+
+  const meta = getMeta(matches, pageConfig);
 
   return (
     <>
       {meta.map(item => <meta key={item.name} {...item} />)}
-      <meta
-        name="ice-meta-count"
-        content={meta.length.toString()}
-      />
     </>
   );
 }
 
 export function Title() {
-  const { pageData } = useAppContext();
-  const title = pageData.pageConfig.title || [];
+  const { matches, pageConfig } = useAppContext();
+
+  const title = getTitle(matches, pageConfig);
 
   return (
     <title>{title}</title>
@@ -27,9 +26,9 @@ export function Title() {
 }
 
 export function Links() {
-  const { pageData, matches, assetsManifest } = useAppContext();
+  const { pageConfig, matches, assetsManifest } = useAppContext();
 
-  const customLinks = pageData.pageConfig.links || [];
+  const customLinks = getLinks(matches, pageConfig);
 
   const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
@@ -49,18 +48,18 @@ export function Links() {
 }
 
 export function Scripts() {
-  const { pageData, initialData, matches, assetsManifest, documentOnly } = useAppContext();
+  const { pageData, pageConfig, initialData, matches, assetsManifest, documentOnly } = useAppContext();
+
+  const customScripts = getScripts(matches, pageConfig);
 
   const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
-
-  const { scripts: customScripts = [] } = pageData.pageConfig;
-
   const scripts = pageAssets.concat(entryAssets).filter(path => path.indexOf('.js') > -1);
 
   const appContext = {
     initialData,
     pageData,
+    pageConfig,
     assetsManifest,
   };
 

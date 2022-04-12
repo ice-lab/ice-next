@@ -6,7 +6,7 @@ import { createSearchParams } from 'react-router-dom';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
-import { loadRouteModules, loadPageData, loadPageConfig, matchRoutes } from './routes.js';
+import { loadRouteModules, loadPageData, getPageConfig, matchRoutes } from './routes.js';
 import type { AppContext, InitialContext, RouteItem, ServerContext, AppConfig, RuntimePlugin, CommonJsRuntime, AssetsManifest } from './types';
 
 interface RenderOptions {
@@ -63,6 +63,7 @@ export async function renderServerApp(requestContext: ServerContext, options: Re
   }
 
   const pageData = await loadPageData(matches, initialContext);
+  const pageConfig = getPageConfig(matches, pageData);
 
   const appContext: AppContext = {
     appConfig,
@@ -71,6 +72,7 @@ export async function renderServerApp(requestContext: ServerContext, options: Re
     initialPageData: pageData,
     // pageData and initialPageData are the same when SSR/SSG
     pageData,
+    pageConfig,
     matches,
     routes,
   };
@@ -127,7 +129,7 @@ export async function renderDocument(requestContext: ServerContext, options: Ren
 
   await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
-  const pageConfig = loadPageConfig(matches);
+  const pageConfig = getPageConfig(matches, {});
 
   const pageData = {
     pageConfig,

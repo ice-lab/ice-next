@@ -3,7 +3,7 @@ import type { Location } from 'history';
 import type { RouteObject } from 'react-router-dom';
 import { matchRoutes as originMatchRoutes } from 'react-router-dom';
 import PageWrapper from './PageWrapper.js';
-import type { RouteItem, RouteModules, PageWrapper as IPageWrapper, RouteMatch, InitialContext, PageConfig } from './types';
+import type { RouteItem, RouteModules, PageWrapper as IPageWrapper, RouteMatch, InitialContext, RoutePageConfig } from './types';
 
 // global route modules cache
 const routeModules: RouteModules = {};
@@ -36,48 +36,46 @@ export async function loadRouteModules(routes: RouteModule[]) {
 }
 
 /**
-* get data for the matched pages
+* get data for the matched routes.
 */
 export async function loadPageData(matches: RouteMatch[], initialContext: InitialContext) {
-  // use the last matched route as the page entry
-  const last = matches.length - 1;
-  const { route } = matches[last];
-  const { id } = route;
+  const pageData = {};
 
-  const routeModule = routeModules[id];
+  await Promise.all(
+    matches.map(async (match) => {
+      const { id } = match.route;
+      const routeModule = routeModules[id];
+      const { getInitialData } = routeModule;
 
-  const { getInitialData, getPageConfig } = routeModule;
-  let initialData;
-  let pageConfig: PageConfig = {};
+      if (getInitialData) {
+        const initialData = await getInitialData(initialContext);
+        pageData[id] = initialData;
+      }
+    }),
+  );
 
-  if (getInitialData) {
-    initialData = await getInitialData(initialContext);
-  }
-
-  if (getPageConfig) {
-    pageConfig = getPageConfig({
-      initialData,
-    });
-  }
-
-  return {
-    initialData,
-    pageConfig,
-  };
+  return pageData;
 }
 
 /**
- * Load page config without initial data.
+ * Get page config for matched routes.
  */
-export function loadPageConfig(matches: RouteMatch[]) {
-  const last = matches.length - 1;
-  const { route } = matches[last];
-  const { id } = route;
+export function getPageConfig(matches: RouteMatch[], pageData): RoutePageConfig {
+  const pageConfig = {};
 
-  const routeModule = routeModules[id];
+  matches.forEach(async (match) => {
+    const { id } = match.route;
+    const routeModule = routeModules[id];
+    const { getPageConfig } = routeModule;
+    const initialData = pageData[id];
 
-  const { getPageConfig } = routeModule;
-  return getPageConfig({ initialData: null });
+    if (getPageConfig) {
+      const value = getPageConfig({ initialData });
+      pageConfig[id] = value;
+    }
+  });
+
+  return pageConfig;
 }
 
 /**

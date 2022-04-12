@@ -6,8 +6,9 @@ import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
 import type { AppContext, AppConfig, RouteItem, AppRouterProps, PageWrapper, RuntimeModules, InitialContext } from './types';
-import { loadRouteModules, loadPageData, matchRoutes } from './routes.js';
+import { loadRouteModules, loadPageData, getPageConfig, matchRoutes } from './routes.js';
 import { loadStyleLinks, loadScripts } from './assets.js';
+import { getLinks, getScripts } from './pageConfig.js';
 
 interface RunClientAppOptions {
   appConfig: AppConfig;
@@ -29,7 +30,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
 
   const appContextFromServer = (window as any).__ICE_APP_CONTEXT__ || {};
 
-  let { initialData, pageData, assetsManifest } = appContextFromServer;
+  let { initialData, pageData, pageConfig, assetsManifest } = appContextFromServer;
 
   const initialContext = getInitialContext();
   if (!initialData && appConfig.app?.getInitialData) {
@@ -40,11 +41,16 @@ export default async function runClientApp(options: RunClientAppOptions) {
     pageData = await loadPageData(matches, initialContext);
   }
 
+  if (!pageConfig) {
+    pageConfig = getPageConfig(matches, initialContext);
+  }
+
   const appContext: AppContext = {
     routes,
     appConfig,
     initialData,
     initialPageData: pageData,
+    pageConfig,
     assetsManifest,
     matches,
   };
@@ -147,11 +153,14 @@ async function loadNextPage(matches, callback) {
 
   const initialContext = getInitialContext();
   const pageData = await loadPageData(matches, initialContext);
+  const pageConfig = getPageConfig(matches, pageData);
 
-  const { pageConfig } = pageData;
+  const links = getLinks(matches, pageConfig);
+  const scripts = getScripts(matches, pageConfig);
+
   await Promise.all([
-    loadStyleLinks(pageConfig.links),
-    loadScripts(pageConfig.scripts),
+    loadStyleLinks(links),
+    loadScripts(scripts),
   ]);
 
   callback(pageData);

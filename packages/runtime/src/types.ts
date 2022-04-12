@@ -75,6 +75,14 @@ export interface RouteModules {
   [routeId: string]: PageComponent;
 }
 
+export interface RoutePageConfig {
+  [routeId: string]: PageConfig;
+}
+
+export interface RoutePageData {
+  [routeId: string]: any;
+}
+
 export interface AssetsManifest {
   publicPath: string;
   entries: string[];
@@ -86,14 +94,10 @@ export interface AppContext {
   matches?: RouteMatch[];
   routes?: RouteItem[];
   initialData?: InitialData;
-  pageData?: PageData;
-  initialPageData?: PageData;
+  pageData?: RoutePageData;
+  initialPageData?: RoutePageData;
+  pageConfig?: RoutePageConfig;
   documentOnly?: boolean;
-}
-
-export interface PageData {
-  pageConfig: PageConfig;
-  initialData?: InitialData;
 }
 
 export interface RuntimeAPI {
