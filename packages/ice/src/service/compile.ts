@@ -17,7 +17,7 @@ interface Options {
 }
 
 export function createEsbuildCompiler(options: Options) {
-  const { task, rootDir } = options;
+  const { task } = options;
   const { taskConfig, webpackConfig } = task;
   const alias = webpackConfig.resolve?.alias || {};
   const compileRegex = (taskConfig.compileIncludes || []).map((includeRule) => {
