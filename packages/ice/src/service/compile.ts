@@ -38,7 +38,7 @@ export function createEsbuildCompiler(options: Options) {
         // TOOD: sync ice runtime env
         'process.env.ICE_RUNTIME_SERVER': 'true',
       },
-      inject: [path.resolve(__dirname, '../utils/reactShim.js')],
+      inject: [path.resolve(__dirname, '../polyfills/react.js')],
       plugins: [
         {
           name: 'esbuild-alias',
