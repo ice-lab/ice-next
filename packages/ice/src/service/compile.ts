@@ -35,6 +35,7 @@ export function createEsbuildCompiler(options: Options) {
       },
       plugins: [
         stylePlugin({
+          extract: false,
           modules: {
             auto: (filePath) => /\.module\.\w+$/i.test(filePath),
             generateLocalIdentName: function (name: string, filename: string) {
