@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Link } from 'ice';
 
 export default function About() {

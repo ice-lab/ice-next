@@ -46,5 +46,9 @@
     "@types/lodash.merge": "^4.6.6",
     "chokidar": "^3.5.3",
     "unplugin": "^0.3.2"
+  },
+  "peerDependencies": {
+    "react": ">=17.0.0",
+    "react-dom": ">=17.0.0"
   }
 }

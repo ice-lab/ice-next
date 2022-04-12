@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useAppContext, Link } from 'ice';
 import type { PageConfig } from '@ice/runtime/esm/types';
 import styles from './index.module.css';

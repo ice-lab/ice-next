@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { fileURLToPath } from 'url';
 import consola from 'consola';
 import fg from 'fast-glob';
 import esbuild from 'esbuild';
@@ -7,6 +8,8 @@ import type { EsbuildCompile } from '@ice/types/esm/plugin.js';
 import { getTransformPlugins } from '@ice/webpack-config';
 import type { ContextConfig } from '../utils/getContextConfig.js';
 import { resolveId } from './analyze.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 interface Options {
   rootDir: string;
@@ -20,7 +23,7 @@ export function createEsbuildCompiler(options: Options) {
   const compileRegex = (taskConfig.compileIncludes || []).map((includeRule) => {
     return includeRule instanceof RegExp ? includeRule : new RegExp(includeRule);
   });
-  const transformPlugins = getTransformPlugins(rootDir, taskConfig);
+  const transformPlugins = getTransformPlugins(taskConfig);
   const esbuildCompile: EsbuildCompile = async (buildOptions) => {
     const startTime = new Date().getTime();
     consola.debug('[esbuild]', `start compile for: ${buildOptions.entryPoints}`);
@@ -35,6 +38,7 @@ export function createEsbuildCompiler(options: Options) {
         // TOOD: sync ice runtime env
         'process.env.ICE_RUNTIME_SERVER': 'true',
       },
+      inject: [path.resolve(__dirname, '../utils/reactShim.js')],
       plugins: [
         {
           name: 'esbuild-alias',
