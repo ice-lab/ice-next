@@ -25,23 +25,19 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
   const compileRegex = compileIncludes.map((includeRule) => {
     return includeRule instanceof RegExp ? includeRule : new RegExp(includeRule);
   });
+  const extensionRegex = /\.(jsx?|tsx?|mjs)$/;
   return {
     name: 'compilation-plugin',
     transformInclude(id) {
-      return !!(['jsx', 'tsx'] as JSXSuffix[]).find(suffix => new RegExp(`\\.${suffix}?$`).test(id));
+      return extensionRegex.test(id);
     },
     // @ts-expect-error TODO: source map types
     async transform(source: string, id: string) {
-      console.log('id2 ==>', id);
       if ((/node_modules/.test(id) && !compileRegex.some((regex) => regex.test(id)))) {
         return;
       }
 
       const suffix = (['jsx', 'tsx'] as JSXSuffix[]).find(suffix => new RegExp(`\\.${suffix}?$`).test(id));
-      if (!suffix) {
-        return;
-      }
-
       const programmaticOptions = {
         filename: id,
         sourceMaps: !!sourceMap,
