@@ -6,7 +6,6 @@ import type { UnpluginOptions } from 'unplugin';
 import lodash from '@builder/pack/deps/lodash/lodash.js';
 import type { Config } from '@ice/types';
 
-
 const { merge } = lodash;
 
 type JSXSuffix = 'jsx' | 'tsx';
