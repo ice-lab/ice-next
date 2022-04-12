@@ -25,7 +25,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
     };
   });
 
-  if (!commandArgs.disableOpen) {
+  if (commandArgs.open) {
     onHook('after.start.compile', ({ urls, isFirstCompile }) => {
       if (!isFirstCompile) {
         return;
