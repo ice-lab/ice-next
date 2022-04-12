@@ -98,16 +98,17 @@ interface BrowserEntryProps {
 }
 
 function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryProps) {
-  const { routes, initialPageData, matches: originMatches } = appContext;
+  const { routes, initialPageData, matches: originMatches, pageConfig: initialPageConfig } = appContext;
 
   const [historyState, setHistoryState] = useState({
     action: history.action,
     location: history.location,
     pageData: initialPageData,
+    pageConfig: initialPageConfig,
     matches: originMatches,
   });
 
-  const { action, location, pageData, matches } = historyState;
+  const { action, location, pageData, pageConfig, matches } = historyState;
 
   // listen the history change and update the state which including the latest action and location
   useLayoutEffect(() => {
@@ -117,9 +118,9 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
         throw new Error(`Routes not found in location ${location}.`);
       }
 
-      loadNextPage(matches, (pageData) => {
+      loadNextPage(matches, (pageData, pageConfig) => {
         // just re-render once, so add pageData to historyState :(
-        setHistoryState({ action, location, pageData, matches });
+        setHistoryState({ action, location, pageData, pageConfig, matches });
       });
     });
   }, []);
@@ -128,6 +129,7 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
   Object.assign(appContext, {
     matches,
     pageData,
+    pageConfig,
   });
 
   return (
@@ -163,7 +165,7 @@ async function loadNextPage(matches, callback) {
     loadScripts(scripts),
   ]);
 
-  callback(pageData);
+  callback(pageData, pageConfig);
 }
 
 function getInitialContext() {
