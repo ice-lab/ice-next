@@ -162,6 +162,7 @@ importers:
       find-up: ^5.0.0
       fs-extra: ^10.0.0
       lodash.merge: ^4.6.2
+      mrmime: ^1.0.0
       prettier: ^2.5.1
       semver: ^7.3.5
       unplugin: ^0.3.2
@@ -184,6 +185,7 @@ importers:
       find-up: 5.0.0
       fs-extra: 10.0.1
       lodash.merge: 4.6.2
+      mrmime: 1.0.0
       prettier: 2.5.1
       semver: 7.3.5
       webpack: 5.69.1_esbuild@0.14.23
@@ -4756,7 +4758,6 @@ packages:
   /mrmime/1.0.0:
     resolution: {integrity: sha512-a70zx7zFfVO7XpnQ2IX1Myh9yY4UYvfld/dikWRnsXxbyvMcfz+u6UfgNAtH+k2QqtJuzVpv6eLTx1G2+WKZbQ==}
     engines: {node: '>=10'}
-    dev: true
 
   /ms/2.0.0:
     resolution: {integrity: sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g=}

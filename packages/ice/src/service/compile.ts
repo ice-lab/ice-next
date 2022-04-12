@@ -73,6 +73,7 @@ export function createEsbuildCompiler(options: Options) {
             });
           },
         },
+        ...(buildOptions.plugins || []),
         ...transformPlugins
           // ignore compilation-plugin while esbuild has it's own transform
           .filter(({ name }) => name !== 'compilation-plugin')
