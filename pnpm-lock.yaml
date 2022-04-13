@@ -148,7 +148,7 @@ importers:
       '@ice/types': ^1.0.0
       '@ice/webpack-config': ^1.0.0
       '@types/ejs': ^3.1.0
-      '@types/lodash.merge': ^4.6.6
+      '@types/lodash.mergewith': ^4.6.6
       address: ^1.1.2
       build-scripts: ^2.0.0-15
       chalk: ^4.0.0
@@ -161,7 +161,7 @@ importers:
       fast-glob: ^3.2.11
       find-up: ^5.0.0
       fs-extra: ^10.0.0
-      lodash.merge: ^4.6.2
+      lodash.mergewith: ^4.6.2
       prettier: ^2.5.1
       semver: ^7.3.5
       unplugin: ^0.3.2
@@ -183,7 +183,7 @@ importers:
       fast-glob: 3.2.11
       find-up: 5.0.0
       fs-extra: 10.0.1
-      lodash.merge: 4.6.2
+      lodash.mergewith: 4.6.2
       prettier: 2.5.1
       semver: 7.3.5
       webpack: 5.69.1_esbuild@0.14.23
@@ -191,7 +191,7 @@ importers:
     devDependencies:
       '@ice/types': link:../types
       '@types/ejs': 3.1.0
-      '@types/lodash.merge': 4.6.6
+      '@types/lodash.mergewith': 4.6.6
       chokidar: 3.5.3
       unplugin: 0.3.3_esbuild@0.14.23+webpack@5.69.1
 
@@ -1278,8 +1278,8 @@ packages:
     resolution: {integrity: sha1-7ihweulOEdK4J7y+UnC86n8+ce4=}
     dev: true
 
-  /@types/lodash.merge/4.6.6:
-    resolution: {integrity: sha512-IB90krzMf7YpfgP3u/EvZEdXVvm4e3gJbUvh5ieuI+o+XqiNEt6fCzqNRaiLlPVScLI59RxIGZMQ3+Ko/DJ8vQ==}
+  /@types/lodash.mergewith/4.6.6:
+    resolution: {integrity: sha512-RY/8IaVENjG19rxTZu9Nukqh0W2UrYgmBj5sdns4hWRZaV8PqR7wIKHFKzvOTjo4zVRV7sVI+yFhAJql12Kfqg==}
     dependencies:
       '@types/lodash': 4.14.181
     dev: true
@@ -4520,6 +4520,11 @@ packages:
 
   /lodash.merge/4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
+    dev: true
+
+  /lodash.mergewith/4.6.2:
+    resolution: {integrity: sha512-GK3g5RPZWTRSeLSpgP8Xhra+pnjBC56q9FZYe1d5RN3TJ35dbkGy3YqBSMbyCrlbi+CM9Z3Jk5yTL7RCsqboyQ==}
+    dev: false
 
   /lodash.truncate/4.4.2:
     resolution: {integrity: sha1-WjUNoLERO4N+z//VgSy+WNbq4ZM=}

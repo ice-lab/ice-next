@@ -13,4 +13,5 @@ export interface UserConfig {
   filename?: string;
   webpack?: ModifyWebpackConfig;
   plugins?: IPluginList;
+  compileDependencies?: boolean | string[] | RegExp[];
 }

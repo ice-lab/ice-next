@@ -14,6 +14,7 @@ interface Options {
   mode: 'development' | 'production' | 'none';
   compileIncludes?: (string | RegExp)[];
   sourceMap?: Config['sourceMap'];
+  compileDependencies?: boolean;
 }
 
 const require = createRequire(import.meta.url);
@@ -21,12 +22,29 @@ const regeneratorRuntimePath = require.resolve('regenerator-runtime');
 
 const compilationPlugin = (options: Options): UnpluginOptions => {
   const { rootDir, sourceMap, mode, compileIncludes } = options;
+  console.log('compileIncludes', compileIncludes);
   const dev = mode !== 'production';
   const compileRegex = compileIncludes.map((includeRule) => {
     return includeRule instanceof RegExp ? includeRule : new RegExp(includeRule);
   });
+  const skipCompileDependencies = [
+    // polyfill and helpers
+    'core-js', 'core-js-pure', '@swc/helpers', '@babel/runtime',
+    // built-in runtime
+    'react', 'react-dom', 'react-router', 'react-router-dom',
+    // dev dependencies
+    '@pmmmwh/react-refresh-webpack-plugin', 'webpack', 'webpack-dev-server', 'react-refresh',
+  ];
+
+  // create regexp for ignore dependencies
+  const skipRegexp = new RegExp(skipCompileDependencies.map((dep) => `node_modules/?.+${dep}/`).join('|'));
+
+  const extensionRegex = /\.(jsx?|tsx?|mjs)$/;
   return {
     name: 'compilation-plugin',
+    transformInclude(id) {
+      return extensionRegex.test(id) && !skipRegexp.test(id);
+    },
     // @ts-expect-error TODO: source map types
     async transform(source: string, id: string) {
       if ((/node_modules/.test(id) && !compileRegex.some((regex) => regex.test(id)))) {
