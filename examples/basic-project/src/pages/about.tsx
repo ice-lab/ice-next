@@ -8,7 +8,7 @@ export default function About() {
     <>
       <h2>About Page</h2>
       <Link to="/">home</Link>
-      <img src={url} />
+      <img src={url} height="40" width="40" />
       <span className="mark">new</span>
     </>
   );
