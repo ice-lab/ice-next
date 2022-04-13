@@ -13,4 +13,6 @@ export interface UserConfig {
   filename?: string;
   webpack?: ModifyWebpackConfig;
   plugins?: IPluginList;
+  dropLogLevel?: 'trace' | 'debug' | 'log' | 'info' | 'warn' | 'error';
+  minify?: boolean;
 }

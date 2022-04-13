@@ -112,6 +112,39 @@ const userConfig = [
       }
     },
   },
+  {
+    name: 'minify',
+    validation: 'boolean',
+    setConfig: (config: Config, minify: UserConfig['minify']) => {
+      return mergeDefaultValue(config, 'minify', minify);
+    },
+  },
+  {
+    name: 'dropLogLevel',
+    validation: 'string',
+    setConfig: (config: Config, dropLogLevel: UserConfig['dropLogLevel']) => {
+      const levels = {
+        trace: 0,
+        debug: 1, // debug is alias for log
+        log: 1,
+        info: 2,
+        warn: 3,
+        error: 4,
+      };
+      const level = levels[dropLogLevel];
+      if (typeof level === 'number') {
+        return mergeDefaultValue(config, 'minimizerOptions', {
+          compress: {
+            pure_funcs: Object.keys(levels)
+              .filter((methodName) => levels[methodName] <= level)
+              .map(methodName => `console.${methodName}`),
+          },
+        });
+      } else {
+        consola.warn(`dropLogLevel only support [${Object.keys(levels).join(',')}]`);
+      }
+    },
+  },
 ];
 
 const cliOptions = [

@@ -23,6 +23,9 @@ describe(`build ${example}`, () => {
     expect(await page.$$text('h2')).toStrictEqual(['Home Page']);
     const bundleContent = fs.readFileSync(path.join(__dirname, `../../examples/${example}/build/index.js`), 'utf-8');
     expect(bundleContent.includes('__REMOVED__')).toBe(false);
+    expect(bundleContent.includes('__LOG__')).toBe(false);
+    expect(bundleContent.includes('__WARN__')).toBe(false);
+    expect(bundleContent.includes('__ERROR__')).toBe(true);
   }, 120000);
 
   afterAll(async () => {
