@@ -54,4 +54,6 @@ export interface Config {
   https?: boolean | ServerOptions;
 
   port?: string | number;
+
+  cacheDirectory?: string;
 }

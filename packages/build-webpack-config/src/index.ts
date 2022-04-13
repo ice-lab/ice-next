@@ -65,6 +65,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
     experimental,
     hash,
     port,
+    cacheDirectory,
   } = config;
 
   const dev = mode !== 'production';
@@ -183,7 +184,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
       type: 'filesystem',
       version: `${process.env.__ICE_VERSION__}|${JSON.stringify(config)}`,
       buildDependencies: { config: [path.join(rootDir, 'package.json')] },
-      cacheDirectory: path.join(rootDir, 'node_modules', '.cache', 'webpack'),
+      cacheDirectory,
     },
     // custom stat output by stats.toJson() calls in plugin-app
     stats: 'none',

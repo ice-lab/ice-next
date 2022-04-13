@@ -103,7 +103,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   // define runtime env before get webpack config
   defineRuntimeEnv();
   const compileIncludes = runtimeModules.map(({ name }) => `${name}/runtime`);
-  const contextConfig = getContextConfig(ctx, { compileIncludes });
+  const contextConfig = getContextConfig(ctx, { compileIncludes, port: commandArgs.port });
   const webTask = contextConfig.find(({ name }) => name === 'web');
   const esbuildCompile = createEsbuildCompiler({
     rootDir,

@@ -132,6 +132,12 @@ const getCliOptions = (commandArgs: CommandArgs): MaybeArray<ICliOptionArgs<Conf
     {
       name: 'force',
       commands: ['start'],
+      setConfig: (config: Config, force: boolean) => {
+        if (force && fse.existsSync(config.cacheDirectory)) {
+          fse.emptyDirSync(config.cacheDirectory);
+        }
+        return config;
+      },
     },
     {
       name: 'https',

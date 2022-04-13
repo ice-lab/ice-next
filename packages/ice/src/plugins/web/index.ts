@@ -35,6 +35,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
   });
   const mode = command === 'start' ? 'development' : 'production';
   registerTask('web', {
+    cacheDirectory: path.join(rootDir, 'node_modules', '.cache', 'webpack'),
     mode,
     outputDir,
     alias: {
@@ -45,7 +46,6 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
       if (!devServer) {
         throw new Error('webpack-dev-server is not defined');
       }
-      // TODO: mock
       middlewares.push({
         name: 'document-render-server',
         middleware: setupRenderServer({
