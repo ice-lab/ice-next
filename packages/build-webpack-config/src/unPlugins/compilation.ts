@@ -22,7 +22,6 @@ const regeneratorRuntimePath = require.resolve('regenerator-runtime');
 
 const compilationPlugin = (options: Options): UnpluginOptions => {
   const { rootDir, sourceMap, mode, compileIncludes, compileExcludes } = options;
-  console.log('compileIncludes', compileIncludes);
   const dev = mode !== 'production';
   const compileRegex = compileIncludes.map((includeRule) => {
     return includeRule instanceof RegExp ? includeRule : new RegExp(includeRule);
