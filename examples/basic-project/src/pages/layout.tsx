@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Outlet } from 'ice';
-import type { PageConfig } from '@ice/runtime/esm/types';
 
 export default () => {
   return (
@@ -11,7 +10,7 @@ export default () => {
   );
 };
 
-export function getPageConfig(): PageConfig {
+export function getConfig() {
   return {
     title: 'Layout',
     meta: [
@@ -24,7 +23,7 @@ export function getPageConfig(): PageConfig {
   };
 }
 
-export function getInitialData() {
+export function getData() {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({

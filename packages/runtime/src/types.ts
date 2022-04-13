@@ -9,7 +9,7 @@ type AppLifecycle = 'onShow' | 'onHide' | 'onPageNotFound' | 'onShareAppMessage'
 type App = Partial<{
   strict?: boolean;
   addProvider?: ({ children }: { children: ReactNode }) => ReactNode;
-  getInitialData?: (ctx?: InitialContext) => Promise<any>;
+  getData?: (ctx?: InitialContext) => Promise<any>;
 } & Record<AppLifecycle, VoidFunction>>;
 
 export interface AppConfig extends Record<string, any> {
@@ -39,8 +39,8 @@ export interface InitialContext extends ServerContext {
 type InitialData = any;
 export interface PageComponent {
   default: ComponentType<any>;
-  getInitialData?: (ctx: InitialContext) => any;
-  getPageConfig?: (props: { initialData: InitialData }) => PageConfig;
+  getData?: (ctx: InitialContext) => any;
+  getConfig?: (props: { initialData: InitialData }) => PageConfig;
 }
 
 export interface RouteItem {

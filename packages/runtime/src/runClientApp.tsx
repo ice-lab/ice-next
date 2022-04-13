@@ -33,8 +33,8 @@ export default async function runClientApp(options: RunClientAppOptions) {
   let { initialData, pageData, pageConfig, assetsManifest } = appContextFromServer;
 
   const initialContext = getInitialContext();
-  if (!initialData && appConfig.app?.getInitialData) {
-    initialData = await appConfig.app.getInitialData(initialContext);
+  if (!initialData && appConfig.app?.getData) {
+    initialData = await appConfig.app.getData(initialContext);
   }
 
   if (!pageData) {

@@ -58,8 +58,8 @@ export async function renderServerApp(requestContext: ServerContext, options: Re
   };
 
   let initialData;
-  if (appConfig.app?.getInitialData) {
-    initialData = await appConfig.app.getInitialData(initialContext);
+  if (appConfig.app?.getData) {
+    initialData = await appConfig.app.getData(initialContext);
   }
 
   const pageData = await loadPageData(matches, initialContext);

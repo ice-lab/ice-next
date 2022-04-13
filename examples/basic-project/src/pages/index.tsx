@@ -1,11 +1,8 @@
 import * as React from 'react';
-import { useAppContext, Link } from 'ice';
-import type { PageConfig } from '@ice/runtime/esm/types';
+import { Link } from 'ice';
 import styles from './index.module.css';
 
 export default function Home(props) {
-  // const appContext = useAppContext();
-
   console.log('render Home', props);
 
   return (
@@ -16,7 +13,7 @@ export default function Home(props) {
   );
 }
 
-export function getPageConfig(): PageConfig {
+export function getConfig() {
   return {
     title: 'Home',
     meta: [
@@ -33,7 +30,7 @@ export function getPageConfig(): PageConfig {
   };
 }
 
-export function getInitialData() {
+export function getData() {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({

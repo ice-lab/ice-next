@@ -11,7 +11,7 @@ export default function About() {
   );
 }
 
-export function getPageConfig() {
+export function getConfig() {
   return {
     title: 'About',
     meta: [
@@ -31,7 +31,7 @@ export function getPageConfig() {
   };
 }
 
-export function getInitialData() {
+export function getData() {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({

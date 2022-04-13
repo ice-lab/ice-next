@@ -45,10 +45,10 @@ export async function loadPageData(matches: RouteMatch[], initialContext: Initia
     matches.map(async (match) => {
       const { id } = match.route;
       const routeModule = routeModules[id];
-      const { getInitialData } = routeModule;
+      const { getData } = routeModule;
 
-      if (getInitialData) {
-        const initialData = await getInitialData(initialContext);
+      if (getData) {
+        const initialData = await getData(initialContext);
         pageData[id] = initialData;
       }
     }),
@@ -66,11 +66,11 @@ export function getPageConfig(matches: RouteMatch[], pageData): RoutePageConfig 
   matches.forEach(async (match) => {
     const { id } = match.route;
     const routeModule = routeModules[id];
-    const { getPageConfig } = routeModule;
+    const { getConfig } = routeModule;
     const initialData = pageData[id];
 
-    if (getPageConfig) {
-      const value = getPageConfig({ initialData });
+    if (getConfig) {
+      const value = getConfig({ initialData });
       pageConfig[id] = value;
     }
   });
