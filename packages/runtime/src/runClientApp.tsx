@@ -5,7 +5,7 @@ import { createSearchParams } from 'react-router-dom';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
-import type { AppContext, AppConfig, RouteItem, AppRouterProps, PageWrapper, RuntimeModules, InitialContext } from './types';
+import type { AppContext, AppConfig, RouteItem, AppRouterProps, PageWrapper, RuntimeModules, InitialContext, RouteMatch } from './types';
 import { loadRouteModules, loadPageData, getPageConfig, matchRoutes } from './routes.js';
 import { loadStyleLinks, loadScripts } from './assets.js';
 import { getLinks, getScripts } from './pageConfig.js';
@@ -113,14 +113,20 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
   // listen the history change and update the state which including the latest action and location
   useLayoutEffect(() => {
     history.listen(({ action, location }) => {
-      const matches = matchRoutes(routes, location);
-      if (!matches) {
+      const newMatches = matchRoutes(routes, location);
+      if (!newMatches) {
         throw new Error(`Routes not found in location ${location}.`);
       }
 
-      loadNextPage(matches, (pageData, pageConfig) => {
+      loadNextPage(matches, newMatches, pageData, (newPageData, newPageConfig) => {
         // just re-render once, so add pageData to historyState :(
-        setHistoryState({ action, location, pageData, pageConfig, matches });
+        setHistoryState({
+          action,
+          location,
+          pageData: newPageData,
+          pageConfig: newPageConfig,
+          matches: newMatches,
+        });
       });
     });
   }, []);
@@ -150,15 +156,29 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
  * Prepare for the next pages.
  * Load modules、getPageData and preLoad the custom assets.
  */
-async function loadNextPage(matches, callback) {
-  await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
+async function loadNextPage(matches, newMatches, pageData, callback) {
+  await loadRouteModules(newMatches.map(({ route: { id, load } }) => ({ id, load })));
 
+  // load data for changed route.
   const initialContext = getInitialContext();
-  const pageData = await loadPageData(matches, initialContext);
-  const pageConfig = getPageConfig(matches, pageData);
+  const matchesToLoad = filterMatchesToLoad(matches, newMatches);
+  const data = await loadPageData(matchesToLoad, initialContext);
 
-  const links = getLinks(matches, pageConfig);
-  const scripts = getScripts(matches, pageConfig);
+  const newPageData = {};
+  // merge page data.
+  matches.forEach(({ route }) => {
+    const { id } = route;
+    if (data[id]) {
+      newPageData[id] = data[id];
+    } else if (pageData[id]) {
+      newPageData[id] = pageData[id];
+    }
+  });
+
+  const pageConfig = getPageConfig(newMatches, pageData);
+
+  const links = getLinks(newMatches, pageConfig);
+  const scripts = getScripts(newMatches, pageConfig);
 
   await Promise.all([
     loadStyleLinks(links),
@@ -166,6 +186,31 @@ async function loadNextPage(matches, callback) {
   ]);
 
   callback(pageData, pageConfig);
+}
+
+function filterMatchesToLoad(matches, newMatches) {
+  let isNew = (match: RouteMatch, index: number) => {
+    // [a] -> [a, b]
+    if (!matches[index]) return true;
+
+    // [a, b] -> [a, c]
+    return match.route.id !== matches[index].route.id;
+  };
+
+  let matchPathChanged = (match: RouteMatch, index: number) => {
+    return (
+      // param change, /users/123 -> /users/456
+      matches[index].pathname !== match.pathname ||
+      // splat param changed, which is not present in match.path
+      // e.g. /files/images/avatar.jpg -> files/finances.xls
+      (matches[index].route.path?.endsWith('*') &&
+      matches[index].params['*'] !== match.params['*'])
+    );
+  };
+
+  return newMatches.filter((match, index) => {
+    return isNew(match, index) || matchPathChanged(match, index);
+  });
 }
 
 function getInitialContext() {
