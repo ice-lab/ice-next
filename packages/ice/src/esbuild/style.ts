@@ -36,9 +36,9 @@ const stylePlugin = (options: PluginOptions): Plugin => {
     setup: async (build: PluginBuild) => {
       build.onResolve({ filter: styleFilter }, onResolve);
 
-      build.onLoad({ filter: /.*/, namespace: CSS_LOADER_NAMESPACE }, onCSSLoad);
-
       build.onLoad({ filter: /.*/, namespace: STYLE_HANDLER_NAMESPACE }, onStyleLoad(options));
+
+      build.onLoad({ filter: /.*/, namespace: CSS_LOADER_NAMESPACE }, onCSSLoad);
     },
   };
 };
@@ -46,12 +46,15 @@ const stylePlugin = (options: PluginOptions): Plugin => {
 async function onResolve(args: OnResolveArgs): Promise<OnResolveResult> {
   const { namespace, resolveDir } = args;
   const absolutePath = path.resolve(resolveDir, args.path);
+  // This is the import in the `STYLE_HANDLER_NAMESPACE` namespace.
+  // Put the path in the `CSS_LOADER_NAMESPACE` namespace to tell esbuild to load the css file.
   if (namespace === STYLE_HANDLER_NAMESPACE) {
     return {
       path: absolutePath,
       namespace: CSS_LOADER_NAMESPACE,
     };
   }
+  // Otherwise, generate css and put it in the `STYLE_HANDLER_NAMESPACE` namespace to handle css file
   return {
     path: absolutePath,
     namespace: STYLE_HANDLER_NAMESPACE,
