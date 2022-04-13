@@ -49,8 +49,6 @@ function getEntry(rootDir: string) {
 
 const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
   const {
-    https,
-    analyzer,
     mode,
     define,
     externals = {},
@@ -66,6 +64,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
     hash,
     port,
     cacheDirectory,
+    https,
+    analyzer,
   } = config;
 
   const dev = mode !== 'production';
