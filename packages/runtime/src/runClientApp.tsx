@@ -118,13 +118,12 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
         throw new Error(`Routes not found in location ${location}.`);
       }
 
-      loadNextPage(matches, newMatches, pageData, (newPageData, newPageConfig) => {
-        // just re-render once, so add pageData to historyState :(
+      loadNextPage(newMatches, historyState).then(({ pageData, pageConfig }) => {
         setHistoryState({
           action,
           location,
-          pageData: newPageData,
-          pageConfig: newPageConfig,
+          pageData,
+          pageConfig,
           matches: newMatches,
         });
       });
@@ -156,36 +155,44 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
  * Prepare for the next pages.
  * Load modules、getPageData and preLoad the custom assets.
  */
-async function loadNextPage(matches, newMatches, pageData, callback) {
-  await loadRouteModules(newMatches.map(({ route: { id, load } }) => ({ id, load })));
+async function loadNextPage(matches, preState) {
+  const {
+    matches: oldMatches,
+    pageData: oldPageData,
+  } = preState;
+
+  await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   // load data for changed route.
   const initialContext = getInitialContext();
-  const matchesToLoad = filterMatchesToLoad(matches, newMatches);
+  const matchesToLoad = filterMatchesToLoad(oldMatches, matches);
   const data = await loadPageData(matchesToLoad, initialContext);
 
-  const newPageData = {};
+  const pageData = {};
   // merge page data.
   matches.forEach(({ route }) => {
     const { id } = route;
     if (data[id]) {
-      newPageData[id] = data[id];
-    } else if (pageData[id]) {
-      newPageData[id] = pageData[id];
+      pageData[id] = data[id];
+    } else if (oldPageData[id]) {
+      pageData[id] = oldPageData[id];
     }
   });
 
-  const pageConfig = getPageConfig(newMatches, pageData);
+  const pageConfig = getPageConfig(matches, pageData);
 
-  const links = getLinks(newMatches, pageConfig);
-  const scripts = getScripts(newMatches, pageConfig);
+  const links = getLinks(matches, pageConfig);
+  const scripts = getScripts(matches, pageConfig);
 
   await Promise.all([
     loadStyleLinks(links),
     loadScripts(scripts),
   ]);
 
-  callback(pageData, pageConfig);
+  return {
+    pageData,
+    pageConfig,
+  };
 }
 
 function filterMatchesToLoad(matches, newMatches) {
