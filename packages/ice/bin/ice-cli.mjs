@@ -36,7 +36,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     .allowUnknownOption()
     .option('--config <config>', 'use custom config')
     .option('-h, --host <host>', 'dev server host', '0.0.0.0')
-    .option('-p, --port <port>', 'dev server port')
+    .option('-p, --port <port>', 'dev server port', 3333)
     .option('--rootDir <rootDir>', 'project root directory', cwd)
     .action(async ({ rootDir, ...commandArgs }) => {
       const service = await createService({ rootDir, command: 'start', commandArgs });

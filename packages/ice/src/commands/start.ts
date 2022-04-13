@@ -4,6 +4,7 @@ import type { Context } from 'build-scripts';
 import lodash from '@builder/pack/deps/lodash/lodash.js';
 import type { Config } from '@ice/types';
 import type { EsbuildCompile } from '@ice/types/esm/plugin.js';
+import detectPort from 'detect-port';
 import webpackCompiler from '../service/webpackCompiler.js';
 import prepareURLs from '../utils/prepareURLs.js';
 import type { ContextConfig } from '../utils/getContextConfig.js';
@@ -16,9 +17,10 @@ const start = async (context: Context<Config>, contextConfig: ContextConfig[], e
   // TODO: task includes miniapp / kraken / pha
   const { webpackConfig, taskConfig } = contextConfig.find(({ name }) => name === 'web');
 
+  const port = await detectPort(commandArgs.port);
   let devServerConfig: Configuration = {
-    port: commandArgs.port || 3333,
-    host: commandArgs.host || '0.0.0.0',
+    port,
+    host: commandArgs.host,
     https: commandArgs.https || false,
   };
 
