@@ -30,11 +30,11 @@ export default async function runClientApp(options: RunClientAppOptions) {
 
   const appContextFromServer = (window as any).__ICE_APP_CONTEXT__ || {};
 
-  let { initialData, pageData, pageConfig, assetsManifest } = appContextFromServer;
+  let { appData, pageData, pageConfig, assetsManifest } = appContextFromServer;
 
   const initialContext = getInitialContext();
-  if (!initialData && appConfig.app?.getData) {
-    initialData = await appConfig.app.getData(initialContext);
+  if (!appData && appConfig.app?.getData) {
+    appData = await appConfig.app.getData(initialContext);
   }
 
   if (!pageData) {
@@ -48,8 +48,8 @@ export default async function runClientApp(options: RunClientAppOptions) {
   const appContext: AppContext = {
     routes,
     appConfig,
-    initialData,
-    initialPageData: pageData,
+    appData,
+    pageData,
     pageConfig,
     assetsManifest,
     matches,
@@ -98,7 +98,7 @@ interface BrowserEntryProps {
 }
 
 function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryProps) {
-  const { routes, initialPageData, matches: originMatches, pageConfig: initialPageConfig } = appContext;
+  const { routes, matches: originMatches, pageData: initialPageData, pageConfig: initialPageConfig } = appContext;
 
   const [historyState, setHistoryState] = useState({
     action: history.action,

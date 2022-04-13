@@ -45,7 +45,7 @@ export function Links() {
 }
 
 export function Scripts() {
-  const { pageData, pageConfig, initialData, matches, assetsManifest, documentOnly } = useAppContext();
+  const { appData, pageData, pageConfig, matches, assetsManifest, documentOnly } = useAppContext();
 
   const customScripts = getScripts(matches, pageConfig);
   const pageAssets = getPageAssets(matches, assetsManifest);
@@ -53,7 +53,7 @@ export function Scripts() {
   const scripts = pageAssets.concat(entryAssets).filter(path => path.indexOf('.js') > -1);
 
   const appContext = {
-    initialData,
+    appData,
     pageData,
     pageConfig,
     assetsManifest,

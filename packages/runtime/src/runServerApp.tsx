@@ -57,9 +57,9 @@ export async function renderServerApp(requestContext: ServerContext, options: Re
     path: req.url,
   };
 
-  let initialData;
+  let appData;
   if (appConfig.app?.getData) {
-    initialData = await appConfig.app.getData(initialContext);
+    appData = await appConfig.app.getData(initialContext);
   }
 
   const pageData = await loadPageData(matches, initialContext);
@@ -68,9 +68,7 @@ export async function renderServerApp(requestContext: ServerContext, options: Re
   const appContext: AppContext = {
     appConfig,
     assetsManifest,
-    initialData,
-    initialPageData: pageData,
-    // pageData and initialPageData are the same when SSR/SSG
+    appData,
     pageData,
     pageConfig,
     matches,

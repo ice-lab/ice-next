@@ -9,8 +9,11 @@ type AppLifecycle = 'onShow' | 'onHide' | 'onPageNotFound' | 'onShareAppMessage'
 type App = Partial<{
   strict?: boolean;
   addProvider?: ({ children }: { children: ReactNode }) => ReactNode;
-  getData?: (ctx?: InitialContext) => Promise<any>;
+  getData?: GetData;
 } & Record<AppLifecycle, VoidFunction>>;
+
+export type GetData = (ctx: InitialContext) => Promise<any>;
+export type GetConfig = (props: { data: RouteData }) => RouteConfig;
 
 export interface AppConfig extends Record<string, any> {
   app?: App;
@@ -36,11 +39,11 @@ export interface InitialContext extends ServerContext {
   ssrError?: any;
 }
 
-type InitialData = any;
+type RouteData = any;
 export interface PageComponent {
   default: ComponentType<any>;
   getData?: (ctx: InitialContext) => any;
-  getConfig?: (props: { initialData: InitialData }) => PageConfig;
+  getConfig?: GetConfig;
 }
 
 export interface RouteItem {
@@ -52,11 +55,10 @@ export interface RouteItem {
   exact?: boolean;
   strict?: boolean;
   load?: () => Promise<PageComponent>;
-  pageConfig?: PageConfig;
   children?: RouteItem[];
 }
 
-export interface PageConfig {
+export interface RouteConfig {
   title?: string;
   // TODO: fix type
   meta?: any[];
@@ -75,11 +77,11 @@ export interface RouteModules {
   [routeId: string]: PageComponent;
 }
 
-export interface RoutePageConfig {
-  [routeId: string]: PageConfig;
+export interface PageConfig {
+  [routeId: string]: RouteConfig;
 }
 
-export interface RoutePageData {
+export interface PageData {
   [routeId: string]: any;
 }
 
@@ -93,10 +95,9 @@ export interface AppContext {
   assetsManifest?: AssetsManifest;
   matches?: RouteMatch[];
   routes?: RouteItem[];
-  initialData?: InitialData;
-  pageData?: RoutePageData;
-  initialPageData?: RoutePageData;
-  pageConfig?: RoutePageConfig;
+  appData?: any;
+  pageData?: PageData;
+  pageConfig?: PageConfig;
   documentOnly?: boolean;
 }
 

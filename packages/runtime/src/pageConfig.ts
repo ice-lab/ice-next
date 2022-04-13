@@ -1,25 +1,25 @@
-import type { RouteMatch, RoutePageConfig } from './types';
+import type { RouteMatch, PageConfig } from './types';
 
-export function getMeta(matches: RouteMatch[], pageConfig: RoutePageConfig) {
+export function getMeta(matches: RouteMatch[], pageConfig: PageConfig) {
   return getMergedValue('meta', matches, pageConfig);
 }
 
-export function getLinks(matches: RouteMatch[], pageConfig: RoutePageConfig) {
+export function getLinks(matches: RouteMatch[], pageConfig: PageConfig) {
   return getMergedValue('links', matches, pageConfig);
 }
 
-export function getScripts(matches: RouteMatch[], pageConfig: RoutePageConfig) {
+export function getScripts(matches: RouteMatch[], pageConfig: PageConfig) {
   return getMergedValue('scripts', matches, pageConfig);
 }
 
-export function getTitle(matches: RouteMatch[], pageConfig: RoutePageConfig) {
+export function getTitle(matches: RouteMatch[], pageConfig: PageConfig) {
   return getValue('title', matches, pageConfig);
 }
 
 /**
  * merge value for each matched route, such as links/scripts.
  */
-function getMergedValue(key, matches: RouteMatch[], pageConfig: RoutePageConfig) {
+function getMergedValue(key, matches: RouteMatch[], pageConfig: PageConfig) {
   let result = [];
   for (let match of matches) {
     let routeId = match.route.id;
@@ -36,7 +36,7 @@ function getMergedValue(key, matches: RouteMatch[], pageConfig: RoutePageConfig)
 /**
  * if multi route has same key, return the last value.
  */
-function getValue(key, matches: RouteMatch[], pageConfig: RoutePageConfig) {
+function getValue(key, matches: RouteMatch[], pageConfig: PageConfig) {
   let value;
   for (let match of matches) {
     let routeId = match.route.id;

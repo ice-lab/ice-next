@@ -3,7 +3,7 @@ import type { Location } from 'history';
 import type { RouteObject } from 'react-router-dom';
 import { matchRoutes as originMatchRoutes } from 'react-router-dom';
 import PageWrapper from './PageWrapper.js';
-import type { RouteItem, RouteModules, PageWrapper as IPageWrapper, RouteMatch, InitialContext, RoutePageConfig } from './types';
+import type { RouteItem, RouteModules, PageWrapper as IPageWrapper, RouteMatch, InitialContext, PageConfig } from './types';
 
 // global route modules cache
 const routeModules: RouteModules = {};
@@ -60,17 +60,17 @@ export async function loadPageData(matches: RouteMatch[], initialContext: Initia
 /**
  * Get page config for matched routes.
  */
-export function getPageConfig(matches: RouteMatch[], pageData): RoutePageConfig {
+export function getPageConfig(matches: RouteMatch[], pageData): PageConfig {
   const pageConfig = {};
 
   matches.forEach(async (match) => {
     const { id } = match.route;
     const routeModule = routeModules[id];
     const { getConfig } = routeModule;
-    const initialData = pageData[id];
+    const data = pageData[id];
 
     if (getConfig) {
-      const value = getConfig({ initialData });
+      const value = getConfig({ data });
       pageConfig[id] = value;
     }
   });
