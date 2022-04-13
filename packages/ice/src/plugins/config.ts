@@ -1,6 +1,8 @@
+import { certificateFor } from 'trusted-cert';
+import fse from 'fs-extra';
 import consola from 'consola';
 import type { UserConfig, Config, Plugin } from '@ice/types';
-import type { UserConfigContext } from 'build-scripts';
+import type { CommandArgs, ICliOptionArgs, MaybeArray, UserConfigContext } from 'build-scripts';
 
 const mergeDefaultValue = <T>(config: Config, key: string, value: T): Config => {
   if (value) {
@@ -114,20 +116,56 @@ const userConfig = [
   },
 ];
 
-const cliOptions = [
-  {
-    name: 'disableOpen',
-    commands: ['start'],
-  },
-  {
-    name: 'analyzer',
-    commands: ['start'],
-  },
-];
+const getCliOptions = (commandArgs: CommandArgs): MaybeArray<ICliOptionArgs<Config>> => {
+  return [
+    {
+      name: 'disableOpen',
+      commands: ['start'],
+    },
+    {
+      name: 'analyzer',
+      commands: ['start'],
+      setConfig: (config: Config, analyzer: boolean) => {
+        return mergeDefaultValue(config, 'analyzer', analyzer);
+      },
+    },
+    {
+      name: 'force',
+      commands: ['start'],
+    },
+    {
+      name: 'https',
+      commands: ['start'],
+      setConfig: async (config: Config, https: boolean) => {
+        let httpsConfig: Config['https'] = https;
+        if (https) {
+          const hosts = ['localhost'];
+          const { host } = commandArgs;
+          if (host && host !== 'localhost') {
+            hosts.push(host);
+          }
+          // @ts-expect-error certificateFor types
+          const certInfo = await certificateFor(hosts, { silent: true });
+          const key = await fse.readFile(certInfo.keyFilePath, 'utf8');
+          const cert = await fse.readFile(certInfo.certFilePath, 'utf8');
+          httpsConfig = {
+            key,
+            cert,
+          };
+        }
+        return mergeDefaultValue(config, 'https', httpsConfig);
+      },
+    },
+    {
+      name: 'mock',
+      commands: ['start'],
+    },
+  ];
+};
 
-const configPlugin: Plugin = ({ registerUserConfig, registerCliOption }) => {
+const configPlugin: Plugin = ({ registerUserConfig, registerCliOption, context: { commandArgs } }) => {
   registerUserConfig(userConfig);
-  registerCliOption(cliOptions);
+  registerCliOption(getCliOptions(commandArgs));
 };
 
 export default configPlugin;

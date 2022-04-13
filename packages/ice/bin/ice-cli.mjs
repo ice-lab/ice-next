@@ -38,7 +38,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     .option('-h, --host <host>', 'dev server host', '0.0.0.0')
     .option('-p, --port <port>', 'dev server port')
     .option('--rootDir <rootDir>', 'project root directory', cwd)
-    .option('--analyzer', 'visualize size of webpack output files', false)
+    .option('--analyzer', 'visualize size of output files', false)
+    .option('--https', 'enable https', false)
+    .option('--force', 'remove cache directory', false)
     .action(async ({ rootDir, ...commandArgs }) => {
       const service = await createService({ rootDir, command: 'start', commandArgs });
       service.run();

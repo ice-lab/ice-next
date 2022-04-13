@@ -9,7 +9,6 @@ import TerserPlugin from '@builder/pack/deps/terser-webpack-plugin/cjs.js';
 import webpack, { type Configuration } from 'webpack';
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
 import type { Config } from '@ice/types';
-import type { CommandArgs } from 'build-scripts';
 import { createUnplugin } from 'unplugin';
 import browserslist from 'browserslist';
 import configAssets from './config/assets.js';
@@ -25,7 +24,6 @@ const watchIgnoredRegexp = ['**/.git/**', '**/node_modules/**'];
 interface GetWebpackConfigOptions {
   rootDir: string;
   config: Config;
-  commandArgs?: CommandArgs;
 }
 type WebpackConfig = Configuration & { devServer?: DevServerConfiguration };
 type GetWebpackConfig = (options: GetWebpackConfigOptions) => WebpackConfig;
@@ -49,8 +47,10 @@ function getEntry(rootDir: string) {
   };
 }
 
-const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} }) => {
+const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
   const {
+    https,
+    analyzer,
     mode,
     define,
     externals = {},
@@ -64,6 +64,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
     configureWebpack,
     experimental,
     hash,
+    port,
   } = config;
 
   const dev = mode !== 'production';
@@ -78,7 +79,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
   const defineStaticVariables = {
     ...define || {},
     'process.env.NODE_ENV': mode || 'development',
-    'process.env.SERVER_PORT': commandArgs.port,
+    'process.env.SERVER_PORT': port,
   };
   // formate define variables
   Object.keys(defineStaticVariables).forEach((key) => {
@@ -202,7 +203,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
         fileName: 'assets-manifest.json',
         outputDir: path.join(rootDir, '.ice'),
       }),
-      commandArgs.analyzer && new BundleAnalyzerPlugin(),
+      analyzer && new BundleAnalyzerPlugin(),
     ].filter(Boolean),
     devServer: {
       allowedHosts: 'all',
@@ -228,6 +229,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
         logging: 'info',
       },
       setupMiddlewares: middlewares,
+      https,
     },
   };
 

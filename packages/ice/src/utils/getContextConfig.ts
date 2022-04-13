@@ -14,7 +14,7 @@ export interface ContextConfig {
 }
 
 function getContextConfig(context: Context<Config>, customConfig: Partial<Config>): ContextConfig[] {
-  const { getConfig, rootDir, commandArgs } = context;
+  const { getConfig, rootDir } = context;
 
   const contextConfig = getConfig();
   if (!contextConfig.length) {
@@ -24,7 +24,6 @@ function getContextConfig(context: Context<Config>, customConfig: Partial<Config
     const webpackConfig = getWebpackConfig({
       rootDir,
       config: merge(config, customConfig),
-      commandArgs,
     });
     return {
       name,

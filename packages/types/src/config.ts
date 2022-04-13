@@ -1,5 +1,5 @@
 import type { RuleSetRule, Configuration } from 'webpack';
-import type { ProxyConfigArray, ProxyConfigArrayItem, ProxyConfigMap, Middleware } from 'webpack-dev-server';
+import type { ProxyConfigArray, ProxyConfigArrayItem, ProxyConfigMap, Middleware, ServerOptions } from 'webpack-dev-server';
 import type { UnpluginOptions } from 'unplugin';
 import type Server from 'webpack-dev-server';
 
@@ -48,4 +48,10 @@ export interface Config {
   proxy?: ProxyConfigArrayItem | ProxyConfigMap | ProxyConfigArray | undefined;
 
   compileIncludes?: (string | RegExp)[];
+
+  analyzer?: boolean;
+
+  https?: boolean | ServerOptions;
+
+  port?: string | number;
 }

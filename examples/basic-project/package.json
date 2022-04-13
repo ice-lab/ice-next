@@ -2,7 +2,7 @@
   "name": "basic-project",
   "version": "1.0.0",
   "scripts": {
-    "start": "ice start",
+    "start": "ice start --https",
     "build": "ice build"
   },
   "description": "",
