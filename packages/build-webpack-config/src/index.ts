@@ -3,6 +3,7 @@ import { createRequire } from 'module';
 import fg from 'fast-glob';
 import consola from 'consola';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import CssMinimizerPlugin from '@builder/pack/deps/css-minimizer-webpack-plugin/cjs.js';
 import TerserPlugin from '@builder/pack/deps/terser-webpack-plugin/cjs.js';
 import webpack, { type Configuration } from 'webpack';
@@ -201,6 +202,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
         fileName: 'assets-manifest.json',
         outputDir: path.join(rootDir, '.ice'),
       }),
+      commandArgs.analyzer && new BundleAnalyzerPlugin(),
     ].filter(Boolean),
     devServer: {
       allowedHosts: 'all',

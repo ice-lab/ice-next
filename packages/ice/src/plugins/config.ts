@@ -119,6 +119,10 @@ const cliOptions = [
     name: 'disableOpen',
     commands: ['start'],
   },
+  {
+    name: 'analyzer',
+    commands: ['start'],
+  },
 ];
 
 const configPlugin: Plugin = ({ registerUserConfig, registerCliOption }) => {
