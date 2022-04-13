@@ -1,5 +1,6 @@
 import * as path from 'path';
 import type { Plugin } from '@ice/types';
+import emptyDir from '../../utils/emptyDir.js';
 import generateHTML from './ssr/generateHTML.js';
 import { setupRenderServer } from './ssr/serverRender.js';
 
@@ -9,8 +10,12 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
   const outputDir = path.join(rootDir, 'build');
   const routeManifest = path.join(rootDir, '.ice/route-manifest.json');
   const serverEntry = path.join(outputDir, 'server/entry.mjs');
+  const mode = command === 'start' ? 'development' : 'production';
   let serverCompiler = async () => '';
+
   onHook(`before.${command as 'start' | 'build'}.run`, async ({ esbuildCompile }) => {
+    await emptyDir(outputDir);
+
     serverCompiler = async () => {
       await esbuildCompile({
         entryPoints: [path.join(rootDir, '.ice/entry.server')],
@@ -23,6 +28,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
       return `${serverEntry}?version=${new Date().getTime()}`;
     };
   });
+
   onHook('after.build.compile', async () => {
     await serverCompiler();
     await generateHTML({
@@ -33,7 +39,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
       ssr,
     });
   });
-  const mode = command === 'start' ? 'development' : 'production';
+
   registerTask('web', {
     mode,
     outputDir,
