@@ -62,7 +62,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
 
       return middlewares;
     },
-   });
+  });
 };
 
 export default webPlugin;

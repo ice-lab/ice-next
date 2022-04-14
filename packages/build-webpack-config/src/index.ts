@@ -41,7 +41,7 @@ function getEntry(rootDir: string) {
   }
   return {
     runtime: ['react', 'react-dom', '@ice/runtime'],
-    index: {
+    main: {
       import: [entryFile],
       dependOn: 'runtime',
     },
@@ -193,7 +193,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
     performance: false,
     devtool: getDevtoolValue(sourceMap),
     plugins: [
-       ...webpackPlugins,
+      ...webpackPlugins,
       dev && new ReactRefreshWebpackPlugin(),
       new webpack.DefinePlugin({
         ...defineStaticVariables,
