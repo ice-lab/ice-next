@@ -40,10 +40,6 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
       }
 
       const suffix = (['jsx', 'tsx'] as JSXSuffix[]).find(suffix => new RegExp(`\\.${suffix}?$`).test(id));
-      if (!suffix) {
-        return;
-      }
-
       const programmaticOptions = {
         filename: id,
         sourceMaps: !!sourceMap,
@@ -68,14 +64,13 @@ function getSwcTransformOptions({
   rootDir,
   dev,
 }: {
-    suffix: JSXSuffix;
-    rootDir: string;
-    dev: boolean;
-    isServer?: boolean;
-  }) {
+  suffix: JSXSuffix;
+  rootDir: string;
+  dev: boolean;
+}) {
   const baseReactTransformConfig = {
     refresh: dev,
-   };
+  };
   const reactTransformConfig = merge(baseReactTransformConfig, hasJsxRuntime(rootDir) ? { runtime: 'automatic' } : {});
 
   const commonOptions: SwcConfig = {
