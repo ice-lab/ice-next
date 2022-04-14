@@ -126,20 +126,4 @@ function getSwcTransformOptions({
   return commonOptions;
 }
 
-function hasJsxRuntime(rootDir: string) {
-  try {
-    // auto detect of jsx runtime
-    // eslint-disable-next-line
-    const tsConfig = require(path.join(rootDir, 'tsconfig.json'));
-    if (tsConfig?.compilerOptions?.jsx !== 'react-jsx') {
-      return false;
-    }
-    // ensure react/jsx-runtime
-    require.resolve('react/jsx-runtime');
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
 export default compilationPlugin;
