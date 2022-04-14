@@ -6,7 +6,7 @@ import { createSearchParams } from 'react-router-dom';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
-import { loadRouteModules, loadPageData, getPageConfig, matchRoutes } from './routes.js';
+import { loadRouteModules, loadPagesData, getPagesConfig, matchRoutes } from './routes.js';
 import type { AppContext, InitialContext, RouteItem, ServerContext, AppConfig, RuntimePlugin, CommonJsRuntime, AssetsManifest } from './types';
 
 interface RenderOptions {
@@ -62,15 +62,15 @@ export async function renderServerApp(requestContext: ServerContext, options: Re
     appData = await appConfig.app.getData(initialContext);
   }
 
-  const pageData = await loadPageData(matches, initialContext);
-  const pageConfig = getPageConfig(matches, pageData);
+  const pagesData = await loadPagesData(matches, initialContext);
+  const pagesConfig = getPagesConfig(matches, pagesData);
 
   const appContext: AppContext = {
     appConfig,
     assetsManifest,
     appData,
-    pageData,
-    pageConfig,
+    pagesData,
+    pagesConfig,
     matches,
     routes,
   };
@@ -127,16 +127,15 @@ export async function renderDocument(requestContext: ServerContext, options: Ren
 
   await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
-  const pageConfig = getPageConfig(matches, {});
-
-  const pageData = {
-    pageConfig,
-  };
+  const pagesConfig = getPagesConfig(matches, {});
+  // renderDocument needn't to load pagesData.
+  const pagesData = {};
 
   const appContext: AppContext = {
     assetsManifest,
     appConfig,
-    pageData,
+    pagesData,
+    pagesConfig,
     matches,
     routes,
     documentOnly: true,

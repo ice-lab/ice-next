@@ -2,10 +2,11 @@ import * as React from 'react';
 import { useAppContext } from './AppContext.js';
 import { getPageAssets, getEntryAssets } from './assets.js';
 import { getMeta, getTitle, getLinks, getScripts } from './pageConfig.js';
+import type { AppContext } from './types';
 
 export function Meta() {
-  const { matches, pageConfig } = useAppContext();
-  const meta = getMeta(matches, pageConfig);
+  const { matches, pagesConfig } = useAppContext();
+  const meta = getMeta(matches, pagesConfig);
 
   return (
     <>
@@ -15,8 +16,8 @@ export function Meta() {
 }
 
 export function Title() {
-  const { matches, pageConfig } = useAppContext();
-  const title = getTitle(matches, pageConfig);
+  const { matches, pagesConfig } = useAppContext();
+  const title = getTitle(matches, pagesConfig);
 
   return (
     <title>{title}</title>
@@ -24,9 +25,9 @@ export function Title() {
 }
 
 export function Links() {
-  const { pageConfig, matches, assetsManifest } = useAppContext();
+  const { pagesConfig, matches, assetsManifest } = useAppContext();
 
-  const customLinks = getLinks(matches, pageConfig);
+  const customLinks = getLinks(matches, pagesConfig);
   const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
   const styles = pageAssets.concat(entryAssets).filter(path => path.indexOf('.css') > -1);
@@ -45,18 +46,19 @@ export function Links() {
 }
 
 export function Scripts() {
-  const { appData, pageData, pageConfig, matches, assetsManifest, documentOnly } = useAppContext();
+  const { appData, pagesData, pagesConfig, matches, assetsManifest, documentOnly } = useAppContext();
 
-  const customScripts = getScripts(matches, pageConfig);
+  const customScripts = getScripts(matches, pagesConfig);
   const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
   const scripts = pageAssets.concat(entryAssets).filter(path => path.indexOf('.js') > -1);
 
-  const appContext = {
+  const appContext: AppContext = {
     appData,
-    pageData,
-    pageConfig,
+    pagesData,
+    pagesConfig,
     assetsManifest,
+    appConfig: {},
   };
 
   return (

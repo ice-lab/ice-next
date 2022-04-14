@@ -10,12 +10,13 @@ interface Props {
 
 export default function PageWrapper(props: Props) {
   const { PageComponent, PageWrappers } = props;
-  const { pageData } = useAppContext();
+  const { pagesData } = useAppContext();
 
   const Page = (PageWrappers || []).reduce((acc, curr) => curr(acc), PageComponent);
 
   return (
-    <PageContextProvider value={{ ...pageData }}>
+    // TODO: getPageData By RouteID
+    <PageContextProvider value={{ ...pagesData }}>
       <Page />
     </PageContextProvider>
   );
