@@ -1,7 +1,7 @@
 import * as React from 'react';
 import type { PageWrapper } from './types';
 import { useAppContext } from './AppContext.js';
-import { DataProvider, ConfigProvider } from './PageContext.js';
+import { DataProvider, ConfigProvider } from './RouteContext.js';
 
 interface Props {
   PageComponent: React.ComponentType<any>;
@@ -11,13 +11,13 @@ interface Props {
 
 export default function PageWrapper(props: Props) {
   const { PageComponent, PageWrappers, id } = props;
-  const { pagesData, pagesConfig } = useAppContext();
+  const { routesData, routesConfig } = useAppContext();
 
   const Page = (PageWrappers || []).reduce((acc, curr) => curr(acc), PageComponent);
 
   return (
-    <DataProvider value={pagesData[id]}>
-      <ConfigProvider value={pagesConfig[id]}>
+    <DataProvider value={routesData[id]}>
+      <ConfigProvider value={routesConfig[id]}>
         <Page />
       </ConfigProvider>
     </DataProvider>

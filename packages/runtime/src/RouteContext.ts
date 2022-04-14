@@ -1,20 +1,19 @@
 import * as React from 'react';
-import type { PageData, PageConfig } from './types';
+import type { RouteData, RouteConfig } from './types';
 
-const DataContext = React.createContext<PageData | undefined>(undefined);
+const DataContext = React.createContext<RouteData | undefined>(undefined);
 DataContext.displayName = 'Data';
 
-function useData <T = PageData>(): T {
+function useData <T = RouteData>(): T {
   const value = React.useContext(DataContext);
   return value;
 }
 const DataProvider = DataContext.Provider;
 
-
-const ConfigContext = React.createContext<PageConfig | undefined>(undefined);
+const ConfigContext = React.createContext<RouteConfig | undefined>(undefined);
 ConfigContext.displayName = 'Config';
 
-function useConfig(): PageConfig {
+function useConfig(): RouteConfig {
   const value = React.useContext(ConfigContext);
   return value;
 }

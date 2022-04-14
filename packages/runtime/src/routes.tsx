@@ -3,7 +3,7 @@ import type { Location } from 'history';
 import type { RouteObject } from 'react-router-dom';
 import { matchRoutes as originMatchRoutes } from 'react-router-dom';
 import PageWrapper from './PageWrapper.js';
-import type { RouteItem, RouteModules, PageWrapper as IPageWrapper, RouteMatch, InitialContext, PagesConfig, PagesData } from './types';
+import type { RouteItem, RouteModules, PageWrapper as IPageWrapper, RouteMatch, InitialContext, RoutesConfig, RoutesData } from './types';
 
 // global route modules cache
 const routeModules: RouteModules = {};
@@ -38,8 +38,8 @@ export async function loadRouteModules(routes: RouteModule[]) {
 /**
 * get data for the matched routes.
 */
-export async function loadPagesData(matches: RouteMatch[], initialContext: InitialContext): Promise<PagesData> {
-  const pagesData: PagesData = {};
+export async function loadRoutesData(matches: RouteMatch[], initialContext: InitialContext): Promise<RoutesData> {
+  const routesData: RoutesData = {};
 
   await Promise.all(
     matches.map(async (match) => {
@@ -49,33 +49,33 @@ export async function loadPagesData(matches: RouteMatch[], initialContext: Initi
 
       if (getData) {
         const initialData = await getData(initialContext);
-        pagesData[id] = initialData;
+        routesData[id] = initialData;
       }
     }),
   );
 
-  return pagesData;
+  return routesData;
 }
 
 /**
  * Get page config for matched routes.
  */
-export function getPagesConfig(matches: RouteMatch[], pagesData: PagesData): PagesConfig {
-  const pagesConfig: PagesConfig = {};
+export function getRoutesConfig(matches: RouteMatch[], routesData: RoutesData): RoutesConfig {
+  const routesConfig: RoutesConfig = {};
 
   matches.forEach(async (match) => {
     const { id } = match.route;
     const routeModule = routeModules[id];
     const { getConfig } = routeModule;
-    const data = pagesData[id];
+    const data = routesData[id];
 
     if (getConfig) {
       const value = getConfig({ data });
-      pagesConfig[id] = value;
+      routesConfig[id] = value;
     }
   });
 
-  return pagesConfig;
+  return routesConfig;
 }
 
 /**
