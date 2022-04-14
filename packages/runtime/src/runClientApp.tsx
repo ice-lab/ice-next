@@ -10,7 +10,7 @@ import type {
   AppContext, AppConfig, RouteItem, AppRouterProps, PagesData, PagesConfig,
   PageWrapper, RuntimeModules, InitialContext, RouteMatch,
 } from './types';
-import { loadRouteModules, loadPagesData, getPagesConfig, matchRoutes } from './routes.js';
+import { loadRouteModules, loadPagesData, getPagesConfig, matchRoutes, filterMatchesToLoad } from './routes.js';
 import { loadStyleLinks, loadScripts } from './assets.js';
 import { getLinks, getScripts } from './pageConfig.js';
 
@@ -202,31 +202,6 @@ async function loadNextPage(currentMatches: RouteMatch[], prevHistoryState: Hist
     pagesData,
     pagesConfig,
   };
-}
-
-function filterMatchesToLoad(prevMatches: RouteMatch[], currentMatches: RouteMatch[]) {
-  let isNew = (match: RouteMatch, index: number) => {
-    // [a] -> [a, b]
-    if (!prevMatches[index]) return true;
-
-    // [a, b] -> [a, c]
-    return match.route.id !== prevMatches[index].route.id;
-  };
-
-  let matchPathChanged = (match: RouteMatch, index: number) => {
-    return (
-      // param change, /users/123 -> /users/456
-      prevMatches[index].pathname !== match.pathname ||
-      // splat param changed, which is not present in match.path
-      // e.g. /files/images/avatar.jpg -> files/finances.xls
-      (prevMatches[index].route.path?.endsWith('*') &&
-      prevMatches[index].params['*'] !== match.params['*'])
-    );
-  };
-
-  return currentMatches.filter((match, index) => {
-    return isNew(match, index) || matchPathChanged(match, index);
-  });
 }
 
 function getInitialContext() {
