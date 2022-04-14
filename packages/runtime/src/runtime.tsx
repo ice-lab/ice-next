@@ -16,7 +16,7 @@ import type {
   AppRouterProps,
 } from './types.js';
 import DefaultAppRouter from './AppRouter.js';
-import { useData, useConfig } from './PageContext.js';
+import { useData, useConfig } from './RouteContext.js';
 
 class Runtime {
   private appContext: AppContext;

@@ -33,6 +33,7 @@ describe('routes', () => {
       }
     ];
 
+    // @ts-ignore
     const matches = filterMatchesToLoad(oldMatches, newMatches);
 
     expect(
@@ -64,6 +65,7 @@ describe('routes', () => {
       }
     ];
 
+    // @ts-ignore
     const matches = filterMatchesToLoad(oldMatches, newMatches);
 
     expect(

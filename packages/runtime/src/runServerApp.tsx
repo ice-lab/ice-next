@@ -7,7 +7,7 @@ import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
 import { AppDataProvider } from './AppData.js';
-import { loadRouteModules, loadPagesData, getPagesConfig, matchRoutes } from './routes.js';
+import { loadRouteModules, loadRoutesData, getRoutesConfig, matchRoutes } from './routes.js';
 import type {
   AppContext, InitialContext, RouteItem, ServerContext,
   AppConfig, RuntimePlugin, CommonJsRuntime, AssetsManifest,
@@ -66,15 +66,15 @@ export async function renderServerApp(requestContext: ServerContext, options: Re
     appData = await appConfig.app.getData(initialContext);
   }
 
-  const pagesData = await loadPagesData(matches, initialContext);
-  const pagesConfig = getPagesConfig(matches, pagesData);
+  const routesData = await loadRoutesData(matches, initialContext);
+  const routesConfig = getRoutesConfig(matches, routesData);
 
   const appContext: AppContext = {
     appConfig,
     assetsManifest,
     appData,
-    pagesData,
-    pagesConfig,
+    routesData,
+    routesConfig,
     matches,
     routes,
   };
@@ -133,17 +133,17 @@ export async function renderDocument(requestContext: ServerContext, options: Ren
 
   await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
-  const pagesConfig = getPagesConfig(matches, {});
-  // renderDocument needn't to load pagesData and appData.
-  const pagesData = {};
+  const routesConfig = getRoutesConfig(matches, {});
+  // renderDocument needn't to load routesData and appData.
+  const routesData = {};
   const appData = {};
 
   const appContext: AppContext = {
     assetsManifest,
     appConfig,
     appData,
-    pagesData,
-    pagesConfig,
+    routesData,
+    routesConfig,
     matches,
     routes,
     documentOnly: true,

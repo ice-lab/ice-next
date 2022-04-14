@@ -2,12 +2,12 @@ import * as React from 'react';
 import { useAppContext } from './AppContext.js';
 import { useAppData } from './AppData.js';
 import { getPageAssets, getEntryAssets } from './assets.js';
-import { getMeta, getTitle, getLinks, getScripts } from './pageConfig.js';
+import { getMeta, getTitle, getLinks, getScripts } from './routesConfig.js';
 import type { AppContext } from './types';
 
 export function Meta() {
-  const { matches, pagesConfig } = useAppContext();
-  const meta = getMeta(matches, pagesConfig);
+  const { matches, routesConfig } = useAppContext();
+  const meta = getMeta(matches, routesConfig);
 
   return (
     <>
@@ -17,8 +17,8 @@ export function Meta() {
 }
 
 export function Title() {
-  const { matches, pagesConfig } = useAppContext();
-  const title = getTitle(matches, pagesConfig);
+  const { matches, routesConfig } = useAppContext();
+  const title = getTitle(matches, routesConfig);
 
   return (
     <title>{title}</title>
@@ -26,9 +26,9 @@ export function Title() {
 }
 
 export function Links() {
-  const { pagesConfig, matches, assetsManifest } = useAppContext();
+  const { routesConfig, matches, assetsManifest } = useAppContext();
 
-  const customLinks = getLinks(matches, pagesConfig);
+  const customLinks = getLinks(matches, routesConfig);
   const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
   const styles = pageAssets.concat(entryAssets).filter(path => path.indexOf('.css') > -1);
@@ -47,18 +47,18 @@ export function Links() {
 }
 
 export function Scripts() {
-  const { pagesData, pagesConfig, matches, assetsManifest, documentOnly } = useAppContext();
+  const { routesData, routesConfig, matches, assetsManifest, documentOnly } = useAppContext();
   const appData = useAppData();
 
-  const customScripts = getScripts(matches, pagesConfig);
+  const customScripts = getScripts(matches, routesConfig);
   const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
   const scripts = pageAssets.concat(entryAssets).filter(path => path.indexOf('.js') > -1);
 
   const appContext: AppContext = {
     appData,
-    pagesData,
-    pagesConfig,
+    routesData,
+    routesConfig,
     assetsManifest,
     appConfig: {},
   };

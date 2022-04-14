@@ -2,7 +2,7 @@ import type { Action, Location } from 'history';
 import type { ComponentType, ReactNode } from 'react';
 import type { Renderer } from 'react-dom';
 import type { Navigator, Params } from 'react-router-dom';
-import type { useConfig, useData } from './PageContext';
+import type { useConfig, useData } from './RouteContext';
 
 type VoidFunction = () => void;
 type AppLifecycle = 'onShow' | 'onHide' | 'onPageNotFound' | 'onShareAppMessage' | 'onUnhandledRejection' | 'onLaunch' | 'onError' | 'onTabItemClick';
@@ -13,10 +13,10 @@ type App = Partial<{
 } & Record<AppLifecycle, VoidFunction>>;
 
 export type AppData = any;
-export type PageData = any;
+export type RouteData = any;
 
-// page.getPageConfig return value
-export interface PageConfig {
+// page.getRouteConfig return value
+export interface RouteConfig {
   title?: string;
   // TODO: fix type
   meta?: any[];
@@ -27,10 +27,10 @@ export interface PageConfig {
   auth?: string[];
 }
 
-// app.getData & page.getData
-export type GetData = (ctx: InitialContext) => Promise<PageData> | PageData;
-// page.getConfig
-export type GetConfig = (args: { data: PageData }) => PageConfig;
+// app.getData & route.getData
+export type GetData = (ctx: InitialContext) => Promise<RouteData> | RouteData;
+// route.getConfig
+export type GetConfig = (args: { data: RouteData }) => RouteConfig;
 
 export interface AppConfig extends Record<string, any> {
   app?: App;
@@ -40,20 +40,20 @@ export interface AppConfig extends Record<string, any> {
   };
 }
 
-export interface PagesConfig {
-  [routeId: string]: PageConfig;
+export interface RoutesConfig {
+  [routeId: string]: RouteConfig;
 }
 
-export interface PagesData {
-  [routeId: string]: PageData;
+export interface RoutesData {
+  [routeId: string]: RouteData;
 }
 
 // useAppContext
 export interface AppContext {
   appConfig: AppConfig;
   assetsManifest: AssetsManifest;
-  pagesData: PagesData;
-  pagesConfig: PagesConfig;
+  routesData: RoutesData;
+  routesConfig: RoutesConfig;
   appData: any;
   matches?: RouteMatch[];
   routes?: RouteItem[];

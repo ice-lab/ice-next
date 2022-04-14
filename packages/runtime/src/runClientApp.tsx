@@ -7,12 +7,12 @@ import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
 import { AppDataProvider } from './AppData.js';
 import type {
-  AppContext, AppConfig, RouteItem, AppRouterProps, PagesData, PagesConfig,
+  AppContext, AppConfig, RouteItem, AppRouterProps, RoutesData, RoutesConfig,
   PageWrapper, RuntimeModules, InitialContext, RouteMatch,
 } from './types';
-import { loadRouteModules, loadPagesData, getPagesConfig, matchRoutes, filterMatchesToLoad } from './routes.js';
+import { loadRouteModules, loadRoutesData, getRoutesConfig, matchRoutes, filterMatchesToLoad } from './routes.js';
 import { loadStyleLinks, loadScripts } from './assets.js';
-import { getLinks, getScripts } from './pageConfig.js';
+import { getLinks, getScripts } from './routesConfig.js';
 
 interface RunClientAppOptions {
   appConfig: AppConfig;
@@ -33,27 +33,27 @@ export default async function runClientApp(options: RunClientAppOptions) {
   await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   const appContextFromServer: AppContext = (window as any).__ICE_APP_CONTEXT__ || {};
-  let { appData, pagesData, pagesConfig, assetsManifest } = appContextFromServer;
+  let { appData, routesData, routesConfig, assetsManifest } = appContextFromServer;
 
   const initialContext = getInitialContext();
   if (!appData && appConfig.app?.getData) {
     appData = await appConfig.app.getData(initialContext);
   }
 
-  if (!pagesData) {
-    pagesData = await loadPagesData(matches, initialContext);
+  if (!routesData) {
+    routesData = await loadRoutesData(matches, initialContext);
   }
 
-  if (!pagesConfig) {
-    pagesConfig = getPagesConfig(matches, pagesData);
+  if (!routesConfig) {
+    routesConfig = getRoutesConfig(matches, routesConfig);
   }
 
   const appContext: AppContext = {
     routes,
     appConfig,
     appData,
-    pagesData,
-    pagesConfig,
+    routesData,
+    routesConfig,
     assetsManifest,
     matches,
   };
@@ -100,26 +100,26 @@ interface BrowserEntryProps {
 interface HistoryState {
   action: Action;
   location: Location;
-  pagesData: PagesData;
-  pagesConfig: PagesConfig;
+  routesData: RoutesData;
+  routesConfig: RoutesConfig;
   matches: RouteMatch[];
 }
 
 function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryProps) {
   const {
-    routes, matches: originMatches, pagesData: initialPagesData,
-    pagesConfig: initialPagesConfig, appData,
+    routes, matches: originMatches, routesData: initialRoutesData,
+    routesConfig: initialRoutesConfig, appData,
   } = appContext;
 
   const [historyState, setHistoryState] = useState<HistoryState>({
     action: history.action,
     location: history.location,
-    pagesData: initialPagesData,
-    pagesConfig: initialPagesConfig,
+    routesData: initialRoutesData,
+    routesConfig: initialRoutesConfig,
     matches: originMatches,
   });
 
-  const { action, location, pagesData, pagesConfig, matches } = historyState;
+  const { action, location, routesData, routesConfig, matches } = historyState;
 
   // listen the history change and update the state which including the latest action and location
   useLayoutEffect(() => {
@@ -129,12 +129,12 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
         throw new Error(`Routes not found in location ${location}.`);
       }
 
-      loadNextPage(currentMatches, historyState).then(({ pagesData, pagesConfig }) => {
+      loadNextPage(currentMatches, historyState).then(({ routesData, routesConfig }) => {
         setHistoryState({
           action,
           location,
-          pagesData,
-          pagesConfig,
+          routesData,
+          routesConfig,
           matches: currentMatches,
         });
       });
@@ -144,8 +144,8 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
   // update app context for the current route.
   Object.assign(appContext, {
     matches,
-    pagesData,
-    pagesConfig,
+    routesData,
+    routesConfig,
   });
 
   return (
@@ -171,7 +171,7 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
 async function loadNextPage(currentMatches: RouteMatch[], prevHistoryState: HistoryState) {
   const {
     matches: preMatches,
-    pagesData: prePagesData,
+    routesData: preRoutesData,
   } = prevHistoryState;
 
   await loadRouteModules(currentMatches.map(({ route: { id, load } }) => ({ id, load })));
@@ -179,19 +179,19 @@ async function loadNextPage(currentMatches: RouteMatch[], prevHistoryState: Hist
   // load data for changed route.
   const initialContext = getInitialContext();
   const matchesToLoad = filterMatchesToLoad(preMatches, currentMatches);
-  const data = await loadPagesData(matchesToLoad, initialContext);
+  const data = await loadRoutesData(matchesToLoad, initialContext);
 
-  const pagesData: PagesData = {};
+  const routesData: RoutesData = {};
   // merge page data.
   currentMatches.forEach(({ route }) => {
     const { id } = route;
-    pagesData[id] = data[id] || prePagesData[id];
+    routesData[id] = data[id] || preRoutesData[id];
   });
 
-  const pagesConfig = getPagesConfig(currentMatches, pagesData);
+  const routesConfig = getRoutesConfig(currentMatches, routesData);
 
-  const links = getLinks(currentMatches, pagesConfig);
-  const scripts = getScripts(currentMatches, pagesConfig);
+  const links = getLinks(currentMatches, routesConfig);
+  const scripts = getScripts(currentMatches, routesConfig);
 
   await Promise.all([
     loadStyleLinks(links),
@@ -199,8 +199,8 @@ async function loadNextPage(currentMatches: RouteMatch[], prevHistoryState: Hist
   ]);
 
   return {
-    pagesData,
-    pagesConfig,
+    routesData,
+    routesConfig,
   };
 }
 
