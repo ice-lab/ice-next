@@ -149,7 +149,7 @@ const userConfig = [
 
 const cliOptions = [
   {
-    name: 'disableOpen',
+    name: 'open',
     commands: ['start'],
   },
 ];
