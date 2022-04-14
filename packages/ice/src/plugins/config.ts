@@ -112,11 +112,77 @@ const userConfig = [
       }
     },
   },
+  {
+    name: 'minify',
+    validation: 'boolean',
+    setConfig: (config: Config, minify: UserConfig['minify']) => {
+      return mergeDefaultValue(config, 'minify', minify);
+    },
+  },
+  {
+    name: 'dropLogLevel',
+    validation: 'string',
+    setConfig: (config: Config, dropLogLevel: UserConfig['dropLogLevel']) => {
+      const levels = {
+        trace: 0,
+        debug: 1, // debug is alias for log
+        log: 1,
+        info: 2,
+        warn: 3,
+        error: 4,
+      };
+      const level = levels[dropLogLevel];
+      if (typeof level === 'number') {
+        return mergeDefaultValue(config, 'minimizerOptions', {
+          compress: {
+            pure_funcs: Object.keys(levels)
+              .filter((methodName) => levels[methodName] <= level)
+              .map(methodName => `console.${methodName}`),
+          },
+        });
+      } else {
+        consola.warn(`dropLogLevel only support [${Object.keys(levels).join(',')}]`);
+      }
+    },
+  },
+  {
+    name: 'compileDependencies',
+    validation: 'array|boolean',
+    setConfig: (config: Config, customValue: UserConfig['compileDependencies'], context) => {
+      const { command } = context;
+      let compileRegex: RegExp | false;
+      if (customValue === undefined) {
+        // compile all node_modules dependencies when build
+        compileRegex = command === 'start' ? false : /node_modules\/*/;
+      }
+      if (customValue === true) {
+        compileRegex = /node_modules\/*/;
+      } else if (customValue && customValue.length > 0) {
+        compileRegex = new RegExp(customValue.map((dep: string | RegExp) => {
+          if (dep instanceof RegExp) {
+            return dep.source;
+          } else if (typeof dep === 'string') {
+            // add default prefix of node_modules
+            const matchStr = `node_modules/?.+${dep}/`;
+            return matchStr;
+          }
+          return false;
+        }).filter(Boolean).join('|'));
+      }
+      if (compileRegex) {
+        config.compileIncludes = [compileRegex];
+      }
+    },
+  },
+  {
+    name: 'routes',
+    validation: 'object',
+  },
 ];
 
 const cliOptions = [
   {
-    name: 'disableOpen',
+    name: 'open',
     commands: ['start'],
   },
 ];
