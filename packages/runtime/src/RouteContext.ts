@@ -10,7 +10,6 @@ function useData <T = RouteData>(): T {
 }
 const DataProvider = DataContext.Provider;
 
-
 const ConfigContext = React.createContext<RouteConfig | undefined>(undefined);
 ConfigContext.displayName = 'Config';
 

@@ -1,51 +1,40 @@
 import type { RouteMatch, RoutesConfig } from './types';
 
 export function getMeta(matches: RouteMatch[], routesConfig: RoutesConfig) {
-  return getMergedValue('meta', matches, routesConfig);
+  return getMergedValue('meta', matches, routesConfig) || [];
 }
 
 export function getLinks(matches: RouteMatch[], routesConfig: RoutesConfig) {
-  return getMergedValue('links', matches, routesConfig);
+  return getMergedValue('links', matches, routesConfig) || [];
 }
 
 export function getScripts(matches: RouteMatch[], routesConfig: RoutesConfig) {
-  return getMergedValue('scripts', matches, routesConfig);
+  return getMergedValue('scripts', matches, routesConfig) || [];
 }
 
 export function getTitle(matches: RouteMatch[], routesConfig: RoutesConfig): string {
-  return getValue('title', matches, routesConfig);
+  return getMergedValue('title', matches, routesConfig);
 }
 
 /**
- * merge value for each matched route, such as links/scripts.
+ * merge value for each matched route
  */
 function getMergedValue(key: string, matches: RouteMatch[], routesConfig: RoutesConfig) {
-  let result = [];
-  for (let match of matches) {
-    let routeId = match.route.id;
-    let data = routesConfig[routeId];
+  let result;
 
-    if (data && data[key]) {
-      result = result.concat(data[key]);
+  for (let match of matches) {
+    const routeId = match.route.id;
+    const data = routesConfig[routeId];
+    const value = data?.[key];
+
+    if (Array.isArray(value)) {
+      // merge array
+      result = result ? result.concat(value) : value;
+    } else if (value) {
+      // overwrite
+      result = value;
     }
   }
 
   return result;
-}
-
-/**
- * if multi route has same key, return the last value.
- */
-function getValue(key: string, matches: RouteMatch[], routesConfig: RoutesConfig) {
-  let value;
-  for (let match of matches) {
-    let routeId = match.route.id;
-    let data = routesConfig[routeId];
-
-    if (data && data[key]) {
-      value = data[key];
-    }
-  }
-
-  return value;
 }
