@@ -5,7 +5,11 @@ import { createSearchParams } from 'react-router-dom';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
-import type { AppContext, AppConfig, RouteItem, AppRouterProps, PageWrapper, RuntimeModules, InitialContext, RouteMatch, PagesData, PagesConfig } from './types';
+import { AppDataProvider } from './AppData.js';
+import type {
+  AppContext, AppConfig, RouteItem, AppRouterProps, PagesData, PagesConfig,
+  PageWrapper, RuntimeModules, InitialContext, RouteMatch,
+} from './types';
 import { loadRouteModules, loadPagesData, getPagesConfig, matchRoutes } from './routes.js';
 import { loadStyleLinks, loadScripts } from './assets.js';
 import { getLinks, getScripts } from './pageConfig.js';
@@ -55,7 +59,6 @@ export default async function runClientApp(options: RunClientAppOptions) {
     matches,
   };
 
-  // TODO: provide useAppContext for runtime modules
   const runtime = new Runtime(appContext);
   runtimeModules.forEach(m => {
     runtime.loadModule(m);
@@ -66,14 +69,12 @@ export default async function runClientApp(options: RunClientAppOptions) {
 
 async function render(runtime: Runtime, Document: React.ComponentType<{}>) {
   const appContext = runtime.getAppContext();
-  const { appConfig } = appContext;
-  const { router: { type: routerType } } = appConfig;
   const render = runtime.getRender();
   const AppProvider = runtime.composeAppProvider() || React.Fragment;
   const PageWrappers = runtime.getWrapperPageRegistration();
   const AppRouter = runtime.getAppRouter();
 
-  const history = (routerType === 'hash' ? createHashHistory : createBrowserHistory)({ window });
+  const history = (appContext.appConfig?.router?.type === 'hash' ? createHashHistory : createBrowserHistory)({ window });
 
   render(
     <BrowserEntry
@@ -106,7 +107,10 @@ interface HistoryState {
 }
 
 function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryProps) {
-  const { routes, matches: originMatches, pagesData: initialPagesData, pagesConfig: initialPagesConfig } = appContext;
+  const {
+    routes, matches: originMatches, pagesData: initialPagesData,
+    pagesConfig: initialPagesConfig, appData,
+  } = appContext;
 
   const [historyState, setHistoryState] = useState<HistoryState>({
     action: history.action,
@@ -147,14 +151,16 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
 
   return (
     <AppContextProvider value={appContext}>
-      <Document>
-        <App
-          action={action}
-          location={location}
-          navigator={history}
-          {...rest}
-        />
-      </Document>
+      <AppDataProvider value={appData}>
+        <Document>
+          <App
+            action={action}
+            location={location}
+            navigator={history}
+            {...rest}
+          />
+        </Document>
+      </AppDataProvider>
     </AppContextProvider>
   );
 }

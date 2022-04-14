@@ -6,8 +6,12 @@ import { createSearchParams } from 'react-router-dom';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
+import { AppDataProvider } from './AppData.js';
 import { loadRouteModules, loadPagesData, getPagesConfig, matchRoutes } from './routes.js';
-import type { AppContext, InitialContext, RouteItem, ServerContext, AppConfig, RuntimePlugin, CommonJsRuntime, AssetsManifest } from './types';
+import type {
+  AppContext, InitialContext, RouteItem, ServerContext,
+  AppConfig, RuntimePlugin, CommonJsRuntime, AssetsManifest,
+} from './types';
 
 interface RenderOptions {
   appConfig: AppConfig;
@@ -87,17 +91,19 @@ export async function renderServerApp(requestContext: ServerContext, options: Re
 
   const result = ReactDOMServer.renderToString(
     <AppContextProvider value={appContext}>
-      <Document>
-        <App
-          action={Action.Pop}
-          location={location}
-          navigator={staticNavigator}
-          static
-          AppProvider={AppProvider}
-          PageWrappers={PageWrappers}
-          AppRouter={AppRouter}
-        />
-      </Document>
+      <AppDataProvider value={appData}>
+        <Document>
+          <App
+            action={Action.Pop}
+            location={location}
+            navigator={staticNavigator}
+            static
+            AppProvider={AppProvider}
+            PageWrappers={PageWrappers}
+            AppRouter={AppRouter}
+          />
+        </Document>
+      </AppDataProvider>
     </AppContextProvider>,
   );
 
@@ -128,12 +134,14 @@ export async function renderDocument(requestContext: ServerContext, options: Ren
   await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   const pagesConfig = getPagesConfig(matches, {});
-  // renderDocument needn't to load pagesData.
+  // renderDocument needn't to load pagesData and appData.
   const pagesData = {};
+  const appData = {};
 
   const appContext: AppContext = {
     assetsManifest,
     appConfig,
+    appData,
     pagesData,
     pagesConfig,
     matches,
@@ -143,7 +151,9 @@ export async function renderDocument(requestContext: ServerContext, options: Ren
 
   const result = ReactDOMServer.renderToString(
     <AppContextProvider value={appContext}>
-      <Document />
+      <AppDataProvider value={appData}>
+        <Document />
+      </AppDataProvider>
     </AppContextProvider>,
   );
 
@@ -153,7 +163,7 @@ export async function renderDocument(requestContext: ServerContext, options: Ren
 /**
  * ref: https://github.com/remix-run/react-router/blob/main/packages/react-router-dom/server.tsx
  */
- function getLocation(url) {
+ function getLocation(url: string) {
   const locationProps = parsePath(url);
 
   const location: Location = {

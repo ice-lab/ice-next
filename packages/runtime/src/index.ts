@@ -7,6 +7,7 @@ import App from './App.js';
 import runClientApp from './runClientApp.js';
 import runServerApp, { renderDocument } from './runServerApp.js';
 import { useAppContext } from './AppContext.js';
+import { useAppData } from './AppData.js';
 import {
   Meta,
   Title,
@@ -32,6 +33,7 @@ export {
   runServerApp,
   renderDocument,
   useAppContext,
+  useAppData,
   Link,
   Outlet,
   Meta,

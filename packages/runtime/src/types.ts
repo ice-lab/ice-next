@@ -12,8 +12,8 @@ type App = Partial<{
   getData?: GetData;
 } & Record<AppLifecycle, VoidFunction>>;
 
-type AppData = any;
-type PageData = any;
+export type AppData = any;
+export type PageData = any;
 
 // page.getPageConfig return value
 export interface PageConfig {
@@ -49,12 +49,12 @@ export interface PagesData {
 // useAppContext
 export interface AppContext {
   appConfig: AppConfig;
-  assetsManifest?: AssetsManifest;
+  assetsManifest: AssetsManifest;
+  pagesData: PagesData;
+  pagesConfig: PagesConfig;
+  appData: any;
   matches?: RouteMatch[];
   routes?: RouteItem[];
-  appData?: any;
-  pagesData?: PagesData;
-  pagesConfig?: PagesConfig;
   documentOnly?: boolean;
 }
 

@@ -1,9 +1,17 @@
 import * as React from 'react';
-import { Link } from 'ice';
+import { Link, useAppData } from 'ice';
+import { useAppContext } from '@ice/runtime';
+import type { AppData } from '@/types';
 import styles from './index.module.css';
 
 export default function Home(props) {
   console.log('render Home', props);
+
+  const appData = useAppData<AppData>();
+  console.log('get AppData', appData);
+
+  const appContext = useAppContext();
+  console.log('get AppContext', appContext);
 
   return (
     <>

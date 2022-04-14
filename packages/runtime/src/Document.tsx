@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useAppContext } from './AppContext.js';
+import { useAppData } from './AppData.js';
 import { getPageAssets, getEntryAssets } from './assets.js';
 import { getMeta, getTitle, getLinks, getScripts } from './pageConfig.js';
 import type { AppContext } from './types';
@@ -46,7 +47,8 @@ export function Links() {
 }
 
 export function Scripts() {
-  const { appData, pagesData, pagesConfig, matches, assetsManifest, documentOnly } = useAppContext();
+  const { pagesData, pagesConfig, matches, assetsManifest, documentOnly } = useAppContext();
+  const appData = useAppData();
 
   const customScripts = getScripts(matches, pagesConfig);
   const pageAssets = getPageAssets(matches, assetsManifest);
