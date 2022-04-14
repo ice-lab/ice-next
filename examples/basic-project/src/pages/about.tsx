@@ -2,7 +2,16 @@ import { Link } from 'ice';
 // @ts-expect-error
 import url from './ice.png';
 
+interface Data {
+  name: string;
+}
+
 export default function About() {
+  const data = useData<Data>();
+  const config = useConfig();
+
+  console.log('render About', 'data', data, 'config', config);
+
   return (
     <>
       <h2>About Page</h2>
@@ -13,7 +22,7 @@ export default function About() {
   );
 }
 
-export function getPageConfig() {
+export function getConfig() {
   return {
     title: 'About',
     meta: [
@@ -33,7 +42,7 @@ export function getPageConfig() {
   };
 }
 
-export function getInitialData() {
+export function getData() {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({

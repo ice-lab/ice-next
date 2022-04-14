@@ -13,22 +13,24 @@ interface Options {
   mode: 'development' | 'production' | 'none';
   compileIncludes?: (string | RegExp)[];
   sourceMap?: Config['sourceMap'];
+  compileExcludes?: RegExp[];
 }
 
 const require = createRequire(import.meta.url);
 const regeneratorRuntimePath = require.resolve('regenerator-runtime');
 
 const compilationPlugin = (options: Options): UnpluginOptions => {
-  const { sourceMap, mode, compileIncludes } = options;
+  const { sourceMap, mode, compileIncludes, compileExcludes } = options;
   const dev = mode !== 'production';
   const compileRegex = compileIncludes.map((includeRule) => {
     return includeRule instanceof RegExp ? includeRule : new RegExp(includeRule);
   });
+
   const extensionRegex = /\.(jsx?|tsx?|mjs)$/;
   return {
     name: 'compilation-plugin',
     transformInclude(id) {
-      return extensionRegex.test(id);
+      return extensionRegex.test(id) && !compileExcludes.some((regex) => regex.test(id));
     },
     // @ts-expect-error TODO: source map types
     async transform(source: string, id: string) {
