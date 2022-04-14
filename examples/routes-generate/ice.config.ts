@@ -1,6 +1,6 @@
-import { defineUserConfig } from '@ice/app';
+import { defineConfig } from '@ice/app';
 
-export default defineUserConfig({
+export default defineConfig({
   routes: {
     ignoreFiles: ['about.tsx', 'products.tsx'],
     defineRoutes: (route) => {
