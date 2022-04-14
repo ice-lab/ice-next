@@ -10,4 +10,5 @@ export default defineConfig({
     return webpackConfig;
   },
   plugins: ['@ice/plugin-auth'],
+  compileDependencies: false,
 });
