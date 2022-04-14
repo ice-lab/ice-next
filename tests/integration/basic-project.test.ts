@@ -16,12 +16,11 @@ describe(`build ${example}`, () => {
 
   test('open /', async () => {
     await buildFixture(example);
-
     const res = await setupBrowser({ example });
     page = res.page;
     browser = res.browser;
     expect(await page.$$text('h2')).toStrictEqual(['Home Page']);
-    const bundleContent = fs.readFileSync(path.join(__dirname, `../../examples/${example}/build/index.js`), 'utf-8');
+    const bundleContent = fs.readFileSync(path.join(__dirname, `../../examples/${example}/build/js/index.js`), 'utf-8');
     expect(bundleContent.includes('__REMOVED__')).toBe(false);
     expect(bundleContent.includes('__LOG__')).toBe(false);
     expect(bundleContent.includes('__WARN__')).toBe(false);
@@ -45,7 +44,7 @@ describe(`start ${example}`, () => {
     expect(await page.$$text('h2')).toStrictEqual(['Home Page']);
   }, 120000);
 
-  test('should update pageConfig during client routing', async () => {
+  test('should update config during client routing', async () => {
     const { devServer, port } = await startFixture(example);
     const res = await setupStartBrowser({ server: devServer, port });
     page = res.page;

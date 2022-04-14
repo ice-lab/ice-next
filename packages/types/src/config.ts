@@ -43,8 +43,8 @@ export interface Config {
   transforms?: UnpluginOptions['transform'][];
 
   middlewares?:
-    | ((middlewares: Middleware[], devServer: Server) => Middleware[])
-    | undefined;
+  | ((middlewares: Middleware[], devServer: Server) => Middleware[])
+  | undefined;
 
   proxy?: ProxyConfigArrayItem | ProxyConfigMap | ProxyConfigArray | undefined;
 

@@ -14,19 +14,25 @@ interface Options {
   mode: 'development' | 'production' | 'none';
   compileIncludes?: (string | RegExp)[];
   sourceMap?: Config['sourceMap'];
+  compileExcludes?: RegExp[];
 }
 
 const require = createRequire(import.meta.url);
 const regeneratorRuntimePath = require.resolve('regenerator-runtime');
 
 const compilationPlugin = (options: Options): UnpluginOptions => {
-  const { rootDir, sourceMap, mode, compileIncludes } = options;
+  const { rootDir, sourceMap, mode, compileIncludes, compileExcludes } = options;
   const dev = mode !== 'production';
   const compileRegex = compileIncludes.map((includeRule) => {
     return includeRule instanceof RegExp ? includeRule : new RegExp(includeRule);
   });
+
+  const extensionRegex = /\.(jsx?|tsx?|mjs)$/;
   return {
     name: 'compilation-plugin',
+    transformInclude(id) {
+      return extensionRegex.test(id) && !compileExcludes.some((regex) => regex.test(id));
+    },
     // @ts-expect-error TODO: source map types
     async transform(source: string, id: string) {
       if ((/node_modules/.test(id) && !compileRegex.some((regex) => regex.test(id)))) {
@@ -34,10 +40,6 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
       }
 
       const suffix = (['jsx', 'tsx'] as JSXSuffix[]).find(suffix => new RegExp(`\\.${suffix}?$`).test(id));
-      if (!suffix) {
-        return;
-      }
-
       const programmaticOptions = {
         filename: id,
         sourceMaps: !!sourceMap,
@@ -62,14 +64,13 @@ function getSwcTransformOptions({
   rootDir,
   dev,
 }: {
-    suffix: JSXSuffix;
-    rootDir: string;
-    dev: boolean;
-    isServer?: boolean;
-  }) {
+  suffix: JSXSuffix;
+  rootDir: string;
+  dev: boolean;
+}) {
   const baseReactTransformConfig = {
     refresh: dev,
-   };
+  };
   const reactTransformConfig = merge(baseReactTransformConfig, hasJsxRuntime(rootDir) ? { runtime: 'automatic' } : {});
 
   const commonOptions: SwcConfig = {

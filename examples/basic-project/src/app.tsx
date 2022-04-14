@@ -11,8 +11,9 @@ console.error('__ERROR__');
 export default defineAppConfig({
   app: {
     // @ts-expect-error loss tslib dependency
-    getInitialData: async (ctx) => {
+    getData: async (ctx) => {
       return {
+        title: 'gogogo',
         auth: {
           admin: true,
         },
