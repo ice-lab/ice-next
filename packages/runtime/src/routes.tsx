@@ -3,7 +3,7 @@ import type { Location } from 'history';
 import type { RouteObject } from 'react-router-dom';
 import { matchRoutes as originMatchRoutes } from 'react-router-dom';
 import PageWrapper from './PageWrapper.js';
-import type { RouteItem, RouteModules, PageWrapper as IPageWrapper, RouteMatch, InitialContext, PageConfig } from './types';
+import type { RouteItem, RouteModules, PageWrapper as IPageWrapper, RouteMatch, InitialContext, PagesConfig, PagesData } from './types';
 
 // global route modules cache
 const routeModules: RouteModules = {};
@@ -38,8 +38,8 @@ export async function loadRouteModules(routes: RouteModule[]) {
 /**
 * get data for the matched routes.
 */
-export async function loadPageData(matches: RouteMatch[], initialContext: InitialContext) {
-  const pageData = {};
+export async function loadPagesData(matches: RouteMatch[], initialContext: InitialContext): Promise<PagesData> {
+  const pagesData: PagesData = {};
 
   await Promise.all(
     matches.map(async (match) => {
@@ -49,33 +49,33 @@ export async function loadPageData(matches: RouteMatch[], initialContext: Initia
 
       if (getData) {
         const initialData = await getData(initialContext);
-        pageData[id] = initialData;
+        pagesData[id] = initialData;
       }
     }),
   );
 
-  return pageData;
+  return pagesData;
 }
 
 /**
  * Get page config for matched routes.
  */
-export function getPageConfig(matches: RouteMatch[], pageData): PageConfig {
-  const pageConfig = {};
+export function getPagesConfig(matches: RouteMatch[], pagesData: PagesData): PagesConfig {
+  const pagesConfig: PagesConfig = {};
 
   matches.forEach(async (match) => {
     const { id } = match.route;
     const routeModule = routeModules[id];
     const { getConfig } = routeModule;
-    const data = pageData[id];
+    const data = pagesData[id];
 
     if (getConfig) {
       const value = getConfig({ data });
-      pageConfig[id] = value;
+      pagesConfig[id] = value;
     }
   });
 
-  return pageConfig;
+  return pagesConfig;
 }
 
 /**
@@ -91,8 +91,9 @@ export function createRouteElements(routes: RouteItem[], PageWrappers?: IPageWra
       <RouteComponent id={id} />
     ) : (
       <PageWrapper
-        PageComponent={(...props) => <RouteComponent id={id} {...props} />}
+        PageComponent={(props) => <RouteComponent id={id} {...props} />}
         PageWrappers={PageWrappers}
+        id={id}
       />
     );
     const route: RouteItem = {
@@ -143,27 +144,27 @@ export function matchRoutes(
 /**
  * filter matches is new or path changed.
  */
-export function filterMatchesToLoad(matches, newMatches) {
+export function filterMatchesToLoad(prevMatches: RouteMatch[], currentMatches: RouteMatch[]): RouteMatch[] {
   let isNew = (match: RouteMatch, index: number) => {
     // [a] -> [a, b]
-    if (!matches[index]) return true;
+    if (!prevMatches[index]) return true;
 
     // [a, b] -> [a, c]
-    return match.route.id !== matches[index].route.id;
+    return match.route.id !== prevMatches[index].route.id;
   };
 
   let matchPathChanged = (match: RouteMatch, index: number) => {
     return (
       // param change, /users/123 -> /users/456
-      matches[index].pathname !== match.pathname ||
+      prevMatches[index].pathname !== match.pathname ||
       // splat param changed, which is not present in match.path
       // e.g. /files/images/avatar.jpg -> files/finances.xls
-      (matches[index].route.path?.endsWith('*') &&
-      matches[index].params['*'] !== match.params['*'])
+      (prevMatches[index].route.path?.endsWith('*') &&
+      prevMatches[index].params['*'] !== match.params['*'])
     );
   };
 
-  return newMatches.filter((match, index) => {
+  return currentMatches.filter((match, index) => {
     return isNew(match, index) || matchPathChanged(match, index);
   });
 }

@@ -9,6 +9,7 @@ export default defineAppConfig({
     // @ts-expect-error loss tslib dependency
     getData: async (ctx) => {
       return {
+        title: 'gogogo',
         auth: {
           admin: true,
         },

@@ -1,7 +1,16 @@
 import * as React from 'react';
-import { Link } from 'ice';
+import { Link, useData, useConfig } from 'ice';
+
+interface Data {
+  name: string;
+}
 
 export default function About() {
+  const data = useData<Data>();
+  const config = useConfig();
+
+  console.log('render About', 'data', data, 'config', config);
+
   return (
     <>
       <h2>About Page</h2>

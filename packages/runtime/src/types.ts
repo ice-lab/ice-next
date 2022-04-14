@@ -1,8 +1,8 @@
 import type { Action, Location } from 'history';
-import type { Navigator, Params } from 'react-router-dom';
 import type { ComponentType, ReactNode } from 'react';
 import type { Renderer } from 'react-dom';
-import type { usePageContext } from './PageContext';
+import type { Navigator, Params } from 'react-router-dom';
+import type { useConfig, useData } from './PageContext';
 
 type VoidFunction = () => void;
 type AppLifecycle = 'onShow' | 'onHide' | 'onPageNotFound' | 'onShareAppMessage' | 'onUnhandledRejection' | 'onLaunch' | 'onError' | 'onTabItemClick';
@@ -12,8 +12,25 @@ type App = Partial<{
   getData?: GetData;
 } & Record<AppLifecycle, VoidFunction>>;
 
-export type GetData = (ctx: InitialContext) => Promise<any>;
-export type GetConfig = (props: { data: RouteData }) => RouteConfig;
+export type AppData = any;
+export type PageData = any;
+
+// page.getPageConfig return value
+export interface PageConfig {
+  title?: string;
+  // TODO: fix type
+  meta?: any[];
+  links?: any[];
+  scripts?: any[];
+
+  // plugin extends
+  auth?: string[];
+}
+
+// app.getData & page.getData
+export type GetData = (ctx: InitialContext) => Promise<PageData> | PageData;
+// page.getConfig
+export type GetConfig = (args: { data: PageData }) => PageConfig;
 
 export interface AppConfig extends Record<string, any> {
   app?: App;
@@ -21,6 +38,26 @@ export interface AppConfig extends Record<string, any> {
     type: 'hash' | 'browser';
     basename?: string;
   };
+}
+
+export interface PagesConfig {
+  [routeId: string]: PageConfig;
+}
+
+export interface PagesData {
+  [routeId: string]: PageData;
+}
+
+// useAppContext
+export interface AppContext {
+  appConfig: AppConfig;
+  assetsManifest: AssetsManifest;
+  pagesData: PagesData;
+  pagesConfig: PagesConfig;
+  appData: any;
+  matches?: RouteMatch[];
+  routes?: RouteItem[];
+  documentOnly?: boolean;
 }
 
 export {
@@ -39,10 +76,9 @@ export interface InitialContext extends ServerContext {
   ssrError?: any;
 }
 
-type RouteData = any;
 export interface PageComponent {
   default: ComponentType<any>;
-  getData?: (ctx: InitialContext) => any;
+  getData?: GetData;
   getConfig?: GetConfig;
 }
 
@@ -58,15 +94,6 @@ export interface RouteItem {
   children?: RouteItem[];
 }
 
-export interface RouteConfig {
-  title?: string;
-  // TODO: fix type
-  meta?: any[];
-  links?: any[];
-  scripts?: any[];
-  auth?: string[];
-}
-
 export type PageWrapper<InjectProps> = (<Props>(Component: ComponentType<Props & InjectProps>) => ComponentType<Props>);
 export type SetAppRouter = (AppRouter: ComponentType<AppRouterProps>) => void;
 export type AddProvider = (Provider: ComponentType) => void;
@@ -77,29 +104,12 @@ export interface RouteModules {
   [routeId: string]: PageComponent;
 }
 
-export interface PageConfig {
-  [routeId: string]: RouteConfig;
-}
-
-export interface PageData {
-  [routeId: string]: any;
-}
-
 export interface AssetsManifest {
   publicPath: string;
   entries: string[];
   pages: string[];
 }
-export interface AppContext {
-  appConfig: AppConfig;
-  assetsManifest?: AssetsManifest;
-  matches?: RouteMatch[];
-  routes?: RouteItem[];
-  appData?: any;
-  pageData?: PageData;
-  pageConfig?: PageConfig;
-  documentOnly?: boolean;
-}
+
 
 export interface RuntimeAPI {
   setAppRouter: SetAppRouter;
@@ -107,7 +117,8 @@ export interface RuntimeAPI {
   setRender: SetRender;
   wrapperPageComponent: WrapperPageComponent;
   appContext: AppContext;
-  usePageContext: typeof usePageContext;
+  useData: typeof useData;
+  useConfig: typeof useConfig;
 }
 
 export interface RuntimePlugin {
