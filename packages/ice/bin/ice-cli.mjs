@@ -3,6 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { program } from 'commander';
+import detectPort from 'detect-port';
 // hijack webpack before import other modules
 import '../esm/requireHook.js';
 import createService from '../esm/createService.js';
@@ -39,6 +40,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     .option('-p, --port <port>', 'dev server port', 3333)
     .option('--rootDir <rootDir>', 'project root directory', cwd)
     .action(async ({ rootDir, ...commandArgs }) => {
+      commandArgs.port = await detectPort(commandArgs.port);
       const service = await createService({ rootDir, command: 'start', commandArgs });
       service.run();
     });

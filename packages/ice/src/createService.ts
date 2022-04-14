@@ -1,7 +1,6 @@
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { Context } from 'build-scripts';
-import detectPort from 'detect-port';
 import consola from 'consola';
 import type { CommandArgs, CommandName } from 'build-scripts';
 import type { ExportData } from '@ice/types/esm/generator.js';
@@ -33,9 +32,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const templateDir = path.join(__dirname, '../template/');
   const configFile = 'ice.config.(mts|mjs|ts|js|cjs|json)';
   const dataCache = new Map<string, string>();
-  if (command === 'start') {
-    commandArgs.port = await detectPort(commandArgs.port);
-  }
 
   const routesRenderData = generateRoutesInfo(rootDir);
   dataCache.set('routes', JSON.stringify(routesRenderData));
@@ -127,12 +123,5 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   };
 }
 
-async function updatePortInCommandArgs(command: string, commandArgs: CommandArgs) {
-  const newCommandArgs = { ...commandArgs };
-  if (command === 'start') {
-    commandArgs.port = await detectPort(commandArgs.port);
-  }
-  return newCommandArgs;
-}
 
 export default createService;
