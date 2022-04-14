@@ -8,6 +8,7 @@ import runClientApp from './runClientApp.js';
 import runServerApp, { renderDocument } from './runServerApp.js';
 import { useAppContext } from './AppContext.js';
 import { useAppData } from './AppData.js';
+import { useData, useConfig } from './PageContext.js';
 import {
   Meta,
   Title,
@@ -19,6 +20,7 @@ import {
   RuntimePlugin,
   AppContext,
   AppConfig,
+  PageConfig,
   PageWrapper,
   RouteItem,
 } from './types.js';
@@ -34,6 +36,8 @@ export {
   renderDocument,
   useAppContext,
   useAppData,
+  useData,
+  useConfig,
   Link,
   Outlet,
   Meta,
@@ -46,6 +50,7 @@ export {
   RuntimePlugin,
   AppContext,
   AppConfig,
+  PageConfig,
   PageWrapper,
   RouteItem,
 };

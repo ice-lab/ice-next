@@ -33,7 +33,6 @@ export default async function runClientApp(options: RunClientAppOptions) {
   await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   const appContextFromServer: AppContext = (window as any).__ICE_APP_CONTEXT__ || {};
-
   let { appData, pagesData, pagesConfig, assetsManifest } = appContextFromServer;
 
   const initialContext = getInitialContext();

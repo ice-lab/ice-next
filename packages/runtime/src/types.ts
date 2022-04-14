@@ -2,7 +2,7 @@ import type { Action, Location } from 'history';
 import type { ComponentType, ReactNode } from 'react';
 import type { Renderer } from 'react-dom';
 import type { Navigator, Params } from 'react-router-dom';
-import type { usePageContext } from './PageContext';
+import type { useConfig, useData } from './PageContext';
 
 type VoidFunction = () => void;
 type AppLifecycle = 'onShow' | 'onHide' | 'onPageNotFound' | 'onShareAppMessage' | 'onUnhandledRejection' | 'onLaunch' | 'onError' | 'onTabItemClick';
@@ -22,6 +22,8 @@ export interface PageConfig {
   meta?: any[];
   links?: any[];
   scripts?: any[];
+
+  // plugin extends
   auth?: string[];
 }
 
@@ -115,7 +117,8 @@ export interface RuntimeAPI {
   setRender: SetRender;
   wrapperPageComponent: WrapperPageComponent;
   appContext: AppContext;
-  usePageContext: typeof usePageContext;
+  useData: typeof useData;
+  useConfig: typeof useConfig;
 }
 
 export interface RuntimePlugin {

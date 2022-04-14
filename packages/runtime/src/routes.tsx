@@ -91,8 +91,9 @@ export function createRouteElements(routes: RouteItem[], PageWrappers?: IPageWra
       <RouteComponent id={id} />
     ) : (
       <PageWrapper
-        PageComponent={(...props) => <RouteComponent id={id} {...props} />}
+        PageComponent={(props) => <RouteComponent id={id} {...props} />}
         PageWrappers={PageWrappers}
+        id={id}
       />
     );
     const route: RouteItem = {
@@ -138,4 +139,32 @@ export function matchRoutes(
     route: route as unknown as RouteItem,
     pathnameBase,
   }));
+}
+
+/**
+ * filter matches is new or path changed.
+ */
+export function filterMatchesToLoad(matches, newMatches) {
+  let isNew = (match: RouteMatch, index: number) => {
+    // [a] -> [a, b]
+    if (!matches[index]) return true;
+
+    // [a, b] -> [a, c]
+    return match.route.id !== matches[index].route.id;
+  };
+
+  let matchPathChanged = (match: RouteMatch, index: number) => {
+    return (
+      // param change, /users/123 -> /users/456
+      matches[index].pathname !== match.pathname ||
+      // splat param changed, which is not present in match.path
+      // e.g. /files/images/avatar.jpg -> files/finances.xls
+      (matches[index].route.path?.endsWith('*') &&
+      matches[index].params['*'] !== match.params['*'])
+    );
+  };
+
+  return newMatches.filter((match, index) => {
+    return isNew(match, index) || matchPathChanged(match, index);
+  });
 }

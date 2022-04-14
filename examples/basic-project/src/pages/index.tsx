@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Link, useAppData } from 'ice';
+import { Link, useAppData, useData, useConfig } from 'ice';
+// not recomended but works
 import { useAppContext } from '@ice/runtime';
 import type { AppData } from '@/types';
 import styles from './index.module.css';
@@ -12,6 +13,11 @@ export default function Home(props) {
 
   const appContext = useAppContext();
   console.log('get AppContext', appContext);
+
+  const data = useData();
+  const config = useConfig();
+
+  console.log('render Home', 'data', data, 'config', config);
 
   return (
     <>
