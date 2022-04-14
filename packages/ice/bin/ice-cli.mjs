@@ -16,6 +16,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
   checkNodeVersion(icePackageInfo.engines.node, icePackageInfo.name);
   process.env.__ICE_VERSION__ = icePackageInfo.version;
   const cwd = process.cwd();
+
   program
     .version(icePackageInfo.version)
     .usage('<command> [options]');
@@ -38,6 +39,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     .option('--config <config>', 'use custom config')
     .option('-h, --host <host>', 'dev server host', '0.0.0.0')
     .option('-p, --port <port>', 'dev server port', 3333)
+    .option('--no-open', 'don\'t open browser')
     .option('--rootDir <rootDir>', 'project root directory', cwd)
     .action(async ({ rootDir, ...commandArgs }) => {
       commandArgs.port = await detectPort(commandArgs.port);
@@ -71,4 +73,3 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     program.help();
   }
 })();
-
