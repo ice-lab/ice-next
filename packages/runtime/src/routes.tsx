@@ -12,12 +12,11 @@ type RouteModule = Pick<RouteItem, 'id' | 'load'>;
 
 export async function loadRouteModule(route: RouteModule) {
   const { id, load } = route;
-  if (typeof window !== 'undefined') {
-    // Don't use cache and should load module again in server env
-    // Ref: https://github.com/ice-lab/ice-next/issues/82
-    if (id in routeModules) {
-      return routeModules[id];
-    }
+  if (
+    typeof window !== 'undefined' && // Don't use module cache and should load again in ssr. Ref: https://github.com/ice-lab/ice-next/issues/82
+    id in routeModules
+  ) {
+    return routeModules[id];
   }
 
   try {
