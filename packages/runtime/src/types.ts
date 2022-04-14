@@ -15,7 +15,7 @@ type App = Partial<{
 export type AppData = any;
 export type RouteData = any;
 
-// page.getRouteConfig return value
+// route.getConfig return value
 export interface RouteConfig {
   title?: string;
   // TODO: fix type
