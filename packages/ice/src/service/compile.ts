@@ -1,13 +1,15 @@
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+import { createHash } from 'crypto';
 import consola from 'consola';
-import fg from 'fast-glob';
 import esbuild from 'esbuild';
 import { createUnplugin } from 'unplugin';
 import type { EsbuildCompile } from '@ice/types/esm/plugin.js';
 import { getTransformPlugins } from '@ice/webpack-config';
+import escapeLocalIdent from '../utils/escapeLocalIdent.js';
+import stylePlugin from '../esbuild/style.js';
+import aliasPlugin from '../esbuild/alias.js';
 import type { ContextConfig } from '../utils/getContextConfig.js';
-import { resolveId } from './analyze.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -19,11 +21,9 @@ interface Options {
 export function createEsbuildCompiler(options: Options) {
   const { task } = options;
   const { taskConfig, webpackConfig } = task;
-  const alias = webpackConfig.resolve?.alias || {};
-  const compileRegex = (taskConfig.compileIncludes || []).map((includeRule) => {
-    return includeRule instanceof RegExp ? includeRule : new RegExp(includeRule);
-  });
   const transformPlugins = getTransformPlugins(taskConfig);
+  const alias = (webpackConfig.resolve?.alias || {}) as Record<string, string | false>;
+
   const esbuildCompile: EsbuildCompile = async (buildOptions) => {
     const startTime = new Date().getTime();
     consola.debug('[esbuild]', `start compile for: ${buildOptions.entryPoints}`);
@@ -40,43 +40,24 @@ export function createEsbuildCompiler(options: Options) {
       },
       inject: [path.resolve(__dirname, '../polyfills/react.js')],
       plugins: [
-        {
-          name: 'esbuild-alias',
-          setup(build) {
-            build.onResolve({ filter: /.*/ }, (args) => {
-              const id = args.path;
-              // ice do not support alias with config onlyModule
-              const resolved = resolveId(id, alias as Record<string, string | false>);
-              if (resolved && resolved !== id) {
-                if (!path.extname(resolved)) {
-                  const basename = path.basename(resolved);
-                  const patterns = [`${basename}.{js,ts,jsx,tsx}`, `${basename}/index.{js,ts,jsx,tsx}`];
-                  const absoluteId = fg.sync(patterns, {
-                    cwd: path.dirname(resolved),
-                    absolute: true,
-                  })[0];
-                  if (absoluteId) {
-                    return {
-                      path: absoluteId,
-                    };
-                  }
-                }
-                return { path: resolved };
-              }
-            });
-            build.onResolve({ filter: /.*/ }, (args) => {
-              const id = args.path;
-              // external ids which is third-party dependencies
-              if (id[0] !== '.' && !path.isAbsolute(id) &&
-                // runtime folder need to been bundled while it is not compiled
-                !compileRegex.some((regex) => regex.test(id))) {
-                return {
-                  external: true,
-                };
-              }
-            });
+        stylePlugin({
+          extract: false,
+          modules: {
+            auto: (filePath) => /\.module\.\w+$/i.test(filePath),
+            generateLocalIdentName: function (name: string, filename: string) {
+              const hash = createHash('md4');
+              hash.update(Buffer.from(filename + name, 'utf8'));
+              return escapeLocalIdent(`${name}--${hash.digest('base64').slice(0, 8)}`);
+            },
           },
-        },
+        }),
+        aliasPlugin({
+          alias,
+          compileRegex: (taskConfig.compileIncludes || []).map((includeRule) => {
+            return includeRule instanceof RegExp ? includeRule : new RegExp(includeRule);
+          }),
+        }),
+        ...(buildOptions.plugins || []),
         ...transformPlugins
           // ignore compilation-plugin while esbuild has it's own transform
           .filter(({ name }) => name !== 'compilation-plugin')

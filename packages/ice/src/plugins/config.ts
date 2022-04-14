@@ -112,11 +112,15 @@ const userConfig = [
       }
     },
   },
+  {
+    name: 'routes',
+    validation: 'object',
+  },
 ];
 
 const cliOptions = [
   {
-    name: 'disableOpen',
+    name: 'open',
     commands: ['start'],
   },
 ];
