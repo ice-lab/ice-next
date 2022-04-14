@@ -15,8 +15,6 @@ export default function PageWrapper(props: Props) {
 
   const Page = (PageWrappers || []).reduce((acc, curr) => curr(acc), PageComponent);
 
-  console.log(111, id);
-
   return (
     <DataProvider value={pagesData[id]}>
       <ConfigProvider value={pagesConfig[id]}>
