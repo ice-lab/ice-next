@@ -157,26 +157,22 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
  */
 async function loadNextPage(matches, preState) {
   const {
-    matches: oldMatches,
-    pageData: oldPageData,
+    matches: preMatches,
+    pageData: prePageData,
   } = preState;
 
   await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   // load data for changed route.
   const initialContext = getInitialContext();
-  const matchesToLoad = filterMatchesToLoad(oldMatches, matches);
+  const matchesToLoad = filterMatchesToLoad(preMatches, matches);
   const data = await loadPageData(matchesToLoad, initialContext);
 
   const pageData = {};
   // merge page data.
   matches.forEach(({ route }) => {
     const { id } = route;
-    if (data[id]) {
-      pageData[id] = data[id];
-    } else if (oldPageData[id]) {
-      pageData[id] = oldPageData[id];
-    }
+    pageData[id] = data[id] || prePageData[id];
   });
 
   const pageConfig = getPageConfig(matches, pageData);
