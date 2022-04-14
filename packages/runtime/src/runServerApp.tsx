@@ -163,7 +163,7 @@ export async function renderDocument(requestContext: ServerContext, options: Ren
 /**
  * ref: https://github.com/remix-run/react-router/blob/main/packages/react-router-dom/server.tsx
  */
- function getLocation(url: string) {
+function getLocation(url: string) {
   const locationProps = parsePath(url);
 
   const location: Location = {

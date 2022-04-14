@@ -125,8 +125,8 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
   useLayoutEffect(() => {
     history.listen(({ action, location }) => {
       const currentMatches = matchRoutes(routes, location);
-      if (!currentMatches) {
-        throw new Error(`Routes not found in location ${location}.`);
+      if (!currentMatches.length) {
+        throw new Error(`Routes not found in location ${location.pathname}.`);
       }
 
       loadNextPage(currentMatches, historyState).then(({ routesData, routesConfig }) => {
