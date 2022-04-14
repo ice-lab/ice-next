@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { Link, useData, useConfig } from 'ice';
+// @ts-expect-error
+import url from './ice.png';
 
 interface Data {
   name: string;
@@ -15,6 +17,7 @@ export default function About() {
     <>
       <h2>About Page</h2>
       <Link to="/">home</Link>
+      <img src={url} height="40" width="40" />
       <span className="mark">new</span>
     </>
   );

@@ -108,6 +108,9 @@ export interface AssetsManifest {
   publicPath: string;
   entries: string[];
   pages: string[];
+  assets?: {
+    [assetPath: string]: string;
+  };
 }
 
 
