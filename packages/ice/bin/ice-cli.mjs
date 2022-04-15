@@ -3,6 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { program } from 'commander';
+import detectPort from 'detect-port';
 // hijack webpack before import other modules
 import '../esm/requireHook.js';
 import createService from '../esm/createService.js';
@@ -15,6 +16,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
   checkNodeVersion(icePackageInfo.engines.node, icePackageInfo.name);
   process.env.__ICE_VERSION__ = icePackageInfo.version;
   const cwd = process.cwd();
+
   program
     .version(icePackageInfo.version)
     .usage('<command> [options]');
@@ -36,12 +38,14 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     .allowUnknownOption()
     .option('--config <config>', 'custom config path')
     .option('-h, --host <host>', 'dev server host', '0.0.0.0')
-    .option('-p, --port <port>', 'dev server port')
+    .option('-p, --port <port>', 'dev server port', 3333)
+    .option('--no-open', 'don\'t open browser')
     .option('--rootDir <rootDir>', 'project root directory', cwd)
     .option('--analyzer', 'visualize size of output files', false)
     .option('--https', 'enable https', false)
     .option('--force', 'force remove cache directory', false)
     .action(async ({ rootDir, ...commandArgs }) => {
+      commandArgs.port = await detectPort(commandArgs.port);
       const service = await createService({ rootDir, command: 'start', commandArgs });
       service.run();
     });
@@ -72,4 +76,3 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     program.help();
   }
 })();
-

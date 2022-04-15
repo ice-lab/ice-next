@@ -2,7 +2,7 @@ import { certificateFor } from 'trusted-cert';
 import fse from 'fs-extra';
 import consola from 'consola';
 import type { UserConfig, Config, Plugin } from '@ice/types';
-import type { CommandArgs, ICliOptionArgs, MaybeArray, UserConfigContext } from 'build-scripts';
+import type { UserConfigContext } from 'build-scripts';
 
 const mergeDefaultValue = <T>(config: Config, key: string, value: T): Config => {
   if (value) {
@@ -114,64 +114,129 @@ const userConfig = [
       }
     },
   },
+  {
+    name: 'minify',
+    validation: 'boolean',
+    setConfig: (config: Config, minify: UserConfig['minify']) => {
+      return mergeDefaultValue(config, 'minify', minify);
+    },
+  },
+  {
+    name: 'dropLogLevel',
+    validation: 'string',
+    setConfig: (config: Config, dropLogLevel: UserConfig['dropLogLevel']) => {
+      const levels = {
+        trace: 0,
+        debug: 1, // debug is alias for log
+        log: 1,
+        info: 2,
+        warn: 3,
+        error: 4,
+      };
+      const level = levels[dropLogLevel];
+      if (typeof level === 'number') {
+        return mergeDefaultValue(config, 'minimizerOptions', {
+          compress: {
+            pure_funcs: Object.keys(levels)
+              .filter((methodName) => levels[methodName] <= level)
+              .map(methodName => `console.${methodName}`),
+          },
+        });
+      } else {
+        consola.warn(`dropLogLevel only support [${Object.keys(levels).join(',')}]`);
+      }
+    },
+  },
+  {
+    name: 'compileDependencies',
+    validation: 'array|boolean',
+    setConfig: (config: Config, customValue: UserConfig['compileDependencies'], context) => {
+      const { command } = context;
+      let compileRegex: RegExp | false;
+      if (customValue === undefined) {
+        // compile all node_modules dependencies when build
+        compileRegex = command === 'start' ? false : /node_modules\/*/;
+      }
+      if (customValue === true) {
+        compileRegex = /node_modules\/*/;
+      } else if (customValue && customValue.length > 0) {
+        compileRegex = new RegExp(customValue.map((dep: string | RegExp) => {
+          if (dep instanceof RegExp) {
+            return dep.source;
+          } else if (typeof dep === 'string') {
+            // add default prefix of node_modules
+            const matchStr = `node_modules/?.+${dep}/`;
+            return matchStr;
+          }
+          return false;
+        }).filter(Boolean).join('|'));
+      }
+      if (compileRegex) {
+        config.compileIncludes = [compileRegex];
+      }
+    },
+  },
+  {
+    name: 'routes',
+    validation: 'object',
+  },
 ];
 
-const getCliOptions = (commandArgs: CommandArgs): MaybeArray<ICliOptionArgs<Config>> => {
-  return [
-    {
-      name: 'disableOpen',
-      commands: ['start'],
+const cliOptions = [
+  {
+    name: 'open',
+    commands: ['start'],
+  },
+  {
+    name: 'analyzer',
+    commands: ['start'],
+    setConfig: (config: Config, analyzer: boolean) => {
+      return mergeDefaultValue(config, 'analyzer', analyzer);
     },
-    {
-      name: 'analyzer',
-      commands: ['start'],
-      setConfig: (config: Config, analyzer: boolean) => {
-        return mergeDefaultValue(config, 'analyzer', analyzer);
-      },
+  },
+  {
+    name: 'force',
+    commands: ['start'],
+    setConfig: (config: Config, force: boolean) => {
+      if (force && fse.existsSync(config.cacheDirectory)) {
+        fse.emptyDirSync(config.cacheDirectory);
+      }
+      return config;
     },
-    {
-      name: 'force',
-      commands: ['start'],
-      setConfig: (config: Config, force: boolean) => {
-        if (force && fse.existsSync(config.cacheDirectory)) {
-          fse.emptyDirSync(config.cacheDirectory);
+  },
+  {
+    name: 'https',
+    commands: ['start'],
+    setConfig: async (config: Config, https: boolean, context) => {
+      let httpsConfig: Config['https'] = https;
+      if (https) {
+        const hosts = ['localhost'];
+        const { host } = context.commandArgs;
+        if (host && host !== 'localhost') {
+          hosts.push(host);
         }
-        return config;
-      },
+        // @ts-expect-error certificateFor types
+        const certInfo = await certificateFor(hosts, { silent: true });
+        const key = await fse.readFile(certInfo.keyFilePath, 'utf8');
+        const cert = await fse.readFile(certInfo.certFilePath, 'utf8');
+        httpsConfig = {
+          key,
+          cert,
+        };
+      }
+      return mergeDefaultValue(config, 'https', httpsConfig);
     },
-    {
-      name: 'https',
-      commands: ['start'],
-      setConfig: async (config: Config, https: boolean) => {
-        let httpsConfig: Config['https'] = https;
-        if (https) {
-          const hosts = ['localhost'];
-          const { host } = commandArgs;
-          if (host && host !== 'localhost') {
-            hosts.push(host);
-          }
-          // @ts-expect-error certificateFor types
-          const certInfo = await certificateFor(hosts, { silent: true });
-          const key = await fse.readFile(certInfo.keyFilePath, 'utf8');
-          const cert = await fse.readFile(certInfo.certFilePath, 'utf8');
-          httpsConfig = {
-            key,
-            cert,
-          };
-        }
-        return mergeDefaultValue(config, 'https', httpsConfig);
-      },
-    },
-    {
-      name: 'mock',
-      commands: ['start'],
-    },
-  ];
-};
+  },
+  {
+    name: 'mock',
+    commands: ['start'],
+    // TODO: setConfig to disable mock
+  },
+];
 
-const configPlugin: Plugin = ({ registerUserConfig, registerCliOption, context: { commandArgs } }) => {
+const configPlugin: Plugin = ({ registerUserConfig, registerCliOption }) => {
   registerUserConfig(userConfig);
-  registerCliOption(getCliOptions(commandArgs));
+  registerCliOption(cliOptions);
 };
 
 export default configPlugin;

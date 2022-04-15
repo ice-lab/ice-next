@@ -4,6 +4,7 @@ import fg from 'fast-glob';
 import consola from 'consola';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+import merge from 'lodash.merge';
 import CssMinimizerPlugin from '@builder/pack/deps/css-minimizer-webpack-plugin/cjs.js';
 import TerserPlugin from '@builder/pack/deps/terser-webpack-plugin/cjs.js';
 import webpack, { type Configuration } from 'webpack';
@@ -40,7 +41,7 @@ function getEntry(rootDir: string) {
   }
   return {
     runtime: ['react', 'react-dom', '@ice/runtime'],
-    index: {
+    main: {
       import: [entryFile],
       dependOn: 'runtime',
     },
@@ -62,6 +63,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
     configureWebpack,
     experimental,
     hash,
+    minify,
+    minimizerOptions = {},
     port,
     cacheDirectory,
     https,
@@ -97,9 +100,9 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
   });
 
   // create plugins
-  const webpackPlugins = getTransformPlugins(rootDir, config).map((plugin) => createUnplugin(() => plugin).webpack());
+  const webpackPlugins = getTransformPlugins(config).map((plugin) => createUnplugin(() => plugin).webpack());
 
-  const terserOptions: any = {
+  const terserOptions: any = merge({
     parse: {
       ecma: 8,
     },
@@ -122,9 +125,9 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
       // Fixes usage of Emoji and certain Regex
       ascii_only: true,
     },
-  };
+  }, minimizerOptions);
 
-  const minimizerOptions = {
+  const cssMinimizerOptions = {
     preset: [
       'default',
       {
@@ -146,7 +149,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
     output: {
       publicPath,
       path: path.isAbsolute(outputDir) ? outputDir : path.join(rootDir, outputDir),
-      filename: hashKey ? `[name]-[${hashKey}].js` : '[name].js',
+      filename: `js/${hashKey ? `[name]-[${hashKey}].js` : '[name].js'}`,
+      assetModuleFilename: 'assets/[name].[hash:8][ext]',
     },
     context: rootDir,
     module: {
@@ -163,20 +167,22 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
       },
     },
     watchOptions: {
-      // add a delay before rebuilding once routes changed webpack can not found routes component after it is been deleted
+      // add a delay before rebuilding once routes changed
+      // webpack can not found routes component after it is been deleted
       aggregateTimeout: 200,
       ignored: watchIgnoredRegexp,
     },
     optimization: {
-      minimizer: [
+      minimizer: minify === false ? [] : [
         new TerserPlugin({
-          minify: TerserPlugin.esbuildMinify,
+          // keep same with compilation
+          minify: TerserPlugin.swcMinify,
           extractComments: false,
           terserOptions,
         }),
         new CssMinimizerPlugin({
           parallel: false,
-          minimizerOptions,
+          minimizerOptions: cssMinimizerOptions,
         }),
       ],
     },
@@ -194,7 +200,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
     performance: false,
     devtool: getDevtoolValue(sourceMap),
     plugins: [
-       ...webpackPlugins,
+      ...webpackPlugins,
       dev && new ReactRefreshWebpackPlugin(),
       new webpack.DefinePlugin({
         ...defineStaticVariables,

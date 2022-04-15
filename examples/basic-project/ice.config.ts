@@ -1,7 +1,7 @@
-import { defineUserConfig } from '@ice/app';
+import { defineConfig } from '@ice/app';
 import SpeedMeasurePlugin from 'speed-measure-webpack-plugin';
 
-export default defineUserConfig({
+export default defineConfig({
   publicPath: '/',
   webpack: (webpackConfig) => {
     if (process.env.NODE_ENV !== 'test') {
@@ -9,5 +9,7 @@ export default defineUserConfig({
     }
     return webpackConfig;
   },
+  dropLogLevel: 'warn',
+  minify: false,
   plugins: ['@ice/plugin-auth'],
 });
