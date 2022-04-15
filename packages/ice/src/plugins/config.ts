@@ -207,9 +207,9 @@ const cliOptions = [
   {
     name: 'https',
     commands: ['start'],
-    setConfig: async (config: Config, https: boolean | 'self-signed-cert', context) => {
+    setConfig: async (config: Config, https: boolean | 'self-signed', context) => {
       let httpsConfig: Config['https'] = false;
-      if (https === 'self-signed-cert') {
+      if (https === 'self-signed') {
         const hosts = ['localhost'];
         const { host } = context.commandArgs;
         if (host && host !== 'localhost') {
