@@ -227,11 +227,6 @@ const cliOptions = [
       return mergeDefaultValue(config, 'https', httpsConfig);
     },
   },
-  {
-    name: 'mock',
-    commands: ['start'],
-    // TODO: setConfig to disable mock
-  },
 ];
 
 const configPlugin: Plugin = ({ registerUserConfig, registerCliOption }) => {
