@@ -178,6 +178,13 @@ const userConfig = [
     name: 'routes',
     validation: 'object',
   },
+  {
+    name: 'sourceMap',
+    validation: 'string|boolean',
+    setConfig: (config: Config, sourceMap: UserConfig['sourceMap']) => {
+      return mergeDefaultValue(config, 'sourceMap', sourceMap);
+    },
+  },
 ];
 
 const cliOptions = [
