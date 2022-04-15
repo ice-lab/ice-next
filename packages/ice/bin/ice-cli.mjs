@@ -42,7 +42,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     .option('--no-open', 'don\'t open browser')
     .option('--rootDir <rootDir>', 'project root directory', cwd)
     .option('--analyzer', 'visualize size of output files', false)
-    .option('--https', 'enable https', false)
+    .option('--https [https]', 'enable https', false)
     .option('--force', 'force remove cache directory', false)
     .action(async ({ rootDir, ...commandArgs }) => {
       commandArgs.port = await detectPort(commandArgs.port);
