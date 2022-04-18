@@ -23,7 +23,6 @@ import type {
   AppContext,
   AppConfig,
   RouteConfig,
-  RouteWrapper,
   RouteItem,
 } from './types.js';
 import defineAppConfig from './defineAppConfig.js';
@@ -58,6 +57,5 @@ export type {
   AppContext,
   AppConfig,
   RouteConfig,
-  RouteWrapper,
   RouteItem,
 };
