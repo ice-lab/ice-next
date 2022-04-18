@@ -76,8 +76,7 @@ export interface InitialContext extends ServerContext {
   ssrError?: any;
 }
 
-// TODO: RouteComponent
-export interface PageComponent {
+export interface RouteComponent {
   default: ComponentType<any>;
   getData?: GetData;
   getConfig?: GetConfig;
@@ -91,7 +90,7 @@ export interface RouteItem {
   index?: false;
   exact?: boolean;
   strict?: boolean;
-  load?: () => Promise<PageComponent>;
+  load?: () => Promise<RouteComponent>;
   children?: RouteItem[];
 }
 
@@ -106,7 +105,7 @@ export type SetRender = (render: Renderer) => void;
 export type AddWrapper = (wrapper: ComponentType, options?: { layout?: boolean}) => void;
 
 export interface RouteModules {
-  [routeId: string]: PageComponent;
+  [routeId: string]: RouteComponent;
 }
 
 export interface AssetsManifest {
