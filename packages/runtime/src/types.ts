@@ -76,6 +76,7 @@ export interface InitialContext extends ServerContext {
   ssrError?: any;
 }
 
+// TODO: RouteComponent
 export interface PageComponent {
   default: ComponentType<any>;
   getData?: GetData;
@@ -94,11 +95,11 @@ export interface RouteItem {
   children?: RouteItem[];
 }
 
-export type PageWrapper<InjectProps> = (<Props>(Component: ComponentType<Props & InjectProps>) => ComponentType<Props>);
+export type RouteWrapper = ComponentType;
 export type SetAppRouter = (AppRouter: ComponentType<AppRouterProps>) => void;
 export type AddProvider = (Provider: ComponentType) => void;
 export type SetRender = (render: Renderer) => void;
-export type WrapperPageComponent = (pageWrapper: PageWrapper<any>) => void;
+export type AddWrapper = (pageWrapper: RouteWrapper) => void;
 
 export interface RouteModules {
   [routeId: string]: PageComponent;
@@ -113,12 +114,11 @@ export interface AssetsManifest {
   };
 }
 
-
 export interface RuntimeAPI {
   setAppRouter: SetAppRouter;
   addProvider: AddProvider;
   setRender: SetRender;
-  wrapperPageComponent: WrapperPageComponent;
+  addWrapper: AddWrapper;
   appContext: AppContext;
   useData: typeof useData;
   useConfig: typeof useConfig;
@@ -133,8 +133,6 @@ export interface RuntimePlugin {
 export interface CommonJsRuntime {
   default: RuntimePlugin;
 }
-
-export type GetWrapperPageRegistration = () => PageWrapper<any>[];
 
 export type RuntimeModules = (RuntimePlugin | CommonJsRuntime)[];
 

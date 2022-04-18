@@ -86,7 +86,7 @@ export async function renderServerApp(requestContext: ServerContext, options: Re
 
   const staticNavigator = createStaticNavigator();
   const AppProvider = runtime.composeAppProvider() || React.Fragment;
-  const PageWrappers = runtime.getWrapperPageRegistration();
+  const RouteWrappers = runtime.getWrappers();
   const AppRouter = runtime.getAppRouter();
 
   const result = ReactDOMServer.renderToString(
@@ -99,7 +99,7 @@ export async function renderServerApp(requestContext: ServerContext, options: Re
             navigator={staticNavigator}
             static
             AppProvider={AppProvider}
-            PageWrappers={PageWrappers}
+            RouteWrappers={RouteWrappers}
             AppRouter={AppRouter}
           />
         </Document>

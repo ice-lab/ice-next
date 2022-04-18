@@ -38,7 +38,7 @@ export function getConfig() {
     scripts: [{
       src: 'https://cdn.jsdelivr.net/npm/lodash@2.4.1/dist/lodash.min.js',
     }],
-    auth: ['admin'],
+    auth: ['guest'],
   };
 }
 
