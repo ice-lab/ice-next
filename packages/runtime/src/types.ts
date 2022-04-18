@@ -95,11 +95,15 @@ export interface RouteItem {
   children?: RouteItem[];
 }
 
-export type RouteWrapper = ComponentType;
+export interface RouteWrapper {
+  Wrapper: ComponentType;
+  layout?: boolean;
+}
+
 export type SetAppRouter = (AppRouter: ComponentType<AppRouterProps>) => void;
 export type AddProvider = (Provider: ComponentType) => void;
 export type SetRender = (render: Renderer) => void;
-export type AddWrapper = (pageWrapper: RouteWrapper) => void;
+export type AddWrapper = (wrapper: ComponentType, options?: { layout?: boolean}) => void;
 
 export interface RouteModules {
   [routeId: string]: PageComponent;

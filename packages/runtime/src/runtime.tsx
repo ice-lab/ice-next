@@ -82,8 +82,11 @@ class Runtime {
     this.render = render;
   };
 
-  private addWrapper: AddWrapper = (wrapper) => {
-    this.RouteWrappers.push(wrapper);
+  private addWrapper: AddWrapper = (Wrapper, options = {}) => {
+    this.RouteWrappers.push({
+      Wrapper,
+      layout: options.layout,
+    });
   };
 
   // for plugin-icestark

@@ -87,18 +87,13 @@ export function getRoutesConfig(matches: RouteMatch[], routesData: RoutesData): 
 export function createRouteElements(routes: RouteItem[], RouteWrappers?: IRouteWrapper[]) {
   return routes.map((routeItem: RouteItem) => {
     let { path, children, index, id, element, ...rest } = routeItem;
-    const idParts = id.split('/');
-    const isLayout = idParts[idParts.length - 1] === 'layout';
-    // Layout components don't need to wrap the Provider(for example: AuthProvider)
-    element = isLayout ? (
-      <RouteComponent id={id} />
-    ) : (
-      <RouteWrapper
-        RouteComponent={(props) => <RouteComponent id={id} {...props} />}
-        RouteWrappers={RouteWrappers}
-        id={id}
-      />
+
+    element = (
+      <RouteWrapper id={id} wrappers={RouteWrappers}>
+        <RouteComponent id={id} />
+      </RouteWrapper>
     );
+
     const route: RouteItem = {
       path,
       element,
