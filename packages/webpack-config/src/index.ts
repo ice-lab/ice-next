@@ -106,7 +106,6 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
   const webpackPlugins = getTransformPlugins(config).map((plugin) => createUnplugin(() => plugin).webpack());
 
   const terserOptions: any = merge({
-    ecma: 5,
     compress: {
       ecma: 5,
       unused: false,
