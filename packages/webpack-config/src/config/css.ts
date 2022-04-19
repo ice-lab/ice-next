@@ -1,7 +1,9 @@
 import { createRequire } from 'module';
+import { createHash } from 'crypto';
 import MiniCssExtractPlugin from '@builder/pack/deps/mini-css-extract-plugin/cjs.js';
 import postcss from 'postcss';
 import type { ModifyWebpackConfig } from '@ice/types/esm/config';
+import type { LoaderContext } from 'webpack';
 
 type CSSRuleConfig = [string, string?, Record<string, any>?];
 interface Options {
@@ -21,7 +23,11 @@ function configCSSRule(config: CSSRuleConfig, options: Options) {
     ...cssLoaderOpts,
     modules: {
       auto: (resourcePath: string) => resourcePath.endsWith(`.module.${style}`),
-      localIdentName: '[folder]--[local]--[hash:base64:7]',
+      getLocalIdent: (context: LoaderContext<any>, localIdentName: string, localName: string) => {
+        const hash = createHash('md4');
+        hash.update(Buffer.from(context.resourcePath + localName, 'utf8'));
+        return `${localName}--${hash.digest('base64').slice(0, 8)}`;
+      },
     },
   };
   const postcssOpts = {
@@ -78,7 +84,7 @@ function configCSSRule(config: CSSRuleConfig, options: Options) {
 
 const css: ModifyWebpackConfig = (config, ctx) => {
   const { supportedBrowsers, publicPath, hashKey } = ctx;
-
+  const cssOutputFolder = 'css';
   config.module.rules.push(...([
     ['css'],
     ['less', require.resolve('@builder/pack/deps/less-loader'), ({ lessOptions: { javascriptEnabled: true } })],
@@ -86,7 +92,7 @@ const css: ModifyWebpackConfig = (config, ctx) => {
   ] as CSSRuleConfig[]).map((config) => configCSSRule(config, { publicPath, browsers: supportedBrowsers })));
   config.plugins.push(
     new MiniCssExtractPlugin({
-      filename: hashKey ? `[name]-[${hashKey}].css` : '[name].css',
+      filename: `${cssOutputFolder}/${hashKey ? `[name]-[${hashKey}].css` : '[name].css'}`,
       // If the warning is triggered, it seen to be unactionable for the user,
       ignoreOrder: true,
     }),

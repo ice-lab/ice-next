@@ -1,5 +1,5 @@
-import path from 'path';
 import { createRequire } from 'module';
+import type { ReactConfig } from '@builder/swc';
 import { transform, type Config as SwcConfig } from '@builder/swc';
 import type { UnpluginOptions } from 'unplugin';
 import lodash from '@builder/pack/deps/lodash/lodash.js';
@@ -10,23 +10,28 @@ const { merge } = lodash;
 type JSXSuffix = 'jsx' | 'tsx';
 
 interface Options {
-  rootDir: string;
   mode: 'development' | 'production' | 'none';
   compileIncludes?: (string | RegExp)[];
   sourceMap?: Config['sourceMap'];
+  compileExcludes?: RegExp[];
 }
 
 const require = createRequire(import.meta.url);
 const regeneratorRuntimePath = require.resolve('regenerator-runtime');
 
 const compilationPlugin = (options: Options): UnpluginOptions => {
-  const { rootDir, sourceMap, mode, compileIncludes } = options;
+  const { sourceMap, mode, compileIncludes, compileExcludes } = options;
   const dev = mode !== 'production';
   const compileRegex = compileIncludes.map((includeRule) => {
     return includeRule instanceof RegExp ? includeRule : new RegExp(includeRule);
   });
+
+  const extensionRegex = /\.(jsx?|tsx?|mjs)$/;
   return {
     name: 'compilation-plugin',
+    transformInclude(id) {
+      return extensionRegex.test(id) && !compileExcludes.some((regex) => regex.test(id));
+    },
     // @ts-expect-error TODO: source map types
     async transform(source: string, id: string) {
       if ((/node_modules/.test(id) && !compileRegex.some((regex) => regex.test(id)))) {
@@ -34,14 +39,10 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
       }
 
       const suffix = (['jsx', 'tsx'] as JSXSuffix[]).find(suffix => new RegExp(`\\.${suffix}?$`).test(id));
-      if (!suffix) {
-        return;
-      }
-
       const programmaticOptions = {
         filename: id,
         sourceMaps: !!sourceMap,
-        ...getSwcTransformOptions({ suffix, rootDir, dev }),
+        ...getSwcTransformOptions({ suffix, dev }),
       };
       // auto detect development mode
       if (mode && programmaticOptions.jsc && programmaticOptions.jsc.transform &&
@@ -59,18 +60,16 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
 
 function getSwcTransformOptions({
   suffix,
-  rootDir,
   dev,
 }: {
-    suffix: JSXSuffix;
-    rootDir: string;
-    dev: boolean;
-    isServer?: boolean;
-  }) {
-  const baseReactTransformConfig = {
+  suffix: JSXSuffix;
+  dev: boolean;
+  isServer?: boolean;
+}) {
+  const reactTransformConfig: ReactConfig = {
     refresh: dev,
-   };
-  const reactTransformConfig = merge(baseReactTransformConfig, hasJsxRuntime(rootDir) ? { runtime: 'automatic' } : {});
+    runtime: 'automatic',
+  };
 
   const commonOptions: SwcConfig = {
     jsc: {
@@ -126,22 +125,6 @@ function getSwcTransformOptions({
     return tsOptions;
   }
   return commonOptions;
-}
-
-function hasJsxRuntime(rootDir: string) {
-  try {
-    // auto detect of jsx runtime
-    // eslint-disable-next-line
-    const tsConfig = require(path.join(rootDir, 'tsconfig.json'));
-    if (tsConfig?.compilerOptions?.jsx !== 'react-jsx') {
-      return false;
-    }
-    // ensure react/jsx-runtime
-    require.resolve('react/jsx-runtime');
-    return true;
-  } catch (e) {
-    return false;
-  }
 }
 
 export default compilationPlugin;

@@ -1,17 +1,28 @@
-import * as React from 'react';
-import { Link } from 'ice';
+import { Link, useData, useConfig } from 'ice';
+// @ts-expect-error
+import url from './ice.png';
+
+interface Data {
+  name: string;
+}
 
 export default function About() {
+  const data = useData<Data>();
+  const config = useConfig();
+
+  console.log('render About', 'data', data, 'config', config);
+
   return (
     <>
       <h2>About Page</h2>
       <Link to="/">home</Link>
+      <img src={url} height="40" width="40" />
       <span className="mark">new</span>
     </>
   );
 }
 
-export function getPageConfig() {
+export function getConfig() {
   return {
     title: 'About',
     meta: [
@@ -31,7 +42,7 @@ export function getPageConfig() {
   };
 }
 
-export function getInitialData() {
+export function getData() {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
