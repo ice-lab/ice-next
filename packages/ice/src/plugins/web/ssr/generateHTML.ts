@@ -1,6 +1,6 @@
 import * as path from 'path';
+import type { RouteObject } from 'react-router';
 import fse from 'fs-extra';
-import type { RouteItem } from '@ice/runtime';
 
 interface Options {
   entry: string;
@@ -51,7 +51,7 @@ export default async function generateHTML(options: Options) {
  * @param routes
  * @returns
  */
-function getPaths(routes: RouteItem[], parentPath = ''): string[] {
+function getPaths(routes: RouteObject[], parentPath = ''): string[] {
   let pathList = [];
 
   routes.forEach(route => {

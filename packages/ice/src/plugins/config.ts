@@ -73,13 +73,6 @@ const userConfig = [
     },
   },
   {
-    name: 'sourceMap',
-    validation: 'string',
-    setConfig: (config: Config, sourceMap: UserConfig['sourceMap']) => {
-      return mergeDefaultValue(config, 'sourceMap', sourceMap);
-    },
-  },
-  {
     name: 'proxy',
     validation: 'object',
     setConfig: (config: Config, proxy: UserConfig['proxy']) => {

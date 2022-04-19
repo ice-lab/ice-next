@@ -10,8 +10,6 @@ export interface UserConfig {
   hash?: boolean | string;
   externals?: Config['externals'];
   outputDir?: string;
-  // TODO: use enums
-  sourceMap?: boolean | string;
   proxy?: Config['proxy'];
   filename?: string;
   webpack?: ModifyWebpackConfig;

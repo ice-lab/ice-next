@@ -60,7 +60,6 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
     cacheDirectory: path.join(rootDir, 'node_modules', '.cache', 'webpack'),
     mode,
     outputDir,
-    sourceMap: command === 'start' ? 'cheap-source-map' : false,
     alias: {
       ice: path.join(rootDir, '.ice', 'index.ts'),
       '@': path.join(rootDir, 'src'),
