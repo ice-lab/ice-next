@@ -10,6 +10,5 @@ export default defineConfig({
     return webpackConfig;
   },
   dropLogLevel: 'warn',
-  minify: false,
   plugins: ['@ice/plugin-auth'],
 });

@@ -21,9 +21,10 @@
     "event": "^1.0.0",
     "fast-glob": "^3.2.11",
     "magic-string": "^0.26.1",
+    "mini-css-extract-plugin": "2.6.0",
+    "react-refresh": "^0.11.0",
     "regenerator-runtime": "0.13.9",
-    "unplugin": "^0.3.2",
-    "react-refresh": "^0.11.0"
+    "unplugin": "^0.3.2"
   },
   "devDependencies": {
     "@ice/types": "^1.0.0",

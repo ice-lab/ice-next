@@ -19,7 +19,7 @@ const EXTERNALS = {
   postcss: 'postcss',
   '@swc/core': '@swc/core',
   'jest-worker': 'jest-worker',
-  terser: 'terser',
+  terser: '@ice/bundles/compiled/terser',
   tapable: '@ice/bundles/compiled/tapable',
   cssnano: '@ice/bundles/compiled/cssnano',
   // depend by webpack
@@ -45,18 +45,10 @@ const tasks = [
   ...['cssnano', 'tapable', 'schema-utils', 'lodash',
     'less-loader', 'postcss-loader', 'sass-loader',
     'postcss-preset-env', 'postcss-nested', 'postcss-modules',
-    'webpack-bundle-analyzer', 'es-module-lexer',
+    'webpack-bundle-analyzer', 'es-module-lexer', 'terser',
   ].map((pkgName) => ({ pkgName })),
   {
     pkgName: 'css-loader',
-    patch: () => {
-      const targetPath = path.join(__dirname, 'compiled/css-loader');
-      ['api.js', 'sourceMaps.js', 'noSourceMaps.js', 'getUrl.js'].forEach((filename) => {
-        // use ES Modules
-        const targetFile = path.join(targetPath, filename);
-        fs.writeFileSync(targetFile, fs.readFileSync(targetFile, 'utf-8').replace('module.exports =', 'export default'), 'utf-8');
-      });
-    },
   },
   {
     pkgName: 'css-minimizer-webpack-plugin',

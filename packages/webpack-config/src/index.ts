@@ -133,7 +133,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
       topLevelAwait: true,
       ...(experimental || {}),
     },
-    entry: () => getEntry(rootDir) as any,
+    entry: () => getEntry(rootDir),
     externals,
     output: {
       publicPath,
@@ -165,7 +165,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
       minimizer: minify === false ? [] : [
         new TerserPlugin({
           // keep same with compilation
-          minify: TerserPlugin.swcMinify,
+          // use swcMinify with fix error of pure_funcs
+          // minify: TerserPlugin.swcMinify
           extractComments: false,
           terserOptions,
         }),
@@ -197,7 +198,9 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
     devtool: getDevtoolValue(sourceMap),
     plugins: [
       ...webpackPlugins,
-      dev && new ReactRefreshWebpackPlugin(),
+      dev && new ReactRefreshWebpackPlugin({
+        exclude: [/node_modules/, /bundles\/compiled/],
+      }),
       new webpack.DefinePlugin({
         ...defineStaticVariables,
         ...defineRuntimeVariables,

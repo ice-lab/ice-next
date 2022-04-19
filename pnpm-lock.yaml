@@ -6,6 +6,7 @@ importers:
     specifiers:
       '@applint/spec': ^1.0.1
       '@commitlint/cli': ^16.1.0
+      '@ice/bundles': workspace:^0.1.0
       '@types/eslint': ^8.4.1
       '@types/fs-extra': ^9.0.13
       '@types/glob': ^7.2.0
@@ -39,6 +40,7 @@ importers:
     devDependencies:
       '@applint/spec': 1.2.0_e705f35661b4069faa3c9dc8ba3666cc
       '@commitlint/cli': 16.2.3
+      '@ice/bundles': link:packages/bundles
       '@types/eslint': 8.4.1
       '@types/fs-extra': 9.0.13
       '@types/glob': 7.2.0
@@ -143,6 +145,7 @@ importers:
       sass: 1.50.0
       sass-loader: 12.6.0
       tapable: 2.2.1
+      terser: 5.12.1
       terser-webpack-plugin: 5.3.1
       webpack: 5.72.0
       webpack-bundle-analyzer: 4.5.0
@@ -175,6 +178,7 @@ importers:
       postcss-preset-env: 7.4.3_postcss@8.4.12
       sass-loader: 12.6.0_sass@1.50.0+webpack@5.72.0
       tapable: 2.2.1
+      terser: 5.12.1
       terser-webpack-plugin: 5.3.1_@swc+core@1.2.168+webpack@5.72.0
       webpack: 5.72.0_@swc+core@1.2.168
       webpack-bundle-analyzer: 4.5.0
@@ -316,6 +320,7 @@ importers:
       event: ^1.0.0
       fast-glob: ^3.2.11
       magic-string: ^0.26.1
+      mini-css-extract-plugin: 2.6.0
       react-refresh: ^0.11.0
       regenerator-runtime: 0.13.9
       unplugin: ^0.3.2
@@ -331,6 +336,7 @@ importers:
       event: 1.0.0
       fast-glob: 3.2.11
       magic-string: 0.26.1
+      mini-css-extract-plugin: 2.6.0_webpack@5.72.0
       react-refresh: 0.11.0
       regenerator-runtime: 0.13.9
       unplugin: 0.3.3_webpack@5.72.0
@@ -5137,7 +5143,6 @@ packages:
     dependencies:
       schema-utils: 4.0.0
       webpack: 5.72.0_@swc+core@1.2.168
-    dev: true
 
   /minimalistic-assert/1.0.1:
     resolution: {integrity: sha512-UtJcAD4yEaGtjPezWuO9wC4nwUnVH/8/Im3yEHQP4b67cXlD/Qr9hdITCU1xDbSEXg2XKNaP8jsReV7vQd00/A==}
