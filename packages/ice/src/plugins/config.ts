@@ -1,3 +1,5 @@
+import { certificateFor } from 'trusted-cert';
+import fse from 'fs-extra';
 import consola from 'consola';
 import type { UserConfig, Config, Plugin } from '@ice/types';
 import type { UserConfigContext } from 'build-scripts';
@@ -98,6 +100,14 @@ const userConfig = [
     },
   },
   {
+    name: 'ssg',
+    validation: 'boolean',
+  },
+  {
+    name: 'ssr',
+    validation: 'boolean',
+  },
+  {
     name: 'webpack',
     validation: 'function',
     setConfig: (config: Config, configureWebpack: UserConfig['webpack']) => {
@@ -111,12 +121,127 @@ const userConfig = [
       }
     },
   },
+  {
+    name: 'minify',
+    validation: 'boolean',
+    setConfig: (config: Config, minify: UserConfig['minify']) => {
+      return mergeDefaultValue(config, 'minify', minify);
+    },
+  },
+  {
+    name: 'dropLogLevel',
+    validation: 'string',
+    setConfig: (config: Config, dropLogLevel: UserConfig['dropLogLevel']) => {
+      const levels = {
+        trace: 0,
+        debug: 1, // debug is alias for log
+        log: 1,
+        info: 2,
+        warn: 3,
+        error: 4,
+      };
+      const level = levels[dropLogLevel];
+      if (typeof level === 'number') {
+        return mergeDefaultValue(config, 'minimizerOptions', {
+          compress: {
+            pure_funcs: Object.keys(levels)
+              .filter((methodName) => levels[methodName] <= level)
+              .map(methodName => `console.${methodName}`),
+          },
+        });
+      } else {
+        consola.warn(`dropLogLevel only support [${Object.keys(levels).join(',')}]`);
+      }
+    },
+  },
+  {
+    name: 'compileDependencies',
+    validation: 'array|boolean',
+    setConfig: (config: Config, customValue: UserConfig['compileDependencies'], context) => {
+      const { command } = context;
+      let compileRegex: RegExp | false;
+      if (customValue === undefined) {
+        // compile all node_modules dependencies when build
+        compileRegex = command === 'start' ? false : /node_modules\/*/;
+      }
+      if (customValue === true) {
+        compileRegex = /node_modules\/*/;
+      } else if (customValue && customValue.length > 0) {
+        compileRegex = new RegExp(customValue.map((dep: string | RegExp) => {
+          if (dep instanceof RegExp) {
+            return dep.source;
+          } else if (typeof dep === 'string') {
+            // add default prefix of node_modules
+            const matchStr = `node_modules/?.+${dep}/`;
+            return matchStr;
+          }
+          return false;
+        }).filter(Boolean).join('|'));
+      }
+      if (compileRegex) {
+        config.compileIncludes = [compileRegex];
+      }
+    },
+  },
+  {
+    name: 'routes',
+    validation: 'object',
+  },
+  {
+    name: 'sourceMap',
+    validation: 'string|boolean',
+    setConfig: (config: Config, sourceMap: UserConfig['sourceMap']) => {
+      return mergeDefaultValue(config, 'sourceMap', sourceMap);
+    },
+  },
 ];
 
 const cliOptions = [
   {
-    name: 'disableOpen',
+    name: 'open',
     commands: ['start'],
+  },
+  {
+    name: 'analyzer',
+    commands: ['start'],
+    setConfig: (config: Config, analyzer: boolean) => {
+      return mergeDefaultValue(config, 'analyzer', analyzer);
+    },
+  },
+  {
+    name: 'force',
+    commands: ['start'],
+    setConfig: (config: Config, force: boolean) => {
+      if (force && fse.existsSync(config.cacheDirectory)) {
+        fse.emptyDirSync(config.cacheDirectory);
+      }
+      return config;
+    },
+  },
+  {
+    name: 'https',
+    commands: ['start'],
+    setConfig: async (config: Config, https: boolean | 'self-signed', context) => {
+      let httpsConfig: Config['https'] = false;
+      if (https === 'self-signed') {
+        const hosts = ['localhost'];
+        const { host } = context.commandArgs;
+        if (host && host !== 'localhost') {
+          hosts.push(host);
+        }
+        // @ts-expect-error certificateFor types
+        const certInfo = await certificateFor(hosts, { silent: true });
+        const key = await fse.readFile(certInfo.keyFilePath, 'utf8');
+        const cert = await fse.readFile(certInfo.certFilePath, 'utf8');
+        httpsConfig = {
+          key,
+          cert,
+        };
+      } else if (https === true) {
+        httpsConfig = true;
+      }
+      return mergeDefaultValue(config, 'https', httpsConfig);
+    },
   },
 ];
 

@@ -5,36 +5,165 @@ import { Action, createPath, parsePath } from 'history';
 import { createSearchParams } from './utils/react-router-dom.js';
 import Runtime from './runtime.js';
 import App from './App.js';
-import { DocumentContextProvider } from './Document.js';
-import { loadRouteModules, loadPageData, matchRoutes } from './routes.js';
-import { getPageAssets, getEntryAssets } from './assets.js';
-import type { AppContext, InitialContext, RouteItem, ServerContext, AppConfig, RuntimePlugin, CommonJsRuntime, AssetsManifest } from './types';
+import { AppContextProvider } from './AppContext.js';
+import { AppDataProvider } from './AppData.js';
+import { loadRouteModules, loadRoutesData, getRoutesConfig, matchRoutes } from './routes.js';
+import type {
+  AppContext, InitialContext, RouteItem, ServerContext,
+  AppConfig, RuntimePlugin, CommonJsRuntime, AssetsManifest,
+} from './types';
 
-interface RunServerAppOptions {
-  requestContext: ServerContext;
+interface RenderOptions {
   appConfig: AppConfig;
+  assetsManifest: AssetsManifest;
   routes: RouteItem[];
-  documentOnly: boolean;
   runtimeModules: (RuntimePlugin | CommonJsRuntime)[];
   Document: React.ComponentType<{}>;
-  assetsManifest: AssetsManifest;
 }
 
-async function runServerApp(options: RunServerAppOptions): Promise<string> {
+export default async function runServerApp(requestContext: ServerContext, options: RenderOptions): Promise<string> {
+  try {
+    return await renderServerApp(requestContext, options);
+  } catch (error) {
+    console.error('renderServerApp error: ', error);
+    return await renderDocument(requestContext, options);
+  }
+}
+
+/**
+ * Render App by SSR.
+ */
+export async function renderServerApp(requestContext: ServerContext, options: RenderOptions): Promise<string> {
+  const { req } = requestContext;
+
   const {
-    appConfig,
     assetsManifest,
-    Document,
-    documentOnly,
-    requestContext,
+    appConfig,
     runtimeModules,
     routes,
+    Document,
   } = options;
 
-  const { req } = requestContext;
-  const { url } = req;
+  const location = getLocation(req.url);
+  const matches = matchRoutes(routes, location);
 
-  // ref: https://github.com/remix-run/react-router/blob/main/packages/react-router-dom/server.tsx
+  if (!matches.length) {
+    // TODO: Render 404
+    throw new Error('No matched page found.');
+  }
+
+  await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
+
+  const initialContext: InitialContext = {
+    ...requestContext,
+    pathname: location.pathname,
+    query: Object.fromEntries(createSearchParams(location.search)),
+    path: req.url,
+  };
+
+  let appData;
+  if (appConfig.app?.getData) {
+    appData = await appConfig.app.getData(initialContext);
+  }
+
+  const routesData = await loadRoutesData(matches, initialContext);
+  const routesConfig = getRoutesConfig(matches, routesData);
+
+  const appContext: AppContext = {
+    appConfig,
+    assetsManifest,
+    appData,
+    routesData,
+    routesConfig,
+    matches,
+    routes,
+  };
+
+  const runtime = new Runtime(appContext);
+  runtimeModules.forEach(m => {
+    runtime.loadModule(m);
+  });
+
+  const staticNavigator = createStaticNavigator();
+  const AppProvider = runtime.composeAppProvider() || React.Fragment;
+  const PageWrappers = runtime.getWrapperPageRegistration();
+  const AppRouter = runtime.getAppRouter();
+
+  const result = ReactDOMServer.renderToString(
+    <AppContextProvider value={appContext}>
+      <AppDataProvider value={appData}>
+        <Document>
+          <App
+            action={Action.Pop}
+            location={location}
+            navigator={staticNavigator}
+            static
+            AppProvider={AppProvider}
+            PageWrappers={PageWrappers}
+            AppRouter={AppRouter}
+          />
+        </Document>
+      </AppDataProvider>
+    </AppContextProvider>,
+  );
+
+  // TODO: send html in render function.
+  return result;
+}
+
+/**
+ * Render Document for CSR.
+ */
+export async function renderDocument(requestContext: ServerContext, options: RenderOptions): Promise<string> {
+  const { req } = requestContext;
+
+  const {
+    routes,
+    assetsManifest,
+    appConfig,
+    Document,
+  } = options;
+
+  const location = getLocation(req.url);
+  const matches = matchRoutes(routes, location);
+
+  if (!matches.length) {
+    throw new Error('No matched page found.');
+  }
+
+  await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
+
+  const routesConfig = getRoutesConfig(matches, {});
+  // renderDocument needn't to load routesData and appData.
+  const routesData = {};
+  const appData = {};
+
+  const appContext: AppContext = {
+    assetsManifest,
+    appConfig,
+    appData,
+    routesData,
+    routesConfig,
+    matches,
+    routes,
+    documentOnly: true,
+  };
+
+  const result = ReactDOMServer.renderToString(
+    <AppContextProvider value={appContext}>
+      <AppDataProvider value={appData}>
+        <Document />
+      </AppDataProvider>
+    </AppContextProvider>,
+  );
+
+  return result;
+}
+
+/**
+ * ref: https://github.com/remix-run/react-router/blob/main/packages/react-router-dom/server.tsx
+ */
+function getLocation(url: string) {
   const locationProps = parsePath(url);
 
   const location: Location = {
@@ -45,104 +174,7 @@ async function runServerApp(options: RunServerAppOptions): Promise<string> {
     key: 'default',
   };
 
-  const matches = matchRoutes(routes, location);
-
-  // TODO: error handling
-  if (!matches.length) {
-    throw new Error('No matched page found.');
-  }
-
-  await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
-
-  const initialContext: InitialContext = {
-    ...requestContext,
-    pathname: location.pathname,
-    query: Object.fromEntries(createSearchParams(location.search)),
-    path: url,
-  };
-
-  let initialData;
-  if (appConfig.app?.getInitialData) {
-    initialData = await appConfig.app.getInitialData(initialContext);
-  }
-
-  const pageData = await loadPageData(matches, initialContext);
-
-  const appContext: AppContext = {
-    matches,
-    routes,
-    appConfig,
-    initialData,
-    initialPageData: pageData,
-    // pageData and initialPageData are the same when SSR/SSG
-    pageData,
-    assetsManifest,
-  };
-
-  const runtime = new Runtime(appContext);
-  runtimeModules.forEach(m => {
-    runtime.loadModule(m);
-  });
-
-  const html = render(Document, runtime, location, documentOnly);
-  return html;
-}
-
-export default runServerApp;
-
-async function render(
-  Document,
-  runtime: Runtime,
-  location: Location,
-  documentOnly: boolean,
-) {
-  const appContext = runtime.getAppContext();
-  const { matches, initialData, pageData, assetsManifest } = appContext;
-
-  let html = '';
-
-  if (!documentOnly) {
-    const staticNavigator = createStaticNavigator();
-    const AppProvider = runtime.composeAppProvider() || React.Fragment;
-    const PageWrappers = runtime.getWrapperPageRegistration();
-    const AppRouter = runtime.getAppRouter();
-
-    html = ReactDOMServer.renderToString(
-      <App
-        action={Action.Pop}
-        location={location}
-        navigator={staticNavigator}
-        static
-        appContext={appContext}
-        AppProvider={AppProvider}
-        PageWrappers={PageWrappers}
-        AppRouter={AppRouter}
-      />,
-    );
-  }
-
-  const pageAssets = getPageAssets(matches, assetsManifest);
-  const entryAssets = getEntryAssets(assetsManifest);
-
-  const appData = {
-    initialData,
-  };
-
-  const documentContext = {
-    appData,
-    pageData,
-    pageAssets,
-    entryAssets,
-    html,
-  };
-
-  const result = ReactDOMServer.renderToString(
-    <DocumentContextProvider value={documentContext}>
-      <Document />
-    </DocumentContextProvider>,
-  );
-
-  return result;
+  return location;
 }
 
 function createStaticNavigator() {

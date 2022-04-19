@@ -2,11 +2,18 @@ import {
   Link,
   Outlet,
 } from './utils/react-router-dom.js';
+// TODO
+import {
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 import Runtime from './runtime.js';
 import App from './App.js';
 import runClientApp from './runClientApp.js';
-import runServerApp from './runServerApp.js';
+import runServerApp, { renderDocument } from './runServerApp.js';
 import { useAppContext } from './AppContext.js';
+import { useAppData } from './AppData.js';
+import { useData, useConfig } from './RouteContext.js';
 import {
   Meta,
   Title,
@@ -14,10 +21,11 @@ import {
   Scripts,
   Main,
 } from './Document.js';
-import {
+import type {
   RuntimePlugin,
   AppContext,
   AppConfig,
+  RouteConfig,
   PageWrapper,
   RouteItem,
 } from './types.js';
@@ -30,19 +38,29 @@ export {
   App,
   runClientApp,
   runServerApp,
+  renderDocument,
   useAppContext,
-  Link,
-  Outlet,
+  useAppData,
+  useData,
+  useConfig,
   Meta,
   Title,
   Links,
   Scripts,
   Main,
   defineAppConfig,
-  // types
+  // react-router-dom API
+  Link,
+  Outlet,
+  useParams,
+  useSearchParams,
+};
+
+export type {
   RuntimePlugin,
   AppContext,
   AppConfig,
+  RouteConfig,
   PageWrapper,
   RouteItem,
 };

@@ -1,8 +1,9 @@
-/* eslint-disable react/self-closing-comp */
-import React from 'react';
-import { Meta, Title, Links, Main, Scripts } from 'ice';
+import { Meta, Title, Links, Main, Scripts, useAppData } from 'ice';
+import type { AppData } from './types';
 
-function Document() {
+function Document(props) {
+  const appData = useAppData<AppData>();
+
   return (
     <html lang="en">
       <head>
@@ -12,9 +13,16 @@ function Document() {
         <Meta />
         <Title />
         <Links />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `console.log('${appData.title}')`,
+          }}
+        />
       </head>
       <body>
-        <Main />
+        <Main>
+          {props.children}
+        </Main>
         <Scripts />
       </body>
     </html>

@@ -1,13 +1,15 @@
-import { defineUserConfig } from '@ice/app';
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+import { defineConfig } from '@ice/app';
+import SpeedMeasurePlugin from 'speed-measure-webpack-plugin';
 
-export default defineUserConfig({
+export default defineConfig({
   publicPath: '/',
   webpack: (webpackConfig) => {
-    // if (process.env.NODE_ENV !== 'test') {
-    //   webpackConfig.plugins?.push(new BundleAnalyzerPlugin());
-    // }
+    if (process.env.NODE_ENV !== 'test') {
+      webpackConfig.plugins?.push(new SpeedMeasurePlugin());
+    }
     return webpackConfig;
   },
+  dropLogLevel: 'warn',
+  minify: false,
   plugins: ['@ice/plugin-auth'],
 });

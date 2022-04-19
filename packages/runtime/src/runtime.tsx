@@ -16,7 +16,7 @@ import type {
   AppRouterProps,
 } from './types.js';
 import DefaultAppRouter from './AppRouter.js';
-import { usePageContext } from './PageContext.js';
+import { useData, useConfig } from './RouteContext.js';
 
 class Runtime {
   private appContext: AppContext;
@@ -40,9 +40,7 @@ class Runtime {
   public getAppContext = () => this.appContext;
 
   public getRender = () => {
-    // TODO: set ssr by process env
-    const isSSR = true;
-    return isSSR ? ReactDOM.hydrate : this.render;
+    return ReactDOM.hydrate;
   };
 
   public getAppRouter = () => this.AppRouter;
@@ -54,7 +52,8 @@ class Runtime {
       wrapperPageComponent: this.wrapperPageComponent,
       appContext: this.appContext,
       setAppRouter: this.setAppRouter,
-      usePageContext,
+      useData,
+      useConfig,
     };
 
     const runtimeModule = (module as CommonJsRuntime).default || module as RuntimePlugin;

@@ -1,7 +1,8 @@
 import type { RuleSetRule, Configuration } from 'webpack';
-import type { ProxyConfigArray, ProxyConfigArrayItem, ProxyConfigMap, Middleware } from 'webpack-dev-server';
+import type { ProxyConfigArray, ProxyConfigArrayItem, ProxyConfigMap, Middleware, ServerOptions } from 'webpack-dev-server';
 import type { UnpluginOptions } from 'unplugin';
 import type Server from 'webpack-dev-server';
+import type { MinimizerOptions, CustomOptions } from 'terser-webpack-plugin';
 
 interface ConfigurationCtx extends Omit<Config, 'webpack'> {
   supportedBrowsers: string[];
@@ -42,10 +43,22 @@ export interface Config {
   transforms?: UnpluginOptions['transform'][];
 
   middlewares?:
-    | ((middlewares: Middleware[], devServer: Server) => Middleware[])
-    | undefined;
+  | ((middlewares: Middleware[], devServer: Server) => Middleware[])
+  | undefined;
 
   proxy?: ProxyConfigArrayItem | ProxyConfigMap | ProxyConfigArray | undefined;
 
   compileIncludes?: (string | RegExp)[];
+
+  minify?: boolean;
+
+  minimizerOptions?: MinimizerOptions<CustomOptions>;
+
+  analyzer?: boolean;
+
+  https?: boolean | ServerOptions;
+
+  port?: string | number;
+
+  cacheDirectory?: string;
 }
