@@ -1,8 +1,6 @@
 import React, { useLayoutEffect, useState } from 'react';
 import type { HashHistory, BrowserHistory, Action, Location } from 'history';
-import { createHashHistory, createBrowserHistory } from './utils/react-router-dom.js';
-// TODO
-import { createSearchParams } from 'react-router-dom';
+import { createHashHistory, createBrowserHistory, createSearchParams } from './utils/react-router-dom.js';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';

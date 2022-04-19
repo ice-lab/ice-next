@@ -9,6 +9,8 @@ import {
   createSearchParams as originCreateSearchParams,
   Router as OriginRouter,
   useRoutes as originUseRoutes,
+  useParams as originUseParams,
+  useSearchParams as originUseSearchParams,
 } from 'react-router-dom';
 import {
   createHashHistory as originCreateHashHistory,
@@ -23,6 +25,8 @@ let Router: typeof OriginRouter;
 let useRoutes: typeof originUseRoutes;
 let createHashHistory: typeof originCreateHashHistory;
 let createBrowserHistory: typeof originCreateBrowserHistory;
+let useParams: typeof originUseParams;
+let useSearchParams: typeof originUseSearchParams;
 
 // @ts-expect-error
 if (process.env.ICE_RUNTIME_ROUTER === true) {
@@ -34,8 +38,12 @@ if (process.env.ICE_RUNTIME_ROUTER === true) {
   useRoutes = originUseRoutes;
   createHashHistory = originCreateHashHistory;
   createBrowserHistory = originCreateBrowserHistory;
+  useParams = originUseParams;
+  useSearchParams = originUseSearchParams;
 } else {
-  console.debug('History disabled, process.env.ICE_RUNTIME_ROUTER', process.env.ICE_RUNTIME_ROUTER);
+  // Mock react-router-dom apis
+  // TODO: mock it right
+
   Link = React.forwardRef(() => null);
   Outlet = () => null;
 
@@ -54,7 +62,6 @@ if (process.env.ICE_RUNTIME_ROUTER === true) {
   matchRoutes = (routes) => {
     return routes.map(item => {
       return {
-        // TODO: 这几个的值是什么
         params: {},
         pathname: '',
         pathnameBase: '',
@@ -72,6 +79,15 @@ if (process.env.ICE_RUNTIME_ROUTER === true) {
   };
   createHashHistory = () => null;
   createBrowserHistory = () => null;
+
+  // @ts-expect-error
+  useParams = () => {
+    return {};
+  };
+  // @ts-expect-error
+  useSearchParams = () => {
+    return [{}, () => {}];
+  };
 }
 
 export {
@@ -83,4 +99,6 @@ export {
   useRoutes,
   createHashHistory,
   createBrowserHistory,
+  useParams,
+  useSearchParams,
 };
