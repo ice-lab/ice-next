@@ -1,6 +1,6 @@
-import type webpack from 'webpack';
+import type webpack from '@ice/bundles/compiled/webpack';
 import type { IPluginAPI, CommandArgs } from 'build-scripts';
-import type { Configuration, Stats } from 'webpack';
+import type { Configuration, Stats } from '@ice/bundles/compiled/webpack';
 import type WebpackDevServer from 'webpack-dev-server';
 import type { BuildOptions, BuildResult } from 'esbuild';
 import type { NestedRouteManifest } from '@ice/route-manifest';

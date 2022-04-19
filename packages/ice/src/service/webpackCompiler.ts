@@ -1,14 +1,17 @@
-import webpack from 'webpack';
+import webpack from '@ice/bundles/compiled/webpack/index.js';
 import consola from 'consola';
 import chalk from 'chalk';
 import type { CommandArgs } from 'build-scripts';
-import type { Compiler, Configuration } from 'webpack';
+import type { Compiler, Configuration } from '@ice/bundles/compiled/webpack';
 import type { Urls, EsbuildCompile } from '@ice/types/esm/plugin.js';
 import type { Config } from '@ice/types';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
+import type { WebpackConfig } from '../utils/getContextConfig';
+
+console.log('webpack==>', webpack);
 
 async function webpackCompiler(options: {
-  webpackConfigs: Configuration | Configuration[];
+  webpackConfigs: WebpackConfig | WebpackConfig[];
   taskConfig: Config;
   command: string;
   commandArgs: CommandArgs;

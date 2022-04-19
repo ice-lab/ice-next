@@ -5,12 +5,14 @@ import type { Configuration as DevServerConfiguration } from 'webpack-dev-server
 import { getWebpackConfig } from '@ice/webpack-config';
 import merge from 'lodash.merge';
 
+export type WebpackConfig = Configuration & {
+  devServer?: DevServerConfiguration;
+};
+
 export interface ContextConfig {
   name: string;
   taskConfig: Config;
-  webpackConfig: Configuration & {
-    devServer?: DevServerConfiguration;
-  };
+  webpackConfig: WebpackConfig;
 }
 
 function getContextConfig(context: Context<Config>, customConfig: Partial<Config>): ContextConfig[] {

@@ -20,6 +20,7 @@
   "homepage": "https://next.ice.work",
   "dependencies": {
     "@builder/pack": "^0.6.0",
+    "@ice/bundles": "^0.1.0",
     "@ice/route-manifest": "^1.0.0",
     "@ice/runtime": "^1.0.0",
     "@ice/webpack-config": "^1.0.0",
@@ -35,7 +36,7 @@
     "find-up": "^5.0.0",
     "fs-extra": "^10.0.0",
     "lodash.merge": "^4.6.2",
-    "prettier": "^2.5.1",
+    "prettier": "2.6.2",
     "semver": "^7.3.5",
     "webpack": "^5.69.1",
     "webpack-dev-server": "^4.7.4"

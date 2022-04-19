@@ -138,7 +138,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
       topLevelAwait: true,
       ...(experimental || {}),
     },
-    entry: () => getEntry(rootDir),
+    entry: () => getEntry(rootDir) as any,
     externals,
     output: {
       publicPath,
