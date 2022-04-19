@@ -43,9 +43,21 @@ export function filterExternals(externals: Record<string, string>, keys: string[
 const tasks = [
   // simple task
   ...['cssnano', 'tapable', 'schema-utils', 'lodash',
-  'css-loader', 'less-loader', 'postcss-loader', 'sass-loader',
-  'postcss-preset-env', 'postcss-nested', 'webpack-bundle-analyzer', 'es-module-lexer',
+    'less-loader', 'postcss-loader', 'sass-loader',
+    'postcss-preset-env', 'postcss-nested', 'postcss-modules',
+    'webpack-bundle-analyzer', 'es-module-lexer',
   ].map((pkgName) => ({ pkgName })),
+  {
+    pkgName: 'css-loader',
+    patch: () => {
+      const targetPath = path.join(__dirname, 'compiled/css-loader');
+      ['api.js', 'sourceMaps.js', 'noSourceMaps.js', 'getUrl.js'].forEach((filename) => {
+        // use ES Modules
+        const targetFile = path.join(targetPath, filename);
+        fs.writeFileSync(targetFile, fs.readFileSync(targetFile, 'utf-8').replace('module.exports =', 'export default'), 'utf-8');
+      });
+    },
+  },
   {
     pkgName: 'css-minimizer-webpack-plugin',
     matchCopyFiles: (data: { resolvePath: string; resolveId: string }): boolean => {
@@ -91,13 +103,13 @@ const tasks = [
   },
 ];
 
-tasks.forEach(taskOptions => {
-  packDependency({
-    rootDir: __dirname,
-    externals: EXTERNALS,
-    target: `compiled/${taskOptions.pkgName}`,
-    ...taskOptions,
-  });
-});
-
-export default tasks;
+(async () => {
+  for (let task of tasks) {
+    await packDependency({
+      rootDir: __dirname,
+      externals: EXTERNALS,
+      target: `compiled/${task.pkgName}`,
+      ...task,
+    });
+  }
+})();

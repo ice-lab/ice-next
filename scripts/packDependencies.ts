@@ -95,7 +95,7 @@ export async function packDependency(options: Options): Promise<void> {
     const packageRoot = path.dirname(
       findUp.sync('package.json', {
         cwd: require.resolve(pkgName, { paths: [rootDir] }),
-    }));
+      }));
     // create license file
     const licensePath = path.join(packageRoot, 'LICENSE');
     if (fs.existsSync(licensePath)) {
@@ -123,9 +123,9 @@ export async function packDependency(options: Options): Promise<void> {
             paths: [rootDir],
           }));
           const typeJson = fs.readJSONSync(path.join(typesRoot, 'package.json'));
-          dtsName = typeJson.types.endsWith('.d.ts') ? `${typeJson.types}.d.ts` : typeJson.types;
+          dtsName = !typeJson.types.endsWith('.d.ts') ? `${typeJson.types}.d.ts` : typeJson.types;
           // copy dts to package root
-          const files = glob.sync('*.d.ts', { cwd: typesRoot, nodir: true });
+          const files = glob.sync('**/*.d.ts', { cwd: typesRoot, nodir: true });
           console.log(chalk.green(`copy dts file for ${pkgName || file}`));
           for (const file of files) {
             const from = path.join(typesRoot, file);
@@ -134,7 +134,7 @@ export async function packDependency(options: Options): Promise<void> {
             await fs.copyFile(from, to);
           }
         } catch (err) {
-          console.log(chalk.red(`can not generate dts file of ${pkgName}`));
+          console.log(chalk.yellow(`can not find dts file of ${pkgName}`));
         }
       }
     }

@@ -3,7 +3,9 @@ import type { Config } from '@ice/types';
 import type { Configuration } from 'webpack';
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
 import { getWebpackConfig } from '@ice/webpack-config';
-import mergeWith from 'lodash.mergewith';
+import lodash from '@ice/bundles/compiled/lodash/index.js';
+
+const { mergeWith } = lodash;
 
 export type WebpackConfig = Configuration & {
   devServer?: DevServerConfiguration;

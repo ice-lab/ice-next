@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from 'fs';
 import { dirname, resolve } from 'path';
-import webpack from 'webpack';
+import webpack from '@ice/bundles/compiled/webpack/index.js';
 import type { Compiler, Compilation } from 'webpack';
 
 const pluginName = 'AssetsManifestPlugin';

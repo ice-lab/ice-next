@@ -8,10 +8,13 @@
     "compiled"
   ],
   "main": "./esm/index.js",
+  "type": "module",
   "dependencies": {
-    "caniuse-lite": "^1.0.30001283",
+    "@swc/core": "1.2.168",
+    "caniuse-lite": "^1.0.30001332",
     "chokidar": "3.5.3",
     "events": "3.3.0",
+    "jest-worker": "27.5.1",
     "less": "4.1.2",
     "postcss": "8.4.12",
     "sass": "1.50.0"
@@ -31,6 +34,7 @@
     "postcss-loader": "6.2.1",
     "postcss-nested": "5.0.6",
     "postcss-preset-env": "7.4.3",
+    "postcss-modules": "4.3.1",
     "sass-loader": "12.6.0",
     "tapable": "2.2.1",
     "terser-webpack-plugin": "5.3.1",

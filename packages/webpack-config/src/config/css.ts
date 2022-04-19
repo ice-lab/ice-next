@@ -1,7 +1,7 @@
 import { createRequire } from 'module';
 import { createHash } from 'crypto';
-import MiniCssExtractPlugin from '@builder/pack/deps/mini-css-extract-plugin/cjs.js';
-import postcss from 'postcss';
+import MiniCssExtractPlugin from '@ice/bundles/compiled/mini-css-extract-plugin/index.js';
+import { sass, less, postcss } from '@ice/bundles';
 import type { ModifyWebpackConfig } from '@ice/types/esm/config';
 import type { LoaderContext } from 'webpack';
 
@@ -36,8 +36,8 @@ function configCSSRule(config: CSSRuleConfig, options: Options) {
     postcssOptions: {
       config: false,
       plugins: [
-        ['@builder/pack/deps/postcss-nested'],
-        ['@builder/pack/deps/postcss-preset-env', {
+        ['@ice/bundles/compiled/postcss-nested'],
+        ['@ice/bundles/compiled/postcss-preset-env', {
           // Without any configuration options, PostCSS Preset Env enables Stage 2 features.
           stage: 3,
           autoprefixer: {
@@ -64,11 +64,11 @@ function configCSSRule(config: CSSRuleConfig, options: Options) {
         },
       },
       {
-        loader: require.resolve('@builder/pack/deps/css-loader'),
+        loader: require.resolve('@ice/bundles/compiled/css-loader'),
         options: cssModuleLoaderOpts,
       },
       {
-        loader: require.resolve('@builder/pack/deps/postcss-loader'),
+        loader: require.resolve('@ice/bundles/compiled/postcss-loader'),
         options: {
           ...cssLoaderOpts,
           ...postcssOpts,
@@ -87,8 +87,13 @@ const css: ModifyWebpackConfig = (config, ctx) => {
   const cssOutputFolder = 'css';
   config.module.rules.push(...([
     ['css'],
-    ['less', require.resolve('@builder/pack/deps/less-loader'), ({ lessOptions: { javascriptEnabled: true } })],
-    ['scss', require.resolve('@builder/pack/deps/sass-loader')],
+    ['less', require.resolve('@ice/bundles/compiled/less-loader'), {
+      lessOptions: { javascriptEnabled: true },
+      implementation: less,
+    }],
+    ['scss', require.resolve('@ice/bundles/compiled/sass-loader'), {
+      implementation: sass,
+    }],
   ] as CSSRuleConfig[]).map((config) => configCSSRule(config, { publicPath, browsers: supportedBrowsers })));
   config.plugins.push(
     new MiniCssExtractPlugin({

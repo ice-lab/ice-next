@@ -2,7 +2,18 @@ import type { RuleSetRule, Configuration } from 'webpack';
 import type { ProxyConfigArray, ProxyConfigArrayItem, ProxyConfigMap, Middleware, ServerOptions } from 'webpack-dev-server';
 import type { UnpluginOptions } from 'unplugin';
 import type Server from 'webpack-dev-server';
-import type { MinimizerOptions, CustomOptions } from 'terser-webpack-plugin';
+import type { ECMA } from 'terser';
+
+// get type definitions from terser-webpack-plugin
+type CustomOptions = {
+  [key: string]: any;
+};
+type InferDefaultType<T> = T extends infer U ? U : CustomOptions;
+type PredefinedOptions = {
+  module?: boolean | undefined;
+  ecma?: ECMA | undefined;
+};
+type MinimizerOptions<T> = PredefinedOptions & InferDefaultType<T>;
 
 interface ConfigurationCtx extends Omit<Config, 'webpack'> {
   supportedBrowsers: string[];
