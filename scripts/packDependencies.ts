@@ -34,16 +34,11 @@ export async function packDependency(options: Options): Promise<void> {
 
   const targetPath = path.join(rootDir, target);
   fs.removeSync(targetPath);
-
-  let packEntry: string;
   const filesToCopy = [];
-  if (file) {
-    packEntry = path.join(rootDir, file);
-  } else {
-    packEntry = require.resolve(pkgName, {
-      paths: [rootDir],
-    });
-  }
+  const packEntry = file ? path.join(rootDir, file) : require.resolve(pkgName, {
+    paths: [rootDir],
+  });
+
   fs.ensureDirSync(targetPath);
   let { code, assets } = await ncc(packEntry, {
     externals,
@@ -123,7 +118,7 @@ export async function packDependency(options: Options): Promise<void> {
             paths: [rootDir],
           }));
           const typeJson = fs.readJSONSync(path.join(typesRoot, 'package.json'));
-          dtsName = !typeJson.types.endsWith('.d.ts') ? `${typeJson.types}.d.ts` : typeJson.types;
+          dtsName = typeJson.types.endsWith('.d.ts') ? typeJson.types : `${typeJson.types}.d.ts`;
           // copy dts to package root
           const files = glob.sync('**/*.d.ts', { cwd: typesRoot, nodir: true });
           console.log(chalk.green(`copy dts file for ${pkgName || file}`));
