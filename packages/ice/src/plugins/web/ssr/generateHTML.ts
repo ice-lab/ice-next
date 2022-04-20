@@ -32,12 +32,14 @@ export default async function generateHTML(options: Options) {
       },
     };
 
-    let html;
-    if (ssg || ssr) {
-      html = await serverEntry.render(requestContext);
-    } else {
-      html = await serverEntry.renderDocument(requestContext);
-    }
+    // let html;
+    // if (ssg || ssr) {
+    //   html = await serverEntry.render(requestContext);
+    // } else {
+    //   html = await serverEntry.renderDocument(requestContext);
+    // }
+
+    const html = await serverEntry.renderToHTML(requestContext);
 
     const fileName = routePath === '/' ? 'index.html' : `${routePath}.html`;
     const contentPath = path.join(outDir, fileName);

@@ -32,14 +32,15 @@ export function setupRenderServer(options: Options) {
       res,
     };
 
-    let html;
-    if (ssg || ssr) {
-      html = await serverEntry.render(requestContext);
-    } else {
-      html = await serverEntry.renderDocument(requestContext);
-    }
+    serverEntry.renderToResponse(requestContext);
+    // let html;
+    // if (ssg || ssr) {
+    //   html = await serverEntry.render(requestContext);
+    // } else {
+    //   html = await serverEntry.renderDocument(requestContext);
+    // }
 
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.send(html);
+    // res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    // res.send(html);
   };
 }

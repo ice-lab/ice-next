@@ -1,8 +1,11 @@
+import * as Stream from 'stream';
+import type * as StreamType from 'stream';
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import type { Location, To } from 'history';
 import { Action, createPath, parsePath } from 'history';
 import { createSearchParams } from 'react-router-dom';
+import type { ReactElement } from 'react';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
@@ -13,6 +16,8 @@ import type {
   AppConfig, RuntimePlugin, CommonJsRuntime, AssetsManifest,
 } from './types';
 
+const { Writable } = Stream;
+
 interface RenderOptions {
   appConfig: AppConfig;
   assetsManifest: AssetsManifest;
@@ -21,19 +26,138 @@ interface RenderOptions {
   Document: React.ComponentType<React.PropsWithChildren<{}>>;
 }
 
-export default async function runServerApp(requestContext: ServerContext, options: RenderOptions): Promise<string> {
-  try {
-    return await renderServerApp(requestContext, options);
-  } catch (error) {
-    console.error('renderServerApp error: ', error);
-    return await renderDocument(requestContext, options);
+const isStream = true;
+
+export async function renderToHTML(requestContext: ServerContext, options: RenderOptions) {
+  const element = await createServerEntry(requestContext, options);
+
+  if (isStream) {
+    const pipe = await renderToNodeStream(element, false);
+    const html = await piperToString(pipe);
+    console.log(html);
+    return html;
   }
+
+  const result = await renderToString(element);
+  return result.value;
+}
+
+export async function renderToResponse(requestContext: ServerContext, options: RenderOptions) {
+  const { res } = requestContext;
+  const element = await createServerEntry(requestContext, options);
+
+  if (isStream) {
+    const pipe = await renderToNodeStream(element, false);
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    pipe(res, (error) => {
+      throw error;
+    });
+
+    return;
+  }
+
+  const result = await renderToString(element);
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.end(result.value);
+}
+
+function piperToString(input): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const bufferedChunks: any[] = [];
+
+    const stream = new Writable({
+      writev(chunks, callback) {
+        chunks.forEach((chunk) => bufferedChunks.push(chunk.chunk));
+        callback();
+      },
+    });
+
+    stream.on('finish', () => {
+      const result = Buffer.concat(bufferedChunks).toString();
+      resolve(result);
+    });
+
+    stream.on('error', (error) => {
+      reject(error);
+    });
+
+    input(stream);
+  });
+}
+
+async function renderToString(element) {
+  const html = ReactDOMServer.renderToString(element);
+
+  return {
+    value: html,
+    statusCode: 200,
+  };
+}
+
+type NodeWritablePiper = (
+  res: StreamType.Writable,
+  next?: (err?: Error) => void
+) => void;
+
+function renderToNodeStream(
+  element: React.ReactElement,
+  generateStaticHTML: boolean,
+): NodeWritablePiper {
+  return (res, next) => {
+    const { pipe } = ReactDOMServer.renderToPipeableStream(
+      element,
+      {
+        onError(error: Error) {
+          next(error);
+        },
+        onShellReady() {
+          if (!generateStaticHTML) {
+            pipe(res);
+          }
+        },
+        onShellError(error: Error) {
+          next(error);
+        },
+        // onAllReady() {
+        //   pipe(res);
+        // },
+      },
+    );
+  };
+}
+
+function renderToReadableStream(
+  element: React.ReactElement,
+): NodeWritablePiper {
+  return (res, next) => {
+    const readable = (ReactDOMServer as any).renderToReadableStream(element, {
+      onError: (error) => {
+        throw error;
+      },
+    });
+
+    const reader = readable.getReader();
+    const decoder = new TextDecoder();
+    const process = () => {
+      reader.read().then(({ done, value }: any) => {
+        if (done) {
+          next();
+        } else {
+          const s = typeof value === 'string' ? value : decoder.decode(value);
+          res.write(s);
+          process();
+        }
+      });
+    };
+
+    process();
+  };
 }
 
 /**
  * Render App by SSR.
  */
-export async function renderServerApp(requestContext: ServerContext, options: RenderOptions): Promise<string> {
+export async function createServerEntry(requestContext: ServerContext, options: RenderOptions): Promise<ReactElement> {
   const { req } = requestContext;
 
   const {
@@ -89,7 +213,7 @@ export async function renderServerApp(requestContext: ServerContext, options: Re
   const PageWrappers = runtime.getWrapperPageRegistration();
   const AppRouter = runtime.getAppRouter();
 
-  const result = ReactDOMServer.renderToString(
+  return (
     <AppContextProvider value={appContext}>
       <AppDataProvider value={appData}>
         <Document>
@@ -104,17 +228,14 @@ export async function renderServerApp(requestContext: ServerContext, options: Re
           />
         </Document>
       </AppDataProvider>
-    </AppContextProvider>,
+    </AppContextProvider>
   );
-
-  // TODO: send html in render function.
-  return result;
 }
 
 /**
  * Render Document for CSR.
  */
-export async function renderDocument(requestContext: ServerContext, options: RenderOptions): Promise<string> {
+export async function createDocument(requestContext: ServerContext, options: RenderOptions): Promise<ReactElement> {
   const { req } = requestContext;
 
   const {
@@ -149,15 +270,13 @@ export async function renderDocument(requestContext: ServerContext, options: Ren
     documentOnly: true,
   };
 
-  const result = ReactDOMServer.renderToString(
+  return (
     <AppContextProvider value={appContext}>
       <AppDataProvider value={appData}>
         <Document />
       </AppDataProvider>
-    </AppContextProvider>,
+    </AppContextProvider>
   );
-
-  return result;
 }
 
 /**

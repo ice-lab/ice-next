@@ -161,6 +161,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
       fallback: {
         // TODO: add more fallback module
         events: require.resolve('events'),
+        stream: false,
       },
     },
     watchOptions: {
