@@ -2,6 +2,7 @@ import * as path from 'path';
 import { createRequire } from 'module';
 import fg from 'fast-glob';
 import consola from 'consola';
+// FIXME when prepack @pmmmwh/react-refresh-webpack-plugin
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import bundleAnalyzer from '@ice/bundles/compiled/webpack-bundle-analyzer/index.js';
 import lodash from '@ice/bundles/compiled/lodash/index.js';

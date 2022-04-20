@@ -65,17 +65,6 @@ const tasks = [
     },
   },
   {
-    pkgName: 'mini-css-extract-plugin',
-    patch: () => {
-      // copy runtime files
-      const pkgPath = path.join(__dirname, 'node_modules/mini-css-extract-plugin');
-      const targetPath = path.join(__dirname, 'compiled/mini-css-extract-plugin');
-      ['hmr', 'loader-options.json', 'utils.js'].forEach((file) => {
-        fs.copySync(path.join(pkgPath, `dist/${file}`), path.join(targetPath, file));
-      });
-    },
-  },
-  {
     file: './webpack/bundle',
     pkgName: 'webpack',
     bundleName: 'bundle.js',
