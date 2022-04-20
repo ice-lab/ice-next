@@ -1,5 +1,3 @@
-import * as Stream from 'stream';
-import type * as StreamType from 'stream';
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import type { Location, To } from 'history';
@@ -11,12 +9,12 @@ import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
 import { AppDataProvider } from './AppData.js';
 import { loadRouteModules, loadRoutesData, getRoutesConfig, matchRoutes } from './routes.js';
+import { piperToString, renderToNodeStream, renderToReadableStream } from './server/streamRender.js';
+import type { NodeWritablePiper } from './server/streamRender.js';
 import type {
   AppContext, InitialContext, RouteItem, ServerContext,
   AppConfig, RuntimePlugin, CommonJsRuntime, AssetsManifest,
 } from './types';
-
-const { Writable } = Stream;
 
 interface RenderOptions {
   appConfig: AppConfig;
@@ -24,140 +22,133 @@ interface RenderOptions {
   routes: RouteItem[];
   runtimeModules: (RuntimePlugin | CommonJsRuntime)[];
   Document: React.ComponentType<React.PropsWithChildren<{}>>;
+  documentOnly?: boolean;
 }
 
-const isStream = true;
+interface RenderResult {
+  pipe?: NodeWritablePiper;
+  statusCode?: number;
+  html?: string;
+}
 
 export async function renderToHTML(requestContext: ServerContext, options: RenderOptions) {
-  const element = await createServerEntry(requestContext, options);
+  const result = await doRender(requestContext, options);
+  const { pipe } = result;
 
-  if (isStream) {
-    const pipe = await renderToNodeStream(element, false);
+  if (pipe) {
     const html = await piperToString(pipe);
-    console.log(html);
-    return html;
+    return {
+      html,
+      statusCode: 200,
+    };
   }
 
-  const result = await renderToString(element);
-  return result.value;
+  return result;
 }
 
 export async function renderToResponse(requestContext: ServerContext, options: RenderOptions) {
   const { res } = requestContext;
-  const element = await createServerEntry(requestContext, options);
 
-  if (isStream) {
-    const pipe = await renderToNodeStream(element, false);
+  try {
+    const result = await doRender(requestContext, options);
+    const { pipe } = result;
+
+    if (!pipe) {
+      sendResult(res, result);
+      return;
+    }
+
+    res.statusCode = 200;
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    pipe(res, (error) => {
-      throw error;
+
+    pipe(res, async (err) => {
+      if (err) {
+        options.documentOnly = true;
+        const result = await doRender(requestContext, options);
+        sendResult(res, result);
+      }
     });
-
-    return;
+  } catch (error) {
+    const result = render500(error);
+    sendResult(res, result);
   }
-
-  const result = await renderToString(element);
-  res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.end(result.value);
 }
 
-function piperToString(input): Promise<string> {
+async function sendResult(res, result: RenderResult) {
+  res.statusCode = result.statusCode;
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(result.html);
+}
+
+function piperToResponse(pipe, res) {
   return new Promise((resolve, reject) => {
-    const bufferedChunks: any[] = [];
-
-    const stream = new Writable({
-      writev(chunks, callback) {
-        chunks.forEach((chunk) => bufferedChunks.push(chunk.chunk));
-        callback();
-      },
-    });
-
-    stream.on('finish', () => {
-      const result = Buffer.concat(bufferedChunks).toString();
-      resolve(result);
-    });
-
-    stream.on('error', (error) => {
-      reject(error);
-    });
-
-    input(stream);
+    pipe(res, (err) => (err ? reject(err) : resolve(null)));
   });
 }
 
-async function renderToString(element) {
-  const html = ReactDOMServer.renderToString(element);
+async function doRender(requestContext: ServerContext, options: RenderOptions): Promise<RenderResult> {
+  const { req } = requestContext;
+
+  const {
+    routes,
+  } = options;
+
+  const location = getLocation(req.url);
+  const matches = matchRoutes(routes, location);
+
+  if (!matches.length) {
+    return render404();
+  }
+
+  await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
+
+  const { documentOnly } = options;
+
+  if (documentOnly) {
+    return renderDocument(matches, options);
+  }
+
+  let element;
+
+  try {
+    element = await createServerEntry(requestContext, matches, options);
+  } catch (err) {
+    console.error('Downgrade To CSR:', err);
+    return renderDocument(matches, options);
+  }
+
+  // @ts-expect-error
+  const pipe = process.browser
+        ? await renderToReadableStream(element)
+        : await renderToNodeStream(element, false);
 
   return {
-    value: html,
-    statusCode: 200,
+    pipe,
   };
 }
 
-type NodeWritablePiper = (
-  res: StreamType.Writable,
-  next?: (err?: Error) => void
-) => void;
-
-function renderToNodeStream(
-  element: React.ReactElement,
-  generateStaticHTML: boolean,
-): NodeWritablePiper {
-  return (res, next) => {
-    const { pipe } = ReactDOMServer.renderToPipeableStream(
-      element,
-      {
-        onError(error: Error) {
-          next(error);
-        },
-        onShellReady() {
-          if (!generateStaticHTML) {
-            pipe(res);
-          }
-        },
-        onShellError(error: Error) {
-          next(error);
-        },
-        // onAllReady() {
-        //   pipe(res);
-        // },
-      },
-    );
+function render404() {
+  return {
+    html: 'Page is Not Found',
+    statusCode: 404,
   };
 }
 
-function renderToReadableStream(
-  element: React.ReactElement,
-): NodeWritablePiper {
-  return (res, next) => {
-    const readable = (ReactDOMServer as any).renderToReadableStream(element, {
-      onError: (error) => {
-        throw error;
-      },
-    });
+function render500(error) {
+  console.error(error);
 
-    const reader = readable.getReader();
-    const decoder = new TextDecoder();
-    const process = () => {
-      reader.read().then(({ done, value }: any) => {
-        if (done) {
-          next();
-        } else {
-          const s = typeof value === 'string' ? value : decoder.decode(value);
-          res.write(s);
-          process();
-        }
-      });
-    };
-
-    process();
+  return {
+    html: 'internal server error',
+    statusCode: 500,
   };
 }
 
 /**
  * Render App by SSR.
  */
-export async function createServerEntry(requestContext: ServerContext, options: RenderOptions): Promise<ReactElement> {
+export async function createServerEntry(
+  requestContext: ServerContext, matches, options: RenderOptions,
+  ): Promise<ReactElement> {
   const { req } = requestContext;
 
   const {
@@ -169,14 +160,6 @@ export async function createServerEntry(requestContext: ServerContext, options: 
   } = options;
 
   const location = getLocation(req.url);
-  const matches = matchRoutes(routes, location);
-
-  if (!matches.length) {
-    // TODO: Render 404
-    throw new Error('No matched page found.');
-  }
-
-  await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   const initialContext: InitialContext = {
     ...requestContext,
@@ -235,9 +218,7 @@ export async function createServerEntry(requestContext: ServerContext, options: 
 /**
  * Render Document for CSR.
  */
-export async function createDocument(requestContext: ServerContext, options: RenderOptions): Promise<ReactElement> {
-  const { req } = requestContext;
-
+export async function renderDocument(matches, options: RenderOptions): Promise<RenderResult> {
   const {
     routes,
     assetsManifest,
@@ -245,19 +226,10 @@ export async function createDocument(requestContext: ServerContext, options: Ren
     Document,
   } = options;
 
-  const location = getLocation(req.url);
-  const matches = matchRoutes(routes, location);
-
-  if (!matches.length) {
-    throw new Error('No matched page found.');
-  }
-
-  await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
-
-  const routesConfig = getRoutesConfig(matches, {});
   // renderDocument needn't to load routesData and appData.
-  const routesData = {};
   const appData = {};
+  const routesData = {};
+  const routesConfig = getRoutesConfig(matches, {});
 
   const appContext: AppContext = {
     assetsManifest,
@@ -270,13 +242,18 @@ export async function createDocument(requestContext: ServerContext, options: Ren
     documentOnly: true,
   };
 
-  return (
+  const html = ReactDOMServer.renderToString(
     <AppContextProvider value={appContext}>
       <AppDataProvider value={appData}>
         <Document />
       </AppDataProvider>
-    </AppContextProvider>
+    </AppContextProvider>,
   );
+
+  return {
+    html,
+    statusCode: 200,
+  };
 }
 
 /**

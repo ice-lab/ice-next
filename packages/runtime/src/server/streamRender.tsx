@@ -1,0 +1,91 @@
+import * as Stream from 'stream';
+import type * as StreamType from 'stream';
+import * as ReactDOMServer from 'react-dom/server';
+
+const { Writable } = Stream;
+
+export type NodeWritablePiper = (
+  res: StreamType.Writable,
+  next?: (err?: Error) => void
+) => void;
+
+export function renderToNodeStream(
+  element: React.ReactElement,
+  generateStaticHTML: boolean,
+): NodeWritablePiper {
+  return (res, next) => {
+    const { pipe } = ReactDOMServer.renderToPipeableStream(
+      element,
+      {
+        onError(error: Error) {
+          console.error(error);
+        },
+        onShellReady() {
+          if (!generateStaticHTML) {
+            pipe(res);
+          }
+        },
+        onShellError(error: Error) {
+          next(error);
+        },
+        onAllReady() {
+          if (generateStaticHTML) {
+            pipe(res);
+          }
+        },
+      },
+    );
+  };
+}
+
+export function renderToReadableStream(
+  element: React.ReactElement,
+): NodeWritablePiper {
+  return (res, next) => {
+    const readable = (ReactDOMServer as any).renderToReadableStream(element, {
+      onError: (error) => {
+        next(error);
+      },
+    });
+
+    const reader = readable.getReader();
+    const decoder = new TextDecoder();
+    const process = () => {
+      reader.read().then(({ done, value }: any) => {
+        if (done) {
+          next();
+        } else {
+          const s = typeof value === 'string' ? value : decoder.decode(value);
+          res.write(s);
+          process();
+        }
+      });
+    };
+
+    process();
+  };
+}
+
+export function piperToString(input): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const bufferedChunks: any[] = [];
+
+    const stream = new Writable({
+      writev(chunks, callback) {
+        chunks.forEach((chunk) => bufferedChunks.push(chunk.chunk));
+        callback();
+      },
+    });
+
+    stream.on('finish', () => {
+      const result = Buffer.concat(bufferedChunks).toString();
+      resolve(result);
+    });
+
+    stream.on('error', (error) => {
+      reject(error);
+    });
+
+    input(stream);
+  });
+}

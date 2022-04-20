@@ -151,6 +151,12 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, commandArgs = {} 
     },
     context: rootDir,
     module: {
+      parser: {
+        javascript: {
+          importExportsPresence: 'warn',
+          exportsPresence: 'warn',
+        },
+      },
       rules: [
         ...loaders,
       ],
