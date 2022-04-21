@@ -26,69 +26,50 @@ interface RenderOptions {
 
 interface RenderResult {
   pipe?: NodeWritablePiper;
+  callback?: Function;
   statusCode?: number;
   html?: string;
 }
 
 export async function renderToHTML(requestContext: ServerContext, options: RenderOptions) {
-  const {
-    documentOnly,
-  } = options;
+  const result = await doRender(requestContext, options);
 
-  if (documentOnly) {
-    const result = await renderDocument(requestContext, options);
+  const { html, pipe, callback } = result;
+
+  if (html) {
     return result;
   }
 
   try {
-    const result = await renderServerEntry(requestContext, options);
-    const { pipe } = result;
+    const html = await piperToString(pipe);
 
-    if (pipe) {
-      const html = await piperToString(pipe);
-      return {
-        html,
-        statusCode: 200,
-      };
-    }
-
-    return result;
+    return {
+      html,
+      statusCode: 200,
+    };
   } catch (error) {
-    options.documentOnly = true;
-    const result = await renderDocument(requestContext, options);
+    const result = callback();
     return result;
   }
 }
 
 export async function renderToResponse(requestContext: ServerContext, options: RenderOptions) {
   const { res } = requestContext;
+  const result = await doRender(requestContext, options);
 
-  const {
-    documentOnly,
-  } = options;
-
-  if (documentOnly) {
-    const result = await renderDocument(requestContext, options);
+  if (result.html) {
     sendResult(res, result);
+    return;
   }
 
   try {
-    const result = await renderServerEntry(requestContext, options);
-    const { pipe } = result;
-
-    if (!pipe) {
-      sendResult(res, result);
-      return;
-    }
-
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
-    await piperToResponse(pipe, res);
+    await piperToResponse(result.pipe, res);
   } catch (error) {
-    options.documentOnly = true;
-    const result = await renderDocument(requestContext, options);
-    sendResult(res, result);
+    const data = await result.callback();
+    sendResult(res, data);
   }
 }
 
@@ -104,6 +85,34 @@ function piperToResponse(pipe, res) {
   });
 }
 
+async function doRender(requestContext, options): Promise<RenderResult> {
+  const { req } = requestContext;
+
+  const {
+    routes,
+    documentOnly,
+  } = options;
+
+  const location = getLocation(req.url);
+  const matches = matchRoutes(routes, location);
+
+  if (!matches.length) {
+    return render404();
+  }
+
+  await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
+
+  if (documentOnly) {
+    return renderDocument(matches, options);
+  }
+
+  try {
+    return await renderServerEntry(requestContext, options, matches, location);
+  } catch (err) {
+    return renderDocument(matches, options);
+  }
+}
+
 function render404() {
   return {
     html: 'Page is Not Found',
@@ -115,7 +124,7 @@ function render404() {
  * Render App by SSR.
  */
 export async function renderServerEntry(
-  requestContext: ServerContext, options: RenderOptions,
+  requestContext: ServerContext, options: RenderOptions, matches, location,
   ): Promise<RenderResult> {
   const { req } = requestContext;
 
@@ -126,15 +135,6 @@ export async function renderServerEntry(
     routes,
     Document,
   } = options;
-
-  const location = getLocation(req.url);
-  const matches = matchRoutes(routes, location);
-
-  if (!matches.length) {
-    return render404();
-  }
-
-  await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   const initialContext: InitialContext = {
     ...requestContext,
@@ -196,30 +196,22 @@ export async function renderServerEntry(
 
   return {
     pipe,
+    callback: () => {
+      return renderDocument(matches, options);
+    },
   };
 }
 
 /**
  * Render Document for CSR.
  */
-export async function renderDocument(requestContext, options: RenderOptions): Promise<RenderResult> {
-  const { req } = requestContext;
-
+export function renderDocument(matches, options: RenderOptions): RenderResult {
   const {
     routes,
     assetsManifest,
     appConfig,
     Document,
   } = options;
-
-  const location = getLocation(req.url);
-  const matches = matchRoutes(routes, location);
-
-  if (!matches.length) {
-    return render404();
-  }
-
-  await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   // renderDocument needn't to load routesData and appData.
   const appData = {};
