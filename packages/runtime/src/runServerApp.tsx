@@ -1,8 +1,8 @@
 import type { ServerResponse } from 'http';
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
-import { Action, createPath, parsePath } from 'history';
-import type { Location, To } from 'history';
+import { Action, parsePath } from 'history';
+import type { Location } from 'history';
 import { createSearchParams } from 'react-router-dom';
 import Runtime from './runtime.js';
 import App from './App.js';
@@ -10,6 +10,7 @@ import { AppContextProvider } from './AppContext.js';
 import { AppDataProvider } from './AppData.js';
 import { loadRouteModules, loadRoutesData, getRoutesConfig, matchRoutes } from './routes.js';
 import { piperToString, renderToNodeStream } from './server/streamRender.js';
+import { createStaticNavigator } from './server/navigator.js';
 import type { NodeWritablePiper } from './server/streamRender.js';
 import type {
   AppContext, InitialContext, RouteItem, ServerContext,
@@ -269,52 +270,4 @@ function getLocation(url: string) {
   };
 
   return location;
-}
-
-function createStaticNavigator() {
-  return {
-    createHref(to: To) {
-      return typeof to === 'string' ? to : createPath(to);
-    },
-    push(to: To) {
-      throw new Error(
-        'You cannot use navigator.push() on the server because it is a stateless ' +
-          'environment. This error was probably triggered when you did a ' +
-          `\`navigate(${JSON.stringify(to)})\` somewhere in your app.`,
-      );
-    },
-    replace(to: To) {
-      throw new Error(
-        'You cannot use navigator.replace() on the server because it is a stateless ' +
-          'environment. This error was probably triggered when you did a ' +
-          `\`navigate(${JSON.stringify(to)}, { replace: true })\` somewhere ` +
-          'in your app.',
-      );
-    },
-    go(delta: number) {
-      throw new Error(
-        'You cannot use navigator.go() on the server because it is a stateless ' +
-          'environment. This error was probably triggered when you did a ' +
-          `\`navigate(${delta})\` somewhere in your app.`,
-      );
-    },
-    back() {
-      throw new Error(
-        'You cannot use navigator.back() on the server because it is a stateless ' +
-          'environment.',
-      );
-    },
-    forward() {
-      throw new Error(
-        'You cannot use navigator.forward() on the server because it is a stateless ' +
-          'environment.',
-      );
-    },
-    block() {
-      throw new Error(
-        'You cannot use navigator.block() on the server because it is a stateless ' +
-          'environment.',
-      );
-    },
-  };
 }
