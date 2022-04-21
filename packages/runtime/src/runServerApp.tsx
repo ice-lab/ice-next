@@ -1,9 +1,8 @@
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
-import type { Location, To } from 'history';
 import { Action, createPath, parsePath } from 'history';
+import type { Location, To } from 'history';
 import { createSearchParams } from 'react-router-dom';
-import type { ReactElement } from 'react';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
