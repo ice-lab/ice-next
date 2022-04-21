@@ -28,8 +28,9 @@ let createBrowserHistory: typeof originCreateBrowserHistory;
 let useParams: typeof originUseParams;
 let useSearchParams: typeof originUseSearchParams;
 
-// @ts-expect-error
-if (process.env.ICE_RUNTIME_ROUTER === true) {
+console.log('utils/react-router', process.env.ICE_ROUTER, process.env.ICE_ROUTER === 'true');
+
+if (process.env.ICE_ROUTER === 'true') {
   Link = OriginLink;
   Outlet = OriginOutlet;
   matchRoutes = originMatchRoutes;
@@ -77,8 +78,23 @@ if (process.env.ICE_RUNTIME_ROUTER === true) {
   Router = (props) => {
     return <>{props.children}</>;
   };
-  createHashHistory = () => null;
-  createBrowserHistory = () => null;
+
+  // @ts-expect-error
+  createHashHistory = () => {
+    return {
+      listen: () => {},
+      action: 'POP',
+      location: '',
+    };
+  };
+  // @ts-expect-error
+  createBrowserHistory = () => {
+    return {
+      listen: () => {},
+      action: 'POP',
+      location: '',
+    };
+  };
 
   // @ts-expect-error
   useParams = () => {

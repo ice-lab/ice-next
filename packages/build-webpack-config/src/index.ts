@@ -14,7 +14,6 @@ import { createUnplugin } from 'unplugin';
 import browserslist from 'browserslist';
 import configAssets from './config/assets.js';
 import configCss from './config/css.js';
-import { getRuntimeEnvironment } from './clientEnv.js';
 import AssetsManifestPlugin from './webpackPlugins/AssetsManifestPlugin.js';
 import getTransformPlugins from './unPlugins/index.js';
 
@@ -65,7 +64,6 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
     hash,
     minify,
     minimizerOptions = {},
-    port,
     cacheDirectory,
     https,
     analyzer,
@@ -80,23 +78,12 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
     aliasWithRoot[key] = alias[key].startsWith('.') ? path.join(rootDir, alias[key]) : alias[key];
   });
 
-  const defineStaticVariables = {
-    ...define || {},
-    'process.env.NODE_ENV': mode || 'development',
-    'process.env.SERVER_PORT': port,
-  };
-  // formate define variables
-  Object.keys(defineStaticVariables).forEach((key) => {
-    defineStaticVariables[key] = typeof defineStaticVariables[key] === 'boolean'
-      ? defineStaticVariables[key]
-      : JSON.stringify(defineStaticVariables[key]);
-  });
-  const runtimeEnv = getRuntimeEnvironment();
-  const defineRuntimeVariables = {};
-  Object.keys(runtimeEnv).forEach((key) => {
-    const runtimeValue = runtimeEnv[key];
-    // set true to flag the module as uncacheable
-    defineRuntimeVariables[key] = webpack.DefinePlugin.runtimeValue(runtimeValue, true);
+  const runtimeDefineVars = {};
+  const RUNTIME_PREFIX = /^ICE_/i;
+  Object.keys(process.env).filter((key) => {
+    return RUNTIME_PREFIX.test(key) || ['NODE_ENV'].includes(key);
+  }).forEach((key) => {
+    runtimeDefineVars[`process.env.${key}`] = webpack.DefinePlugin.runtimeValue(() => JSON.stringify(process.env[key]), true);
   });
 
   // create plugins
@@ -203,8 +190,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
       ...webpackPlugins,
       dev && new ReactRefreshWebpackPlugin(),
       new webpack.DefinePlugin({
-        ...defineStaticVariables,
-        ...defineRuntimeVariables,
+        ...define,
+        ...runtimeDefineVars,
       }),
       new AssetsManifestPlugin({
         fileName: 'assets-manifest.json',

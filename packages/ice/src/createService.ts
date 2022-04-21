@@ -13,11 +13,12 @@ import build from './commands/build.js';
 import getContextConfig from './utils/getContextConfig.js';
 import getWatchEvents from './getWatchEvents.js';
 import { getAppConfig } from './analyzeRuntime.js';
-import { defineRuntimeEnv, updateRuntimeEnv } from './utils/runtimeEnv.js';
+import { initProcessEnv, updateRuntimeEnv } from './utils/runtimeEnv.js';
 import getRuntimeModules from './utils/getRuntimeModules.js';
 import { generateRoutesInfo } from './routes.js';
 import webPlugin from './plugins/web/index.js';
 import configPlugin from './plugins/config.js';
+import type { AppConfig } from './utils/runtimeEnv.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -38,6 +39,9 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     // add default template of ice
     templates: [templateDir],
   });
+
+  // load dotenv, set to process.env
+  await initProcessEnv(command, commandArgs);
 
   const { addWatchEvent, removeWatchEvent } = createWatch({
     watchDir: rootDir,
@@ -76,7 +80,8 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     },
   });
   await ctx.resolveConfig();
-  const { userConfig: { routes: routesConfig } } = ctx;
+  const { userConfig } = ctx;
+  const { routes: routesConfig } = userConfig;
   const routesRenderData = generateRoutesInfo(rootDir, routesConfig);
   generator.modifyRenderData((renderData) => ({
     ...renderData,
@@ -85,41 +90,51 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   dataCache.set('routes', JSON.stringify(routesRenderData.routeManifest));
 
   const runtimeModules = getRuntimeModules(ctx.getAllPlugin());
-  generator.modifyRenderData((renderData) => ({
-    ...renderData,
-    runtimeModules,
-  }));
+
   await ctx.setup();
-
-  // render template before webpack compile
-  const renderStart = new Date().getTime();
-
-  generator.render();
 
   addWatchEvent(
     ...getWatchEvents({ generator, targetDir, templateDir, cache: dataCache, ctx }),
   );
 
+  const compileIncludes = runtimeModules.map(({ name }) => `${name}/runtime`);
+  const contextConfig = getContextConfig(ctx, {
+    compileIncludes,
+    port: commandArgs.port,
+  });
+  const webTask = contextConfig.find(({ name }) => name === 'web');
+
+  // render template before webpack compile
+  const renderStart = new Date().getTime();
+  generator.modifyRenderData((renderData) => ({
+    ...renderData,
+    runtimeModules,
+  }));
+  generator.render();
   consola.debug('template render cost:', new Date().getTime() - renderStart);
 
-  // define runtime env before get webpack config
-  defineRuntimeEnv();
-  const compileIncludes = runtimeModules.map(({ name }) => `${name}/runtime`);
-  const contextConfig = getContextConfig(ctx, { compileIncludes, port: commandArgs.port });
-  const webTask = contextConfig.find(({ name }) => name === 'web');
   const esbuildCompile = createEsbuildCompiler({
     rootDir,
     task: webTask,
   });
 
+  let appConfig: AppConfig;
+  if (command === 'build') {
+    try {
+      // should after generator, otherwise it will compile error
+      appConfig = await getAppConfig({ esbuildCompile, rootDir });
+    } catch (err) {
+      consola.warn('Failed to get app config:', err.message);
+      consola.debug(err);
+    }
+  }
+  updateRuntimeEnv(routesRenderData.routeManifest, appConfig);
+
   return {
     run: async () => {
       if (command === 'start') {
-        updateRuntimeEnv(routesRenderData.routeManifest);
         return await start(ctx, contextConfig, esbuildCompile);
       } else if (command === 'build') {
-        const appConfig = await getAppConfig({ esbuildCompile, rootDir });
-        updateRuntimeEnv(routesRenderData.routeManifest, appConfig);
         return await build(ctx, contextConfig, esbuildCompile);
       }
     },

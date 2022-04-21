@@ -26,7 +26,15 @@ export function setupRenderServer(options: Options) {
     if (matches.length === 0) return;
 
     const entry = await serverCompiler();
-    const serverEntry = await import(entry);
+
+    let serverEntry;
+    try {
+      serverEntry = await import(entry);
+    } catch (err) {
+      // make error clearly, notice typeof err === 'string'
+      res.send(`import ${entry} error: ${err}`);
+    }
+
     const requestContext = {
       req,
       res,

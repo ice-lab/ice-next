@@ -27,25 +27,19 @@ export function createEsbuildCompiler(options: Options) {
   const esbuildCompile: EsbuildCompile = async (buildOptions) => {
     const startTime = new Date().getTime();
     consola.debug('[esbuild]', `start compile for: ${buildOptions.entryPoints}`);
-
-    const ICE_PREFIX = /^ICE_/i;
-    const raw = Object.keys({ ...process.env }).filter(key => ICE_PREFIX.test(key))
-      .reduce((env, key) => {
-        env[`process.env.${key}`] = process.env[key];
-        return env;
-      }, {});
+    const define = {
+      // ref: https://github.com/evanw/esbuild/blob/master/CHANGELOG.md#01117
+      // in esm, this in the global should be undefined. Set the following config to avoid warning
+      this: undefined,
+      ...taskConfig.define,
+      ...buildOptions.define,
+    };
 
     const buildResult = await esbuild.build({
       bundle: true,
       target: 'node12.19.0',
       ...buildOptions,
-      define: {
-        // ref: https://github.com/evanw/esbuild/blob/master/CHANGELOG.md#01117
-        // in esm, this in the global should be undefined. Set the following config to avoid warning
-        this: undefined,
-        // TOOD: sync ice runtime env
-        'process.env.ICE_RUNTIME_SERVER': 'true',
-      },
+      define,
       inject: [path.resolve(__dirname, '../polyfills/react.js')],
       plugins: [
         stylePlugin({
@@ -77,3 +71,5 @@ export function createEsbuildCompiler(options: Options) {
   };
   return esbuildCompile;
 }
+
+

@@ -19,7 +19,15 @@ export default async function generateHTML(options: Options) {
     ssr,
   } = options;
 
-  const serverEntry = await import(entry);
+  let serverEntry;
+
+  try {
+    serverEntry = await import(entry);
+  } catch (err) {
+    // make error clearly, notice typeof err === 'string'
+    throw new Error(`import ${entry} error: ${err}`);
+  }
+
   const routes = JSON.parse(fse.readFileSync(routeManifest, 'utf8'));
   const paths = getPaths(routes);
 

@@ -1,6 +1,6 @@
 import { defineAppConfig } from 'ice';
 
-if (process.env.ICE_RUNTIME_ERROR_BOUNDARY) {
+if (process.env.ICE_ERROR_BOUNDARY) {
   console.log('__REMOVED__');
 }
 
