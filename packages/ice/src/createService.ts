@@ -41,7 +41,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   });
 
   // load dotenv, set to process.env
-  await initProcessEnv(command, commandArgs);
+  await initProcessEnv(rootDir, command, commandArgs);
 
   const { addWatchEvent, removeWatchEvent } = createWatch({
     watchDir: rootDir,

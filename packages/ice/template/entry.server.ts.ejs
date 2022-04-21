@@ -1,9 +1,9 @@
 // process.env value will replace by esbuild define options
 // env keys same as utils/runtimeEnv.ts
-process.env.ICE_ROUTER = __process.env.ICE_ROUTER__;
-process.env.ICE_MODE = __process.env.ICE_MODE__;
-process.env.ICE_ERROR_BOUNDARY = __process.env.ICE_ERROR_BOUNDARY__;
-process.env.ICE_INITIAL_DATA = __process.env.ICE_INITIAL_DATA__;
+process.env.ICE_CORE_ROUTER = __process.env.ICE_CORE_ROUTER__;
+process.env.ICE_CORE_MODE = __process.env.ICE_CORE_MODE__;
+process.env.ICE_CORE_ERROR_BOUNDARY = __process.env.ICE_CORE_ERROR_BOUNDARY__;
+process.env.ICE_CORE_INITIAL_DATA = __process.env.ICE_CORE_INITIAL_DATA__;
 
 import { runServerApp, renderDocument as runDocumentRender } from '@ice/runtime';
 import appConfig from '@/app';

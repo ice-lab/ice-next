@@ -83,7 +83,10 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
   Object.keys(process.env).filter((key) => {
     return RUNTIME_PREFIX.test(key) || ['NODE_ENV'].includes(key);
   }).forEach((key) => {
-    runtimeDefineVars[`process.env.${key}`] = webpack.DefinePlugin.runtimeValue(() => JSON.stringify(process.env[key]), true);
+    runtimeDefineVars[`process.env.${key}`] =
+      /^ICE_CORE_/i.test(key)
+        ? webpack.DefinePlugin.runtimeValue(() => JSON.stringify(process.env[key]), true)
+        : JSON.stringify(process.env[key]);
   });
 
   // create plugins

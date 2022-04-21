@@ -28,9 +28,7 @@ let createBrowserHistory: typeof originCreateBrowserHistory;
 let useParams: typeof originUseParams;
 let useSearchParams: typeof originUseSearchParams;
 
-console.log('utils/react-router', process.env.ICE_ROUTER, process.env.ICE_ROUTER === 'true');
-
-if (process.env.ICE_ROUTER === 'true') {
+if (process.env.ICE_CORE_ROUTER === 'true') {
   Link = OriginLink;
   Outlet = OriginOutlet;
   matchRoutes = originMatchRoutes;

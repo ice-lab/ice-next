@@ -1,3 +1,7 @@
+import * as path from 'path';
+import * as fs from 'fs';
+import * as dotenv from 'dotenv';
+import { expand as dotenvExpand } from 'dotenv-expand';
 import type { RouteManifest } from '@ice/route-manifest';
 import type { CommandArgs, CommandName } from 'build-scripts';
 
@@ -6,11 +10,30 @@ export interface Envs {
   [key: string]: string;
 }
 
-export async function initProcessEnv(command: CommandName, commandArgs: CommandArgs): Promise<void> {
-  process.env.ICE_MODE = commandArgs.mode;
-  process.env.ICE_DEV_PORT = commandArgs.port;
+export async function initProcessEnv(rootDir: string, command: CommandName, commandArgs: CommandArgs): Promise<void> {
+  const { mode } = commandArgs;
 
-  // DG TODO: load .env file
+  // .env.${mode}.local is the highest priority
+  const dotenvFiles = [
+    `.env.${mode}.local`,
+    `.env.${mode}`,
+    '.env.local',
+    '.env',
+  ];
+
+  dotenvFiles.forEach(dotenvFile => {
+    const filepath = path.join(rootDir, dotenvFile);
+    if (fs.existsSync(dotenvFile)) {
+      dotenvExpand(
+        dotenv.config({
+          path: filepath,
+        }),
+      );
+    }
+  });
+
+  process.env.ICE_CORE_MODE = mode;
+  process.env.ICE_CORE_DEV_PORT = commandArgs.port;
 
   if (command === 'start') {
     process.env.NODE_ENV = 'development';
@@ -22,19 +45,19 @@ export async function initProcessEnv(command: CommandName, commandArgs: CommandA
   }
 
   // set runtime initial env
-  process.env.ICE_ROUTER = 'true';
-  process.env.ICE_ERROR_BOUNDARY = 'true';
-  process.env.ICE_INITIAL_DATA = 'true';
+  process.env.ICE_CORE_ROUTER = 'true';
+  process.env.ICE_CORE_ERROR_BOUNDARY = 'true';
+  process.env.ICE_CORE_INITIAL_DATA = 'true';
 }
 
 export const updateRuntimeEnv = (routeManifest?: RouteManifest, appConfig?: AppConfig) => {
   if (!appConfig?.app?.getInitialData) {
-    process.env['ICE_INITIAL_DATA'] = 'false';
+    process.env['ICE_CORE_INITIAL_DATA'] = 'false';
   }
   if (!appConfig?.app?.errorBoundary) {
-    process.env['ICE_ERROR_BOUNDARY'] = 'false';
+    process.env['ICE_CORE_ERROR_BOUNDARY'] = 'false';
   }
   if (routeManifest && Object.keys(routeManifest).length <= 1) {
-    process.env['ICE_ROUTER'] = 'false';
+    process.env['ICE_CORE_ROUTER'] = 'false';
   }
 };

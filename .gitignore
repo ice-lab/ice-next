@@ -46,3 +46,5 @@ dist
 # website
 .docusaurus
 .cache-loader
+
+.env*.local
