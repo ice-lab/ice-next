@@ -32,25 +32,49 @@ interface RenderResult {
 }
 
 export async function renderToHTML(requestContext: ServerContext, options: RenderOptions) {
-  const result = await doRender(requestContext, options);
-  const { pipe } = result;
+  const {
+    documentOnly,
+  } = options;
 
-  if (pipe) {
-    const html = await piperToString(pipe);
-    return {
-      html,
-      statusCode: 200,
-    };
+  if (documentOnly) {
+    const result = await renderDocument(requestContext, options);
+    return result;
   }
 
-  return result;
+  try {
+    const result = await renderServerEntry(requestContext, options);
+    const { pipe } = result;
+
+    if (pipe) {
+      const html = await piperToString(pipe);
+      return {
+        html,
+        statusCode: 200,
+      };
+    }
+
+    return result;
+  } catch (error) {
+    options.documentOnly = true;
+    const result = await renderDocument(requestContext, options);
+    return result;
+  }
 }
 
 export async function renderToResponse(requestContext: ServerContext, options: RenderOptions) {
   const { res } = requestContext;
 
+  const {
+    documentOnly,
+  } = options;
+
+  if (documentOnly) {
+    const result = await renderDocument(requestContext, options);
+    sendResult(res, result);
+  }
+
   try {
-    const result = await doRender(requestContext, options);
+    const result = await renderServerEntry(requestContext, options);
     const { pipe } = result;
 
     if (!pipe) {
@@ -61,15 +85,10 @@ export async function renderToResponse(requestContext: ServerContext, options: R
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
-    pipe(res, async (err) => {
-      if (err) {
-        options.documentOnly = true;
-        const result = await doRender(requestContext, options);
-        sendResult(res, result);
-      }
-    });
+    await piperToResponse(pipe, res);
   } catch (error) {
-    const result = render500(error);
+    options.documentOnly = true;
+    const result = await renderDocument(requestContext, options);
     sendResult(res, result);
   }
 }
@@ -86,47 +105,6 @@ function piperToResponse(pipe, res) {
   });
 }
 
-async function doRender(requestContext: ServerContext, options: RenderOptions): Promise<RenderResult> {
-  const { req } = requestContext;
-
-  const {
-    routes,
-  } = options;
-
-  const location = getLocation(req.url);
-  const matches = matchRoutes(routes, location);
-
-  if (!matches.length) {
-    return render404();
-  }
-
-  await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
-
-  const { documentOnly } = options;
-
-  if (documentOnly) {
-    return renderDocument(matches, options);
-  }
-
-  let element;
-
-  try {
-    element = await createServerEntry(requestContext, matches, options);
-  } catch (err) {
-    console.error('Downgrade To CSR:', err);
-    return renderDocument(matches, options);
-  }
-
-  // @ts-expect-error
-  const pipe = process.browser
-        ? await renderToReadableStream(element)
-        : await renderToNodeStream(element, false);
-
-  return {
-    pipe,
-  };
-}
-
 function render404() {
   return {
     html: 'Page is Not Found',
@@ -134,21 +112,12 @@ function render404() {
   };
 }
 
-function render500(error) {
-  console.error(error);
-
-  return {
-    html: 'internal server error',
-    statusCode: 500,
-  };
-}
-
 /**
  * Render App by SSR.
  */
-export async function createServerEntry(
-  requestContext: ServerContext, matches, options: RenderOptions,
-  ): Promise<ReactElement> {
+export async function renderServerEntry(
+  requestContext: ServerContext, options: RenderOptions,
+  ): Promise<RenderResult> {
   const { req } = requestContext;
 
   const {
@@ -160,6 +129,13 @@ export async function createServerEntry(
   } = options;
 
   const location = getLocation(req.url);
+  const matches = matchRoutes(routes, location);
+
+  if (!matches.length) {
+    return render404();
+  }
+
+  await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   const initialContext: InitialContext = {
     ...requestContext,
@@ -196,7 +172,7 @@ export async function createServerEntry(
   const PageWrappers = runtime.getWrapperPageRegistration();
   const AppRouter = runtime.getAppRouter();
 
-  return (
+  const element = (
     <AppContextProvider value={appContext}>
       <AppDataProvider value={appData}>
         <Document>
@@ -213,18 +189,38 @@ export async function createServerEntry(
       </AppDataProvider>
     </AppContextProvider>
   );
+
+  // @ts-expect-error
+  const pipe = process.browser
+        ? await renderToReadableStream(element)
+        : await renderToNodeStream(element, false);
+
+  return {
+    pipe,
+  };
 }
 
 /**
  * Render Document for CSR.
  */
-export async function renderDocument(matches, options: RenderOptions): Promise<RenderResult> {
+export async function renderDocument(requestContext, options: RenderOptions): Promise<RenderResult> {
+  const { req } = requestContext;
+
   const {
     routes,
     assetsManifest,
     appConfig,
     Document,
   } = options;
+
+  const location = getLocation(req.url);
+  const matches = matchRoutes(routes, location);
+
+  if (!matches.length) {
+    return render404();
+  }
+
+  await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   // renderDocument needn't to load routesData and appData.
   const appData = {};

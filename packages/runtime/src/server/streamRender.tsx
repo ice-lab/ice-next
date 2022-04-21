@@ -32,6 +32,7 @@ export function renderToNodeStream(
           if (generateStaticHTML) {
             pipe(res);
           }
+          next();
         },
       },
     );
@@ -86,6 +87,8 @@ export function piperToString(input): Promise<string> {
       reject(error);
     });
 
-    input(stream);
+    input(stream, () => {
+      // noop
+    });
   });
 }
