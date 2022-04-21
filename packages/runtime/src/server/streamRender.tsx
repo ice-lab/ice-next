@@ -14,19 +14,22 @@ export function renderToNodeStream(
   generateStaticHTML: boolean,
 ): NodeWritablePiper {
   return (res, next) => {
-    const { pipe } = ReactDOMServer.renderToPipeableStream(
+    let shellReady = false;
+
+    const { abort, pipe } = ReactDOMServer.renderToPipeableStream(
       element,
       {
         onError(error: Error) {
-          console.error(error);
+          if (!shellReady) {
+            next(error);
+          }
+          abort();
         },
         onShellReady() {
+          shellReady = true;
           if (!generateStaticHTML) {
             pipe(res);
           }
-        },
-        onShellError(error: Error) {
-          next(error);
         },
         onAllReady() {
           if (generateStaticHTML) {

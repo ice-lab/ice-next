@@ -1,3 +1,4 @@
+import type { ServerResponse } from 'http';
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import { Action, createPath, parsePath } from 'history';
@@ -8,7 +9,7 @@ import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
 import { AppDataProvider } from './AppData.js';
 import { loadRouteModules, loadRoutesData, getRoutesConfig, matchRoutes } from './routes.js';
-import { piperToString, renderToNodeStream, renderToReadableStream } from './server/streamRender.js';
+import { piperToString, renderToNodeStream } from './server/streamRender.js';
 import type { NodeWritablePiper } from './server/streamRender.js';
 import type {
   AppContext, InitialContext, RouteItem, ServerContext,
@@ -24,31 +25,35 @@ interface RenderOptions {
   documentOnly?: boolean;
 }
 
+interface Piper {
+  piper: NodeWritablePiper;
+  fallback: Function;
+}
 interface RenderResult {
-  pipe?: NodeWritablePiper;
-  callback?: Function;
   statusCode?: number;
-  html?: string;
+  value?: string | Piper;
 }
 
-export async function renderToHTML(requestContext: ServerContext, options: RenderOptions) {
+export async function renderToHTML(requestContext: ServerContext, options: RenderOptions): Promise<RenderResult> {
   const result = await doRender(requestContext, options);
 
-  const { html, pipe, callback } = result;
+  const { value } = result;
 
-  if (html) {
+  if (typeof value === 'string') {
     return result;
   }
 
+  const { piper, fallback } = value;
+
   try {
-    const html = await piperToString(pipe);
+    const html = await piperToString(piper);
 
     return {
-      html,
+      value: html,
       statusCode: 200,
     };
   } catch (error) {
-    const result = callback();
+    const result = fallback();
     return result;
   }
 }
@@ -57,35 +62,39 @@ export async function renderToResponse(requestContext: ServerContext, options: R
   const { res } = requestContext;
   const result = await doRender(requestContext, options);
 
-  if (result.html) {
+  const { value } = result;
+
+  if (typeof value === 'string') {
     sendResult(res, result);
     return;
   }
+
+  const { piper, fallback } = value;
 
   try {
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
-    await piperToResponse(result.pipe, res);
+    await piperToResponse(res, piper);
   } catch (error) {
-    const data = await result.callback();
-    sendResult(res, data);
+    const result = await fallback();
+    sendResult(res, result);
   }
 }
 
-async function sendResult(res, result: RenderResult) {
+async function sendResult(res: ServerResponse, result: RenderResult) {
   res.statusCode = result.statusCode;
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.send(result.html);
+  res.end(result.value);
 }
 
-function piperToResponse(pipe, res) {
+function piperToResponse(res, pipe: NodeWritablePiper) {
   return new Promise((resolve, reject) => {
     pipe(res, (err) => (err ? reject(err) : resolve(null)));
   });
 }
 
-async function doRender(requestContext, options): Promise<RenderResult> {
+async function doRender(requestContext: ServerContext, options: RenderOptions): Promise<RenderResult> {
   const { req } = requestContext;
 
   const {
@@ -113,9 +122,10 @@ async function doRender(requestContext, options): Promise<RenderResult> {
   }
 }
 
-function render404() {
+// TODO: render custom 404 page.
+function render404(): RenderResult {
   return {
-    html: 'Page is Not Found',
+    value: 'Page is Not Found',
     statusCode: 404,
   };
 }
@@ -189,15 +199,16 @@ export async function renderServerEntry(
     </AppContextProvider>
   );
 
-  // @ts-expect-error
-  const pipe = process.browser
-        ? await renderToReadableStream(element)
-        : await renderToNodeStream(element, false);
+  const piper = await renderToNodeStream(element, false);
+
+  const fallback = () => {
+    renderDocument(matches, options);
+  };
 
   return {
-    pipe,
-    callback: () => {
-      return renderDocument(matches, options);
+    value: {
+      piper,
+      fallback,
     },
   };
 }
@@ -238,7 +249,7 @@ export function renderDocument(matches, options: RenderOptions): RenderResult {
   );
 
   return {
-    html,
+    value: html,
     statusCode: 200,
   };
 }

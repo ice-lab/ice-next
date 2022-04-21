@@ -33,7 +33,7 @@ export default async function generateHTML(options: Options) {
     };
 
     const documentOnly = !(ssg || ssr);
-    const { html } = await serverEntry.renderToHTML(requestContext, documentOnly);
+    const { value: html } = await serverEntry.renderToHTML(requestContext, documentOnly);
 
     const fileName = routePath === '/' ? 'index.html' : `${routePath}.html`;
     const contentPath = path.join(outDir, fileName);
