@@ -130,7 +130,9 @@ importers:
       css-minimizer-webpack-plugin: 3.4.1
       cssnano: ^5.1.7
       es-module-lexer: 0.10.5
+      eslint-webpack-plugin: 3.1.1
       events: 3.3.0
+      fork-ts-checker-webpack-plugin: 7.2.6
       fs-extra: ^10.0.0
       jest-worker: 27.5.1
       less: 4.1.2
@@ -168,6 +170,8 @@ importers:
       css-minimizer-webpack-plugin: 3.4.1_webpack@5.72.0
       cssnano: 5.1.7_postcss@8.4.12
       es-module-lexer: 0.10.5
+      eslint-webpack-plugin: 3.1.1_eslint@8.13.0+webpack@5.72.0
+      fork-ts-checker-webpack-plugin: 7.2.6_typescript@4.6.3+webpack@5.72.0
       fs-extra: 10.1.0
       less-loader: 10.2.0_less@4.1.2+webpack@5.72.0
       lodash: 4.17.21
@@ -291,6 +295,8 @@ importers:
       '@ice/runtime': ^1.0.0
       build-scripts: ^2.0.0-16
       esbuild: ^0.14.23
+      eslint-webpack-plugin: 3.1.1
+      fork-ts-checker-webpack-plugin: 7.2.6
       react: ^17.0.2
       terser: ^5.12.1
       unplugin: ^0.3.2
@@ -301,6 +307,8 @@ importers:
       '@ice/runtime': link:../runtime
       build-scripts: 2.0.0-17
       esbuild: 0.14.36
+      eslint-webpack-plugin: 3.1.1_eslint@8.13.0+webpack@5.72.0
+      fork-ts-checker-webpack-plugin: 7.2.6_typescript@4.6.3+webpack@5.72.0
       react: 17.0.2
       terser: 5.12.1
       unplugin: 0.3.3_esbuild@0.14.36+webpack@5.72.0
@@ -1398,6 +1406,13 @@ packages:
     dependencies:
       '@types/eslint': 8.4.1
       '@types/estree': 0.0.51
+    dev: true
+
+  /@types/eslint/7.29.0:
+    resolution: {integrity: sha512-VNcvioYDH8/FxaeTKkM4/TiTwt6pBV9E3OfGmvaw8tPl0rrHCJ4Ll15HRT+pMiFAf/MLQvAzC+6RzUMEL9Ceng==}
+    dependencies:
+      '@types/estree': 0.0.51
+      '@types/json-schema': 7.0.11
     dev: true
 
   /@types/eslint/8.4.1:
@@ -3546,6 +3561,22 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dev: true
 
+  /eslint-webpack-plugin/3.1.1_eslint@8.13.0+webpack@5.72.0:
+    resolution: {integrity: sha512-xSucskTN9tOkfW7so4EaiFIkulWLXwCB/15H917lR6pTv0Zot6/fetFucmENRb7J5whVSFKIvwnrnsa78SG2yg==}
+    engines: {node: '>= 12.13.0'}
+    peerDependencies:
+      eslint: ^7.0.0 || ^8.0.0
+      webpack: ^5.0.0
+    dependencies:
+      '@types/eslint': 7.29.0
+      eslint: 8.13.0
+      jest-worker: 27.5.1
+      micromatch: 4.0.5
+      normalize-path: 3.0.0
+      schema-utils: 3.1.1
+      webpack: 5.72.0_@swc+core@1.2.168
+    dev: true
+
   /eslint/8.13.0:
     resolution: {integrity: sha512-D+Xei61eInqauAyTJ6C0q6x9mx7kTUC1KZ0m0LSEexR0V+e94K12LmWX076ZIsldwfQ2RONdaJe0re0TRGQbRQ==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
@@ -3895,6 +3926,32 @@ packages:
     dependencies:
       cross-spawn: 7.0.3
       signal-exit: 3.0.7
+    dev: true
+
+  /fork-ts-checker-webpack-plugin/7.2.6_typescript@4.6.3+webpack@5.72.0:
+    resolution: {integrity: sha512-q5rdvy7CaqEWyK3ly/AjSMQ+e3DGkjuqP0pkTwJcg+PHLhQfTJXqkmRIeA2y0TPfX4U00Et+AxS2ObAsVcm0hQ==}
+    engines: {node: '>=12.13.0', yarn: '>=1.0.0'}
+    peerDependencies:
+      typescript: '>3.6.0'
+      vue-template-compiler: '*'
+      webpack: ^5.11.0
+    peerDependenciesMeta:
+      vue-template-compiler:
+        optional: true
+    dependencies:
+      '@babel/code-frame': 7.16.7
+      chalk: 4.1.2
+      chokidar: 3.5.3
+      cosmiconfig: 7.0.1
+      deepmerge: 4.2.2
+      fs-extra: 10.1.0
+      memfs: 3.4.1
+      minimatch: 3.1.2
+      schema-utils: 3.1.1
+      semver: 7.3.7
+      tapable: 2.2.1
+      typescript: 4.6.3
+      webpack: 5.72.0_@swc+core@1.2.168
     dev: true
 
   /forwarded/0.2.0:

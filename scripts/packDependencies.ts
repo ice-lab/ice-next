@@ -19,6 +19,7 @@ interface Options {
   minify?: boolean;
   declaration?: boolean;
   bundleName?: string;
+  emptyDir?: boolean;
   matchCopyFiles?: (data: {
     resolvePath: string;
     resolveId: string;
@@ -28,12 +29,14 @@ interface Options {
 
 export async function packDependency(options: Options): Promise<void> {
   const {
-    pkgName, file, rootDir, target, externals, matchCopyFiles, patch,
+    pkgName, file, rootDir, target, externals, matchCopyFiles, patch, emptyDir = true,
     bundleName = 'index.js', minify = true, declaration = true } = options;
   console.log(chalk.green(`start pack ${pkgName || file}`));
 
   const targetPath = path.join(rootDir, target);
-  fs.removeSync(targetPath);
+  if (emptyDir) {
+    fs.removeSync(targetPath);
+  }
   const filesToCopy = [];
   const packEntry = file ? path.join(rootDir, file) : require.resolve(pkgName, {
     paths: [rootDir],
@@ -85,6 +88,8 @@ export async function packDependency(options: Options): Promise<void> {
     );
   }
   // write code to package
+  const outfile = path.join(targetPath, bundleName);
+  fs.ensureDirSync(path.dirname(outfile));
   fs.writeFileSync(path.join(targetPath, bundleName), code, 'utf-8');
   if (pkgName) {
     const packageRoot = path.dirname(

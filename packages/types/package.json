@@ -30,6 +30,8 @@
     "@ice/runtime": "^1.0.0",
     "build-scripts": "^2.0.0-16",
     "esbuild": "^0.14.23",
+    "eslint-webpack-plugin": "3.1.1",
+    "fork-ts-checker-webpack-plugin": "7.2.6",
     "react": "^17.0.2",
     "terser": "^5.12.1",
     "unplugin": "^0.3.2",

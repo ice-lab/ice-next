@@ -1,5 +1,7 @@
 import type { RuleSetRule, Configuration } from 'webpack';
 import type { ProxyConfigArray, ProxyConfigArrayItem, ProxyConfigMap, Middleware, ServerOptions } from 'webpack-dev-server';
+import type { Options } from 'eslint-webpack-plugin';
+import type { ForkTsCheckerWebpackPluginOptions } from 'fork-ts-checker-webpack-plugin/lib/plugin-options';
 import type { UnpluginOptions } from 'unplugin';
 import type Server from 'webpack-dev-server';
 import type { ECMA } from 'terser';
@@ -72,4 +74,8 @@ export interface Config {
   port?: string | number;
 
   cacheDirectory?: string;
+
+  tsCheckerOptions?: ForkTsCheckerWebpackPluginOptions;
+
+  eslintOptions?: Options;
 }

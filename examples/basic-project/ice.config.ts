@@ -11,4 +11,5 @@ export default defineConfig({
   },
   dropLogLevel: 'warn',
   plugins: ['@ice/plugin-auth'],
+  eslint: true,
 });

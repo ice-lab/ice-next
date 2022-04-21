@@ -15,6 +15,7 @@ const EXTERNALS = {
   fibers: 'fibers',
   sass: 'sass',
   less: 'less',
+  eslint: 'eslint',
   typescript: 'typescript',
   postcss: 'postcss',
   '@swc/core': '@swc/core',
@@ -43,12 +44,30 @@ export function filterExternals(externals: Record<string, string>, keys: string[
 const tasks = [
   // simple task
   ...['cssnano', 'tapable', 'schema-utils', 'lodash',
-    'less-loader', 'postcss-loader', 'sass-loader',
+    'less-loader', 'postcss-loader', 'sass-loader', 'css-loader',
     'postcss-preset-env', 'postcss-nested', 'postcss-modules',
     'webpack-bundle-analyzer', 'es-module-lexer', 'terser',
+    'eslint-webpack-plugin',
   ].map((pkgName) => ({ pkgName })),
   {
-    pkgName: 'css-loader',
+    // pack main package
+    pkgName: 'fork-ts-checker-webpack-plugin',
+  },
+  {
+    // pack worker file
+    pkgName: 'fork-ts-checker-webpack-plugin',
+    declaration: false,
+    emptyDir: false,
+    file: 'node_modules/fork-ts-checker-webpack-plugin/lib/typescript/worker/get-issues-worker.js',
+    bundleName: 'typescript/worker/get-issues-worker.js',
+  },
+  {
+    // pack worker file
+    pkgName: 'fork-ts-checker-webpack-plugin',
+    declaration: false,
+    emptyDir: false,
+    file: path.join('node_modules', 'fork-ts-checker-webpack-plugin/lib/typescript/worker/get-dependencies-worker.js'),
+    bundleName: 'typescript/worker/get-dependencies-worker.js',
   },
   {
     pkgName: 'css-minimizer-webpack-plugin',

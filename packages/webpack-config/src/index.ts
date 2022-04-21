@@ -8,6 +8,8 @@ import bundleAnalyzer from '@ice/bundles/compiled/webpack-bundle-analyzer/index.
 import lodash from '@ice/bundles/compiled/lodash/index.js';
 import CssMinimizerPlugin from '@ice/bundles/compiled/css-minimizer-webpack-plugin/index.js';
 import TerserPlugin from '@ice/bundles/compiled/terser-webpack-plugin/index.js';
+import ForkTsCheckerPlugin from '@ice/bundles/compiled/fork-ts-checker-webpack-plugin/index.js';
+import ESlintPlugin from '@ice/bundles/compiled/eslint-webpack-plugin/index.js';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
 import type { Configuration, WebpackPluginInstance } from 'webpack';
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
@@ -72,6 +74,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
     cacheDirectory,
     https,
     analyzer,
+    tsCheckerOptions,
+    eslintOptions,
   } = config;
 
   const dev = mode !== 'production';
@@ -102,7 +106,6 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
     // @ts-expect-error ignore error with different webpack referer
     defineRuntimeVariables[key] = webpack.DefinePlugin.runtimeValue(runtimeValue, true);
   });
-
   // create plugins
   const webpackPlugins = getTransformPlugins(config).map((plugin) => createUnplugin(() => plugin).webpack());
 
@@ -211,6 +214,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
         outputDir: path.join(rootDir, '.ice'),
       }),
       analyzer && new BundleAnalyzerPlugin(),
+      tsCheckerOptions && new ForkTsCheckerPlugin(tsCheckerOptions),
+      eslintOptions && new ESlintPlugin(eslintOptions),
     ].filter(Boolean) as unknown as WebpackPluginInstance[],
     devServer: {
       allowedHosts: 'all',
