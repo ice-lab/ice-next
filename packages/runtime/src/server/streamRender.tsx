@@ -42,6 +42,9 @@ export function renderToNodeStream(
   };
 }
 
+/**
+ * Environments with Web Streams, like Deno and modern edge runtimes, should use renderToReadableStream instead.
+ */
 export function renderToReadableStream(
   element: React.ReactElement,
 ): NodeWritablePiper {
