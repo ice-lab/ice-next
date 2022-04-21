@@ -10,8 +10,8 @@ import CssMinimizerPlugin from '@ice/bundles/compiled/css-minimizer-webpack-plug
 import TerserPlugin from '@ice/bundles/compiled/terser-webpack-plugin/index.js';
 import ForkTsCheckerPlugin from '@ice/bundles/compiled/fork-ts-checker-webpack-plugin/index.js';
 import ESlintPlugin from '@ice/bundles/compiled/eslint-webpack-plugin/index.js';
-import webpack from '@ice/bundles/compiled/webpack/index.js';
 import type { Configuration, WebpackPluginInstance } from 'webpack';
+import type webpack from 'webpack';
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
 import type { Config } from '@ice/types';
 import { createUnplugin } from 'unplugin';
@@ -30,6 +30,7 @@ const watchIgnoredRegexp = ['**/.git/**', '**/node_modules/**'];
 interface GetWebpackConfigOptions {
   rootDir: string;
   config: Config;
+  webpack: typeof webpack;
 }
 type WebpackConfig = Configuration & { devServer?: DevServerConfiguration };
 type GetWebpackConfig = (options: GetWebpackConfigOptions) => WebpackConfig;
@@ -53,7 +54,7 @@ function getEntry(rootDir: string) {
   };
 }
 
-const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
+const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
   const {
     mode,
     define,
@@ -103,7 +104,6 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
   Object.keys(runtimeEnv).forEach((key) => {
     const runtimeValue = runtimeEnv[key];
     // set true to flag the module as uncacheable
-    // @ts-expect-error ignore error with different webpack referer
     defineRuntimeVariables[key] = webpack.DefinePlugin.runtimeValue(runtimeValue, true);
   });
   // create plugins
@@ -267,6 +267,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
     ...config,
     supportedBrowsers,
     hashKey,
+    webpack,
   };
   const finalWebpackConfig = [configCss, configAssets, ...(configureWebpack || [])].reduce((result, next) => {
     return next(result, ctx);
