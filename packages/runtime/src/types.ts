@@ -96,12 +96,13 @@ export interface RouteItem {
   children?: RouteItem[];
 }
 
+export type ComponentWithChildren<P = {}> = React.ComponentType<React.PropsWithChildren<P>>;
+
 export interface RouteWrapper {
-  Wrapper: ComponentType;
+  Wrapper: ComponentWithChildren;
   layout?: boolean;
 }
 
-export type ComponentWithChildren<P = {}> = React.ComponentType<React.PropsWithChildren<P>>;
 export type SetAppRouter = (AppRouter: ComponentType<AppRouterProps>) => void;
 export type AddProvider = (Provider: ComponentWithChildren<any>) => void;
 export type SetRender = (render: Renderer) => void;
