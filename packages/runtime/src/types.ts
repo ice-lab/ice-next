@@ -107,7 +107,7 @@ export interface RouteWrapper {
 export type SetAppRouter = (AppRouter: ComponentType<AppRouterProps>) => void;
 export type AddProvider = (Provider: ComponentWithChildren<any>) => void;
 export type SetRender = (render: Renderer) => void;
-export type AddWrapper = (wrapper: ComponentType, options?: { layout?: boolean}) => void;
+export type AddWrapper = (wrapper: ComponentType, forLayout?: boolean) => void;
 
 export interface RouteModules {
   [routeId: string]: RouteComponent;

@@ -83,10 +83,10 @@ class Runtime {
     this.render = render;
   };
 
-  private addWrapper: AddWrapper = (Wrapper, options = {}) => {
+  private addWrapper: AddWrapper = (Wrapper, forLayout?: boolean) => {
     this.RouteWrappers.push({
       Wrapper,
-      layout: options.layout,
+      layout: forLayout,
     });
   };
 
