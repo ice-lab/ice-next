@@ -94,6 +94,7 @@ export interface RouteItem {
   strict?: boolean;
   load?: () => Promise<RouteComponent>;
   children?: RouteItem[];
+  layout?: boolean;
 }
 
 export type ComponentWithChildren<P = {}> = React.ComponentType<React.PropsWithChildren<P>>;

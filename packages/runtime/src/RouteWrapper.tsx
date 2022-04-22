@@ -5,17 +5,14 @@ import { DataProvider, ConfigProvider } from './RouteContext.js';
 
 interface Props {
   id: string;
+  isLayout?: boolean;
   wrappers?: RouteWrapper[];
   children?: React.ReactNode;
 }
 
 export default function RouteWrapper(props: Props) {
-  const { wrappers = [], id } = props;
+  const { wrappers = [], id, isLayout } = props;
   const { routesData, routesConfig } = useAppContext();
-
-  const idParts = id.split('/');
-  const isLayout = idParts[idParts.length - 1] === 'layout';
-
   // layout should only be wrapped by Wrapper with `layout: true`
   const filtered = isLayout ? wrappers.filter(wrapper => wrapper.layout === true) : wrappers;
   const RouteWrappers = filtered.map(item => item.Wrapper);

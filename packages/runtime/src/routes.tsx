@@ -86,10 +86,10 @@ export function getRoutesConfig(matches: RouteMatch[], routesData: RoutesData): 
  */
 export function createRouteElements(routes: RouteItem[], RouteWrappers?: IRouteWrapper[]) {
   return routes.map((routeItem: RouteItem) => {
-    let { path, children, index, id, element, ...rest } = routeItem;
+    let { path, children, index, id, layout, element, ...rest } = routeItem;
 
     element = (
-      <RouteWrapper id={id} wrappers={RouteWrappers}>
+      <RouteWrapper id={id} isLayout={layout} wrappers={RouteWrappers}>
         <RouteComponent id={id} />
       </RouteWrapper>
     );
