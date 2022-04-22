@@ -42,7 +42,7 @@ const start = async (context: Context<Config>, contextConfig: ContextConfig[], e
     applyHook,
     esbuildCompile,
   });
-  const devServer = new WebpackDevServer(devServerConfig, compiler as any);
+  const devServer = new WebpackDevServer(devServerConfig, compiler);
   devServer.startCallback(() => {
     applyHook('after.start.devServer', {
       urls,
