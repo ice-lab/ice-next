@@ -55,6 +55,7 @@ export async function renderToHTML(requestContext: ServerContext, options: Rende
       statusCode: 200,
     };
   } catch (error) {
+    console.error('Downgrade:', error);
     const result = fallback();
     return result;
   }
@@ -79,6 +80,7 @@ export async function renderToResponse(requestContext: ServerContext, options: R
 
     await piperToResponse(res, piper);
   } catch (error) {
+    console.error('Downgrade:', error);
     const result = await fallback();
     sendResult(res, result);
   }
