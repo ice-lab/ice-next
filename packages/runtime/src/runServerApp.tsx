@@ -28,7 +28,7 @@ interface RenderOptions {
 }
 
 interface Piper {
-  piper: NodeWritablePiper;
+  pipe: NodeWritablePiper;
   fallback: Function;
 }
 interface RenderResult {
@@ -45,10 +45,10 @@ export async function renderToHTML(requestContext: ServerContext, options: Rende
     return result;
   }
 
-  const { piper, fallback } = value;
+  const { pipe, fallback } = value;
 
   try {
-    const html = await piperToString(piper);
+    const html = await piperToString(pipe);
 
     return {
       value: html,
@@ -72,13 +72,13 @@ export async function renderToResponse(requestContext: ServerContext, options: R
     return;
   }
 
-  const { piper, fallback } = value;
+  const { pipe, fallback } = value;
 
   try {
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
-    await piperToResponse(res, piper);
+    await piperToResponse(res, pipe);
   } catch (error) {
     console.error('Downgrade:', error);
     const result = await fallback();
@@ -203,7 +203,7 @@ export async function renderServerEntry(
     </AppContextProvider>
   );
 
-  const piper = await renderToNodeStream(element, false);
+  const pipe = await renderToNodeStream(element, false);
 
   const fallback = () => {
     renderDocument(matches, options);
@@ -211,7 +211,7 @@ export async function renderServerEntry(
 
   return {
     value: {
-      piper,
+      pipe,
       fallback,
     },
   };
