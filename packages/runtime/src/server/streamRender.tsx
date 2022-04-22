@@ -58,7 +58,7 @@ export function renderToReadableStream(
     const reader = readable.getReader();
     const decoder = new TextDecoder();
     const process = () => {
-      reader.read().then(({ done, value }: any) => {
+      reader.read().then(({ done, value }) => {
         if (done) {
           next();
         } else {
