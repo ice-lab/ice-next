@@ -1,12 +1,11 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs-extra';
-import { packDependency } from '../../scripts/packDependencies';
 
 // @ts-expect-error
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const EXTERNALS = {
+export const taskExternals = {
   // don't bundle caniuse-lite data so users can
   // update it manually
   'caniuse-lite': 'caniuse-lite',
@@ -87,7 +86,7 @@ const tasks = [
     file: './webpack/bundle',
     pkgName: 'webpack',
     bundleName: 'bundle.js',
-    externals: filterExternals(EXTERNALS, ['webpack']),
+    externals: filterExternals(taskExternals, ['webpack']),
     minify: false,
     matchCopyFiles: (data: { resolvePath: string }): boolean => {
       const { resolvePath } = data;
@@ -103,13 +102,4 @@ const tasks = [
   },
 ];
 
-(async () => {
-  for (let task of tasks) {
-    await packDependency({
-      rootDir: __dirname,
-      externals: EXTERNALS,
-      target: `compiled/${task.pkgName}`,
-      ...task,
-    });
-  }
-})();
+export default tasks;

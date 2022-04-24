@@ -10,7 +10,7 @@
     "rebuild": "pnpm install && pnpm run build",
     "watch": "esmo ./scripts/watch.ts",
     "build": "esmo ./scripts/build.ts",
-    "prebundle": "esmo ./packages/bundles/tasks.ts",
+    "prebundle": "esmo ./scripts/packDependencies.ts",
     "clean": "rimraf packages/*/esm",
     "dependency:check": "esmo ./scripts/dependencyCheck.ts",
     "version": "esmo ./scripts/tagVersion.ts",

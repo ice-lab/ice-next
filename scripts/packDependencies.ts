@@ -1,14 +1,16 @@
 import * as path from 'path';
 import { createRequire } from 'module';
+import { fileURLToPath } from 'url';
 import fs from 'fs-extra';
 import ncc from '@vercel/ncc';
 import chalk from 'chalk';
 import * as dts from 'dts-bundle';
 import glob from 'glob';
 import findUp from 'find-up';
+import tasks, { taskExternals } from '../packages/bundles/tasks';
 
-// @ts-expect-error
 const require = createRequire(import.meta.url);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 interface Options {
   pkgName?: string;
@@ -152,3 +154,14 @@ export async function packDependency(options: Options): Promise<void> {
     patch();
   }
 }
+
+(async () => {
+  for (let task of tasks) {
+    await packDependency({
+      rootDir: path.join(__dirname, '../packages/bundles'),
+      externals: taskExternals,
+      target: `compiled/${task.pkgName}`,
+      ...task,
+    });
+  }
+})();
