@@ -51,3 +51,8 @@ export function getData() {
     }, 1 * 100);
   });
 }
+
+export const loader = {
+  type: 'fetch',
+  url: 'https://api.cdnjs.com/libraries/react',
+};

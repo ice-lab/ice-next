@@ -33,16 +33,21 @@ export default async function runClientApp(options: RunClientAppOptions) {
   await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   const appContextFromServer: AppContext = (window as any).__ICE_APP_CONTEXT__ || {};
-  let { appData, routesData, routesConfig, assetsManifest } = appContextFromServer;
+  let { appData, routesData, routesConfig, assetsManifest, routesLoader } = appContextFromServer;
 
   const initialContext = getInitialContext();
   if (!appData && appConfig.app?.getData) {
-    appData = await appConfig.app.getData(initialContext);
+    if (appConfig.app?.loader && typeof window !== 'undefined') {
+      const load = (window as any).__ICE_DATA_LOADER__;
+      appData = await load('app');
+    } else if (appConfig.app?.getData) {
+      appData = await appConfig.app.getData(initialContext);
+    }
   }
 
-  if (!routesData) {
+  // if (!routesData) {
     routesData = await loadRoutesData(matches, initialContext);
-  }
+  // }
 
   if (!routesConfig) {
     routesConfig = getRoutesConfig(matches, routesConfig);
@@ -55,6 +60,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
     routesData,
     routesConfig,
     assetsManifest,
+    routesLoader,
     matches,
   };
 

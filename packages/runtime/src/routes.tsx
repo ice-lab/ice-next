@@ -3,7 +3,7 @@ import type { Location } from 'history';
 import type { RouteObject } from 'react-router-dom';
 import { matchRoutes as originMatchRoutes } from 'react-router-dom';
 import PageWrapper from './PageWrapper.js';
-import type { RouteItem, RouteModules, PageWrapper as IPageWrapper, RouteMatch, InitialContext, RoutesConfig, RoutesData } from './types';
+import type { RouteItem, RouteModules, PageWrapper as IPageWrapper, RouteMatch, InitialContext, RoutesConfig, RoutesData, RoutesLoader } from './types';
 
 // global route modules cache
 const routeModules: RouteModules = {};
@@ -48,10 +48,20 @@ export async function loadRoutesData(matches: RouteMatch[], initialContext: Init
     matches.map(async (match) => {
       const { id } = match.route;
       const routeModule = routeModules[id];
-      const { getData } = routeModule;
 
-      if (getData) {
-        const initialData = await getData(initialContext);
+      const { loader, getData } = routeModule;
+
+      let initialData;
+
+      debugger;
+      if (loader && typeof window !== 'undefined') {
+        const load = (window as any).__ICE_DATA_LOADER__;
+        initialData = await load(id);
+      } else if (getData) {
+        initialData = await getData(initialContext);
+      }
+
+      if (initialData) {
         routesData[id] = initialData;
       }
     }),
@@ -79,6 +89,22 @@ export function getRoutesConfig(matches: RouteMatch[], routesData: RoutesData): 
   });
 
   return routesConfig;
+}
+
+export function getRoutesLoader(matches: RouteMatch[]) {
+  const routesLoader: RoutesLoader = {};
+
+  matches.forEach(async (match) => {
+    const { id } = match.route;
+    const routeModule = routeModules[id];
+    const { loader } = routeModule;
+
+    if (loader) {
+      routesLoader[id] = loader;
+    }
+  });
+
+  return routesLoader;
 }
 
 /**

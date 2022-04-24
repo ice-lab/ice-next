@@ -40,6 +40,7 @@ function getEntry(rootDir: string) {
     entryFile = path.join(rootDir, '.ice/entry.client.ts');
   }
   return {
+    fetch: [path.join(rootDir, '.ice/fetch.ts')],
     runtime: ['react', 'react-dom', '@ice/runtime'],
     main: {
       import: [entryFile],

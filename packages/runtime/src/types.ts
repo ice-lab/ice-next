@@ -10,6 +10,7 @@ type App = Partial<{
   strict?: boolean;
   addProvider?: ({ children }: { children: ReactNode }) => ReactNode;
   getData?: GetData;
+  loader?: any;
 } & Record<AppLifecycle, VoidFunction>>;
 
 export type AppData = any;
@@ -44,6 +45,10 @@ export interface RoutesConfig {
   [routeId: string]: RouteConfig;
 }
 
+export interface RoutesLoader {
+  [routeId: string]: any;
+}
+
 export interface RoutesData {
   [routeId: string]: RouteData;
 }
@@ -52,6 +57,7 @@ export interface RoutesData {
 export interface AppContext {
   appConfig: AppConfig;
   assetsManifest: AssetsManifest;
+  routesLoader: RoutesLoader;
   routesData: RoutesData;
   routesConfig: RoutesConfig;
   appData: any;
@@ -82,6 +88,7 @@ export interface PageComponent {
   default: ComponentType<any>;
   getData?: GetData;
   getConfig?: GetConfig;
+  loader?: any;
 }
 
 export interface RouteItem {

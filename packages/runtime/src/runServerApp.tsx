@@ -7,7 +7,7 @@ import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
 import { AppDataProvider } from './AppData.js';
-import { loadRouteModules, loadRoutesData, getRoutesConfig, matchRoutes } from './routes.js';
+import { loadRouteModules, loadRoutesData, getRoutesConfig, matchRoutes, getRoutesLoader } from './routes.js';
 import type {
   AppContext, InitialContext, RouteItem, ServerContext,
   AppConfig, RuntimePlugin, CommonJsRuntime, AssetsManifest,
@@ -70,9 +70,12 @@ export async function renderServerApp(requestContext: ServerContext, options: Re
   const routesData = await loadRoutesData(matches, initialContext);
   const routesConfig = getRoutesConfig(matches, routesData);
 
+  const routesLoader = getRoutesLoader(matches);
+
   const appContext: AppContext = {
     appConfig,
     assetsManifest,
+    routesLoader,
     appData,
     routesData,
     routesConfig,
@@ -138,9 +141,11 @@ export async function renderDocument(requestContext: ServerContext, options: Ren
   // renderDocument needn't to load routesData and appData.
   const routesData = {};
   const appData = {};
+  const routesLoader = getRoutesLoader(matches);
 
   const appContext: AppContext = {
     assetsManifest,
+    routesLoader,
     appConfig,
     appData,
     routesData,

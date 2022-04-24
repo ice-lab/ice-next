@@ -20,7 +20,7 @@ export default function Home(props) {
 
   return (
     <>
-      <h2 className={styles.title}>Home Page</h2>
+      <h2 className={styles.title}>Home Page {data.name}</h2>
       <Link to="/about">about</Link>
     </>
   );
@@ -52,3 +52,9 @@ export function getData() {
     }, 1 * 100);
   });
 }
+
+export const loader = {
+  type: 'fetch',
+  // url: 'https://api.github.com/repos/jasonrudolph/keyboard/tags',
+  url: 'https://api.cdnjs.com/libraries/react',
+};
