@@ -7,7 +7,7 @@ import { AppContextProvider } from './AppContext.js';
 import { AppDataProvider } from './AppData.js';
 import type {
   AppContext, AppConfig, RouteItem, AppRouterProps, RoutesData, RoutesConfig,
-  PageWrapper, RuntimeModules, InitialContext, RouteMatch,
+  PageWrapper, RuntimeModules, InitialContext, RouteMatch, ComponentWithChildren,
 } from './types';
 import { loadRouteModules, loadRoutesData, getRoutesConfig, matchRoutes, filterMatchesToLoad } from './routes.js';
 import { loadStyleLinks, loadScripts } from './assets.js';
@@ -17,7 +17,7 @@ interface RunClientAppOptions {
   appConfig: AppConfig;
   routes: RouteItem[];
   runtimeModules: RuntimeModules;
-  Document: React.ComponentType<{}>;
+  Document: ComponentWithChildren<{}>;
 }
 
 export default async function runClientApp(options: RunClientAppOptions) {
@@ -65,7 +65,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
   render(runtime, Document);
 }
 
-async function render(runtime: Runtime, Document: React.ComponentType<{}>) {
+async function render(runtime: Runtime, Document: ComponentWithChildren<{}>) {
   const appContext = runtime.getAppContext();
   const render = runtime.getRender();
   const AppProvider = runtime.composeAppProvider() || React.Fragment;
@@ -75,6 +75,7 @@ async function render(runtime: Runtime, Document: React.ComponentType<{}>) {
   const history = (appContext.appConfig?.router?.type === 'hash' ? createHashHistory : createBrowserHistory)({ window });
 
   render(
+    document,
     <BrowserEntry
       history={history}
       appContext={appContext}
@@ -83,7 +84,6 @@ async function render(runtime: Runtime, Document: React.ComponentType<{}>) {
       AppRouter={AppRouter}
       Document={Document}
     />,
-    document,
   );
 }
 
@@ -93,7 +93,7 @@ interface BrowserEntryProps {
   AppProvider: React.ComponentType<any>;
   PageWrappers: PageWrapper<{}>[];
   AppRouter: React.ComponentType<AppRouterProps>;
-  Document: React.ComponentType<{}>;
+  Document: ComponentWithChildren<{}>;
 }
 
 interface HistoryState {
