@@ -1,3 +1,4 @@
+import type webpack from 'webpack';
 import type { RuleSetRule, Configuration } from 'webpack';
 import type { ProxyConfigArray, ProxyConfigArrayItem, ProxyConfigMap, Middleware, ServerOptions } from 'webpack-dev-server';
 import type { Options } from 'eslint-webpack-plugin';
@@ -17,9 +18,10 @@ type PredefinedOptions = {
 };
 type MinimizerOptions<T> = PredefinedOptions & InferDefaultType<T>;
 
-interface ConfigurationCtx extends Omit<Config, 'webpack'> {
+interface ConfigurationCtx extends Config {
   supportedBrowsers: string[];
   hashKey: string;
+  webpack: typeof webpack;
 }
 
 type Experimental = Pick<Configuration, 'experiments'>;
