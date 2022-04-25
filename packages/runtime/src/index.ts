@@ -28,6 +28,7 @@ import type {
 } from './types.js';
 import defineAppConfig from './defineAppConfig.js';
 import { matchRoutes } from './routes.js';
+import dataLoader from './dataLoader.js';
 
 export {
   matchRoutes,
@@ -51,6 +52,7 @@ export {
   Outlet,
   useParams,
   useSearchParams,
+  dataLoader,
 };
 
 export type {

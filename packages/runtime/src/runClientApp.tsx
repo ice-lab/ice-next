@@ -207,6 +207,7 @@ async function loadNextPage(currentMatches: RouteMatch[], prevHistoryState: Hist
 function getInitialContext() {
   const { href, origin, pathname, search } = window.location;
   const path = href.replace(origin, '');
+  // FIXME: support after safari 12
   const query = Object.fromEntries(createSearchParams(search));
   const initialContext: InitialContext = {
     pathname,
