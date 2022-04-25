@@ -12,6 +12,7 @@
     "@ice/app": "file:../../packages/ice",
     "@ice/plugin-auth": "^1.0.0",
     "@ice/runtime": "^1.0.0",
+    "ahooks": "^3.3.8",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },
