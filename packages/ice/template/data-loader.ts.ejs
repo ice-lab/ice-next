@@ -1,0 +1,76 @@
+import { getData as getData_layout } from '@/pages/layout';
+import { getData as getData_about } from '@/pages/about';
+import { getData as getData_index } from '@/pages/index';
+import { getData as getData_blog } from '@/pages/blog';
+
+// TODO: generate it
+const loaders = {
+  layout: getData_layout,
+  about: getData_about,
+  index: getData_index,
+  blog: getData_blog,
+};
+
+const cache = new Map();
+
+function loadInitialData() {
+  //TODO: matches info
+  const context = window.__ICE_APP_CONTEXT__ || {};
+  const routes = context.routesConfig || {};
+  const matches = Object.keys(routes);
+  
+  matches.forEach(id => {
+    const getData = loaders[id];
+    if (getData) {
+      // TODO: initialContext
+      const loader = getData({}).then(data => {
+        cache.set(id, {
+          value: data,
+          status: 'RESOLVED',
+        });
+        return data;
+      }).catch(err => {
+        cache.set(id, {
+          value: err,
+          status: 'REJECTED',
+        });
+      });
+  
+      cache.set(id, {
+        value: loader,
+        status: 'PENDING',
+      });
+    }
+  });
+}
+
+try {
+  loadInitialData();
+} catch (e) {
+  console.error(e);
+}
+
+async function load(id) {
+  const loader = loaders[id];
+
+  if (!loader) {
+    return null;
+  }
+
+  const result = cache.get(id);
+
+  if (result) {
+    const { value, status } = result;
+
+    if (status === 'RESOLVED' || status === 'REJECTED') {
+      return value;
+    }
+  
+    return await value;
+  } else {
+    return await loader();
+  }
+}
+
+// TODO: move from template
+window.__ICE_DATA_LOADER__ = load;

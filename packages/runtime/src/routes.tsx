@@ -44,18 +44,32 @@ export async function loadRouteModules(routes: RouteModule[]) {
 export async function loadRoutesData(matches: RouteMatch[], initialContext: InitialContext): Promise<RoutesData> {
   const routesData: RoutesData = {};
 
-  await Promise.all(
-    matches.map(async (match) => {
-      const { id } = match.route;
-      const routeModule = routeModules[id];
-      const { getData } = routeModule;
+  const hasLoader = typeof window !== 'undefined' && (window as any).__ICE_DATA_LOADER__;
 
-      if (getData) {
-        const initialData = await getData(initialContext);
+  if (hasLoader) {
+    const load = (window as any).__ICE_DATA_LOADER__;
+
+    await Promise.all(
+      matches.map(async (match) => {
+        const { id } = match.route;
+        const initialData = await load(id);
         routesData[id] = initialData;
-      }
-    }),
-  );
+      }),
+    );
+  } else {
+    await Promise.all(
+      matches.map(async (match) => {
+        const { id } = match.route;
+        const routeModule = routeModules[id];
+        const { getData } = routeModule;
+
+        if (getData) {
+          const initialData = await getData(initialContext);
+          routesData[id] = initialData;
+        }
+      }),
+    );
+  }
 
   return routesData;
 }

@@ -22,6 +22,7 @@ export default function Home(props) {
     <>
       <h2 className={styles.title}>Home Page</h2>
       <Link to="/about">about</Link>
+      <div>count: {data.count}</div>
     </>
   );
 }
@@ -48,6 +49,7 @@ export function getData() {
     setTimeout(() => {
       resolve({
         name: 'Home',
+        count: 100,
       });
     }, 1 * 100);
   });
