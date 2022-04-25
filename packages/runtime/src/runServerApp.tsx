@@ -153,7 +153,7 @@ function render404(): RenderResult {
  */
 export async function renderServerEntry(
   requestContext: ServerContext, options: RenderOptions, matches, location,
-  ): Promise<RenderResult> {
+): Promise<RenderResult> {
   const { req } = requestContext;
 
   const {
