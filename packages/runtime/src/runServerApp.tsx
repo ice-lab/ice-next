@@ -36,6 +36,9 @@ interface RenderResult {
   value?: string | Piper;
 }
 
+/**
+ * Render and return the result as html string.
+ */
 export async function renderToHTML(requestContext: ServerContext, options: RenderOptions): Promise<RenderResult> {
   const result = await doRender(requestContext, options);
 
@@ -55,12 +58,16 @@ export async function renderToHTML(requestContext: ServerContext, options: Rende
       statusCode: 200,
     };
   } catch (error) {
-    console.error('Downgrade:', error);
+    console.error('PiperToString Error:', error);
+    // downgrade to csr.
     const result = fallback();
     return result;
   }
 }
 
+/**
+ * Render and send the result to ServerResponse.
+ */
 export async function renderToResponse(requestContext: ServerContext, options: RenderOptions) {
   const { res } = requestContext;
   const result = await doRender(requestContext, options);
@@ -74,24 +81,31 @@ export async function renderToResponse(requestContext: ServerContext, options: R
 
   const { pipe, fallback } = value;
 
-  try {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
+  try {
     await piperToResponse(res, pipe);
   } catch (error) {
-    console.error('Downgrade:', error);
+    console.error('PiperToResponse Error:', error);
+    // downgrade to csr.
     const result = await fallback();
     sendResult(res, result);
   }
 }
 
+/**
+ * Send string result to ServerResponse.
+ */
 async function sendResult(res: ServerResponse, result: RenderResult) {
   res.statusCode = result.statusCode;
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.end(result.value);
 }
 
+/**
+ * Send stream result to ServerResponse.
+ */
 function piperToResponse(res, pipe: NodeWritablePiper) {
   return new Promise((resolve, reject) => {
     pipe(res, (err) => (err ? reject(err) : resolve(null)));
@@ -122,11 +136,12 @@ async function doRender(requestContext: ServerContext, options: RenderOptions): 
   try {
     return await renderServerEntry(requestContext, options, matches, location);
   } catch (err) {
+    console.error('Render Server Entry Error', err);
     return renderDocument(matches, options);
   }
 }
 
-// TODO: render custom 404 page.
+// TODO: render custom 404 page. https://github.com/ice-lab/ice-next/issues/133
 function render404(): RenderResult {
   return {
     value: 'Page is Not Found',
