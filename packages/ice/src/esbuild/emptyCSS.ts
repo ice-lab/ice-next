@@ -18,7 +18,7 @@ const emptyCSSPlugin = (): Plugin => {
         }
       });
 
-    build.onLoad({ filter: /.*/, namespace: 'empty-css-content' }, () => {
+      build.onLoad({ filter: /.*/, namespace: 'empty-css-content' }, () => {
         return {
           contents: '',
         };

@@ -52,8 +52,8 @@ async function onResolve(args: OnResolveArgs): Promise<OnResolveResult> {
   return {
     path: absolutePath,
     namespace: STYLE_HANDLER_NAMESPACE,
-    };
-  }
+  };
+}
 
 async function onCSSLoad(args: OnLoadArgs): Promise<OnLoadResult> {
   const data = (await fse.readFile(args.path)).toString();
