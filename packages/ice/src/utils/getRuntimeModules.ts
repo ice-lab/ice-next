@@ -1,6 +1,7 @@
 import path from 'path';
 import fse from 'fs-extra';
 import findUp from 'find-up';
+import consola from 'consola';
 
 export interface RuntimeModule {
   staticModule: boolean;
@@ -8,31 +9,32 @@ export interface RuntimeModule {
   name: string;
 }
 
-export interface Plugin {
-  pluginPath?: string;
+interface RuntimeInfo {
+  name?: string;
+  runtime: string;
 }
 
-function getRuntimeModules(plugins: Plugin[]) {
-  return plugins.map(({ pluginPath }) => {
-    if (!pluginPath) return false;
+function getRuntimeModules(runtimes: RuntimeInfo[]) {
+  return runtimes.map(({ runtime, name }) => {
     // for example: xx/build-plugin-app/lib/index.js
-    const pluginDir = path.dirname(pluginPath);
+    const pluginDir = path.dirname(runtime);
     // for example: xx/build-plugin-app/package.json
     const pkgPath = findUp.sync('package.json', { cwd: pluginDir });
     // for example: xx/build-plugin-app/
     const packageDir = path.dirname(pkgPath);
-    const runtimeDir = path.join(packageDir, 'runtime');
-    if (fse.existsSync(runtimeDir)) {
+    if (fse.existsSync(runtime)) {
       try {
         const pkgInfo = fse.readJSONSync(pkgPath);
         return {
           staticModule: !!pkgInfo?.pluginConfig?.staticModule,
-          path: `${pkgInfo.name}/runtime`,
+          path: path.join(pkgInfo.name, path.relative(packageDir, runtime)),
           name: pkgInfo.name as string,
         };
       } catch (error) {
-        console.log(`ERROR: fail to load package.json of plugin ${path.basename(packageDir)}`);
+        consola.error(`ERROR: fail to load package.json of plugin ${path.basename(packageDir)}`);
       }
+    } else {
+      consola.warn(`runtime is not exist in ${name}`);
     }
     return false;
   }).filter(Boolean) as RuntimeModule[];

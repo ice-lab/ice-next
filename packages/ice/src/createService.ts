@@ -79,20 +79,22 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
       return [webPlugin, configPlugin];
     },
   });
-  await ctx.resolveConfig();
-  const { userConfig: { routes: routesConfig } } = ctx;
+  const userConfig = await ctx.resolveUserConfig();
+  const plugins = await ctx.resolvePlugins();
+  const runtimeModules = getRuntimeModules(
+    plugins
+      .filter(({ runtime }) => !!runtime)
+      .map(({ name, runtime }) => ({ name, runtime })),
+  );
+  const { routes: routesConfig } = userConfig;
   const routesRenderData = generateRoutesInfo(rootDir, routesConfig);
-  generator.modifyRenderData((renderData) => ({
-    ...renderData,
+  // add render data
+  generator.setRenderData({
     ...routesRenderData,
-  }));
+    runtimeModules,
+  });
   dataCache.set('routes', JSON.stringify(routesRenderData.routeManifest));
 
-  const runtimeModules = getRuntimeModules(ctx.getAllPlugin());
-  generator.modifyRenderData((renderData) => ({
-    ...renderData,
-    runtimeModules,
-  }));
   await ctx.setup();
 
   // render template before webpack compile

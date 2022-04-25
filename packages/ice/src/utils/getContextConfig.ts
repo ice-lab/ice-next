@@ -19,13 +19,13 @@ export interface ContextConfig {
 }
 
 function getContextConfig(context: Context<Config, ExtendsPluginAPI>, customConfig: Partial<Config>): ContextConfig[] {
-  const { getConfig, rootDir, extendsPluginAPI } = context;
+  const { getTaskConfig, rootDir, extendsPluginAPI } = context;
 
-  const contextConfig = getConfig();
-  if (!contextConfig.length) {
+  const taskConfig = getTaskConfig();
+  if (!taskConfig.length) {
     throw new Error('Task config is not Found');
   }
-  const configs = contextConfig.map(({ config, name }) => {
+  const configs = taskConfig.map(({ config, name }) => {
     const webpackConfig = getWebpackConfig({
       rootDir,
       webpack: extendsPluginAPI.context!.webpack,

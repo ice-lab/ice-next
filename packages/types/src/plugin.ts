@@ -1,5 +1,5 @@
 import type webpack from 'webpack';
-import type { IPluginAPI, CommandArgs } from 'build-scripts';
+import type { PluginAPI, CommandArgs } from 'build-scripts';
 import type { Configuration, Stats } from 'webpack';
 import type WebpackDevServer from 'webpack-dev-server';
 import type { BuildOptions, BuildResult } from 'esbuild';
@@ -78,5 +78,5 @@ interface OverwritePluginAPI extends ExtendsPluginAPI {
 }
 
 export interface Plugin<T = undefined> {
-  (api: IPluginAPI<Config, OverwritePluginAPI>, options?: T): Promise<void> | void;
+  (api: PluginAPI<Config, OverwritePluginAPI>, options?: T): Promise<void> | void;
 }
