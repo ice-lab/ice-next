@@ -83,7 +83,7 @@ export async function renderToResponse(requestContext: ServerContext, options: R
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
     try {
-      await piperToResponse(res, pipe);
+      await pipeToResponse(res, pipe);
     } catch (error) {
       console.error('PiperToResponse Error:', error);
       // downgrade to csr.
@@ -105,7 +105,7 @@ async function sendResult(res: ServerResponse, result: RenderResult) {
 /**
  * Send stream result to ServerResponse.
  */
-function piperToResponse(res, pipe: NodeWritablePiper) {
+function pipeToResponse(res, pipe: NodeWritablePiper) {
   return new Promise((resolve, reject) => {
     pipe(res, (err) => (err ? reject(err) : resolve(null)));
   });
