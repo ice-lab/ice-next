@@ -5,6 +5,7 @@ import openBrowser from '../../utils/openBrowser.js';
 import createAssetsPlugin from '../../esbuild/assets.js';
 import generateHTML from './ssr/generateHTML.js';
 import { setupRenderServer } from './ssr/serverRender.js';
+import getMockConfigs from './mock/getConfigs.js';
 
 const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
   const { command, rootDir, userConfig, commandArgs } = context;
@@ -68,15 +69,24 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
       if (!devServer) {
         throw new Error('webpack-dev-server is not defined');
       }
-      middlewares.push({
-        name: 'document-render-server',
-        middleware: setupRenderServer({
-          serverCompiler,
-          routeManifest,
-          ssg,
-          ssr,
-        }),
-      });
+      const mockConfigs = getMockConfigs(rootDir);
+      console.log(mockConfigs);
+      middlewares.push(
+        // TODO: add mock middleware
+        // {
+        //   name: 'mock',
+        //   middleware:
+        // },
+        {
+          name: 'document-render-server',
+          middleware: setupRenderServer({
+            serverCompiler,
+            routeManifest,
+            ssg,
+            ssr,
+          }),
+        },
+      );
 
       return middlewares;
     },
