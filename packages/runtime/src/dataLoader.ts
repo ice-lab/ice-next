@@ -15,10 +15,8 @@ const cache = new Map<string, Result>();
  * getData and set to cache.
  */
 function loadInitialData(loaders: Loaders) {
-  // TODO: matches info
   const context = (window as any).__ICE_APP_CONTEXT__ || {};
-  const routes = context.routesConfig || {};
-  const matches = Object.keys(routes);
+  const matches = context.matchedIds || [];
 
   matches.forEach(id => {
     const getData = loaders[id];
@@ -80,9 +78,9 @@ function init(loaders: Loaders) {
     console.error(e);
   }
 
-  (window as any).__ICE_DATA_LOADER__ = (id) => {
+  (window as any).__ICE_DATA_LOADER__ = async (id) => {
     const loader = loaders[id];
-    run(id, loader);
+    return await run(id, loader);
   };
 }
 

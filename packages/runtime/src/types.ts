@@ -58,6 +58,7 @@ export interface AppContext {
   matches?: RouteMatch[];
   routes?: RouteItem[];
   documentOnly?: boolean;
+  matchedIds?: string[];
 }
 
 export type Renderer = (

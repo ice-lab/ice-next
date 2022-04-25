@@ -55,12 +55,15 @@ export function Scripts() {
   const entryAssets = getEntryAssets(assetsManifest);
   const scripts = pageAssets.concat(entryAssets).filter(path => path.indexOf('.js') > -1);
 
+  const matchedIds = matches.map(match => match.route.id);
+
   const appContext: AppContext = {
     appData,
     routesData,
     routesConfig,
     assetsManifest,
     appConfig: {},
+    matchedIds,
   };
 
   return (
