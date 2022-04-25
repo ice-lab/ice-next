@@ -76,21 +76,20 @@ export async function renderToResponse(requestContext: ServerContext, options: R
 
   if (typeof value === 'string') {
     sendResult(res, result);
-    return;
-  }
+  } else {
+    const { pipe, fallback } = value;
 
-  const { pipe, fallback } = value;
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/html; charset=utf-8');
-
-  try {
-    await piperToResponse(res, pipe);
-  } catch (error) {
-    console.error('PiperToResponse Error:', error);
-    // downgrade to csr.
-    const result = await fallback();
-    sendResult(res, result);
+    try {
+      await piperToResponse(res, pipe);
+    } catch (error) {
+      console.error('PiperToResponse Error:', error);
+      // downgrade to csr.
+      const result = await fallback();
+      sendResult(res, result);
+    }
   }
 }
 
