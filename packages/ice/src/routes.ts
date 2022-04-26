@@ -53,7 +53,7 @@ function generateLoadersStr(routes: NestedRouteManifest[]) {
       const fileExtname = path.extname(file);
       const componentFile = file.replace(new RegExp(`${fileExtname}$`), '');
 
-      const loaderName = `getData_${id}`;
+      const loaderName = `getData_${id}`.replace('/', '_');
       loaders.push([id, loaderName]);
 
       let str = `import { getData as ${loaderName} } from '@/pages/${componentFile}';\n`;
