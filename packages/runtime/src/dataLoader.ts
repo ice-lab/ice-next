@@ -57,8 +57,12 @@ async function run(id: string, loader: GetData) {
   if (result) {
     const { value, status } = result;
 
-    if (status === 'RESOLVED' || status === 'REJECTED') {
+    if (status === 'RESOLVED') {
       return value;
+    }
+
+    if (status === 'REJECTED') {
+      throw value;
     }
 
     // PENDING
