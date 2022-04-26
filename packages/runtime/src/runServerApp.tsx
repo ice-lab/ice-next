@@ -58,7 +58,7 @@ export async function renderToHTML(requestContext: ServerContext, options: Rende
       statusCode: 200,
     };
   } catch (error) {
-    console.error('PiperToString Error:', error);
+    console.error('Warning: piperToString error, downgrade to csr.', error);
     // downgrade to csr.
     const result = fallback();
     return result;
@@ -85,7 +85,7 @@ export async function renderToResponse(requestContext: ServerContext, options: R
     try {
       await pipeToResponse(res, pipe);
     } catch (error) {
-      console.error('PiperToResponse Error:', error);
+      console.error('Warning: piperToResponse error, downgrade to csr.', error);
       // downgrade to csr.
       const result = await fallback();
       sendResult(res, result);
@@ -135,12 +135,12 @@ async function doRender(requestContext: ServerContext, options: RenderOptions): 
   try {
     return await renderServerEntry(requestContext, options, matches, location);
   } catch (err) {
-    console.error('Render Server Entry Error', err);
+    console.error('Warning: render server entry error, downgrade to csr.', err);
     return renderDocument(matches, options);
   }
 }
 
-// TODO: render custom 404 page. https://github.com/ice-lab/ice-next/issues/133
+// https://github.com/ice-lab/ice-next/issues/133
 function render404(): RenderResult {
   return {
     value: 'Page is Not Found',
