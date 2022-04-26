@@ -20,11 +20,7 @@ interface PluginOptions {
   generateLocalIdentName?: GenerateScopedNameFunction;
 }
 
-interface CSSModulesOptions {
-  generateScopedName?: string | GenerateScopedNameFunction;
-}
-
-const stylePlugin = (options: PluginOptions): Plugin => {
+const cssModulesPlugin = (options: PluginOptions): Plugin => {
   return {
     name: 'esbuild-css-modules',
     setup: async (build: PluginBuild) => {
@@ -68,36 +64,32 @@ async function onCSSLoad(args: OnLoadArgs): Promise<OnLoadResult> {
  */
 function onStyleLoad(options: PluginOptions) {
   return async function (args: OnLoadArgs): Promise<OnLoadResult> {
+    const { localIdentName = '[hash:base64]', generateLocalIdentName } = options;
     const extract = options.extract === undefined ? true : options.extract;
 
     let css = await parseStyle(args.path);
 
-    const plugins = [];
     const data = { exportedClasses: '' };
-    let injectMapping = false;
     let contents = '';
 
-    const { localIdentName = '[hash:base64]', generateLocalIdentName } = options;
-    const cssModulesOptions: CSSModulesOptions = {
-      generateScopedName: generateLocalIdentName || localIdentName,
-    };
-    plugins.push(handleCSSModules(data, cssModulesOptions));
-    injectMapping = true;
-
-    if (plugins.length > 0) {
-      const result = await postcss(plugins).process(css, { from: args.path });
-      css = result.css;
-
-      if (injectMapping) {
-        contents += `export default ${data.exportedClasses};`;
-      }
-    }
+    // parse css modules to css
+    const postcssPlugins = [
+      cssModules({
+        generateScopedName: generateLocalIdentName || localIdentName,
+        getJSON: (cssFilename, json) => {
+          // Save exported classes
+          data.exportedClasses = JSON.stringify(json, null, 2);
+        },
+      }),
+    ];
+    const result = await postcss(postcssPlugins).process(css, { from: args.path });
+    css = result.css;
+    contents += `export default ${data.exportedClasses};`;
 
     if (extract) {
       const writestream = temp.createWriteStream({ suffix: '.css' });
       writestream.write(css);
       writestream.end();
-
       // Inject import "new url path" so esbuild can resolve a new css file
       contents += `import ${JSON.stringify(writestream.path)};`;
     }
@@ -107,16 +99,6 @@ function onStyleLoad(options: PluginOptions) {
       contents,
     };
   };
-}
-
-function handleCSSModules(data, options: CSSModulesOptions) {
-  return cssModules({
-    ...options,
-    getJSON: (cssFilename, json) => {
-      // Save exported classes
-      data.exportedClasses = JSON.stringify(json, null, 2);
-    },
-  });
 }
 
 async function parseStyle(filePath: string) {
@@ -137,4 +119,4 @@ async function parseStyle(filePath: string) {
   throw new Error(`Can't parse the style '${ext}'.`);
 }
 
-export default stylePlugin;
+export default cssModulesPlugin;
