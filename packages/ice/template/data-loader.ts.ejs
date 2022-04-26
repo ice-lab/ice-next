@@ -1,13 +1,5 @@
 import { dataLoader } from '@ice/runtime';
-import { getData as getData_layout } from '@/pages/layout';
-import { getData as getData_about } from '@/pages/about';
-import { getData as getData_index } from '@/pages/index';
 
-// TODO: generate loader info
-const loaders = {
-  layout: getData_layout,
-  about: getData_about,
-  index: getData_index,
-};
+<%- loaders %>
 
 dataLoader.init(loaders);
