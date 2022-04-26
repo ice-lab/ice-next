@@ -6,7 +6,7 @@ import { register } from 'esbuild-register/dist/node.js';
 
 const require = createRequire(import.meta.url);
 
-const VALID_METHODS = [
+export const VALID_METHODS = [
   'GET',
   'POST',
   'PUT',
@@ -15,7 +15,8 @@ const VALID_METHODS = [
   'HEAD',
   'OPTIONS',
 ];
-const DEFAULT_METHOD = 'GET';
+export const DEFAULT_METHOD = 'GET';
+export const MOCK_FILE_PATTERN = 'mock/**/*.{js,ts}';
 
 export interface MockConfig {
   method: string;
@@ -24,7 +25,7 @@ export interface MockConfig {
 }
 
 export default function getConfig(rootDir: string, ignore: string[] = []): MockConfig[] {
-  const mockFiles = fg.sync('mock/**/*.[jt]s', {
+  const mockFiles = fg.sync(MOCK_FILE_PATTERN, {
     cwd: rootDir,
     ignore,
   }).map(file => path.join(rootDir, file));

@@ -5,11 +5,12 @@ import openBrowser from '../../utils/openBrowser.js';
 import createAssetsPlugin from '../../esbuild/assets.js';
 import generateHTML from './ssr/generateHTML.js';
 import { setupRenderServer } from './ssr/serverRender.js';
-import getMockConfigs from './mock/getConfigs.js';
+import getMockConfigs, { MOCK_FILE_PATTERN } from './mock/getConfigs.js';
 import createMiddleware from './mock/createMiddleware.js';
 
-const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
+const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
   const { command, rootDir, userConfig, commandArgs } = context;
+  const { addEvent } = watch;
   const { ssg = true, ssr = true } = userConfig;
   const outputDir = path.join(rootDir, 'build');
   const routeManifest = path.join(rootDir, '.ice/route-manifest.json');
@@ -70,13 +71,25 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
       if (!devServer) {
         throw new Error('webpack-dev-server is not defined');
       }
-      const mockConfigs = getMockConfigs(rootDir);
-      console.log(mockConfigs);
+
+      // mock
+      const mockContext = {
+        mockConfigs: getMockConfigs(rootDir),
+      };
+      addEvent([
+        MOCK_FILE_PATTERN,
+        () => {
+          mockContext.mockConfigs = getMockConfigs(rootDir);
+        },
+      ]);
       middlewares.push(
         {
           name: 'mock',
-          middleware: createMiddleware(mockConfigs),
+          middleware: createMiddleware(mockContext),
         },
+      );
+      // document
+      middlewares.push(
         {
           name: 'document-render-server',
           middleware: setupRenderServer({

@@ -23,13 +23,16 @@ export default function Home(props) {
   const { data: users } = useRequest(() => fetch('/api/users').then(res => res.json()));
   const { data: userInfo } = useRequest(() => fetch('/api/users/a', { method: 'POST' }).then(res => res.json()));
 
-  console.log('foo: ', foo);
-  console.log('users: ', users);
-  console.log('userInfo: ', userInfo);
   return (
     <>
       <h2 className={styles.title}>Home Page</h2>
       <Link to="/about">about</Link>
+      <div className={styles.data}>
+        <div>foo: {JSON.stringify(foo)}</div>
+        <div>users: {JSON.stringify(users)}</div>
+        <div>userInfo: {JSON.stringify(userInfo)}</div>
+      </div>
+
     </>
   );
 }
