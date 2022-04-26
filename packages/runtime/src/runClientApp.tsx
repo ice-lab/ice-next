@@ -7,7 +7,7 @@ import { AppContextProvider } from './AppContext.js';
 import { AppDataProvider } from './AppData.js';
 import type {
   AppContext, AppConfig, RouteItem, AppRouterProps, RoutesData, RoutesConfig,
-  PageWrapper, RuntimeModules, InitialContext, RouteMatch, ComponentWithChildren,
+  RouteWrapper, RuntimeModules, InitialContext, RouteMatch, ComponentWithChildren,
 } from './types';
 import { loadRouteModules, loadRoutesData, getRoutesConfig, matchRoutes, filterMatchesToLoad } from './routes.js';
 import { loadStyleLinks, loadScripts } from './assets.js';
@@ -69,7 +69,7 @@ async function render(runtime: Runtime, Document: ComponentWithChildren<{}>) {
   const appContext = runtime.getAppContext();
   const render = runtime.getRender();
   const AppProvider = runtime.composeAppProvider() || React.Fragment;
-  const PageWrappers = runtime.getWrapperPageRegistration();
+  const RouteWrappers = runtime.getWrappers();
   const AppRouter = runtime.getAppRouter();
 
   const history = (appContext.appConfig?.router?.type === 'hash' ? createHashHistory : createBrowserHistory)({ window });
@@ -80,7 +80,7 @@ async function render(runtime: Runtime, Document: ComponentWithChildren<{}>) {
       history={history}
       appContext={appContext}
       AppProvider={AppProvider}
-      PageWrappers={PageWrappers}
+      RouteWrappers={RouteWrappers}
       AppRouter={AppRouter}
       Document={Document}
     />,
@@ -91,7 +91,7 @@ interface BrowserEntryProps {
   history: HashHistory | BrowserHistory | null;
   appContext: AppContext;
   AppProvider: React.ComponentType<any>;
-  PageWrappers: PageWrapper<{}>[];
+  RouteWrappers: RouteWrapper[];
   AppRouter: React.ComponentType<AppRouterProps>;
   Document: ComponentWithChildren<{}>;
 }
