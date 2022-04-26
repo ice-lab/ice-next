@@ -1,6 +1,8 @@
 import React, { useLayoutEffect, useState } from 'react';
+import { createHashHistory, createBrowserHistory } from 'history';
 import type { HashHistory, BrowserHistory, Action, Location } from 'history';
-import { createHashHistory, createBrowserHistory, createSearchParams } from './utils/react-router-dom.js';
+import { createHistorySingle } from './utils/history-single.js';
+import { createSearchParams } from './utils/createSearchParams.js';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
@@ -72,7 +74,10 @@ async function render(runtime: Runtime, Document: ComponentWithChildren<{}>) {
   const RouteWrappers = runtime.getWrappers();
   const AppRouter = runtime.getAppRouter();
 
-  const history = (appContext.appConfig?.router?.type === 'hash' ? createHashHistory : createBrowserHistory)({ window });
+  const createHistory = process.env.ICE_CORE_ROUTER === 'true'
+    ? (appContext.appConfig?.router?.type === 'hash' ? createHashHistory : createBrowserHistory)
+    : createHistorySingle;
+  const history = createHistory({ window });
 
   render(
     document,

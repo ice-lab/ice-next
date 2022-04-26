@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Location } from 'history';
 import type { RouteObject } from 'react-router-dom';
-import { matchRoutes as originMatchRoutes } from './utils/react-router-dom.js';
+import { matchRoutes as originMatchRoutes } from 'react-router-dom';
 import RouteWrapper from './RouteWrapper.js';
 import type { RouteItem, RouteModules, RouteWrapper as IRouteWrapper, RouteMatch, InitialContext, RoutesConfig, RoutesData } from './types';
 

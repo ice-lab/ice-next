@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import type { Location, To } from 'history';
 import { Action, createPath, parsePath } from 'history';
-import { createSearchParams } from './utils/react-router-dom.js';
+import { createSearchParams } from './utils/createSearchParams.js';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';

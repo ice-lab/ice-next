@@ -136,9 +136,20 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     }
   }
 
-  const disableRouter = routeManifest && Object.keys(routeManifest).length <= 1 && userConfig.removeHistoryDeadCode;
-  if (command === 'build' && disableRouter) {
-    consola.info('[ice] removeHistoryDeadCode is enabled and only have one route, ice build will remove history and react-router dead code.');
+  let disableRouter = true;
+  if (command === 'build' && userConfig.removeHistoryDeadCode) {
+    let routesCount = 0;
+    routeManifest && Object.keys(routeManifest).forEach((key) => {
+      const routeItem = routeManifest[key];
+      if (!routeItem.layout) {
+        routesCount += 1;
+      }
+    });
+
+    if (routesCount <= 1) {
+      consola.info('[ice] removeHistoryDeadCode is enabled and only have one route, ice build will remove history and react-router dead code.');
+      disableRouter = true;
+    }
   }
 
   updateRuntimeEnv(appConfig, disableRouter);

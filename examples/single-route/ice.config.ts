@@ -3,6 +3,9 @@ import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 export default defineConfig({
   publicPath: '/',
+  removeHistoryDeadCode: true,
+  // minify: false,
+  sourceMap: true,
   webpack: (webpackConfig) => {
     // if (process.env.NODE_ENV !== 'test') {
     //   webpackConfig.plugins?.push(new BundleAnalyzerPlugin());

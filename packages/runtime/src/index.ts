@@ -3,7 +3,13 @@ import {
   Outlet,
   useParams,
   useSearchParams,
-} from './utils/react-router-dom.js';
+} from 'react-router-dom';
+import {
+  LinkSingle,
+  OutletSingle,
+  useParamsSingle,
+  useSearchParamsSingle,
+} from './utils/history-single.js';
 import Runtime from './runtime.js';
 import App from './App.js';
 import runClientApp from './runClientApp.js';
@@ -50,6 +56,10 @@ export {
   Outlet,
   useParams,
   useSearchParams,
+  LinkSingle,
+  OutletSingle,
+  useParamsSingle,
+  useSearchParamsSingle,
 };
 
 export type {
