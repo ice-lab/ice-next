@@ -3,22 +3,23 @@ import { fileURLToPath } from 'url';
 import { Context } from 'build-scripts';
 import consola from 'consola';
 import type { CommandArgs, CommandName } from 'build-scripts';
+import type { Config } from '@ice/types';
 import type { ExportData } from '@ice/types/esm/generator.js';
 import type { ExtendsPluginAPI } from '@ice/types/esm/plugin.js';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
 import Generator from './service/runtimeGenerator.js';
-import { createEsbuildCompiler } from './service/compile.js';
+import { createServerCompiler } from './service/serverCompiler.js';
 import createWatch from './service/watchSource.js';
 import start from './commands/start.js';
 import build from './commands/build.js';
-import getContextConfig from './utils/getContextConfig.js';
+import mergeTaskConfig from './utils/mergeTaskConfig.js';
 import getWatchEvents from './getWatchEvents.js';
 import { getAppConfig } from './analyzeRuntime.js';
 import { defineRuntimeEnv, updateRuntimeEnv } from './utils/runtimeEnv.js';
 import getRuntimeModules from './utils/getRuntimeModules.js';
 import { generateRoutesInfo } from './routes.js';
-import webPlugin from './plugins/web/index.js';
-import configPlugin from './plugins/config.js';
+import getWebTask from './tasks/web/index.js';
+import * as config from './config.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -59,7 +60,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     addRenderTemplate: generator.addTemplateFiles,
   };
 
-  const ctx = new Context<any, ExtendsPluginAPI>({
+  const ctx = new Context<Config, ExtendsPluginAPI>({
     rootDir,
     command,
     commandArgs,
@@ -75,27 +76,23 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
         webpack,
       },
     },
-    getBuiltInPlugins: () => {
-      return [webPlugin, configPlugin];
-    },
   });
+  // get userConfig from ice.config.ts
   const userConfig = await ctx.resolveUserConfig();
+  // get plugins include built-in plugins and custom plugins
   const plugins = await ctx.resolvePlugins();
-  const runtimeModules = getRuntimeModules(
-    plugins
-      .filter(({ runtime }) => !!runtime)
-      .map(({ name, runtime }) => ({ name, runtime })),
-  );
+  const runtimeModules = getRuntimeModules(plugins);
   const { routes: routesConfig } = userConfig;
+  // register web
+  ctx.registerTask('web', getWebTask({ rootDir, command }));
+  // register config
+  ['userConfig', 'cliOptions'].forEach((configType) => ctx.registerConfig(configType, config[configType]));
   const routesRenderData = generateRoutesInfo(rootDir, routesConfig);
   // add render data
-  generator.setRenderData({
-    ...routesRenderData,
-    runtimeModules,
-  });
+  generator.setRenderData({ ...routesRenderData, runtimeModules });
   dataCache.set('routes', JSON.stringify(routesRenderData.routeManifest));
 
-  await ctx.setup();
+  let taskConfigs = await ctx.setup();
 
   // render template before webpack compile
   const renderStart = new Date().getTime();
@@ -111,9 +108,14 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   // define runtime env before get webpack config
   defineRuntimeEnv();
   const compileIncludes = runtimeModules.map(({ name }) => `${name}/runtime`);
-  const contextConfig = getContextConfig(ctx, { compileIncludes, port: commandArgs.port });
-  const webTask = contextConfig.find(({ name }) => name === 'web');
-  const esbuildCompile = createEsbuildCompiler({
+
+  // merge task config with built-in config
+  taskConfigs = mergeTaskConfig(taskConfigs, { compileIncludes, port: commandArgs.port });
+
+  const webTask = taskConfigs.find(({ name }) => name === 'web');
+
+  // create serverCompiler with task config
+  const serverCompiler = createServerCompiler({
     rootDir,
     task: webTask,
   });
@@ -121,11 +123,11 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   return {
     run: async () => {
       if (command === 'start') {
-        return await start(ctx, contextConfig, esbuildCompile);
+        return await start(ctx, taskConfigs, serverCompiler);
       } else if (command === 'build') {
-        const appConfig = await getAppConfig({ esbuildCompile, rootDir });
+        const appConfig = await getAppConfig({ serverCompiler, rootDir });
         updateRuntimeEnv(appConfig, routesRenderData.routeManifest);
-        return await build(ctx, contextConfig, esbuildCompile);
+        return await build(ctx, taskConfigs, serverCompiler);
       }
     },
   };

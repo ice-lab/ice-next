@@ -2,6 +2,8 @@ import path from 'path';
 import fse from 'fs-extra';
 import findUp from 'find-up';
 import consola from 'consola';
+import type { PluginInfo } from 'build-scripts';
+import type { ExtendsPluginAPI } from '@ice/types/esm/plugin.js';
 
 export interface RuntimeModule {
   staticModule: boolean;
@@ -9,12 +11,10 @@ export interface RuntimeModule {
   name: string;
 }
 
-interface RuntimeInfo {
-  name?: string;
-  runtime: string;
-}
-
-function getRuntimeModules(runtimes: RuntimeInfo[]) {
+function getRuntimeModules(plugins: Array<PluginInfo<any, ExtendsPluginAPI>>) {
+  const runtimes = plugins
+    .filter(({ runtime }) => !!runtime)
+    .map(({ name, runtime }) => ({ name, runtime }));
   return runtimes.map(({ runtime, name }) => {
     // for example: xx/build-plugin-app/lib/index.js
     const pluginDir = path.dirname(runtime);

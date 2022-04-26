@@ -1,23 +1,28 @@
 import consola from 'consola';
-import type { Context } from 'build-scripts';
+import { getWebpackConfig } from '@ice/webpack-config';
+import type { Context, TaskConfig } from 'build-scripts';
 import type { StatsError } from 'webpack';
 import type { Config } from '@ice/types';
-import type { EsbuildCompile } from '@ice/types/esm/plugin.js';
+import type { ServerCompiler } from '@ice/types/esm/plugin.js';
 import webpackCompiler from '../service/webpackCompiler.js';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
-import type { ContextConfig } from '../utils/getContextConfig.js';
 
-const build = async (context: Context<Config>, contextConfig: ContextConfig[], esbuildCompile: EsbuildCompile) => {
+const build = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[], serverCompiler: ServerCompiler) => {
   const { applyHook, commandArgs, command, rootDir } = context;
-  const webConfig = contextConfig.find(({ name }) => name === 'web');
+  const webpackConfigs = taskConfigs.map(({ config }) => getWebpackConfig({
+    config,
+    rootDir,
+    // @ts-expect-error fix type error of compiled webpack
+    webpack,
+  }));
   const compiler = await webpackCompiler({
     rootDir,
-    webpackConfigs: contextConfig.map(({ webpackConfig }) => webpackConfig),
-    taskConfig: webConfig.taskConfig,
+    webpackConfigs,
+    taskConfigs,
     commandArgs,
     command,
     applyHook,
-    esbuildCompile,
+    serverCompiler,
   });
   const { stats, isSuccessful, messages } = await new Promise((resolve, reject): void => {
     let messages: { errors: string[]; warnings: string[] };
@@ -54,8 +59,8 @@ const build = async (context: Context<Config>, contextConfig: ContextConfig[], e
     stats,
     isSuccessful,
     messages,
-    taskConfig: webConfig.taskConfig,
-    esbuildCompile,
+    taskConfigs,
+    serverCompiler,
   });
   return { compiler };
 };

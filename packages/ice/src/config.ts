@@ -2,7 +2,7 @@ import { createRequire } from 'module';
 import { certificateFor } from 'trusted-cert';
 import fse from 'fs-extra';
 import consola from 'consola';
-import type { UserConfig, Config, Plugin } from '@ice/types';
+import type { UserConfig, Config } from '@ice/types';
 import type { UserConfigContext } from 'build-scripts';
 
 const require = createRequire(import.meta.url);
@@ -300,9 +300,8 @@ const cliOptions = [
   },
 ];
 
-const configPlugin: Plugin = ({ registerUserConfig, registerCliOption }) => {
-  registerUserConfig(userConfig);
-  registerCliOption(cliOptions);
-};
 
-export default configPlugin;
+export {
+  userConfig,
+  cliOptions,
+};

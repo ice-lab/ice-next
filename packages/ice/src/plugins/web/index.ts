@@ -16,25 +16,6 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
   const serverEntry = path.join(outputDir, 'server/index.mjs');
   let serverCompiler = async () => '';
 
-  onHook(`before.${command as 'start' | 'build'}.run`, async ({ esbuildCompile }) => {
-    await emptyDir(outputDir);
-
-    serverCompiler = async () => {
-      await esbuildCompile({
-        entryPoints: [path.join(rootDir, '.ice/entry.server')],
-        outfile: serverEntry,
-        // platform: 'node',
-        format: 'esm',
-        outExtension: { '.js': '.mjs' },
-        plugins: [
-          createAssetsPlugin(assetsManifest, rootDir),
-        ],
-      });
-      // timestamp for disable import cache
-      return `${serverEntry}?version=${new Date().getTime()}`;
-    };
-  });
-
   if (commandArgs.open) {
     onHook('after.start.compile', ({ urls, isFirstCompile }) => {
       if (!isFirstCompile) {

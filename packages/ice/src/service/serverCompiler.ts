@@ -2,29 +2,31 @@ import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { createHash } from 'crypto';
 import consola from 'consola';
-import esbuild from 'esbuild';
-import { createUnplugin } from 'unplugin';
-import type { EsbuildCompile } from '@ice/types/esm/plugin.js';
-import { getTransformPlugins } from '@ice/webpack-config';
+import esbuild, { type BuildOptions } from 'esbuild';
+import type { Config } from '@ice/types';
+import type { ServerCompiler } from '@ice/types/esm/plugin.js';
+import type { TaskConfig } from 'build-scripts';
+import { getCompilerPlugins } from '@ice/webpack-config';
 import escapeLocalIdent from '../utils/escapeLocalIdent.js';
 import stylePlugin from '../esbuild/style.js';
 import aliasPlugin from '../esbuild/alias.js';
-import type { ContextConfig } from '../utils/getContextConfig.js';
+import createAssetsPlugin from '../esbuild/assets.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 interface Options {
   rootDir: string;
-  task: ContextConfig;
+  task: TaskConfig<Config>;
 }
 
-export function createEsbuildCompiler(options: Options) {
-  const { task } = options;
-  const { taskConfig, webpackConfig } = task;
-  const transformPlugins = getTransformPlugins(taskConfig);
-  const alias = (webpackConfig.resolve?.alias || {}) as Record<string, string | false>;
+type CompilerOptions = Pick<BuildOptions, 'entryPoints' | 'outfile' | 'plugins' | 'bundle'>;
 
-  const esbuildCompile: EsbuildCompile = async (buildOptions) => {
+export function createServerCompiler(options: Options) {
+  const { task, rootDir } = options;
+  const transformPlugins = getCompilerPlugins(task.config, 'esbuild');
+  const alias = (task.config?.alias || {}) as Record<string, string | false>;
+
+  const serverCompiler: ServerCompiler = async (buildOptions: CompilerOptions) => {
     const startTime = new Date().getTime();
     consola.debug('[esbuild]', `start compile for: ${buildOptions.entryPoints}`);
     const buildResult = await esbuild.build({
@@ -53,19 +55,17 @@ export function createEsbuildCompiler(options: Options) {
         }),
         aliasPlugin({
           alias,
-          compileRegex: (taskConfig.compileIncludes || []).map((includeRule) => {
+          compileRegex: (task.config?.compileIncludes || []).map((includeRule) => {
             return includeRule instanceof RegExp ? includeRule : new RegExp(includeRule);
           }),
         }),
+        createAssetsPlugin(path.join(rootDir, '.ice/assets-manifest.json'), rootDir),
+        ...transformPlugins,
         ...(buildOptions.plugins || []),
-        ...transformPlugins
-          // ignore compilation-plugin while esbuild has it's own transform
-          .filter(({ name }) => name !== 'compilation-plugin')
-          .map(plugin => createUnplugin(() => plugin).esbuild()),
       ],
     });
     consola.debug('[esbuild]', `time cost: ${new Date().getTime() - startTime}ms`);
     return buildResult;
   };
-  return esbuildCompile;
+  return serverCompiler;
 }
