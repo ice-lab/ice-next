@@ -185,10 +185,6 @@ const userConfig = [
     validation: 'object',
   },
   {
-    name: 'routes',
-    validation: 'object',
-  },
-  {
     name: 'sourceMap',
     validation: 'string|boolean',
     setConfig: (config: Config, sourceMap: UserConfig['sourceMap']) => {
