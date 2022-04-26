@@ -56,7 +56,7 @@ function getEntry(rootDir: string) {
 const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
   const {
     mode,
-    define,
+    define = {},
     externals = {},
     publicPath = '/',
     outputDir = path.join(rootDir, 'build'),

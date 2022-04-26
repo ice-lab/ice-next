@@ -23,7 +23,7 @@ export function createEsbuildCompiler(options: Options) {
   const { taskConfig, webpackConfig } = task;
   const transformPlugins = getTransformPlugins(taskConfig);
   const alias = (webpackConfig.resolve?.alias || {}) as Record<string, string | false>;
-  const { define } = taskConfig;
+  const { define = {} } = taskConfig;
 
   // auto stringify define value
   const defineVars = {};
