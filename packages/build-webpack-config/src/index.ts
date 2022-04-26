@@ -78,6 +78,12 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
     aliasWithRoot[key] = alias[key].startsWith('.') ? path.join(rootDir, alias[key]) : alias[key];
   });
 
+  // auto stringify define value
+  const defineVars = {};
+  Object.keys(define).forEach((key) => {
+    defineVars[key] = JSON.stringify(define[key]);
+  });
+
   const runtimeDefineVars = {};
   const RUNTIME_PREFIX = /^ICE_/i;
   Object.keys(process.env).filter((key) => {
@@ -193,7 +199,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config }) => {
       ...webpackPlugins,
       dev && new ReactRefreshWebpackPlugin(),
       new webpack.DefinePlugin({
-        ...define,
+        ...defineVars,
         ...runtimeDefineVars,
       }),
       new AssetsManifestPlugin({

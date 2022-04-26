@@ -23,6 +23,13 @@ export function createEsbuildCompiler(options: Options) {
   const { taskConfig, webpackConfig } = task;
   const transformPlugins = getTransformPlugins(taskConfig);
   const alias = (webpackConfig.resolve?.alias || {}) as Record<string, string | false>;
+  const { define } = taskConfig;
+
+  // auto stringify define value
+  const defineVars = {};
+  Object.keys(define).forEach((key) => {
+    defineVars[key] = JSON.stringify(define[key]);
+  });
 
   const esbuildCompile: EsbuildCompile = async (buildOptions) => {
     const startTime = new Date().getTime();
@@ -31,7 +38,7 @@ export function createEsbuildCompiler(options: Options) {
       // ref: https://github.com/evanw/esbuild/blob/master/CHANGELOG.md#01117
       // in esm, this in the global should be undefined. Set the following config to avoid warning
       this: undefined,
-      ...taskConfig.define,
+      ...defineVars,
       ...buildOptions.define,
     };
 
