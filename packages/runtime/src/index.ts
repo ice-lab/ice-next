@@ -7,7 +7,7 @@ import {
 import Runtime from './runtime.js';
 import App from './App.js';
 import runClientApp from './runClientApp.js';
-import runServerApp, { renderDocument } from './runServerApp.js';
+import { renderToHTML, renderToResponse } from './runServerApp.js';
 import { useAppContext } from './AppContext.js';
 import { useAppData } from './AppData.js';
 import { useData, useConfig } from './RouteContext.js';
@@ -23,7 +23,6 @@ import type {
   AppContext,
   AppConfig,
   RouteConfig,
-  PageWrapper,
   RouteItem,
 } from './types.js';
 import defineAppConfig from './defineAppConfig.js';
@@ -35,8 +34,8 @@ export {
   Runtime,
   App,
   runClientApp,
-  runServerApp,
-  renderDocument,
+  renderToHTML,
+  renderToResponse,
   useAppContext,
   useAppData,
   useData,
@@ -60,6 +59,5 @@ export type {
   AppContext,
   AppConfig,
   RouteConfig,
-  PageWrapper,
   RouteItem,
 };
