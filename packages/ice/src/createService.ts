@@ -14,7 +14,7 @@ import build from './commands/build.js';
 import getContextConfig from './utils/getContextConfig.js';
 import getWatchEvents from './getWatchEvents.js';
 import { getAppConfig } from './analyzeRuntime.js';
-import { initProcessEnv, updateRuntimeEnv } from './utils/runtimeEnv.js';
+import { initProcessEnv, updateRuntimeEnv, getCoreEnvKeys } from './utils/runtimeEnv.js';
 import getRuntimeModules from './utils/getRuntimeModules.js';
 import { generateRoutesInfo } from './routes.js';
 import webPlugin from './plugins/web/index.js';
@@ -43,6 +43,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
 
   // load dotenv, set to process.env
   await initProcessEnv(rootDir, command, commandArgs);
+  const coreEnvKeys = getCoreEnvKeys();
 
   const { addWatchEvent, removeWatchEvent } = createWatch({
     watchDir: rootDir,
@@ -87,11 +88,13 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const { userConfig } = ctx;
   const { routes: routesConfig } = userConfig;
   const routesRenderData = generateRoutesInfo(rootDir, routesConfig);
+  const { routeManifest } = routesRenderData;
   generator.modifyRenderData((renderData) => ({
     ...renderData,
     ...routesRenderData,
+    coreEnvKeys,
   }));
-  dataCache.set('routes', JSON.stringify(routesRenderData.routeManifest));
+  dataCache.set('routes', JSON.stringify(routeManifest));
 
   const runtimeModules = getRuntimeModules(ctx.getAllPlugin());
 
@@ -132,7 +135,13 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
       consola.debug(err);
     }
   }
-  updateRuntimeEnv(routesRenderData.routeManifest, appConfig);
+
+  const disableRouter = routeManifest && Object.keys(routeManifest).length <= 1 && userConfig.removeHistoryDeadCode;
+  if (command === 'build' && disableRouter) {
+    consola.info('[ice] removeHistoryDeadCode is enabled and only have one route, ice build will remove history and react-router dead code.');
+  }
+
+  updateRuntimeEnv(appConfig, disableRouter);
 
   return {
     run: async () => {

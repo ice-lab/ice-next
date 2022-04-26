@@ -2,7 +2,6 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as dotenv from 'dotenv';
 import { expand as dotenvExpand } from 'dotenv-expand';
-import type { RouteManifest } from '@ice/route-manifest';
 import type { CommandArgs, CommandName } from 'build-scripts';
 
 export type AppConfig = Record<string, any>;
@@ -50,14 +49,18 @@ export async function initProcessEnv(rootDir: string, command: CommandName, comm
   process.env.ICE_CORE_INITIAL_DATA = 'true';
 }
 
-export const updateRuntimeEnv = (routeManifest?: RouteManifest, appConfig?: AppConfig) => {
+export const updateRuntimeEnv = (appConfig: AppConfig, disableRouter: boolean) => {
   if (!appConfig?.app?.getInitialData) {
     process.env['ICE_CORE_INITIAL_DATA'] = 'false';
   }
   if (!appConfig?.app?.errorBoundary) {
     process.env['ICE_CORE_ERROR_BOUNDARY'] = 'false';
   }
-  if (routeManifest && Object.keys(routeManifest).length <= 1) {
+  if (disableRouter) {
     process.env['ICE_CORE_ROUTER'] = 'false';
   }
 };
+
+export function getCoreEnvKeys() {
+  return ['ICE_CORE_MODE', 'ICE_CORE_ROUTER', 'ICE_CORE_ERROR_BOUNDARY', 'ICE_CORE_INITIAL_DATA', 'ICE_CORE_DEV_PORT'];
+}

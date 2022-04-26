@@ -99,6 +99,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
   }).forEach((key) => {
     runtimeDefineVars[`process.env.${key}`] =
       /^ICE_CORE_/i.test(key)
+        // ICE_CORE_* will be updated dynamically, so we need to make it effectively
         ? webpack.DefinePlugin.runtimeValue(() => JSON.stringify(process.env[key]), true)
         : JSON.stringify(process.env[key]);
   });

@@ -185,6 +185,10 @@ const userConfig = [
     validation: 'object',
   },
   {
+    name: 'routes',
+    validation: 'object',
+  },
+  {
     name: 'sourceMap',
     validation: 'string|boolean',
     setConfig: (config: Config, sourceMap: UserConfig['sourceMap']) => {
@@ -249,6 +253,10 @@ const userConfig = [
         return mergeDefaultValue(config, 'eslintOptions', eslintOptions);
       }
     },
+  },
+  {
+    name: 'removeHistoryDeadCode',
+    validation: 'boolean',
   },
 ];
 

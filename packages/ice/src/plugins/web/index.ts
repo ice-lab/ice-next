@@ -19,14 +19,15 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
   onHook(`before.${command as 'start' | 'build'}.run`, async ({ esbuildCompile }) => {
     await emptyDir(outputDir);
 
-    // like webpack define runtimeEnvs in build-webpack-config
+    // same as webpack define runtimeEnvs in build-webpack-config
     const runtimeDefineVars = {};
-    const RUNTIME_PREFIX = /^ICE_/i;
-    Object.keys(process.env).filter((key) => {
-      return RUNTIME_PREFIX.test(key);
-    }).forEach((key) => {
-      // __process.env.ICE_FOO__ defined in server.entry.ts
-      runtimeDefineVars[`__process.env.${key}__`] = JSON.stringify(process.env[key]);
+    Object.keys(process.env).forEach((key) => {
+      if (/^ICE_CORE_/i.test(key)) {
+        // in server.entry
+        runtimeDefineVars[`__process.env.${key}__`] = JSON.stringify(process.env[key]);
+      } else if (/^ICE_/i.test(key)) {
+        runtimeDefineVars[`process.env.${key}`] = JSON.stringify(process.env[key]);
+      }
     });
 
     serverCompiler = async () => {

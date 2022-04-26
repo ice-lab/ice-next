@@ -28,6 +28,9 @@ let createBrowserHistory: typeof originCreateBrowserHistory;
 let useParams: typeof originUseParams;
 let useSearchParams: typeof originUseSearchParams;
 
+console.log('process.env.NODE_ENV', process.env.NODE_ENV);
+console.log('process.env.ICE_CORE_ROUTER', process.env.ICE_CORE_ROUTER);
+
 if (process.env.ICE_CORE_ROUTER === 'true') {
   Link = OriginLink;
   Outlet = OriginOutlet;
