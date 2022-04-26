@@ -4,6 +4,7 @@ import type { Context, TaskConfig } from 'build-scripts';
 import type { StatsError } from 'webpack';
 import type { Config } from '@ice/types';
 import type { ServerCompiler } from '@ice/types/esm/plugin.js';
+import webpack from '@ice/bundles/compiled/webpack/index.js';
 import webpackCompiler from '../service/webpackCompiler.js';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
 
@@ -46,7 +47,7 @@ const build = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
         return;
       } else {
         compiler?.close?.(() => {});
-        const isSuccessful = !messages.errors.length && !messages.warnings.length;
+        const isSuccessful = !messages.errors.length;
         resolve({
           stats,
           messages,

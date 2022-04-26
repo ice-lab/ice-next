@@ -86,7 +86,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   // register web
   ctx.registerTask('web', getWebTask({ rootDir, command }));
   // register config
-  ['userConfig', 'cliOptions'].forEach((configType) => ctx.registerConfig(configType, config[configType]));
+  ['userConfig', 'cliOption'].forEach((configType) => ctx.registerConfig(configType, config[configType]));
   const routesRenderData = generateRoutesInfo(rootDir, routesConfig);
   // add render data
   generator.setRenderData({ ...routesRenderData, runtimeModules });

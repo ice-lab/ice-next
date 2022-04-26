@@ -6,6 +6,7 @@ import type { Compiler, Configuration } from 'webpack';
 import type { Urls, ServerCompiler } from '@ice/types/esm/plugin.js';
 import type { Config } from '@ice/types';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
+import openBrowser from '../utils/openBrowser.js';
 import type { WebpackConfig } from '../utils/getContextConfig';
 
 async function webpackCompiler(options: {
@@ -46,7 +47,7 @@ async function webpackCompiler(options: {
       assets: true,
     });
     const messages = formatWebpackMessages(statsData);
-    const isSuccessful = !messages.errors.length && !messages.warnings.length;
+    const isSuccessful = !messages.errors.length;
     if (isSuccessful && !process.env.DISABLE_STATS) {
       const assetsStatsOptions = {
         errors: false,
@@ -85,6 +86,10 @@ async function webpackCompiler(options: {
    - Network:  ${chalk.underline.white(urls.lanUrlForTerminal)}`;
         }
         consola.log(`${logoutMessage}\n`);
+
+        if (commandArgs.open) {
+          openBrowser(urls.localUrlForBrowser);
+        }
       }
       // compiler.hooks.done is AsyncSeriesHook which does not support async function
       await applyHook('after.start.compile', {

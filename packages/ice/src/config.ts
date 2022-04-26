@@ -251,7 +251,7 @@ const userConfig = [
   },
 ];
 
-const cliOptions = [
+const cliOption = [
   {
     name: 'open',
     commands: ['start'],
@@ -303,5 +303,5 @@ const cliOptions = [
 
 export {
   userConfig,
-  cliOptions,
+  cliOption,
 };

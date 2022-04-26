@@ -2,6 +2,7 @@ import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { createHash } from 'crypto';
 import consola from 'consola';
+import * as fs from 'fs';
 import esbuild, { type BuildOptions } from 'esbuild';
 import type { Config } from '@ice/types';
 import type { ServerCompiler } from '@ice/types/esm/plugin.js';
@@ -25,6 +26,7 @@ export function createServerCompiler(options: Options) {
   const { task, rootDir } = options;
   const transformPlugins = getCompilerPlugins(task.config, 'esbuild');
   const alias = (task.config?.alias || {}) as Record<string, string | false>;
+  const assetsManifest = path.join(rootDir, '.ice/assets-manifest.json');
 
   const serverCompiler: ServerCompiler = async (buildOptions: CompilerOptions) => {
     const startTime = new Date().getTime();
@@ -59,10 +61,10 @@ export function createServerCompiler(options: Options) {
             return includeRule instanceof RegExp ? includeRule : new RegExp(includeRule);
           }),
         }),
-        createAssetsPlugin(path.join(rootDir, '.ice/assets-manifest.json'), rootDir),
+        fs.existsSync(assetsManifest) && createAssetsPlugin(assetsManifest, rootDir),
         ...transformPlugins,
         ...(buildOptions.plugins || []),
-      ],
+      ].filter(Boolean),
     });
     consola.debug('[esbuild]', `time cost: ${new Date().getTime() - startTime}ms`);
     return buildResult;
