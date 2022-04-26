@@ -12,7 +12,7 @@ import type {
 import { loadRouteModules, loadRoutesData, getRoutesConfig, matchRoutes, filterMatchesToLoad } from './routes.js';
 import { loadStyleLinks, loadScripts } from './assets.js';
 import { getLinks, getScripts } from './routesConfig.js';
-import getInitialContext from './initialContext.js';
+import getRequestContext from './requestContext.js';
 
 interface RunClientAppOptions {
   appConfig: AppConfig;
@@ -35,14 +35,14 @@ export default async function runClientApp(options: RunClientAppOptions) {
   const appContextFromServer: AppContext = (window as any).__ICE_APP_CONTEXT__ || {};
   let { appData, routesData, routesConfig, assetsManifest } = appContextFromServer;
 
-  const initialContext = getInitialContext(window.location);
+  const requestContext = getRequestContext(window.location);
 
   if (!appData) {
-    appData = await getAppData(appConfig, initialContext);
+    appData = await getAppData(appConfig, requestContext);
   }
 
   if (!routesData) {
-    routesData = await loadRoutesData(matches, initialContext);
+    routesData = await loadRoutesData(matches, requestContext);
   }
 
   if (!routesConfig) {
@@ -178,7 +178,7 @@ async function loadNextPage(currentMatches: RouteMatch[], prevHistoryState: Hist
   await loadRouteModules(currentMatches.map(({ route: { id, load } }) => ({ id, load })));
 
   // load data for changed route.
-  const initialContext = getInitialContext(window.location);
+  const initialContext = getRequestContext(window.location);
   const matchesToLoad = filterMatchesToLoad(preMatches, currentMatches);
   const data = await loadRoutesData(matchesToLoad, initialContext);
 

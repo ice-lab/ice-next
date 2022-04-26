@@ -16,7 +16,7 @@ import type {
   AppConfig, RuntimePlugin, CommonJsRuntime, AssetsManifest,
   ComponentWithChildren,
 } from './types';
-import getInitialContext from './initialContext.js';
+import getRequestContext from './requestContext.js';
 
 interface RenderOptions {
   appConfig: AppConfig;
@@ -111,8 +111,8 @@ function pipeToResponse(res, pipe: NodeWritablePiper) {
   });
 }
 
-async function doRender(requestContext: ServerContext, options: RenderOptions): Promise<RenderResult> {
-  const { req } = requestContext;
+async function doRender(serverContext: ServerContext, options: RenderOptions): Promise<RenderResult> {
+  const { req } = serverContext;
 
   const {
     routes,
@@ -133,7 +133,7 @@ async function doRender(requestContext: ServerContext, options: RenderOptions): 
   }
 
   try {
-    return await renderServerEntry(requestContext, options, matches, location);
+    return await renderServerEntry(serverContext, options, matches, location);
   } catch (err) {
     console.error('Warning: render server entry error, downgrade to csr.', err);
     return renderDocument(matches, options);
@@ -152,7 +152,7 @@ function render404(): RenderResult {
  * Render App by SSR.
  */
 export async function renderServerEntry(
-  requestContext: ServerContext, options: RenderOptions, matches, location,
+  serverContext: ServerContext, options: RenderOptions, matches, location,
 ): Promise<RenderResult> {
   const {
     assetsManifest,
@@ -162,7 +162,7 @@ export async function renderServerEntry(
     Document,
   } = options;
 
-  const initialContext = getInitialContext(location, requestContext);
+  const initialContext = getRequestContext(location, serverContext);
 
   const appData = await getAppData(appConfig, initialContext);
   const routesData = await loadRoutesData(matches, initialContext);

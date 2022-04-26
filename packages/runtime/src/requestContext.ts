@@ -1,21 +1,21 @@
-import type { ServerContext, InitialContext } from './types';
+import type { ServerContext, RequestContext } from './types';
 
 interface Location {
   pathname: string;
   search: string;
 }
 
-export default function getInitialContext(location: Location, serverContext: ServerContext = {}): InitialContext {
+export default function getRequestContext(location: Location, serverContext: ServerContext = {}): RequestContext {
   const { pathname, search } = location;
   const query = parseSearch(search);
 
-  const initialContext: InitialContext = {
+  const requestContext: RequestContext = {
     ...serverContext,
     pathname,
     query,
   };
 
-  return initialContext;
+  return requestContext;
 }
 
 /**

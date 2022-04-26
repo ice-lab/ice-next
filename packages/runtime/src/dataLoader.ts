@@ -1,5 +1,5 @@
 import type { GetData } from './types';
-import getInitialContext from './initialContext.js';
+import getRequestContext from './requestContext.js';
 
 interface Loaders {
   [routeId: string]: GetData;
@@ -24,8 +24,8 @@ function loadInitialData(loaders: Loaders) {
   matches.forEach(id => {
     const getData = loaders[id];
     if (getData) {
-      const initialContext = getInitialContext(window.location);
-      const loader = getData(initialContext).then(data => {
+      const requestContext = getRequestContext(window.location);
+      const loader = getData(requestContext).then(data => {
         cache.set(id, {
           value: data,
           status: 'RESOLVED',
@@ -70,8 +70,8 @@ async function run(id: string, loader: GetData) {
     // PENDING
     return await value;
   } else {
-    const initialContext = getInitialContext(window.location);
-    return await loader(initialContext);
+    const requestContext = getRequestContext(window.location);
+    return await loader(requestContext);
   }
 }
 

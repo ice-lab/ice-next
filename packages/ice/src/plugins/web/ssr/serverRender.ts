@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { matchRoutes } from '@ice/runtime';
+import { matchRoutes, ServerContext } from '@ice/runtime';
 import type { Request, Response } from 'express';
 
 interface Options {
@@ -27,12 +27,12 @@ export function setupRenderServer(options: Options) {
 
     const entry = await serverCompiler();
     const serverEntry = await import(entry);
-    const requestContext = {
+    const serverContext: ServerContext = {
       req,
       res,
     };
 
     const documentOnly = !(ssg || ssr);
-    serverEntry.renderToResponse(requestContext, documentOnly);
+    serverEntry.renderToResponse(serverContext, documentOnly);
   };
 }

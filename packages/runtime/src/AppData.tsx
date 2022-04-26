@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { AppConfig, AppData, InitialContext } from './types';
+import type { AppConfig, AppData, RequestContext } from './types';
 
 const Context = React.createContext<AppData | undefined>(undefined);
 
@@ -15,7 +15,7 @@ const AppDataProvider = Context.Provider;
 /**
  * Call the getData of app config.
  */
-async function getAppData(appConfig: AppConfig, initialContext: InitialContext): Promise<AppData> {
+async function getAppData(appConfig: AppConfig, requestContext: RequestContext): Promise<AppData> {
   const hasGlobalLoader = typeof window !== 'undefined' && (window as any).__ICE_DATA_LOADER__;
 
   if (hasGlobalLoader) {
@@ -24,7 +24,7 @@ async function getAppData(appConfig: AppConfig, initialContext: InitialContext):
   }
 
   if (appConfig?.app.getData) {
-    return await appConfig.app.getData(initialContext);
+    return await appConfig.app.getData(requestContext);
   }
 }
 

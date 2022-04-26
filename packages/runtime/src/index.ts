@@ -24,6 +24,7 @@ import type {
   AppConfig,
   RouteConfig,
   RouteItem,
+  ServerContext,
 } from './types.js';
 import defineAppConfig from './defineAppConfig.js';
 import { matchRoutes } from './routes.js';
@@ -60,4 +61,5 @@ export type {
   AppConfig,
   RouteConfig,
   RouteItem,
+  ServerContext,
 };
