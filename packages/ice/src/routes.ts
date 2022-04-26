@@ -74,7 +74,7 @@ function generateLoadersStr(routes: NestedRouteManifest[]) {
   const loaders = {
     ${
       loaders.map((loader) => {
-        return `${loader[0]}: ${loader[1]},`;
+        return `'${loader[0]}': ${loader[1]},`;
       }).join('\n')
     }
   };`;
