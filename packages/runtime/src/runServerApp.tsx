@@ -6,7 +6,7 @@ import type { Location } from 'history';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
-import { AppDataProvider } from './AppData.js';
+import { AppDataProvider, getAppData } from './AppData.js';
 import { loadRouteModules, loadRoutesData, getRoutesConfig, matchRoutes } from './routes.js';
 import { piperToString, renderToNodeStream } from './server/streamRender.js';
 import { createStaticNavigator } from './server/navigator.js';
@@ -164,11 +164,7 @@ export async function renderServerEntry(
 
   const initialContext = getInitialContext(location, requestContext);
 
-  let appData;
-  if (appConfig.app?.getData) {
-    appData = await appConfig.app.getData(initialContext);
-  }
-
+  const appData = await getAppData(appConfig, initialContext);
   const routesData = await loadRoutesData(matches, initialContext);
   const routesConfig = getRoutesConfig(matches, routesData);
 

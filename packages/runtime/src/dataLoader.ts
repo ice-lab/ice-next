@@ -19,6 +19,8 @@ function loadInitialData(loaders: Loaders) {
   const context = (window as any).__ICE_APP_CONTEXT__ || {};
   const matches = context.matchedIds || [];
 
+  matches.unshift('__app');
+
   matches.forEach(id => {
     const getData = loaders[id];
     if (getData) {

@@ -4,7 +4,7 @@ import type { HashHistory, BrowserHistory, Action, Location } from 'history';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
-import { AppDataProvider } from './AppData.js';
+import { AppDataProvider, getAppData } from './AppData.js';
 import type {
   AppContext, AppConfig, RouteItem, AppRouterProps, RoutesData, RoutesConfig,
   RouteWrapper, RuntimeModules, RouteMatch, ComponentWithChildren,
@@ -36,8 +36,9 @@ export default async function runClientApp(options: RunClientAppOptions) {
   let { appData, routesData, routesConfig, assetsManifest } = appContextFromServer;
 
   const initialContext = getInitialContext(window.location);
-  if (!appData && appConfig.app?.getData) {
-    appData = await appConfig.app.getData(initialContext);
+
+  if (!appData) {
+    appData = await getAppData(appConfig, initialContext);
   }
 
   if (!routesData) {

@@ -44,9 +44,9 @@ export async function loadRouteModules(routes: RouteModule[]) {
 export async function loadRoutesData(matches: RouteMatch[], initialContext: InitialContext): Promise<RoutesData> {
   const routesData: RoutesData = {};
 
-  const hasLoader = typeof window !== 'undefined' && (window as any).__ICE_DATA_LOADER__;
+  const hasGlobalLoader = typeof window !== 'undefined' && (window as any).__ICE_DATA_LOADER__;
 
-  if (hasLoader) {
+  if (hasGlobalLoader) {
     const load = (window as any).__ICE_DATA_LOADER__;
 
     await Promise.all(
@@ -56,20 +56,22 @@ export async function loadRoutesData(matches: RouteMatch[], initialContext: Init
         routesData[id] = initialData;
       }),
     );
-  } else {
-    await Promise.all(
-      matches.map(async (match) => {
-        const { id } = match.route;
-        const routeModule = routeModules[id];
-        const { getData } = routeModule;
 
-        if (getData) {
-          const initialData = await getData(initialContext);
-          routesData[id] = initialData;
-        }
-      }),
-    );
+    return routesData;
   }
+
+  await Promise.all(
+    matches.map(async (match) => {
+      const { id } = match.route;
+      const routeModule = routeModules[id];
+      const { getData } = routeModule;
+
+      if (getData) {
+        const initialData = await getData(initialContext);
+        routesData[id] = initialData;
+      }
+    }),
+  );
 
   return routesData;
 }
