@@ -44,12 +44,14 @@ export function getConfig() {
   };
 }
 
-export function getData() {
+export function getData({ pathname, query }) {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
         name: 'Home',
         count: 100,
+        pathname,
+        query,
       });
     }, 1 * 100);
   });

@@ -1,18 +1,18 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { createHashHistory, createBrowserHistory } from 'history';
 import type { HashHistory, BrowserHistory, Action, Location } from 'history';
-import { createSearchParams } from 'react-router-dom';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
 import { AppDataProvider } from './AppData.js';
 import type {
   AppContext, AppConfig, RouteItem, AppRouterProps, RoutesData, RoutesConfig,
-  PageWrapper, RuntimeModules, InitialContext, RouteMatch, ComponentWithChildren,
+  PageWrapper, RuntimeModules, RouteMatch, ComponentWithChildren,
 } from './types';
 import { loadRouteModules, loadRoutesData, getRoutesConfig, matchRoutes, filterMatchesToLoad } from './routes.js';
 import { loadStyleLinks, loadScripts } from './assets.js';
 import { getLinks, getScripts } from './routesConfig.js';
+import getInitialContext from './initialContext.js';
 
 interface RunClientAppOptions {
   appConfig: AppConfig;
@@ -35,7 +35,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
   const appContextFromServer: AppContext = (window as any).__ICE_APP_CONTEXT__ || {};
   let { appData, routesData, routesConfig, assetsManifest } = appContextFromServer;
 
-  const initialContext = getInitialContext();
+  const initialContext = getInitialContext(window.location);
   if (!appData && appConfig.app?.getData) {
     appData = await appConfig.app.getData(initialContext);
   }
@@ -177,7 +177,7 @@ async function loadNextPage(currentMatches: RouteMatch[], prevHistoryState: Hist
   await loadRouteModules(currentMatches.map(({ route: { id, load } }) => ({ id, load })));
 
   // load data for changed route.
-  const initialContext = getInitialContext();
+  const initialContext = getInitialContext(window.location);
   const matchesToLoad = filterMatchesToLoad(preMatches, currentMatches);
   const data = await loadRoutesData(matchesToLoad, initialContext);
 
@@ -202,18 +202,4 @@ async function loadNextPage(currentMatches: RouteMatch[], prevHistoryState: Hist
     routesData,
     routesConfig,
   };
-}
-
-function getInitialContext() {
-  const { href, origin, pathname, search } = window.location;
-  const path = href.replace(origin, '');
-  // FIXME: support after safari 12
-  const query = Object.fromEntries(createSearchParams(search));
-  const initialContext: InitialContext = {
-    pathname,
-    path,
-    query,
-  };
-
-  return initialContext;
 }

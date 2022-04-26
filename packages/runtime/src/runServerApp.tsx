@@ -2,17 +2,17 @@ import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import type { Location, To } from 'history';
 import { Action, createPath, parsePath } from 'history';
-import { createSearchParams } from 'react-router-dom';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
 import { AppDataProvider } from './AppData.js';
 import { loadRouteModules, loadRoutesData, getRoutesConfig, matchRoutes } from './routes.js';
 import type {
-  AppContext, InitialContext, RouteItem, ServerContext,
+  AppContext, RouteItem, ServerContext,
   AppConfig, RuntimePlugin, CommonJsRuntime, AssetsManifest,
   ComponentWithChildren,
 } from './types';
+import getInitialContext from './initialContext.js';
 
 interface RenderOptions {
   appConfig: AppConfig;
@@ -55,12 +55,7 @@ export async function renderServerApp(requestContext: ServerContext, options: Re
 
   await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
-  const initialContext: InitialContext = {
-    ...requestContext,
-    pathname: location.pathname,
-    query: Object.fromEntries(createSearchParams(location.search)),
-    path: req.url,
-  };
+  const initialContext = getInitialContext(location, requestContext);
 
   let appData;
   if (appConfig.app?.getData) {

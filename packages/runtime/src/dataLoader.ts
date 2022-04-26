@@ -1,4 +1,5 @@
-import type { GetData, InitialContext } from './types';
+import type { GetData } from './types';
+import getInitialContext from './initialContext.js';
 
 interface Loaders {
   [routeId: string]: GetData;
@@ -21,7 +22,7 @@ function loadInitialData(loaders: Loaders) {
   matches.forEach(id => {
     const getData = loaders[id];
     if (getData) {
-      const initialContext = getInitialContext();
+      const initialContext = getInitialContext(window.location);
       const loader = getData(initialContext).then(data => {
         cache.set(id, {
           value: data,
@@ -63,7 +64,7 @@ async function run(id: string, loader: GetData) {
     // PENDING
     return await value;
   } else {
-    const initialContext = getInitialContext();
+    const initialContext = getInitialContext(window.location);
     return await loader(initialContext);
   }
 }
@@ -82,20 +83,6 @@ function init(loaders: Loaders) {
     const loader = loaders[id];
     return await run(id, loader);
   };
-}
-
-function getInitialContext() {
-  const { href, origin, pathname } = window.location;
-  const path = href.replace(origin, '');
-  // FIXME
-  const query = {};
-  const initialContext: InitialContext = {
-    pathname,
-    path,
-    query,
-  };
-
-  return initialContext;
 }
 
 export default {

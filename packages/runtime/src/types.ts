@@ -74,9 +74,7 @@ export interface ServerContext {
 
 export interface InitialContext extends ServerContext {
   pathname: string;
-  path: string;
   query: Record<string, any>;
-  ssrError?: any;
 }
 
 export interface PageComponent {
