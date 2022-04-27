@@ -13,7 +13,7 @@ interface Result {
 const cache = new Map<string, Result>();
 
 /**
- * getData and set to cache.
+ * Start getData once loader is ready, and set to cache.
  */
 function loadInitialData(loaders: Loaders) {
   const context = (window as any).__ICE_APP_CONTEXT__ || {};
@@ -23,8 +23,10 @@ function loadInitialData(loaders: Loaders) {
 
   matches.forEach(id => {
     const getData = loaders[id];
+
     if (getData) {
       const requestContext = getRequestContext(window.location);
+
       const loader = getData(requestContext).then(data => {
         cache.set(id, {
           value: data,
@@ -49,13 +51,14 @@ function loadInitialData(loaders: Loaders) {
 /**
  * getData from cache or run it.
  */
-async function run(id: string, loader: GetData) {
+async function load(id: string, loader: GetData) {
   if (!loader) {
     return null;
   }
 
   const result = cache.get(id);
 
+  // get from cache first
   if (result) {
     const { value, status } = result;
 
@@ -70,6 +73,7 @@ async function run(id: string, loader: GetData) {
     // PENDING
     return await value;
   } else {
+    // if no cache, call the loader
     const requestContext = getRequestContext(window.location);
     return await loader(requestContext);
   }
@@ -77,6 +81,7 @@ async function run(id: string, loader: GetData) {
 
 /**
  * Load initial data and register global loader.
+ * In order to load data, JavaScript modules, CSS and other assets in parallel.
  */
 function init(loaders: Loaders) {
   try {
@@ -87,7 +92,7 @@ function init(loaders: Loaders) {
 
   (window as any).__ICE_DATA_LOADER__ = async (id) => {
     const loader = loaders[id];
-    return await run(id, loader);
+    return await load(id, loader);
   };
 }
 
