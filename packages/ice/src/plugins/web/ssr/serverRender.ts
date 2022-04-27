@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { matchRoutes } from '@ice/runtime';
-import type { Request, Response } from 'express';
+import type { ExpressRequestHandler } from 'webpack-dev-server';
 
 interface Options {
   routeManifest: string;
@@ -9,7 +9,7 @@ interface Options {
   ssr: boolean;
 }
 
-export function setupRenderServer(options: Options) {
+export function setupRenderServer(options: Options): ExpressRequestHandler {
   const {
     routeManifest,
     serverCompiler,
@@ -17,22 +17,25 @@ export function setupRenderServer(options: Options) {
     ssr,
   } = options;
 
-  return async (req: Request, res: Response) => {
+  return async (req, res, next) => {
     // Read the latest routes info.
     const routes = JSON.parse(fs.readFileSync(routeManifest, 'utf8'));
 
     // If not match pages routes, hand over to webpack dev server for processing
     let matches = matchRoutes(routes, req.path);
-    if (matches.length === 0) return;
+    if (matches.length === 0) {
+      next();
+    } else {
+      const entry = await serverCompiler();
+      // const serverEntry = await import(entry);
+      // const requestContext = {
+      //   req,
+      //   res,
+      // };
 
-    const entry = await serverCompiler();
-    const serverEntry = await import(entry);
-    const requestContext = {
-      req,
-      res,
-    };
-
-    const documentOnly = !(ssg || ssr);
-    serverEntry.renderToResponse(requestContext, documentOnly);
+      // const documentOnly = !(ssg || ssr);
+      // serverEntry.renderToResponse(requestContext, documentOnly);
+      next();
+    }
   };
 }

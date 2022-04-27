@@ -68,7 +68,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
       if (!devServer) {
         throw new Error('webpack-dev-server is not defined');
       }
-      middlewares.push({
+      middlewares.unshift({
         name: 'document-render-server',
         middleware: setupRenderServer({
           serverCompiler,

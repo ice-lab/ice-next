@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import type { Action, Location } from 'history';
 import type { ComponentType, ReactNode } from 'react';
-import type { Root, HydrationOptions } from 'react-dom/client';
+import type { createRoot, hydrateRoot } from 'react-dom/client';
 import type { Navigator, Params } from 'react-router-dom';
 import type { useConfig, useData } from './RouteContext';
 
@@ -61,11 +61,7 @@ export interface AppContext {
   documentOnly?: boolean;
 }
 
-export type Renderer = (
-  container: Element | Document,
-  initialChildren: React.ReactChild | Iterable<React.ReactNode>,
-  options?: HydrationOptions,
-) => Root;
+export type Renderer = typeof hydrateRoot | typeof createRoot;
 
 export interface ServerContext {
   req?: IncomingMessage;
