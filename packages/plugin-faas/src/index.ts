@@ -10,13 +10,14 @@ const plugin: Plugin = ({ onGetConfig, context }) => {
   const { rootDir } = context;
   const routeManifestPath = path.join(rootDir, '.ice/route-manifest.json');
   const serverEntryPath = path.join(rootDir, 'build', 'server', 'index.mjs');
+
   onGetConfig(async (config) => {
     const { middlewares: originSetupMiddlewares } = config;
     config.middlewares = (webpackMiddlewares: Middleware[], devServer: Server) => {
       const middlewares = originSetupMiddlewares(webpackMiddlewares, devServer);
       const routes = JSON.parse(fs.readFileSync(routeManifestPath, 'utf8')) as RouteItem[];
 
-      middlewares.splice(1, 0,
+      const faasMiddlewares = [
         {
           name: 'faas-render-middleware',
           middleware: createFaaSRenderMiddleware(
@@ -31,7 +32,15 @@ const plugin: Plugin = ({ onGetConfig, context }) => {
           name: 'faas-api-middleware',
           middleware: createFaaSAPIMiddleware(),
         },
-      );
+      ];
+      const serverRenderMiddlewareIndex = middlewares.findIndex(middleware => middleware.name === 'server-render');
+      if (serverRenderMiddlewareIndex > -1) {
+        // use faas render instead of default server render
+        middlewares.splice(serverRenderMiddlewareIndex, 1, ...faasMiddlewares);
+      } else {
+        middlewares.unshift(...faasMiddlewares);
+      }
+
       return middlewares;
     };
 
@@ -52,9 +61,9 @@ function createFaaSRenderMiddleware(
           path: req.path,
         },
       };
-      const { value: html } = await serverEntry.renderToHTML(requestContext, false);
-      res.set('Content-Type', 'text/html');
-      res.send(html);
+      const result = await serverEntry.renderToHTML(requestContext, false);
+      res.set('Content-Type', 'text/html; charset=utf-8');
+      res.end(result.value);
     } else {
       next();
     }

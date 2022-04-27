@@ -4,7 +4,8 @@ import emptyDir from '../../utils/emptyDir.js';
 import openBrowser from '../../utils/openBrowser.js';
 import createAssetsPlugin from '../../esbuild/assets.js';
 import generateHTML from './ssr/generateHTML.js';
-import { setupRenderServer } from './ssr/serverRender.js';
+import createServerRenderMiddleware from './ssr/createServerRenderMiddleware.js';
+import createServerCompileMiddleware from './ssr/createServerCompileMiddleware.js';
 
 const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
   const { command, rootDir, userConfig, commandArgs } = context;
@@ -68,15 +69,19 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
       if (!devServer) {
         throw new Error('webpack-dev-server is not defined');
       }
-      middlewares.unshift({
-        name: 'document-render-server',
-        middleware: setupRenderServer({
-          serverCompiler,
-          routeManifest,
-          ssg,
-          ssr,
-        }),
-      });
+      middlewares.unshift(
+        {
+          name: 'server-entry-compile',
+          middleware: createServerCompileMiddleware({ serverCompiler }),
+        },
+        {
+          name: 'server-render',
+          middleware: createServerRenderMiddleware({
+            routeManifest,
+            ssg,
+            ssr,
+          }),
+        });
 
       return middlewares;
     },

@@ -4,18 +4,12 @@ import type { ExpressRequestHandler } from 'webpack-dev-server';
 
 interface Options {
   routeManifest: string;
-  serverCompiler: () => Promise<string>;
   ssg: boolean;
   ssr: boolean;
 }
 
-export function setupRenderServer(options: Options): ExpressRequestHandler {
-  const {
-    routeManifest,
-    serverCompiler,
-    ssg,
-    ssr,
-  } = options;
+export default function createServerRenderMiddleware(options: Options): ExpressRequestHandler {
+  const { routeManifest, ssg, ssr } = options;
 
   return async (req, res, next) => {
     // Read the latest routes info.
@@ -26,16 +20,16 @@ export function setupRenderServer(options: Options): ExpressRequestHandler {
     if (matches.length === 0) {
       next();
     } else {
-      const entry = await serverCompiler();
-      // const serverEntry = await import(entry);
-      // const requestContext = {
-      //   req,
-      //   res,
-      // };
+      // @ts-ignore
+      const entry = req.serverEntry;
+      const serverEntry = await import(entry);
+      const requestContext = {
+        req,
+        res,
+      };
 
-      // const documentOnly = !(ssg || ssr);
-      // serverEntry.renderToResponse(requestContext, documentOnly);
-      next();
+      const documentOnly = !(ssg || ssr);
+      serverEntry.renderToResponse(requestContext, documentOnly);
     }
   };
 }
