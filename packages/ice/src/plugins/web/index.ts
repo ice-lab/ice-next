@@ -69,7 +69,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
       if (!devServer) {
         throw new Error('webpack-dev-server is not defined');
       }
-      const staticMiddlewaresIndex = middlewares.findIndex(({ name }) => name === 'express-static');
+      const staticMiddlewaresIndex = middlewares.findIndex(({ name }) => name === 'serve-index');
       // add ssr middleware before static
       middlewares.splice(staticMiddlewaresIndex, 0, {
         name: 'document-render-server',
