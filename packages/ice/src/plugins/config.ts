@@ -8,7 +8,7 @@ import type { UserConfigContext } from 'build-scripts';
 const require = createRequire(import.meta.url);
 
 const mergeDefaultValue = <T>(config: Config, key: string, value: T): Config => {
-  if (value !== undefined) {
+  if (value) {
     if (typeof value === 'object') {
       return {
         ...config,
@@ -122,7 +122,7 @@ const userConfig = [
     validation: 'boolean',
     defaultValue: true,
     setConfig: (config: Config, minify: UserConfig['minify']) => {
-      return mergeDefaultValue(config, 'minify', minify);
+      config.minify = minify;
     },
   },
   {
