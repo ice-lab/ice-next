@@ -8,17 +8,13 @@ import { getWebpackConfig } from '@ice/webpack-config';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
 import webpackCompiler from '../service/webpackCompiler.js';
 import prepareURLs from '../utils/prepareURLs.js';
+import createSSRMiddleware from '../middleware/ssr.js';
 
 const { defaultsDeep } = lodash;
 
 const start = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[], serverCompiler: ServerCompiler) => {
-  const { applyHook, commandArgs, command, rootDir } = context;
+  const { applyHook, commandArgs, command, rootDir, userConfig } = context;
   const { port, host, https = false } = commandArgs;
-  let devServerConfig: Configuration = {
-    port,
-    host,
-    https,
-  };
 
   const webpackConfigs = taskConfigs.map(({ config }) => getWebpackConfig({
     config,
@@ -26,10 +22,25 @@ const start = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
     // @ts-expect-error fix type error of compiled webpack
     webpack,
   }));
-
+  const customMiddlewares = webpackConfigs[0].devServer?.setupMiddlewares;
+  let devServerConfig: Configuration = {
+    port,
+    host,
+    https,
+    setupMiddlewares: (middlewares, devServer) => {
+      const { outputDir } = taskConfigs.find(({ name }) => name === 'web').config;
+      const { ssg = true, ssr = true } = userConfig;
+      middlewares.push(createSSRMiddleware({
+        rootDir,
+        outputDir,
+        serverCompiler,
+        documentOnly: !ssr && !ssg,
+      }));
+      return customMiddlewares ? customMiddlewares(middlewares, devServer) : middlewares;
+    },
+  };
   // merge devServerConfig with webpackConfig.devServer
   devServerConfig = defaultsDeep(webpackConfigs[0].devServer, devServerConfig);
-
   const protocol = devServerConfig.https ? 'https' : 'http';
   const urls = prepareURLs(
     protocol,

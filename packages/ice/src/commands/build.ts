@@ -1,3 +1,4 @@
+import * as path from 'path';
 import consola from 'consola';
 import { getWebpackConfig } from '@ice/webpack-config';
 import type { Context, TaskConfig } from 'build-scripts';
@@ -7,9 +8,11 @@ import type { ServerCompiler } from '@ice/types/esm/plugin.js';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
 import webpackCompiler from '../service/webpackCompiler.js';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
+import { SERVER_ENTRY, SERVER_OUTPUT } from '../constant.js';
+import generateHTML from '../utils/generateHTML.js';
 
 const build = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[], serverCompiler: ServerCompiler) => {
-  const { applyHook, commandArgs, command, rootDir } = context;
+  const { applyHook, commandArgs, command, rootDir, userConfig } = context;
   const webpackConfigs = taskConfigs.map(({ config }) => getWebpackConfig({
     config,
     rootDir,
@@ -27,7 +30,7 @@ const build = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
   });
   const { stats, isSuccessful, messages } = await new Promise((resolve, reject): void => {
     let messages: { errors: string[]; warnings: string[] };
-    compiler.run((err, stats) => {
+    compiler.run(async (err, stats) => {
       if (err) {
         if (!err.message) {
           reject(err);
@@ -48,6 +51,21 @@ const build = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
       } else {
         compiler?.close?.(() => {});
         const isSuccessful = !messages.errors.length;
+        const { outputDir } = taskConfigs.find(({ name }) => name === 'web').config;
+        // compile server bundle
+        const outfile = path.join(outputDir, SERVER_OUTPUT);
+        await serverCompiler({
+          entryPoints: [path.join(rootDir, SERVER_ENTRY)],
+          outfile,
+        });
+        // generate html
+        const { ssg = true, ssr = true } = userConfig;
+        await generateHTML({
+          rootDir,
+          outputDir,
+          entry: outfile,
+          documentOnly: !ssg && !ssr,
+        });
         resolve({
           stats,
           messages,

@@ -1,8 +1,8 @@
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { createHash } from 'crypto';
-import consola from 'consola';
 import * as fs from 'fs';
+import consola from 'consola';
 import esbuild, { type BuildOptions } from 'esbuild';
 import type { Config } from '@ice/types';
 import type { ServerCompiler } from '@ice/types/esm/plugin.js';
@@ -12,6 +12,7 @@ import escapeLocalIdent from '../utils/escapeLocalIdent.js';
 import stylePlugin from '../esbuild/style.js';
 import aliasPlugin from '../esbuild/alias.js';
 import createAssetsPlugin from '../esbuild/assets.js';
+import { ASSETS_MANIFEST } from '../constant.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -26,13 +27,14 @@ export function createServerCompiler(options: Options) {
   const { task, rootDir } = options;
   const transformPlugins = getCompilerPlugins(task.config, 'esbuild');
   const alias = (task.config?.alias || {}) as Record<string, string | false>;
-  const assetsManifest = path.join(rootDir, '.ice/assets-manifest.json');
+  const assetsManifest = path.join(rootDir, ASSETS_MANIFEST);
 
   const serverCompiler: ServerCompiler = async (buildOptions: CompilerOptions) => {
     const startTime = new Date().getTime();
     consola.debug('[esbuild]', `start compile for: ${buildOptions.entryPoints}`);
     const buildResult = await esbuild.build({
       bundle: true,
+      format: 'esm',
       target: 'node12.19.0',
       ...buildOptions,
       define: {

@@ -112,12 +112,10 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   // merge task config with built-in config
   taskConfigs = mergeTaskConfig(taskConfigs, { compileIncludes, port: commandArgs.port });
 
-  const webTask = taskConfigs.find(({ name }) => name === 'web');
-
   // create serverCompiler with task config
   const serverCompiler = createServerCompiler({
     rootDir,
-    task: webTask,
+    task: taskConfigs.find(({ name }) => name === 'web'),
   });
 
   return {
