@@ -21,6 +21,7 @@ import configCss from './config/css.js';
 import { getRuntimeEnvironment } from './clientEnv.js';
 import AssetsManifestPlugin from './webpackPlugins/AssetsManifestPlugin.js';
 import getTransformPlugins from './unPlugins/index.js';
+import getSplitChunksConfig from './config/splitChunks.js';
 
 const require = createRequire(import.meta.url);
 const { merge } = lodash;
@@ -46,11 +47,7 @@ function getEntry(rootDir: string) {
     entryFile = path.join(rootDir, '.ice/entry.client.ts');
   }
   return {
-    runtime: ['react', 'react-dom', '@ice/runtime'],
-    main: {
-      import: [entryFile],
-      dependOn: 'runtime',
-    },
+    main: [entryFile],
   };
 }
 
@@ -173,6 +170,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       ignored: watchIgnoredRegexp,
     },
     optimization: {
+      splitChunks: getSplitChunksConfig(rootDir),
       minimizer: minify === false ? [] : [
         new TerserPlugin({
           // keep same with compilation
