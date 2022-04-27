@@ -32,13 +32,7 @@ export default async function generateHTML(options: Options) {
         path: routePath,
       },
     };
-
-    let html: string;
-    if (documentOnly) {
-      html = await serverEntry.renderDocument(requestContext);
-    } else {
-      html = await serverEntry.render(requestContext);
-    }
+    const { value: html } = await serverEntry.renderToHTML(requestContext, documentOnly);
 
     const fileName = routePath === '/' ? 'index.html' : `${routePath}.html`;
     const contentPath = path.join(outputDir, fileName);
