@@ -16,10 +16,10 @@ export default function createFallbackMiddleware(): ExpressRequestHandler {
           path: '/_404',
         },
       };
-      const result = await serverEntry.renderToHTML(requestContext, false);
-      res.end(result.value);
+      const _404Result = await serverEntry.renderToHTML(requestContext, false);
+      res.end(_404Result.value);
     } else {
-      res.end(result.value);
+      next();
     }
   };
 }

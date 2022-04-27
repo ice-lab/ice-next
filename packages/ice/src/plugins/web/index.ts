@@ -70,7 +70,9 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
       if (!devServer) {
         throw new Error('webpack-dev-server is not defined');
       }
-      middlewares.push(
+      const staticMiddlewaresIndex = middlewares.findIndex(({ name }) => name === 'express-static');
+      middlewares.splice(
+        staticMiddlewaresIndex + 1, 0,
         {
           name: 'server-entry-compile',
           middleware: createServerCompileMiddleware({ serverCompiler }),
