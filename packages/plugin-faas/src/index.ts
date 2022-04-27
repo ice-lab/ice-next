@@ -55,12 +55,7 @@ function createFaaSRenderMiddleware(
   return async function (req, res, next) {
     if (callback(req)) {
       const serverEntry = await import(serverEntryPath);
-      const requestContext = {
-        req: {
-          url: req.url,
-          path: req.path,
-        },
-      };
+      const requestContext = { req, res };
       const result = await serverEntry.renderToHTML(requestContext, false);
       res.set('Content-Type', 'text/html; charset=utf-8');
       res.end(result.value);

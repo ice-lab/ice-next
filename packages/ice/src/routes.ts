@@ -1,10 +1,12 @@
 import * as path from 'path';
 import { formatNestedRouteManifest, generateRouteManifest } from '@ice/route-manifest';
-import type { NestedRouteManifest } from '@ice/route-manifest';
+import type { NestedRouteManifest, ConfigRoute, RouteManifest } from '@ice/route-manifest';
 import type { UserConfig } from '@ice/types';
 
 export function generateRoutesInfo(rootDir: string, routesConfig: UserConfig['routes'] = {}) {
   const routeManifest = generateRouteManifest(rootDir, routesConfig.ignoreFiles, routesConfig.defineRoutes);
+  const defaultNotFoundRoute = createDefaultNotFoundRoute(rootDir, routeManifest);
+  routeManifest['_404'] = defaultNotFoundRoute;
   const routes = formatNestedRouteManifest(routeManifest);
   const str = generateNestRoutesStr(routes);
 
@@ -21,10 +23,10 @@ function generateNestRoutesStr(nestRouteManifest: NestedRouteManifest[]) {
 
     const fileExtname = path.extname(file);
     const componentFile = file.replace(new RegExp(`${fileExtname}$`), '');
-
+    const componentPath = path.isAbsolute(componentFile) ? componentFile : `@/pages/${componentFile}`;
     let str = `{
       path: '${routePath || ''}',
-      load: () => import(/* webpackChunkName: "${componentName}" */ '@/pages/${componentFile}'),
+      load: () => import(/* webpackChunkName: "${componentName}" */ '${componentPath}'),
       componentName: '${componentName}',
       index: ${index},
       id: '${id}',
@@ -38,4 +40,14 @@ function generateNestRoutesStr(nestRouteManifest: NestedRouteManifest[]) {
     prev += str;
     return prev;
   }, '');
+}
+
+function createDefaultNotFoundRoute(rootDir: string, routeManifest: RouteManifest): ConfigRoute {
+  return {
+    id: '_404',
+    file: path.join(rootDir, '.ice', '_404'),
+    componentName: '_404',
+    path: '_404',
+    parentId: routeManifest['layout'] ? 'layout' : null,
+  };
 }

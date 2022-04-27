@@ -16,6 +16,7 @@ import type {
   AppContext, InitialContext, RouteItem, ServerContext,
   AppConfig, RuntimePlugin, CommonJsRuntime, AssetsManifest,
   ComponentWithChildren,
+  RouteMatch,
 } from './types';
 
 interface RenderOptions {
@@ -85,7 +86,7 @@ export async function renderToResponse(requestContext: ServerContext, options: R
     try {
       await pipeToResponse(res, pipe);
     } catch (error) {
-      console.error('Warning: piperToResponse error, downgrade to csr.', error);
+      console.error('PiperToResponse error, downgrade to csr.', error);
       // downgrade to csr.
       const result = await fallback();
       sendResult(res, result);
@@ -143,7 +144,7 @@ async function doRender(requestContext: ServerContext, options: RenderOptions): 
 // https://github.com/ice-lab/ice-next/issues/133
 function render404(): RenderResult {
   return {
-    value: 'Page is Not Found',
+    value: 'Not Found',
     statusCode: 404,
   };
 }
@@ -219,9 +220,7 @@ export async function renderServerEntry(
 
   const pipe = await renderToNodeStream(element, false);
 
-  const fallback = () => {
-    renderDocument(matches, options);
-  };
+  const fallback = () => renderDocument(matches, options);
 
   return {
     value: {
@@ -234,7 +233,7 @@ export async function renderServerEntry(
 /**
  * Render Document for CSR.
  */
-export function renderDocument(matches, options: RenderOptions): RenderResult {
+export function renderDocument(matches: RouteMatch[], options: RenderOptions): RenderResult {
   const {
     routes,
     assetsManifest,
