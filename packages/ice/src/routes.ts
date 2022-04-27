@@ -5,8 +5,10 @@ import type { UserConfig } from '@ice/types';
 
 export function generateRoutesInfo(rootDir: string, routesConfig: UserConfig['routes'] = {}) {
   const routeManifest = generateRouteManifest(rootDir, routesConfig.ignoreFiles, routesConfig.defineRoutes);
-  const defaultNotFoundRoute = createDefaultNotFoundRoute(rootDir, routeManifest);
-  routeManifest['_404'] = defaultNotFoundRoute;
+  if (!routeManifest['$']) {
+    const defaultNotFoundRoute = createDefaultNotFoundRoute(rootDir, routeManifest);
+    routeManifest['$'] = defaultNotFoundRoute;
+  }
   const routes = formatNestedRouteManifest(routeManifest);
   const str = generateNestRoutesStr(routes);
 
@@ -47,7 +49,7 @@ function createDefaultNotFoundRoute(rootDir: string, routeManifest: RouteManifes
     id: '_404',
     file: path.join(rootDir, '.ice', '_404'),
     componentName: '_404',
-    path: '_404',
+    path: '*',
     parentId: routeManifest['layout'] ? 'layout' : null,
   };
 }

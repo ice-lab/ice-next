@@ -6,7 +6,6 @@ import createAssetsPlugin from '../../esbuild/assets.js';
 import generateHTML from './ssr/generateHTML.js';
 import createServerRenderMiddleware from './ssr/createServerRenderMiddleware.js';
 import createServerCompileMiddleware from './ssr/createServerCompileMiddleware.js';
-import createFallbackMiddleware from './createFallbackMiddleware.js';
 
 const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
   const { command, rootDir, userConfig, commandArgs } = context;
@@ -85,11 +84,8 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
             ssr,
           }),
         },
-        {
-          name: 'fallback',
-          middleware: createFallbackMiddleware(),
-        },
       );
+
       return middlewares;
     },
   });
