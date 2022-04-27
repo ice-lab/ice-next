@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { createRequire } from 'module';
 import { certificateFor } from 'trusted-cert';
 import fse from 'fs-extra';
@@ -9,7 +8,7 @@ import type { UserConfigContext } from 'build-scripts';
 const require = createRequire(import.meta.url);
 
 const mergeDefaultValue = <T>(config: Config, key: string, value: T): Config => {
-  if (value) {
+  if (value !== undefined) {
     if (typeof value === 'object') {
       return {
         ...config,
@@ -121,6 +120,7 @@ const userConfig = [
   {
     name: 'minify',
     validation: 'boolean',
+    defaultValue: true,
     setConfig: (config: Config, minify: UserConfig['minify']) => {
       return mergeDefaultValue(config, 'minify', minify);
     },
