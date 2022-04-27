@@ -222,7 +222,6 @@ importers:
       semver: ^7.3.5
       temp: ^0.9.4
       trusted-cert: ^1.1.3
-      unplugin: ^0.3.2
       webpack: ^5.72.0
       webpack-dev-server: ^4.7.4
     dependencies:
@@ -259,7 +258,6 @@ importers:
       '@types/sass': 1.43.1
       '@types/temp': 0.9.1
       chokidar: 3.5.3
-      unplugin: 0.3.3_esbuild@0.14.36+webpack@5.72.0
       webpack: 5.72.0_esbuild@0.14.36
 
   packages/plugin-auth:
@@ -5201,7 +5199,7 @@ packages:
       webpack: ^5.0.0
     dependencies:
       schema-utils: 4.0.0
-      webpack: 5.72.0_esbuild@0.14.36
+      webpack: 5.72.0_@swc+core@1.2.168
 
   /minimalistic-assert/1.0.1:
     resolution: {integrity: sha512-UtJcAD4yEaGtjPezWuO9wC4nwUnVH/8/Im3yEHQP4b67cXlD/Qr9hdITCU1xDbSEXg2XKNaP8jsReV7vQd00/A==}
@@ -7926,7 +7924,7 @@ packages:
       mime-types: 2.1.35
       range-parser: 1.2.1
       schema-utils: 4.0.0
-      webpack: 5.72.0_esbuild@0.14.36
+      webpack: 5.72.0_@swc+core@1.2.168
 
   /webpack-dev-server/4.8.1_webpack@5.72.0:
     resolution: {integrity: sha512-dwld70gkgNJa33czmcj/PlKY/nOy/BimbrgZRaR9vDATBQAYgLzggR0nxDtPLJiLrMgZwbE6RRfJ5vnBBasTyg==}
@@ -7966,7 +7964,7 @@ packages:
       serve-index: 1.9.1
       sockjs: 0.3.24
       spdy: 4.0.2
-      webpack: 5.72.0_esbuild@0.14.36
+      webpack: 5.72.0_@swc+core@1.2.168
       webpack-dev-middleware: 5.3.1_webpack@5.72.0
       ws: 8.5.0
     transitivePeerDependencies:
