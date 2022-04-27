@@ -5,6 +5,9 @@ interface Location {
   search: string;
 }
 
+/**
+ * context for getData both in server and client side.
+ */
 export default function getRequestContext(location: Location, serverContext: ServerContext = {}): RequestContext {
   const { pathname, search } = location;
   const query = parseSearch(search);
