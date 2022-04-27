@@ -3,12 +3,13 @@ import consola from 'consola';
 import chalk from 'chalk';
 import type { CommandArgs, TaskConfig } from 'build-scripts';
 import type { Compiler, Configuration } from 'webpack';
+import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
 import type { Urls, ServerCompiler } from '@ice/types/esm/plugin.js';
 import type { Config } from '@ice/types';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
 import openBrowser from '../utils/openBrowser.js';
-import type { WebpackConfig } from '../utils/getContextConfig';
 
+type WebpackConfig = Configuration & { devServer?: DevServerConfiguration };
 async function webpackCompiler(options: {
   webpackConfigs: WebpackConfig | WebpackConfig[];
   taskConfigs: TaskConfig<Config>[];
