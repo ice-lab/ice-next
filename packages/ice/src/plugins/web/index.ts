@@ -80,6 +80,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
           ssr,
         }),
       });
+      console.log(middlewares);
       return middlewares;
     },
   });

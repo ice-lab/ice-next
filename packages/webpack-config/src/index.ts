@@ -224,7 +224,9 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       analyzer && new BundleAnalyzerPlugin(),
       tsCheckerOptions && new ForkTsCheckerPlugin(tsCheckerOptions),
       eslintOptions && new ESlintPlugin(eslintOptions),
-      new CopyPlugin({
+      // copy plugin only active in production
+      // otherwise it will add assets to webpack compilation
+      !dev && new CopyPlugin({
         patterns: [{
           from: path.join(rootDir, 'public'),
           to: outputDir,
