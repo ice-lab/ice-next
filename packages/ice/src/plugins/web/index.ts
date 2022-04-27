@@ -74,12 +74,14 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
         staticMiddlewaresIndex + 1, 0,
         {
           name: 'server-entry-compile',
-          middleware: createServerCompileMiddleware({ serverCompiler }),
+          middleware: createServerCompileMiddleware({
+            routeManifest,
+            serverCompiler,
+          }),
         },
         {
           name: 'server-render',
           middleware: createServerRenderMiddleware({
-            routeManifest,
             ssg,
             ssr,
           }),
