@@ -1,8 +1,10 @@
 import * as path from 'path';
 import fse from 'fs-extra';
+import consola from 'consola';
 import type { RouteItem } from '@ice/runtime';
 
 interface Options {
+  rootDir: string;
   entry: string;
   routeManifest: string;
   outDir: string;
@@ -12,6 +14,7 @@ interface Options {
 
 export default async function generateHTML(options: Options) {
   const {
+    rootDir,
     entry,
     routeManifest,
     outDir,
@@ -36,6 +39,9 @@ export default async function generateHTML(options: Options) {
     const { value: html } = await serverEntry.renderToHTML(requestContext, documentOnly);
 
     const fileName = routePath === '/' ? 'index.html' : `${routePath}.html`;
+    if (fse.existsSync(path.join(rootDir, 'public', fileName))) {
+      consola.warn(`${fileName} is overwrite by framework, rename file name if it is necessary`);
+    }
     const contentPath = path.join(outDir, fileName);
     await fse.ensureFile(contentPath);
     await fse.writeFile(contentPath, html);

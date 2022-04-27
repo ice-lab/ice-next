@@ -47,6 +47,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
   onHook('after.build.compile', async () => {
     await serverCompiler();
     await generateHTML({
+      rootDir,
       outDir: outputDir,
       entry: serverEntry,
       routeManifest,
@@ -68,7 +69,9 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
       if (!devServer) {
         throw new Error('webpack-dev-server is not defined');
       }
-      middlewares.push({
+      const staticMiddlewaresIndex = middlewares.findIndex(({ name }) => name === 'express-static');
+      // add ssr middleware before static
+      middlewares.splice(staticMiddlewaresIndex, 0, {
         name: 'document-render-server',
         middleware: setupRenderServer({
           serverCompiler,
@@ -77,7 +80,6 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
           ssr,
         }),
       });
-
       return middlewares;
     },
   });

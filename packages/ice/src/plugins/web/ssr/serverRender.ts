@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { matchRoutes } from '@ice/runtime';
-import type { Request, Response } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 
 interface Options {
   routeManifest: string;
@@ -17,13 +17,16 @@ export function setupRenderServer(options: Options) {
     ssr,
   } = options;
 
-  return async (req: Request, res: Response) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
     // Read the latest routes info.
     const routes = JSON.parse(fs.readFileSync(routeManifest, 'utf8'));
 
     // If not match pages routes, hand over to webpack dev server for processing
     let matches = matchRoutes(routes, req.path);
-    if (matches.length === 0) return;
+    if (matches.length === 0) {
+      next();
+      return;
+    }
 
     const entry = await serverCompiler();
     const serverEntry = await import(entry);
