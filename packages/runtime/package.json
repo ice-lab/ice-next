@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
-  "types": "./esm/index.server.d.ts",
-  "main": "./esm/index.server.js",
+  "types": "./esm/index.d.ts",
+  "main": "./esm/index.js",
   "exports": {
     ".": "./esm/index.js",
     "./client": "./esm/index.js",
