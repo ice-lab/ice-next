@@ -72,22 +72,25 @@ const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
         throw new Error('webpack-dev-server is not defined');
       }
 
-      // mock
-      const mockContext = {
-        mockConfigs: getMockConfigs(rootDir),
-      };
-      addEvent([
-        MOCK_FILE_PATTERN,
-        () => {
-          mockContext.mockConfigs = getMockConfigs(rootDir);
-        },
-      ]);
-      middlewares.push(
-        {
-          name: 'mock',
-          middleware: createMiddleware(mockContext),
-        },
-      );
+      if (commandArgs.mock) {
+        // mock
+        const mockContext = {
+          mockConfigs: getMockConfigs(rootDir),
+        };
+        addEvent([
+          MOCK_FILE_PATTERN,
+          () => {
+            mockContext.mockConfigs = getMockConfigs(rootDir);
+          },
+        ]);
+        middlewares.push(
+          {
+            name: 'mock',
+            middleware: createMiddleware(mockContext),
+          },
+        );
+      }
+
       // document
       middlewares.push(
         {

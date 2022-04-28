@@ -299,6 +299,10 @@ const cliOptions = [
       return mergeDefaultValue(config, 'https', httpsConfig);
     },
   },
+  {
+    name: 'mock',
+    commands: ['start'],
+  },
 ];
 
 const configPlugin: Plugin = ({ registerUserConfig, registerCliOption }) => {
