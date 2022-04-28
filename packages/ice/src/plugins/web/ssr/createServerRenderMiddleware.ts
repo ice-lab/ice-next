@@ -7,7 +7,6 @@ interface Options {
 
 export default function createServerRenderMiddleware(options: Options): ExpressRequestHandler {
   const { ssg, ssr } = options;
-
   return async (req, res, next) => {
     // @ts-ignore
     const entry = req.serverEntry;

@@ -73,14 +73,14 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
       middlewares.splice(
         staticMiddlewaresIndex + 1, 0,
         {
-          name: 'server-entry-compile',
+          name: 'ice-server-entry-compile',
           middleware: createServerCompileMiddleware({
             routeManifest,
             serverCompiler,
           }),
         },
         {
-          name: 'server-render',
+          name: 'ice-server-render',
           middleware: createServerRenderMiddleware({
             ssg,
             ssr,
