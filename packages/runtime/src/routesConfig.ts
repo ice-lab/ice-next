@@ -1,4 +1,4 @@
-import type { RouteMatch, RoutesConfig } from './types';
+import type { RouteMatch, RoutesConfig, RouteConfig } from './types';
 
 export function getMeta(matches: RouteMatch[], routesConfig: RoutesConfig) {
   return getMergedValue('meta', matches, routesConfig) || [];
@@ -61,7 +61,7 @@ export async function updateRoutesConfig(matches: RouteMatch[], routesConfig: Ro
 /**
  * find meta by 'next-meta-count' and update it
  */
-function updateMeta(meta): void {
+function updateMeta(meta: RouteConfig['meta']): void {
   const headEl = document.head;
   const metaCountEl: HTMLMetaElement = headEl.querySelector(
     'meta[name=ice-meta-count]',
@@ -98,15 +98,16 @@ const DOMAttributeNames: Record<string, string> = {
   noModule: 'noModule',
 };
 
+type ElementProps = RouteConfig['meta'] | RouteConfig['links'] | RouteConfig['scripts'];
+
 /**
  * map element props to dom
  * https://github.com/vercel/next.js/blob/canary/packages/next/client/head-manager.ts#L9
  */
-function reactElementToDOM(type, props): HTMLElement {
+function reactElementToDOM(type: string, props: ElementProps): HTMLElement {
   const el: HTMLElement = document.createElement(type);
-  for (const p in props) {
-    if (p === 'children' || p === 'dangerouslySetInnerHTML') continue;
 
+  for (const p in props) {
     // we don't render undefined props to the DOM
     if (props[p] === undefined) continue;
 
@@ -121,17 +122,6 @@ function reactElementToDOM(type, props): HTMLElement {
     }
   }
 
-  const { children, dangerouslySetInnerHTML } = props;
-  if (dangerouslySetInnerHTML) {
-    el.innerHTML = dangerouslySetInnerHTML.__html || '';
-  } else if (children) {
-    el.textContent =
-      typeof children === 'string'
-        ? children
-        : Array.isArray(children)
-          ? children.join('')
-          : '';
-  }
   return el;
 }
 
@@ -141,7 +131,7 @@ const looseToArray = <T extends {}>(input: any): T[] => [].slice.call(input);
  * Load links/scripts for current page.
  * Remove links/scripts for the last page.
  */
-async function updateAssets(type, assets) {
+async function updateAssets(type: string, assets: RouteConfig['links'] | RouteConfig['scripts']) {
   const oldTags: HTMLStyleElement[] = looseToArray<HTMLStyleElement>(
     document.querySelectorAll(`${type}[data-route-${type}]`),
   );
@@ -155,7 +145,7 @@ async function updateAssets(type, assets) {
   });
 }
 
-async function appendTags(type, props) {
+async function appendTags(type: string, props: ElementProps) {
   return new Promise((resolve, reject) => {
     const tag = reactElementToDOM(type, props);
 
