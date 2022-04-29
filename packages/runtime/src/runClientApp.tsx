@@ -12,8 +12,7 @@ import type {
   RouteWrapperConfig, RuntimeModules, RouteMatch, ComponentWithChildren,
 } from './types';
 import { loadRouteModules, loadRoutesData, getRoutesConfig, matchRoutes, filterMatchesToLoad } from './routes.js';
-import { loadStyleLinks, loadScripts } from './assets.js';
-import { getLinks, getScripts, updateRoutesConfig } from './routesConfig.js';
+import { updateRoutesConfig } from './routesConfig.js';
 import getRequestContext from './requestContext.js';
 
 interface RunClientAppOptions {
