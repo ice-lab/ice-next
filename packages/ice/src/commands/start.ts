@@ -8,7 +8,7 @@ import { getWebpackConfig } from '@ice/webpack-config';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
 import webpackCompiler from '../service/webpackCompiler.js';
 import prepareURLs from '../utils/prepareURLs.js';
-import createSSRMiddleware from '../middleware/ssr.js';
+import createSSRMiddleware from '../middlewares/ssr.js';
 
 const { defaultsDeep } = lodash;
 
