@@ -1,7 +1,8 @@
 import * as path from 'path';
-import type { IncomingMessage } from 'http';
 import fse from 'fs-extra';
-import type { RouteItem, ServerContext } from '@ice/runtime';
+import type { IncomingMessage } from 'http';
+import type { ServerContext } from '@ice/runtime';
+import type { RouteObject } from 'react-router';
 
 interface Options {
   entry: string;
@@ -20,7 +21,15 @@ export default async function generateHTML(options: Options) {
     ssr,
   } = options;
 
-  const serverEntry = await import(entry);
+  let serverEntry;
+
+  try {
+    serverEntry = await import(entry);
+  } catch (err) {
+    // make error clearly, notice typeof err === 'string'
+    throw new Error(`import ${entry} error: ${err}`);
+  }
+
   const routes = JSON.parse(fse.readFileSync(routeManifest, 'utf8'));
   const paths = getPaths(routes);
 
@@ -50,7 +59,7 @@ export default async function generateHTML(options: Options) {
  * @param routes
  * @returns
  */
-function getPaths(routes: RouteItem[], parentPath = ''): string[] {
+function getPaths(routes: RouteObject[], parentPath = ''): string[] {
   let pathList = [];
 
   routes.forEach(route => {

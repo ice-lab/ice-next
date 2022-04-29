@@ -1,6 +1,7 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { createHashHistory, createBrowserHistory } from 'history';
 import type { HashHistory, BrowserHistory, Action, Location } from 'history';
+import { createHistorySingle } from './utils/history-single.js';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
@@ -74,7 +75,10 @@ async function render(runtime: Runtime, Document: ComponentWithChildren<{}>) {
   const RouteWrappers = runtime.getWrappers();
   const AppRouter = runtime.getAppRouter();
 
-  const history = (appContext.appConfig?.router?.type === 'hash' ? createHashHistory : createBrowserHistory)({ window });
+  const createHistory = process.env.ICE_CORE_ROUTER === 'true'
+    ? (appContext.appConfig?.router?.type === 'hash' ? createHashHistory : createBrowserHistory)
+    : createHistorySingle;
+  const history = createHistory({ window });
 
   render(
     document,
@@ -90,7 +94,7 @@ async function render(runtime: Runtime, Document: ComponentWithChildren<{}>) {
 }
 
 interface BrowserEntryProps {
-  history: HashHistory | BrowserHistory;
+  history: HashHistory | BrowserHistory | null;
   appContext: AppContext;
   AppProvider: React.ComponentType<any>;
   RouteWrappers: RouteWrapper[];
@@ -124,22 +128,26 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
 
   // listen the history change and update the state which including the latest action and location
   useLayoutEffect(() => {
-    history.listen(({ action, location }) => {
-      const currentMatches = matchRoutes(routes, location);
-      if (!currentMatches.length) {
-        throw new Error(`Routes not found in location ${location.pathname}.`);
-      }
+    if (history) {
+      history.listen(({ action, location }) => {
+        const currentMatches = matchRoutes(routes, location);
+        if (!currentMatches.length) {
+          throw new Error(`Routes not found in location ${location.pathname}.`);
+        }
 
-      loadNextPage(currentMatches, historyState).then(({ routesData, routesConfig }) => {
-        setHistoryState({
-          action,
-          location,
-          routesData,
-          routesConfig,
-          matches: currentMatches,
+        loadNextPage(currentMatches, historyState).then(({ routesData, routesConfig }) => {
+          setHistoryState({
+            action,
+            location,
+            routesData,
+            routesConfig,
+            matches: currentMatches,
+          });
         });
       });
-    });
+    }
+    // just trigger once
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // update app context for the current route.

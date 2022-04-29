@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import type { IncomingMessage, ServerResponse } from 'http';
-import { matchRoutes, ServerContext } from '@ice/runtime';
+import { ServerContext } from '@ice/runtime';
+import matchRoutes from '../../../utils/matchRoutes.js';
 
 interface Options {
   routeManifest: string;
@@ -26,7 +27,15 @@ export function setupRenderServer(options: Options) {
     if (matches.length === 0) return;
 
     const entry = await serverCompiler();
-    const serverEntry = await import(entry);
+
+    let serverEntry;
+    try {
+      serverEntry = await import(entry);
+    } catch (err) {
+      // make error clearly, notice typeof err === 'string'
+      res.end(`import ${entry} error: ${err}`);
+    }
+
     const serverContext: ServerContext = {
       req,
       res,
