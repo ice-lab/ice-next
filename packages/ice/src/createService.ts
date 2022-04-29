@@ -137,7 +137,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   }
 
   let disableRouter = false;
-  if (command === 'build' && userConfig.removeHistoryDeadCode) {
+  if (userConfig.removeHistoryDeadCode) {
     let routesCount = 0;
     routeManifest && Object.keys(routeManifest).forEach((key) => {
       const routeItem = routeManifest[key];

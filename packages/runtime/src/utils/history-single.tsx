@@ -3,7 +3,6 @@
  */
 import * as React from 'react';
 import type { History } from 'history';
-import { useAppContext } from '../AppContext.js';
 
 export const useRoutesSingle = (routes) => {
   return <>{routes[0].element}</>;
