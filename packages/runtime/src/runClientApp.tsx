@@ -12,8 +12,7 @@ import type {
   RouteWrapper, RuntimeModules, InitialContext, RouteMatch, ComponentWithChildren,
 } from './types';
 import { loadRouteModules, loadRoutesData, getRoutesConfig, matchRoutes, filterMatchesToLoad } from './routes.js';
-import { loadStyleLinks, loadScripts } from './assets.js';
-import { getLinks, getScripts } from './routesConfig.js';
+import { updateRoutesConfig } from './routesConfig.js';
 
 interface RunClientAppOptions {
   appConfig: AppConfig;
@@ -195,14 +194,7 @@ async function loadNextPage(currentMatches: RouteMatch[], prevHistoryState: Hist
   });
 
   const routesConfig = getRoutesConfig(currentMatches, routesData);
-
-  const links = getLinks(currentMatches, routesConfig);
-  const scripts = getScripts(currentMatches, routesConfig);
-
-  await Promise.all([
-    loadStyleLinks(links),
-    loadScripts(scripts),
-  ]);
+  await updateRoutesConfig(currentMatches, routesConfig);
 
   return {
     routesData,

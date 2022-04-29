@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { useAppContext } from './AppContext.js';
 import { useAppData } from './AppData.js';
-import { getPageAssets, getEntryAssets } from './assets.js';
 import { getMeta, getTitle, getLinks, getScripts } from './routesConfig.js';
-import type { AppContext } from './types';
+import type { AppContext, RouteMatch, AssetsManifest } from './types';
 
 export function Meta() {
   const { matches, routesConfig } = useAppContext();
@@ -12,6 +11,7 @@ export function Meta() {
   return (
     <>
       {meta.map(item => <meta key={item.name} {...item} />)}
+      <meta name="ice-meta-count" content={meta.length.toString()} />
     </>
   );
 }
@@ -28,7 +28,7 @@ export function Title() {
 export function Links() {
   const { routesConfig, matches, assetsManifest } = useAppContext();
 
-  const customLinks = getLinks(matches, routesConfig);
+  const routesLink = getLinks(matches, routesConfig);
   const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
   const styles = pageAssets.concat(entryAssets).filter(path => path.indexOf('.css') > -1);
@@ -36,9 +36,9 @@ export function Links() {
   return (
     <>
       {
-        customLinks.map(link => {
+        routesLink.map(link => {
           const { block, ...props } = link;
-          return <link key={link.href} {...props} />;
+          return <link key={link.href} {...props} data-route-link />;
         })
       }
       {styles.map(style => <link key={style} rel="stylesheet" type="text/css" href={style} />)}
@@ -50,7 +50,7 @@ export function Scripts() {
   const { routesData, routesConfig, matches, assetsManifest, documentOnly } = useAppContext();
   const appData = useAppData();
 
-  const customScripts = getScripts(matches, routesConfig);
+  const routesScript = getScripts(matches, routesConfig);
   const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
   const scripts = pageAssets.concat(entryAssets).filter(path => path.indexOf('.js') > -1);
@@ -71,19 +71,14 @@ export function Scripts() {
        */}
       <script suppressHydrationWarning={documentOnly} dangerouslySetInnerHTML={{ __html: `window.__ICE_APP_CONTEXT__=${JSON.stringify(appContext)}` }} />
       {
-        customScripts.map(script => {
+        routesScript.map(script => {
           const { block, ...props } = script;
-          return <script key={script.src} defer {...props} />;
+          return <script key={script.src} {...props} data-route-script />;
         })
       }
-      {/*
-       * script must be deferred.
-       * if there are other dom after this tag, and hydrate before parsed all dom,
-       * hydrate will fail due to inconsistent dom nodes.
-       */}
       {
         scripts.map(script => {
-          return <script key={script} defer src={script} />;
+          return <script key={script} src={script} />;
         })
       }
     </>
@@ -101,4 +96,35 @@ export function Main(props) {
       {props.children}
     </div>
   );
+}
+
+/**
+ * merge assets info for matched route
+ */
+export function getPageAssets(matches: RouteMatch[], assetsManifest: AssetsManifest): string[] {
+  // TODO：publicPath from runtime
+  const { pages, publicPath } = assetsManifest;
+
+  let result = [];
+
+  matches.forEach(match => {
+    const { componentName } = match.route;
+    const assets = pages[componentName];
+    assets && assets.forEach(filePath => {
+      result.push(`${publicPath}${filePath}`);
+    });
+  });
+
+  return result;
+}
+
+export function getEntryAssets(assetsManifest: AssetsManifest): string[] {
+  const { entries, publicPath } = assetsManifest;
+  let result = [];
+
+  Object.values(entries).forEach(assets => {
+    result = result.concat(assets);
+  });
+
+  return result.map(filePath => `${publicPath}${filePath}`);
 }
