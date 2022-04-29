@@ -44,7 +44,7 @@ export function Title() {
 export function Links() {
   const { routesConfig, matches, assetsManifest } = useAppContext();
 
-  const routesLink = getLinks(matches, routesConfig);
+  const routeLinks = getLinks(matches, routesConfig);
   const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
   const styles = pageAssets.concat(entryAssets).filter(path => path.indexOf('.css') > -1);
@@ -52,7 +52,7 @@ export function Links() {
   return (
     <>
       {
-        routesLink.map(link => {
+        routeLinks.map(link => {
           const { block, ...props } = link;
           return <link key={link.href} {...props} data-route-link />;
         })
@@ -66,7 +66,7 @@ export function Scripts() {
   const { routesData, routesConfig, matches, assetsManifest, documentOnly } = useAppContext();
   const appData = useAppData();
 
-  const routesScript = getScripts(matches, routesConfig);
+  const routeScripts = getScripts(matches, routesConfig);
   const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
   const scripts = pageAssets.concat(entryAssets).filter(path => path.indexOf('.js') > -1);
@@ -87,7 +87,7 @@ export function Scripts() {
        */}
       <script suppressHydrationWarning={documentOnly} dangerouslySetInnerHTML={{ __html: `window.__ICE_APP_CONTEXT__=${JSON.stringify(appContext)}` }} />
       {
-        routesScript.map(script => {
+        routeScripts.map(script => {
           const { block, ...props } = script;
           return <script key={script.src} {...props} data-route-script />;
         })
