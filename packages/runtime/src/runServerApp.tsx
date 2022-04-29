@@ -243,8 +243,8 @@ export function renderDocument(matches, options: RenderOptions): RenderResult {
   } = options;
 
   // renderDocument needn't to load routesData and appData.
-  const appData = {};
-  const routesData = {};
+  const appData = null;
+  const routesData = null;
   const routesConfig = getRoutesConfig(matches, {});
 
   const appContext: AppContext = {

@@ -2,13 +2,16 @@ import type { RouteManifest } from '@ice/route-manifest';
 
 export type AppConfig = Record<string, any>;
 
-export const defineRuntimeEnv = () => {
+export const defineRuntimeEnv = (userConfig) => {
   const runtimeEnvironment = {
     ROUTER: 'true',
     ERROR_BOUNDARY: 'true',
     AUTH: 'true',
     INITIAL_DATA: 'true',
+    SSR: userConfig.ssr ? 'true' : 'false',
+    SSG: userConfig.ssg ? 'true' : 'false',
   };
+
   Object.keys(runtimeEnvironment).forEach((key) => {
     process.env[`ICE_RUNTIME_${key}`] = runtimeEnvironment[key];
   });

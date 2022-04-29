@@ -1,4 +1,5 @@
 import React, { useLayoutEffect, useState } from 'react';
+import * as ReactDOM from 'react-dom/client';
 import { createHashHistory, createBrowserHistory } from 'history';
 import type { HashHistory, BrowserHistory, Action, Location } from 'history';
 import { createSearchParams } from 'react-router-dom';
@@ -59,6 +60,13 @@ export default async function runClientApp(options: RunClientAppOptions) {
   };
 
   const runtime = new Runtime(appContext);
+
+  if (process.env.ICE_RUNTIME_SSR || process.env.ICE_RUNTIME_SSG) {
+    runtime.setRender((container, element) => {
+      ReactDOM.hydrateRoot(container, element);
+    });
+  }
+
   runtimeModules.forEach(m => {
     runtime.loadModule(m);
   });
@@ -76,7 +84,7 @@ async function render(runtime: Runtime, Document: ComponentWithChildren<{}>) {
   const history = (appContext.appConfig?.router?.type === 'hash' ? createHashHistory : createBrowserHistory)({ window });
 
   render(
-    document,
+    document.getElementById('ice-container'),
     <BrowserEntry
       history={history}
       appContext={appContext}
@@ -151,14 +159,12 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
   return (
     <AppContextProvider value={appContext}>
       <AppDataProvider value={appData}>
-        <Document>
-          <App
-            action={action}
-            location={location}
-            navigator={history}
-            {...rest}
-          />
-        </Document>
+        <App
+          action={action}
+          location={location}
+          navigator={history}
+          {...rest}
+        />
       </AppDataProvider>
     </AppContextProvider>
   );

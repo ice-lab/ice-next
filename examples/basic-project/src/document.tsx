@@ -15,7 +15,7 @@ function Document(props) {
         <Links />
         <script
           dangerouslySetInnerHTML={{
-            __html: `console.log('${appData.title}')`,
+            __html: `console.log('${appData?.title}')`,
           }}
         />
       </head>

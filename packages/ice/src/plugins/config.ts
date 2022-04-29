@@ -99,10 +99,12 @@ const userConfig = [
   {
     name: 'ssg',
     validation: 'boolean',
+    defaultValue: true,
   },
   {
     name: 'ssr',
     validation: 'boolean',
+    defaultValue: true,
   },
   {
     name: 'webpack',

@@ -107,7 +107,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   consola.debug('template render cost:', new Date().getTime() - renderStart);
 
   // define runtime env before get webpack config
-  defineRuntimeEnv();
+  defineRuntimeEnv(ctx.userConfig);
   const compileIncludes = runtimeModules.map(({ name }) => `${name}/runtime`);
   const contextConfig = getContextConfig(ctx, { compileIncludes, port: commandArgs.port });
   const webTask = contextConfig.find(({ name }) => name === 'web');

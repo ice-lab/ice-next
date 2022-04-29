@@ -65,7 +65,7 @@ export type Renderer = (
   container: Element | Document,
   initialChildren: React.ReactChild | Iterable<React.ReactNode>,
   options?: HydrationOptions,
-) => Root;
+) => void;
 
 export interface ServerContext {
   req?: IncomingMessage;
