@@ -1,7 +1,7 @@
 import { Meta, Title, Links, Main, Scripts, useAppData } from 'ice';
 import type { AppData } from './types';
 
-function Document(props) {
+function Document() {
   const appData = useAppData<AppData>();
 
   return (
