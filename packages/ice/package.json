@@ -39,8 +39,6 @@
     "less": "^4.1.2",
     "open": "^8.4.0",
     "mrmime": "^1.0.0",
-    "postcss": "^8.4.7",
-    "postcss-modules": "^4.3.1",
     "prettier": "^2.5.1",
     "react-router": "^6.3.0",
     "sass": "^1.49.9",

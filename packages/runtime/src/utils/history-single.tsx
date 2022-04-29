@@ -23,6 +23,17 @@ export const createHistorySingle = (): History => {
   };
 };
 
+export const matchRoutesSingle = (routes) => {
+  return routes.map(item => {
+    return {
+      params: {},
+      pathname: '',
+      pathnameBase: '',
+      route: item,
+    };
+  });
+};
+
 export const LinkSingle = () => null;
 export const OutletSingle = () => {
   return <></>;
