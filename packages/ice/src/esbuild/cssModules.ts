@@ -5,7 +5,7 @@ import cssModules from '@ice/bundles/compiled/postcss-modules/index.js';
 import { less, sass, postcss } from '@ice/bundles';
 import type { Plugin, PluginBuild, OnResolveArgs, OnResolveResult, OnLoadArgs, OnLoadResult } from 'esbuild';
 
-const cssModulesStyleFilter = /module\.(css|sass|scss|less)$/;
+const cssModulesStyleFilter = /\.module\.(css|sass|scss|less)$/;
 const CSS_LOADER_NAMESPACE = 'css-loader-namespace';
 const STYLE_HANDLER_NAMESPACE = 'style-handler-namespace';
 
