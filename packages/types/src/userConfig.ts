@@ -26,4 +26,5 @@ export interface UserConfig {
   eslint?: Config['eslintOptions'] | boolean;
   ssr?: boolean;
   ssg?: boolean;
+  removeHistoryDeadCode?: boolean;
 }

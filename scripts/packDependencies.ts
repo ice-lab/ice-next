@@ -46,6 +46,7 @@ export async function packDependency(options: Options): Promise<void> {
 
   fs.ensureDirSync(targetPath);
   let { code, assets } = await ncc(packEntry, {
+    cache: false,
     externals,
     minify,
     target: 'es5',
@@ -59,6 +60,7 @@ export async function packDependency(options: Options): Promise<void> {
         filesToCopy.push(require.resolve(filePath, {
           paths: [path.dirname(id)],
         }));
+
         return `'./${path.basename(filePath)}'`;
       }
     },

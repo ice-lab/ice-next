@@ -122,8 +122,9 @@ const userConfig = [
   {
     name: 'minify',
     validation: 'boolean',
+    defaultValue: true,
     setConfig: (config: Config, minify: UserConfig['minify']) => {
-      return mergeDefaultValue(config, 'minify', minify);
+      config.minify = minify;
     },
   },
   {
@@ -251,6 +252,10 @@ const userConfig = [
       }
     },
   },
+  {
+    name: 'removeHistoryDeadCode',
+    validation: 'boolean',
+  },
 ];
 
 const cliOptions = [
@@ -259,8 +264,12 @@ const cliOptions = [
     commands: ['start'],
   },
   {
+    name: 'mode',
+    commands: ['start', 'build', 'test'],
+  },
+  {
     name: 'analyzer',
-    commands: ['start'],
+    commands: ['start', 'build'],
     setConfig: (config: Config, analyzer: boolean) => {
       return mergeDefaultValue(config, 'analyzer', analyzer);
     },
