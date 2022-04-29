@@ -39,6 +39,9 @@ function getMergedValue(key: string, matches: RouteMatch[], routesConfig: Routes
   return result;
 }
 
+/**
+ * update routes config to document.
+ */
 export async function updateRoutesConfig(matches: RouteMatch[], routesConfig: RoutesConfig) {
   const title = getTitle(matches, routesConfig);
   document.title = title || '';
