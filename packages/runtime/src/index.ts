@@ -26,7 +26,6 @@ import type {
   RouteItem,
   ServerContext,
 } from './types.js';
-import defineAppConfig from './defineAppConfig.js';
 import { matchRoutes } from './routes.js';
 import dataLoader from './dataLoader.js';
 
@@ -46,7 +45,6 @@ export {
   Links,
   Scripts,
   Main,
-  defineAppConfig,
   // react-router-dom API
   Link,
   Outlet,
