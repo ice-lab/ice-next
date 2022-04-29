@@ -44,7 +44,10 @@ function getMergedValue(key: string, matches: RouteMatch[], routesConfig: Routes
  */
 export async function updateRoutesConfig(matches: RouteMatch[], routesConfig: RoutesConfig) {
   const title = getTitle(matches, routesConfig);
-  document.title = title || '';
+
+  if (title) {
+    document.title = title;
+  }
 
   const meta = getMeta(matches, routesConfig) || [];
   const links = getLinks(matches, routesConfig) || [];
