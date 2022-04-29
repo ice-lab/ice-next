@@ -23,7 +23,7 @@ export const getAppData: GetAppData = () => {
 export const getAppConfig: GetAppConfig = (appData) => {
   return {
     auth: {
-      initialAuth: appData.auth,
+      initialAuth: appData?.auth,
     },
   };
 };
