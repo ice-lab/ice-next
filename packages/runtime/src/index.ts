@@ -30,6 +30,10 @@ import type {
   RouteConfig,
   RouteItem,
   ServerContext,
+  AppProvider,
+  RouteWrapper,
+  GetAppData,
+  GetAppConfig,
 } from './types.js';
 import { matchRoutes } from './routes.js';
 import dataLoader from './dataLoader.js';
@@ -67,4 +71,8 @@ export type {
   RouteConfig,
   RouteItem,
   ServerContext,
+  AppProvider,
+  RouteWrapper,
+  GetAppData,
+  GetAppConfig,
 };

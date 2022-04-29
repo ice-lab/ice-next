@@ -1,3 +1,5 @@
+import { GetAppData, GetAppConfig } from 'ice';
+
 if (process.env.ICE_CORE_ERROR_BOUNDARY === 'true') {
   console.error('__REMOVED__');
 }
@@ -7,7 +9,7 @@ console.warn('__WARN__');
 console.error('__ERROR__');
 console.log('process.env.HAHA', process.env.HAHA);
 
-export function getAppData() {
+export const getAppData: GetAppData = () => {
   return new Promise((resolve) => {
     resolve({
       title: 'gogogo',
@@ -16,12 +18,12 @@ export function getAppData() {
       },
     });
   });
-}
+};
 
-export function getAppConfig(appData) {
+export const getAppConfig: GetAppConfig = (appData) => {
   return {
     auth: {
       initialAuth: appData.auth,
     },
   };
-}
+};
