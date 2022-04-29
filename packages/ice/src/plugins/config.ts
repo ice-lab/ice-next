@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { createRequire } from 'module';
 import { certificateFor } from 'trusted-cert';
 import fse from 'fs-extra';

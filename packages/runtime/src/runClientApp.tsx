@@ -9,7 +9,7 @@ import { AppContextProvider } from './AppContext.js';
 import { AppDataProvider } from './AppData.js';
 import type {
   AppContext, AppConfig, RouteItem, AppRouterProps, RoutesData, RoutesConfig,
-  RouteWrapper, RuntimeModules, InitialContext, RouteMatch, ComponentWithChildren,
+  RouteWrapperConfig, RuntimeModules, InitialContext, RouteMatch, ComponentWithChildren,
 } from './types';
 import { loadRouteModules, loadRoutesData, getRoutesConfig, matchRoutes, filterMatchesToLoad } from './routes.js';
 import { updateRoutesConfig } from './routesConfig.js';
@@ -99,7 +99,7 @@ interface BrowserEntryProps {
   history: HashHistory | BrowserHistory;
   appContext: AppContext;
   AppProvider: React.ComponentType<any>;
-  RouteWrappers: RouteWrapper[];
+  RouteWrappers: RouteWrapperConfig[];
   AppRouter: React.ComponentType<AppRouterProps>;
   Document: ComponentWithChildren<{}>;
 }
@@ -146,6 +146,7 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
         });
       });
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // update app context for the current route.

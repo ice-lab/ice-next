@@ -10,7 +10,7 @@ import type {
   SetAppRouter,
   AddProvider,
   AddWrapper,
-  RouteWrapper,
+  RouteWrapperConfig,
   SetRender,
   AppRouterProps,
   ComponentWithChildren,
@@ -25,7 +25,7 @@ class Runtime {
 
   private AppProvider: ComponentWithChildren[];
 
-  private RouteWrappers: RouteWrapper[];
+  private RouteWrappers: RouteWrapperConfig[];
 
   private render: Renderer;
 
