@@ -20,9 +20,7 @@ function Document(props) {
         />
       </head>
       <body>
-        <Main>
-          {props.children}
-        </Main>
+        <Main />
         <Scripts />
       </body>
     </html>

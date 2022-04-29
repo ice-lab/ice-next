@@ -1,8 +1,24 @@
 import * as React from 'react';
+import type { ReactNode } from 'react';
 import { useAppContext } from './AppContext.js';
 import { useAppData } from './AppData.js';
 import { getMeta, getTitle, getLinks, getScripts } from './routesConfig.js';
 import type { AppContext, RouteMatch, AssetsManifest } from './types';
+
+interface DocumentContext {
+  main: ReactNode | null;
+}
+
+const Context = React.createContext<DocumentContext | undefined>(undefined);
+
+Context.displayName = 'DocumentContext';
+
+function useDocumentContext() {
+  const value = React.useContext(Context);
+  return value;
+}
+
+export const DocumentContextProvider = Context.Provider;
 
 export function Meta() {
   const { matches, routesConfig } = useAppContext();
@@ -85,15 +101,12 @@ export function Scripts() {
   );
 }
 
-export function Main(props) {
-  const { documentOnly } = useAppContext();
+export function Main() {
+  const { main } = useDocumentContext();
 
-  // disable hydration warning for csr.
-  // document is rendered by hydration.
-  // initial content form "ice-container" is empty, which will not match csr result.
   return (
-    <div id="ice-container" suppressHydrationWarning={documentOnly} >
-      {props.children}
+    <div id="ice-container" >
+      {main}
     </div>
   );
 }

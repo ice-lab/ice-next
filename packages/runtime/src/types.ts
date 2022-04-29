@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import type { Action, Location } from 'history';
-import type { ComponentType, ReactNode } from 'react';
+import type { ComponentType, ReactNode, ReactChild, PropsWithChildren } from 'react';
 import type { HydrationOptions } from 'react-dom/client';
 import type { Navigator, Params } from 'react-router-dom';
 import type { useConfig, useData } from './RouteContext';
@@ -63,7 +63,7 @@ export interface AppContext {
 
 export type Renderer = (
   container: Element | Document,
-  initialChildren: React.ReactChild | Iterable<React.ReactNode>,
+  initialChildren: ReactChild | Iterable<ReactNode>,
   options?: HydrationOptions,
 ) => void;
 
@@ -98,7 +98,7 @@ export interface RouteItem {
   layout?: boolean;
 }
 
-export type ComponentWithChildren<P = {}> = React.ComponentType<React.PropsWithChildren<P>>;
+export type ComponentWithChildren<P = {}> = ComponentType<PropsWithChildren<P>>;
 
 export interface RouteWrapperConfig {
   Wrapper: RouteWrapper;
@@ -106,7 +106,7 @@ export interface RouteWrapperConfig {
 }
 
 export type AppProvider = ComponentWithChildren<any>;
-export type RouteWrapper = React.ComponentType<any>;
+export type RouteWrapper = ComponentType<any>;
 
 export type SetAppRouter = (AppRouter: ComponentType<AppRouterProps>) => void;
 export type AddProvider = (Provider: AppProvider) => void;
