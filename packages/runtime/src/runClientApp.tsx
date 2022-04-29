@@ -1,4 +1,5 @@
 import React, { useLayoutEffect, useState } from 'react';
+import * as ReactDOM from 'react-dom/client';
 import { createHashHistory, createBrowserHistory } from 'history';
 import type { HashHistory, BrowserHistory, Action, Location } from 'history';
 import { createHistorySingle } from './utils/history-single.js';
@@ -8,11 +9,11 @@ import { AppContextProvider } from './AppContext.js';
 import { AppDataProvider, getAppData } from './AppData.js';
 import type {
   AppContext, AppConfig, RouteItem, AppRouterProps, RoutesData, RoutesConfig,
-  RouteWrapper, RuntimeModules, RouteMatch, ComponentWithChildren,
+  RouteWrapperConfig, RuntimeModules, RouteMatch, ComponentWithChildren,
 } from './types';
 import { loadRouteModules, loadRoutesData, getRoutesConfig, matchRoutes, filterMatchesToLoad } from './routes.js';
 import { loadStyleLinks, loadScripts } from './assets.js';
-import { getLinks, getScripts } from './routesConfig.js';
+import { getLinks, getScripts, updateRoutesConfig } from './routesConfig.js';
 import getRequestContext from './requestContext.js';
 
 interface RunClientAppOptions {
@@ -61,6 +62,12 @@ export default async function runClientApp(options: RunClientAppOptions) {
   };
 
   const runtime = new Runtime(appContext);
+  if (process.env.ICE_CORE_SSR === 'true' || process.env.ICE_CORE_SSG === 'true') {
+    runtime.setRender((container, element) => {
+      ReactDOM.hydrateRoot(container, element);
+    });
+  }
+
   runtimeModules.forEach(m => {
     runtime.loadModule(m);
   });
@@ -81,7 +88,7 @@ async function render(runtime: Runtime, Document: ComponentWithChildren<{}>) {
   const history = createHistory({ window });
 
   render(
-    document,
+    document.getElementById('ice-container'),
     <BrowserEntry
       history={history}
       appContext={appContext}
@@ -97,7 +104,7 @@ interface BrowserEntryProps {
   history: HashHistory | BrowserHistory | null;
   appContext: AppContext;
   AppProvider: React.ComponentType<any>;
-  RouteWrappers: RouteWrapper[];
+  RouteWrappers: RouteWrapperConfig[];
   AppRouter: React.ComponentType<AppRouterProps>;
   Document: ComponentWithChildren<{}>;
 }
@@ -160,14 +167,12 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
   return (
     <AppContextProvider value={appContext}>
       <AppDataProvider value={appData}>
-        <Document>
-          <App
-            action={action}
-            location={location}
-            navigator={history}
-            {...rest}
-          />
-        </Document>
+        <App
+          action={action}
+          location={location}
+          navigator={history}
+          {...rest}
+        />
       </AppDataProvider>
     </AppContextProvider>
   );
@@ -198,14 +203,7 @@ async function loadNextPage(currentMatches: RouteMatch[], prevHistoryState: Hist
   });
 
   const routesConfig = getRoutesConfig(currentMatches, routesData);
-
-  const links = getLinks(currentMatches, routesConfig);
-  const scripts = getScripts(currentMatches, routesConfig);
-
-  await Promise.all([
-    loadStyleLinks(links),
-    loadScripts(scripts),
-  ]);
+  await updateRoutesConfig(currentMatches, routesConfig);
 
   return {
     routesData,

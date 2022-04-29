@@ -98,10 +98,12 @@ const userConfig = [
   {
     name: 'ssg',
     validation: 'boolean',
+    defaultValue: true,
   },
   {
     name: 'ssr',
     validation: 'boolean',
+    defaultValue: true,
   },
   {
     name: 'webpack',
@@ -120,9 +122,13 @@ const userConfig = [
   {
     name: 'minify',
     validation: 'boolean',
-    defaultValue: true,
-    setConfig: (config: Config, minify: UserConfig['minify']) => {
-      config.minify = minify;
+    setConfig: (config: Config, minify: UserConfig['minify'], context: UserConfigContext<Config>) => {
+      if (typeof minify === 'boolean') {
+        config.minify = minify;
+      } else {
+        // minify code in build, while disable minify in dev
+        config.minify = context.command === 'build';
+      }
     },
   },
   {
