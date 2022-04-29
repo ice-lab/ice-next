@@ -4,10 +4,15 @@ import {
   useParams,
   useSearchParams,
 } from 'react-router-dom';
+import {
+  LinkSingle,
+  OutletSingle,
+  useParamsSingle,
+  useSearchParamsSingle,
+} from './utils/history-single.js';
 import Runtime from './runtime.js';
 import App from './App.js';
 import runClientApp from './runClientApp.js';
-import { renderToHTML, renderToResponse } from './runServerApp.js';
 import { useAppContext } from './AppContext.js';
 import { useAppData } from './AppData.js';
 import { useData, useConfig } from './RouteContext.js';
@@ -34,8 +39,6 @@ export {
   Runtime,
   App,
   runClientApp,
-  renderToHTML,
-  renderToResponse,
   useAppContext,
   useAppData,
   useData,
@@ -51,6 +54,10 @@ export {
   useParams,
   useSearchParams,
   dataLoader,
+  LinkSingle,
+  OutletSingle,
+  useParamsSingle,
+  useSearchParamsSingle,
 };
 
 export type {
