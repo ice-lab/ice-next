@@ -162,10 +162,10 @@ export async function renderServerEntry(
     Document,
   } = options;
 
-  const initialContext = getRequestContext(location, serverContext);
+  const requestContext = getRequestContext(location, serverContext);
 
-  const appData = await getAppData(appConfig, initialContext);
-  const routesData = await loadRoutesData(matches, initialContext);
+  const appData = await getAppData(appConfig, requestContext);
+  const routesData = await loadRoutesData(matches, requestContext);
   const routesConfig = getRoutesConfig(matches, routesData);
 
   const appContext: AppContext = {
