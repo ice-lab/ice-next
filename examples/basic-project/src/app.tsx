@@ -12,7 +12,7 @@ console.log('process.env.HAHA', process.env.HAHA);
 export const getAppData: GetAppData = () => {
   return new Promise((resolve) => {
     resolve({
-      title: 'gogogo',
+      title: 'gogogogo',
       auth: {
         admin: true,
       },
