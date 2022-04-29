@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import fs from 'fs/promises';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { program } from 'commander';
@@ -12,7 +12,7 @@ import checkNodeVersion from './checkNodeVersion.mjs';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 (async function () {
-  const icePackageInfo = JSON.parse(await fs.readFile(path.join(__dirname, '../package.json'), 'utf-8'));
+  const icePackageInfo = JSON.parse(fs.readFileSync(path.join(__dirname, '../package.json'), 'utf-8'));
   checkNodeVersion(icePackageInfo.engines.node, icePackageInfo.name);
   process.env.__ICE_VERSION__ = icePackageInfo.version;
   const cwd = process.cwd();
