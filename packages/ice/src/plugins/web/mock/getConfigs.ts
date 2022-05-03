@@ -24,7 +24,9 @@ export interface MockConfig {
   handler: Function | Record<string, any>;
 }
 
-export default function getConfig(rootDir: string, ignore: string[] = []): MockConfig[] {
+export default function getConfigs(rootDir: string, exclude: string[] = []): MockConfig[] {
+  // exclude is relative `mock` dir
+  const ignore = exclude.map((ele) => `mock${ele.startsWith('/') ? '' : '/'}${ele}`);
   const mockFiles = fg.sync(MOCK_FILE_PATTERN, {
     cwd: rootDir,
     ignore,

@@ -260,6 +260,10 @@ const userConfig = [
     name: 'removeHistoryDeadCode',
     validation: 'boolean',
   },
+  {
+    name: 'mock',
+    validation: 'object',
+  },
 ];
 
 const cliOptions = [

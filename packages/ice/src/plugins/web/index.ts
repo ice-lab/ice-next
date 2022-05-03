@@ -91,12 +91,12 @@ const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
       if (commandArgs.mock) {
         // mock
         const mockContext = {
-          mockConfigs: getMockConfigs(rootDir),
+          mockConfigs: getMockConfigs(rootDir, userConfig?.mock?.exclude),
         };
         addEvent([
           MOCK_FILE_PATTERN,
           () => {
-            mockContext.mockConfigs = getMockConfigs(rootDir);
+            mockContext.mockConfigs = getMockConfigs(rootDir, userConfig?.mock?.exclude);
           },
         ]);
         middlewares.unshift(
