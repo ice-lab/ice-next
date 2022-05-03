@@ -22,7 +22,6 @@ export default function Home(props) {
   const { data: foo } = useRequest(() => fetch('/api/foo').then(res => res.json()));
   const { data: users } = useRequest(() => fetch('/api/users').then(res => res.json()));
   const { data: userInfo } = useRequest(() => fetch('/api/users/a', { method: 'POST' }).then(res => res.json()));
-
   return (
     <>
       <h2 className={styles.title}>Home Page</h2>
@@ -32,7 +31,6 @@ export default function Home(props) {
         <div>users: {JSON.stringify(users)}</div>
         <div>userInfo: {JSON.stringify(userInfo)}</div>
       </div>
-
     </>
   );
 }

@@ -6,7 +6,7 @@ import createAssetsPlugin from '../../esbuild/assets.js';
 import generateHTML from './ssr/generateHTML.js';
 import { setupRenderServer } from './ssr/serverRender.js';
 import getMockConfigs, { MOCK_FILE_PATTERN } from './mock/getConfigs.js';
-import createMiddleware from './mock/createMiddleware.js';
+import createMockMiddleware from './mock/createMiddleware.js';
 
 const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
   const { command, rootDir, userConfig, commandArgs } = context;
@@ -83,10 +83,10 @@ const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
             mockContext.mockConfigs = getMockConfigs(rootDir);
           },
         ]);
-        middlewares.push(
+        middlewares.unshift(
           {
             name: 'mock',
-            middleware: createMiddleware(mockContext),
+            middleware: createMockMiddleware(mockContext),
           },
         );
       }
