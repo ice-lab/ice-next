@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { createRequire } from 'module';
 import type { Plugin } from '@ice/types';
 import emptyDir from '../../utils/emptyDir.js';
 import openBrowser from '../../utils/openBrowser.js';
@@ -7,6 +8,8 @@ import generateHTML from './ssr/generateHTML.js';
 import { setupRenderServer } from './ssr/serverRender.js';
 import getMockConfigs, { MOCK_FILE_PATTERN } from './mock/getConfigs.js';
 import createMockMiddleware from './mock/createMiddleware.js';
+
+const require = createRequire(import.meta.url);
 
 const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
   const { command, rootDir, userConfig, commandArgs } = context;
@@ -22,6 +25,17 @@ const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
   onHook(`before.${command as 'start' | 'build'}.run`, async ({ esbuildCompile }) => {
     await emptyDir(outputDir);
 
+    // same as webpack define runtimeEnvs in build-webpack-config
+    const runtimeDefineVars = {};
+    Object.keys(process.env).forEach((key) => {
+      if (/^ICE_CORE_/i.test(key)) {
+        // in server.entry
+        runtimeDefineVars[`__process.env.${key}__`] = JSON.stringify(process.env[key]);
+      } else if (/^ICE_/i.test(key)) {
+        runtimeDefineVars[`process.env.${key}`] = JSON.stringify(process.env[key]);
+      }
+    });
+
     serverCompiler = async () => {
       await esbuildCompile({
         entryPoints: [path.join(rootDir, '.ice/entry.server')],
@@ -29,6 +43,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
         // platform: 'node',
         format: 'esm',
         outExtension: { '.js': '.mjs' },
+        define: runtimeDefineVars,
         plugins: [
           createAssetsPlugin(assetsManifest, rootDir),
         ],
@@ -66,6 +81,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
     alias: {
       ice: path.join(rootDir, '.ice', 'index.ts'),
       '@': path.join(rootDir, 'src'),
+      'webpack/hot': path.join(require.resolve('@ice/bundles'), '../../compiled/webpack/hot'),
     },
     middlewares: (middlewares, devServer) => {
       if (!devServer) {

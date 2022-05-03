@@ -18,7 +18,6 @@ import { createUnplugin } from 'unplugin';
 import browserslist from 'browserslist';
 import configAssets from './config/assets.js';
 import configCss from './config/css.js';
-import { getRuntimeEnvironment } from './clientEnv.js';
 import AssetsManifestPlugin from './webpackPlugins/AssetsManifestPlugin.js';
 import getTransformPlugins from './unPlugins/index.js';
 
@@ -46,6 +45,7 @@ function getEntry(rootDir: string) {
     entryFile = path.join(rootDir, '.ice/entry.client.ts');
   }
   return {
+    loader: [path.join(rootDir, '.ice/data-loader.ts')],
     runtime: ['react', 'react-dom', '@ice/runtime'],
     main: {
       import: [entryFile],
@@ -57,7 +57,7 @@ function getEntry(rootDir: string) {
 const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
   const {
     mode,
-    define,
+    define = {},
     externals = {},
     publicPath = '/',
     outputDir = path.join(rootDir, 'build'),
@@ -71,7 +71,6 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     hash,
     minify,
     minimizerOptions = {},
-    port,
     cacheDirectory,
     https,
     analyzer,
@@ -88,23 +87,22 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     aliasWithRoot[key] = alias[key].startsWith('.') ? path.join(rootDir, alias[key]) : alias[key];
   });
 
-  const defineStaticVariables = {
-    ...define || {},
-    'process.env.NODE_ENV': mode || 'development',
-    'process.env.SERVER_PORT': port,
-  };
-  // formate define variables
-  Object.keys(defineStaticVariables).forEach((key) => {
-    defineStaticVariables[key] = typeof defineStaticVariables[key] === 'boolean'
-      ? defineStaticVariables[key]
-      : JSON.stringify(defineStaticVariables[key]);
+  // auto stringify define value
+  const defineVars = {};
+  Object.keys(define).forEach((key) => {
+    defineVars[key] = JSON.stringify(define[key]);
   });
-  const runtimeEnv = getRuntimeEnvironment();
-  const defineRuntimeVariables = {};
-  Object.keys(runtimeEnv).forEach((key) => {
-    const runtimeValue = runtimeEnv[key];
-    // set true to flag the module as uncacheable
-    defineRuntimeVariables[key] = webpack.DefinePlugin.runtimeValue(runtimeValue, true);
+
+  const runtimeDefineVars = {};
+  const RUNTIME_PREFIX = /^ICE_/i;
+  Object.keys(process.env).filter((key) => {
+    return RUNTIME_PREFIX.test(key) || ['NODE_ENV'].includes(key);
+  }).forEach((key) => {
+    runtimeDefineVars[`process.env.${key}`] =
+      /^ICE_CORE_/i.test(key)
+        // ICE_CORE_* will be updated dynamically, so we need to make it effectively
+        ? webpack.DefinePlugin.runtimeValue(() => JSON.stringify(process.env[key]), true)
+        : JSON.stringify(process.env[key]);
   });
   // create plugins
   const webpackPlugins = getTransformPlugins(config).map((plugin) => createUnplugin(() => plugin).webpack());
@@ -147,6 +145,12 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     },
     context: rootDir,
     module: {
+      parser: {
+        javascript: {
+          importExportsPresence: 'warn',
+          exportsPresence: 'warn',
+        },
+      },
       rules: [
         ...loaders,
       ],
@@ -157,6 +161,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       fallback: {
         // TODO: add more fallback module
         events: require.resolve('events'),
+        stream: false,
       },
     },
     watchOptions: {
@@ -166,7 +171,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       ignored: watchIgnoredRegexp,
     },
     optimization: {
-      minimizer: minify === false ? [] : [
+      minimize: minify,
+      minimizer: [
         new TerserPlugin({
           // keep same with compilation
           // use swcMinify with fix error of pure_funcs
@@ -206,8 +212,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
         exclude: [/node_modules/, /bundles\/compiled/],
       }),
       new webpack.DefinePlugin({
-        ...defineStaticVariables,
-        ...defineRuntimeVariables,
+        ...defineVars,
+        ...runtimeDefineVars,
       }),
       new AssetsManifestPlugin({
         fileName: 'assets-manifest.json',
