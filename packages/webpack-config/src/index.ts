@@ -44,11 +44,15 @@ function getEntry(rootDir: string) {
     // use generated file in template directory
     entryFile = path.join(rootDir, '.ice/entry.client.ts');
   }
+  const dataLoaderFile = path.join(rootDir, '.ice/data-loader.ts');
   return {
-    loader: [path.join(rootDir, '.ice/data-loader.ts')],
     runtime: ['react', 'react-dom', '@ice/runtime'],
     main: {
       import: [entryFile],
+      dependOn: 'runtime',
+    },
+    loader: {
+      import: [dataLoaderFile],
       dependOn: 'runtime',
     },
   };
