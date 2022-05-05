@@ -16,7 +16,8 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
   const routeManifest = path.join(rootDir, '.ice/route-manifest.json');
   const mode = command === 'start' ? 'development' : 'production';
   const assetsManifest = path.join(rootDir, '.ice/assets-manifest.json');
-  const serverEntry = path.join(outputDir, 'server/index.mjs');
+  const serverOutputDir = path.join(outputDir, 'server');
+  const serverEntry = path.join(serverOutputDir, 'index.mjs');
   let serverCompiler = async () => '';
 
   onHook(`before.${command as 'start' | 'build'}.run`, async ({ esbuildCompile }) => {
@@ -35,10 +36,13 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
 
     serverCompiler = async () => {
       await esbuildCompile({
-        entryPoints: [path.join(rootDir, '.ice/entry.server')],
-        outfile: serverEntry,
+        entryPoints: {
+          index: path.join(rootDir, '.ice/entry.server'),
+        },
+        outdir: serverOutputDir,
         // platform: 'node',
         format: 'esm',
+        splitting: true,
         outExtension: { '.js': '.mjs' },
         define: runtimeDefineVars,
         plugins: [

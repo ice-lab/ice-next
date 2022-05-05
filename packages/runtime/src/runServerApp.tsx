@@ -128,10 +128,11 @@ async function doRender(serverContext: ServerContext, options: RenderOptions): P
     return render404();
   }
 
-  await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
-
   if (documentOnly) {
     return renderDocument(matches, options);
+  } else {
+    // TODO: 调用 renderHTML 的时候 getConfig 失效了
+    await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
   }
 
   try {
