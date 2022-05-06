@@ -58,6 +58,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     },
     addRenderFile: generator.addRenderFile,
     addRenderTemplate: generator.addTemplateFiles,
+    modifyRenderData: generator.modifyRenderData,
   };
 
   const ctx = new Context<any, ExtendsPluginAPI>({
