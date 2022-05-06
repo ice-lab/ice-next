@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 import type { Action, Location } from 'history';
-import type { ComponentType, ReactNode } from 'react';
-import type { createRoot, hydrateRoot } from 'react-dom/client';
+import type { ComponentType, ReactNode, PropsWithChildren } from 'react';
+import type { HydrationOptions } from 'react-dom/client';
 import type { Navigator, Params } from 'react-router-dom';
 import type { useConfig, useData } from './RouteContext';
 
@@ -10,7 +10,6 @@ type AppLifecycle = 'onShow' | 'onHide' | 'onPageNotFound' | 'onShareAppMessage'
 type App = Partial<{
   strict?: boolean;
   addProvider?: ({ children }: { children: ReactNode }) => ReactNode;
-  getData?: GetData;
 } & Record<AppLifecycle, VoidFunction>>;
 
 export type AppData = any;
@@ -28,8 +27,16 @@ export interface RouteConfig {
   auth?: string[];
 }
 
+export interface AppEntry {
+  getAppConfig?: GetAppConfig;
+  getAppData?: GetAppData;
+}
+
+export type GetAppData = (ctx: RequestContext) => Promise<AppData> | AppData;
+export type GetAppConfig = (appData: AppData) => AppConfig;
+
 // app.getData & route.getData
-export type GetData = (ctx: InitialContext) => Promise<RouteData> | RouteData;
+export type GetData = (ctx: RequestContext) => Promise<RouteData> | RouteData;
 // route.getConfig
 export type GetConfig = (args: { data: RouteData }) => RouteConfig;
 
@@ -59,20 +66,24 @@ export interface AppContext {
   matches?: RouteMatch[];
   routes?: RouteItem[];
   documentOnly?: boolean;
+  matchedIds?: string[];
 }
 
-export type Renderer = typeof hydrateRoot | typeof createRoot;
+// export type Renderer = typeof hydrateRoot;
+export type Renderer = (
+  container: Element | Document,
+    initialChildren: React.ReactNode,
+    options?: HydrationOptions,
+) => void;
 
 export interface ServerContext {
   req?: IncomingMessage;
   res?: ServerResponse;
 }
 
-export interface InitialContext extends ServerContext {
+export interface RequestContext extends ServerContext {
   pathname: string;
-  path: string;
   query: Record<string, any>;
-  ssrError?: any;
 }
 
 export interface RouteComponent {
@@ -86,7 +97,7 @@ export interface RouteItem {
   path: string;
   element?: ReactNode;
   componentName: string;
-  index?: false;
+  index?: boolean;
   exact?: boolean;
   strict?: boolean;
   load?: () => Promise<RouteComponent>;
@@ -94,17 +105,20 @@ export interface RouteItem {
   layout?: boolean;
 }
 
-export type ComponentWithChildren<P = {}> = React.ComponentType<React.PropsWithChildren<P>>;
+export type ComponentWithChildren<P = {}> = ComponentType<PropsWithChildren<P>>;
 
-export interface RouteWrapper {
-  Wrapper: ComponentWithChildren;
+export interface RouteWrapperConfig {
+  Wrapper: RouteWrapper;
   layout?: boolean;
 }
 
+export type AppProvider = ComponentWithChildren<any>;
+export type RouteWrapper = ComponentType<any>;
+
 export type SetAppRouter = (AppRouter: ComponentType<AppRouterProps>) => void;
-export type AddProvider = (Provider: ComponentWithChildren<any>) => void;
+export type AddProvider = (Provider: AppProvider) => void;
 export type SetRender = (render: Renderer) => void;
-export type AddWrapper = (wrapper: ComponentType, forLayout?: boolean) => void;
+export type AddWrapper = (wrapper: RouteWrapper, forLayout?: boolean) => void;
 
 export interface RouteModules {
   [routeId: string]: RouteComponent;

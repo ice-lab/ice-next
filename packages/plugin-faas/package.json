@@ -13,11 +13,11 @@
     "!esm/**/*.map"
   ],
   "dependencies": {
-    "@ice/runtime": "^1.0.0"
+    "@ice/runtime": "^1.0.0",
+    "fs-extra": "^10.0.0"
   },
   "devDependencies": {
     "@ice/types": "^1.0.0",
-    "express": "^4.18.0",
     "webpack-dev-server": "^4.8.1"
   }
 }

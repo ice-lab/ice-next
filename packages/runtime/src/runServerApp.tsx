@@ -3,24 +3,26 @@ import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import { Action, parsePath } from 'history';
 import type { Location } from 'history';
-import { createSearchParams } from 'react-router-dom';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
-import { AppDataProvider } from './AppData.js';
+import { AppDataProvider, getAppData } from './AppData.js';
+import getAppConfig from './appConfig.js';
+import { DocumentContextProvider } from './Document.js';
 import { loadRouteModules, loadRoutesData, getRoutesConfig, matchRoutes } from './routes.js';
 import { piperToString, renderToNodeStream } from './server/streamRender.js';
 import { createStaticNavigator } from './server/navigator.js';
 import type { NodeWritablePiper } from './server/streamRender.js';
 import type {
-  AppContext, InitialContext, RouteItem, ServerContext,
-  AppConfig, RuntimePlugin, CommonJsRuntime, AssetsManifest,
+  AppContext, RouteItem, ServerContext,
+  AppEntry, RuntimePlugin, CommonJsRuntime, AssetsManifest,
   ComponentWithChildren,
   RouteMatch,
 } from './types';
+import getRequestContext from './requestContext.js';
 
 interface RenderOptions {
-  appConfig: AppConfig;
+  app: AppEntry;
   assetsManifest: AssetsManifest;
   routes: RouteItem[];
   runtimeModules: (RuntimePlugin | CommonJsRuntime)[];
@@ -112,8 +114,8 @@ function pipeToResponse(res, pipe: NodeWritablePiper) {
   });
 }
 
-async function doRender(requestContext: ServerContext, options: RenderOptions): Promise<RenderResult> {
-  const { req } = requestContext;
+async function doRender(serverContext: ServerContext, options: RenderOptions): Promise<RenderResult> {
+  const { req } = serverContext;
 
   const {
     routes,
@@ -134,7 +136,7 @@ async function doRender(requestContext: ServerContext, options: RenderOptions): 
   }
 
   try {
-    return await renderServerEntry(requestContext, options, matches, location);
+    return await renderServerEntry(serverContext, options, matches, location);
   } catch (err) {
     console.error('Warning: render server entry error, downgrade to csr.', err);
     return renderDocument(matches, options);
@@ -153,31 +155,21 @@ function render404(): RenderResult {
  * Render App by SSR.
  */
 export async function renderServerEntry(
-  requestContext: ServerContext, options: RenderOptions, matches, location,
+  serverContext: ServerContext, options: RenderOptions, matches, location,
 ): Promise<RenderResult> {
-  const { req } = requestContext;
-
   const {
     assetsManifest,
-    appConfig,
+    app,
     runtimeModules,
     routes,
     Document,
   } = options;
 
-  const initialContext: InitialContext = {
-    ...requestContext,
-    pathname: location.pathname,
-    query: Object.fromEntries(createSearchParams(location.search)),
-    path: req.url,
-  };
+  const requestContext = getRequestContext(location, serverContext);
 
-  let appData;
-  if (appConfig.app?.getData) {
-    appData = await appConfig.app.getData(initialContext);
-  }
-
-  const routesData = await loadRoutesData(matches, initialContext);
+  const appData = await getAppData(app, requestContext);
+  const appConfig = getAppConfig(app, appData);
+  const routesData = await loadRoutesData(matches, requestContext);
   const routesConfig = getRoutesConfig(matches, routesData);
 
   const appContext: AppContext = {
@@ -200,20 +192,24 @@ export async function renderServerEntry(
   const RouteWrappers = runtime.getWrappers();
   const AppRouter = runtime.getAppRouter();
 
+  const documentContext = {
+    main: <App
+      action={Action.Pop}
+      location={location}
+      navigator={staticNavigator}
+      static
+      AppProvider={AppProvider}
+      RouteWrappers={RouteWrappers}
+      AppRouter={AppRouter}
+    />,
+  };
+
   const element = (
     <AppContextProvider value={appContext}>
       <AppDataProvider value={appData}>
-        <Document>
-          <App
-            action={Action.Pop}
-            location={location}
-            navigator={staticNavigator}
-            static
-            AppProvider={AppProvider}
-            RouteWrappers={RouteWrappers}
-            AppRouter={AppRouter}
-          />
-        </Document>
+        <DocumentContextProvider value={documentContext}>
+          <Document />
+        </DocumentContextProvider>
       </AppDataProvider>
     </AppContextProvider>
   );
@@ -237,13 +233,14 @@ export function renderDocument(matches: RouteMatch[], options: RenderOptions): R
   const {
     routes,
     assetsManifest,
-    appConfig,
+    app,
     Document,
   } = options;
 
   // renderDocument needn't to load routesData and appData.
-  const appData = {};
-  const routesData = {};
+  const appData = null;
+  const routesData = null;
+  const appConfig = getAppConfig(app, appData);
   const routesConfig = getRoutesConfig(matches, {});
 
   const appContext: AppContext = {
@@ -257,10 +254,16 @@ export function renderDocument(matches: RouteMatch[], options: RenderOptions): R
     documentOnly: true,
   };
 
+  const documentContext = {
+    main: null,
+  };
+
   const html = ReactDOMServer.renderToString(
     <AppContextProvider value={appContext}>
       <AppDataProvider value={appData}>
-        <Document />
+        <DocumentContextProvider value={documentContext}>
+          <Document />
+        </DocumentContextProvider>
       </AppDataProvider>
     </AppContextProvider>,
   );
