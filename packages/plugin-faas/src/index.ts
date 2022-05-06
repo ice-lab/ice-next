@@ -1,8 +1,7 @@
 import path from 'path';
 import fse from 'fs-extra';
 import type { Plugin } from '@ice/types';
-import type { Middleware, ExpressRequestHandler } from 'webpack-dev-server';
-import type Server from 'webpack-dev-server';
+import type { RequestHandler } from 'express';
 import { matchRoutes } from '@ice/runtime';
 import type { RouteItem } from '@ice/runtime/esm/types';
 
@@ -13,7 +12,7 @@ const plugin: Plugin = async ({ onGetConfig, context }) => {
 
   onGetConfig(async (config) => {
     const { middlewares: originSetupMiddlewares } = config;
-    config.middlewares = (webpackMiddlewares: Middleware[], devServer: Server) => {
+    config.middlewares = (webpackMiddlewares, devServer) => {
       const middlewares = originSetupMiddlewares(webpackMiddlewares, devServer);
       const routes = fse.readJSONSync(routeManifestPath, 'utf8') as RouteItem[];
 
@@ -51,7 +50,7 @@ const plugin: Plugin = async ({ onGetConfig, context }) => {
 function createFaaSRenderMiddleware(
   callback: (req: any) => boolean,
   serverEntryPath: string,
-): ExpressRequestHandler {
+): RequestHandler {
   return async function (req, res, next) {
     if (callback(req)) {
       const serverEntry = await import(serverEntryPath);
@@ -65,7 +64,7 @@ function createFaaSRenderMiddleware(
   };
 }
 
-function createFaaSAPIMiddleware(): ExpressRequestHandler {
+function createFaaSAPIMiddleware(): RequestHandler {
   return function (req, res, next) {
     if (req.path.startsWith('/api')) {
       res.json(['a', 'b']);

@@ -18,6 +18,6 @@
   },
   "devDependencies": {
     "@ice/types": "^1.0.0",
-    "webpack-dev-server": "^4.8.1"
+    "express": "^4.18.1"
   }
 }
