@@ -1,6 +1,6 @@
 import * as path from 'path';
+import type { Request } from 'express';
 import fse from 'fs-extra';
-import type { IncomingMessage } from 'http';
 import type { ServerContext } from '@ice/runtime';
 import type { RouteObject } from 'react-router';
 
@@ -41,7 +41,7 @@ export default async function generateHTML(options: Options) {
     };
 
     const serverContext: ServerContext = {
-      req: req as IncomingMessage,
+      req: req as Request,
     };
 
     const documentOnly = !(ssg || ssr);

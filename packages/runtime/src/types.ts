@@ -1,4 +1,4 @@
-import type { IncomingMessage, ServerResponse } from 'http';
+import type { Request, Response } from 'express';
 import type { Action, Location } from 'history';
 import type { ComponentType, ReactNode, ReactChild, PropsWithChildren } from 'react';
 import type { HydrationOptions } from 'react-dom/client';
@@ -43,7 +43,7 @@ export type GetConfig = (args: { data: RouteData }) => RouteConfig;
 export interface AppConfig extends Record<string, any> {
   app?: App;
   router?: {
-    type: 'hash' | 'browser';
+    type?: 'hash' | 'browser';
     basename?: string;
   };
 }
@@ -76,8 +76,8 @@ export type Renderer = (
 ) => void;
 
 export interface ServerContext {
-  req?: IncomingMessage;
-  res?: ServerResponse;
+  req?: Request;
+  res?: Response;
 }
 
 export interface RequestContext extends ServerContext {
@@ -160,6 +160,7 @@ export interface AppRouterProps {
   navigator: Navigator;
   routes: RouteItem[];
   static?: boolean;
+  basename?: string;
 }
 
 export interface AppRouteProps {

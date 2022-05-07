@@ -31,9 +31,6 @@ export default async function runClientApp(options: RunClientAppOptions) {
     Document,
   } = options;
 
-  const matches = matchRoutes(routes, window.location);
-  await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
-
   const appContextFromServer: AppContext = (window as any).__ICE_APP_CONTEXT__ || {};
   let { appData, routesData, routesConfig, assetsManifest } = appContextFromServer;
 
@@ -42,13 +39,14 @@ export default async function runClientApp(options: RunClientAppOptions) {
   if (!appData) {
     appData = await getAppData(app, requestContext);
   }
-
   const appConfig = getAppConfig(app, appData);
+
+  const matches = matchRoutes(routes, window.location, appConfig?.router?.basename);
+  await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   if (!routesData) {
     routesData = await loadRoutesData(matches, requestContext);
   }
-
   if (!routesConfig) {
     routesConfig = getRoutesConfig(matches, routesConfig);
   }
@@ -121,8 +119,12 @@ interface HistoryState {
 
 function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryProps) {
   const {
-    routes, matches: originMatches, routesData: initialRoutesData,
-    routesConfig: initialRoutesConfig, appData,
+    routes,
+    matches: originMatches,
+    routesData: initialRoutesData,
+    routesConfig: initialRoutesConfig,
+    appData,
+    appConfig,
   } = appContext;
 
   const [historyState, setHistoryState] = useState<HistoryState>({
@@ -139,7 +141,7 @@ function BrowserEntry({ history, appContext, Document, ...rest }: BrowserEntryPr
   useLayoutEffect(() => {
     if (history) {
       history.listen(({ action, location }) => {
-        const currentMatches = matchRoutes(routes, location);
+        const currentMatches = matchRoutes(routes, location, appConfig?.router?.basename);
         if (!currentMatches.length) {
           throw new Error(`Routes not found in location ${location.pathname}.`);
         }

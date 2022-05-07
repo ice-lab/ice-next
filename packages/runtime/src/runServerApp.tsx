@@ -1,4 +1,4 @@
-import type { ServerResponse } from 'http';
+import type { Response } from 'express';
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import { Action, parsePath } from 'history';
@@ -17,6 +17,10 @@ import type {
   AppContext, RouteItem, ServerContext,
   AppEntry, RuntimePlugin, CommonJsRuntime, AssetsManifest,
   ComponentWithChildren,
+  RouteMatch,
+  RequestContext,
+  AppData,
+  AppConfig,
 } from './types';
 import getRequestContext from './requestContext.js';
 
@@ -98,7 +102,7 @@ export async function renderToResponse(requestContext: ServerContext, options: R
 /**
  * Send string result to ServerResponse.
  */
-async function sendResult(res: ServerResponse, result: RenderResult) {
+async function sendResult(res: Response, result: RenderResult) {
   res.statusCode = result.statusCode;
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.end(result.value);
@@ -107,22 +111,22 @@ async function sendResult(res: ServerResponse, result: RenderResult) {
 /**
  * Send stream result to ServerResponse.
  */
-function pipeToResponse(res, pipe: NodeWritablePiper) {
+function pipeToResponse(res: Response, pipe: NodeWritablePiper) {
   return new Promise((resolve, reject) => {
     pipe(res, (err) => (err ? reject(err) : resolve(null)));
   });
 }
 
-async function doRender(serverContext: ServerContext, options: RenderOptions): Promise<RenderResult> {
+async function doRender(serverContext: ServerContext, renderOptions: RenderOptions): Promise<RenderResult> {
   const { req } = serverContext;
-
-  const {
-    routes,
-    documentOnly,
-  } = options;
+  const { routes, documentOnly, app } = renderOptions;
 
   const location = getLocation(req.url);
-  const matches = matchRoutes(routes, location);
+
+  const requestContext = getRequestContext(location, serverContext);
+  const appData = await getAppData(app, requestContext);
+  const appConfig = getAppConfig(app, appData);
+  const matches = matchRoutes(routes, location, appConfig?.router?.basename);
 
   if (!matches.length) {
     return render404();
@@ -131,14 +135,21 @@ async function doRender(serverContext: ServerContext, options: RenderOptions): P
   await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   if (documentOnly) {
-    return renderDocument(matches, options);
+    return renderDocument(matches, renderOptions);
   }
 
   try {
-    return await renderServerEntry(serverContext, options, matches, location);
+    return await renderServerEntry({
+      requestContext,
+      renderOptions,
+      matches,
+      location,
+      appConfig,
+      appData,
+    });
   } catch (err) {
     console.error('Warning: render server entry error, downgrade to csr.', err);
-    return renderDocument(matches, options);
+    return renderDocument(matches, renderOptions);
   }
 }
 
@@ -154,27 +165,36 @@ function render404(): RenderResult {
  * Render App by SSR.
  */
 export async function renderServerEntry(
-  serverContext: ServerContext, options: RenderOptions, matches, location,
+  {
+    requestContext,
+    matches,
+    location,
+    appData,
+    appConfig,
+    renderOptions,
+  }: {
+    requestContext: RequestContext;
+    renderOptions: RenderOptions;
+    matches: RouteMatch[];
+    location: Location;
+    appData: AppData;
+    appConfig: AppConfig;
+  },
 ): Promise<RenderResult> {
   const {
     assetsManifest,
-    app,
     runtimeModules,
     routes,
     Document,
-  } = options;
+  } = renderOptions;
 
-  const requestContext = getRequestContext(location, serverContext);
-
-  const appData = await getAppData(app, requestContext);
-  const appConfig = getAppConfig(app, appData);
   const routesData = await loadRoutesData(matches, requestContext);
   const routesConfig = getRoutesConfig(matches, routesData);
 
   const appContext: AppContext = {
-    appConfig,
     assetsManifest,
     appData,
+    appConfig,
     routesData,
     routesConfig,
     matches,
@@ -216,7 +236,7 @@ export async function renderServerEntry(
   const pipe = await renderToNodeStream(element, false);
 
   const fallback = () => {
-    renderDocument(matches, options);
+    renderDocument(matches, renderOptions);
   };
 
   return {
@@ -230,7 +250,7 @@ export async function renderServerEntry(
 /**
  * Render Document for CSR.
  */
-export function renderDocument(matches, options: RenderOptions): RenderResult {
+export function renderDocument(matches: RouteMatch[], options: RenderOptions): RenderResult {
   const {
     routes,
     assetsManifest,

@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import type { IncomingMessage, ServerResponse } from 'http';
+import type { RequestHandler } from 'express';
 import { ServerContext } from '@ice/runtime';
 import matchRoutes from '../../../utils/matchRoutes.js';
 
@@ -10,7 +10,7 @@ interface Options {
   ssr: boolean;
 }
 
-export function setupRenderServer(options: Options) {
+export function setupRenderServer(options: Options): RequestHandler {
   const {
     routeManifest,
     serverCompiler,
@@ -18,13 +18,16 @@ export function setupRenderServer(options: Options) {
     ssr,
   } = options;
 
-  return async (req: IncomingMessage, res: ServerResponse) => {
+  return async (req, res) => {
     // Read the latest routes info.
     const routes = JSON.parse(fs.readFileSync(routeManifest, 'utf8'));
 
     // If not match pages routes, hand over to webpack dev server for processing
     let matches = matchRoutes(routes, req.url);
-    if (matches.length === 0) return;
+    if (matches.length === 0) {
+      // TODO: 需要有 log
+      return;
+    }
 
     const entry = await serverCompiler();
 

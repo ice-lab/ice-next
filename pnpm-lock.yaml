@@ -259,6 +259,7 @@ importers:
       dotenv-expand: ^8.0.3
       ejs: ^3.1.6
       esbuild: ^0.14.23
+      express: ^4.18.1
       fast-glob: ^3.2.11
       find-up: ^5.0.0
       fs-extra: ^10.0.0
@@ -311,6 +312,7 @@ importers:
       '@types/sass': 1.43.1
       '@types/temp': 0.9.1
       chokidar: 3.5.3
+      express: 4.18.1
       unplugin: 0.3.3_esbuild@0.14.38+webpack@5.72.0
       webpack: 5.72.0_esbuild@0.14.38
 
@@ -328,6 +330,7 @@ importers:
 
   packages/runtime:
     specifiers:
+      express: ^4.18.1
       history: ^5.3.0
       react: ^18.0.0
       react-dom: ^18.0.0
@@ -337,6 +340,7 @@ importers:
       history: 5.3.0
       react-router-dom: 6.3.0_react-dom@18.0.0+react@18.0.0
     devDependencies:
+      express: 4.18.1
       react: 18.0.0
       react-dom: 18.0.0_react@18.0.0
       regenerator-runtime: 0.13.9
@@ -3792,8 +3796,8 @@ packages:
       clone-regexp: 2.2.0
     dev: true
 
-  /express/4.18.0:
-    resolution: {integrity: sha512-EJEXxiTQJS3lIPrU1AE2vRuT7X7E+0KBbpm5GSoK524yl0K8X+er8zS2P14E64eqsVNoWbMCT7MpmQ+ErAhgRg==}
+  /express/4.18.1:
+    resolution: {integrity: sha512-zZBcOX9TfehHQhtupq57OF8lFZ3UZi08Y97dwFCkD8p9d/d2Y3M+ykKcwaMDEL+4qyUolgBDX6AblpR3fL212Q==}
     engines: {node: '>= 0.10.0'}
     dependencies:
       accepts: 1.3.8
@@ -8040,7 +8044,7 @@ packages:
       mime-types: 2.1.35
       range-parser: 1.2.1
       schema-utils: 4.0.0
-      webpack: 5.72.0_@swc+core@1.2.168
+      webpack: 5.72.0_esbuild@0.14.38
 
   /webpack-dev-server/4.8.1_webpack@5.72.0:
     resolution: {integrity: sha512-dwld70gkgNJa33czmcj/PlKY/nOy/BimbrgZRaR9vDATBQAYgLzggR0nxDtPLJiLrMgZwbE6RRfJ5vnBBasTyg==}
@@ -8066,7 +8070,7 @@ packages:
       compression: 1.7.4
       connect-history-api-fallback: 1.6.0
       default-gateway: 6.0.3
-      express: 4.18.0
+      express: 4.18.1
       graceful-fs: 4.2.10
       html-entities: 2.3.3
       http-proxy-middleware: 2.0.6_@types+express@4.17.13
@@ -8080,7 +8084,7 @@ packages:
       serve-index: 1.9.1
       sockjs: 0.3.24
       spdy: 4.0.2
-      webpack: 5.72.0_@swc+core@1.2.168
+      webpack: 5.72.0_esbuild@0.14.38
       webpack-dev-middleware: 5.3.1_webpack@5.72.0
       ws: 8.5.0
     transitivePeerDependencies:

@@ -49,6 +49,7 @@ export default function App(props: Props) {
       navigator={navigator}
       static={staticProp}
       routes={routes}
+      basename={appConfig?.router?.basename}
     />
   );
 
