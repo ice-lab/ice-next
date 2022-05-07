@@ -6,17 +6,21 @@ import openBrowser from '../../utils/openBrowser.js';
 import createAssetsPlugin from '../../esbuild/assets.js';
 import generateHTML from './ssr/generateHTML.js';
 import { setupRenderServer } from './ssr/serverRender.js';
+import getMockConfigs, { MOCK_FILE_PATTERN } from './mock/getConfigs.js';
+import createMockMiddleware from './mock/createMiddleware.js';
 
 const require = createRequire(import.meta.url);
 
-const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
+const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
   const { command, rootDir, userConfig, commandArgs } = context;
+  const { addEvent } = watch;
   const { ssg = true, ssr = true } = userConfig;
   const outputDir = path.join(rootDir, 'build');
   const routeManifest = path.join(rootDir, '.ice/route-manifest.json');
   const mode = command === 'start' ? 'development' : 'production';
   const assetsManifest = path.join(rootDir, '.ice/assets-manifest.json');
-  const serverEntry = path.join(outputDir, 'server/index.mjs');
+  const serverOutputDir = path.join(outputDir, 'server');
+  const serverEntry = path.join(serverOutputDir, 'index.mjs');
   let serverCompiler = async () => '';
 
   onHook(`before.${command as 'start' | 'build'}.run`, async ({ esbuildCompile }) => {
@@ -35,10 +39,13 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
 
     serverCompiler = async () => {
       await esbuildCompile({
-        entryPoints: [path.join(rootDir, '.ice/entry.server')],
-        outfile: serverEntry,
+        entryPoints: {
+          index: path.join(rootDir, '.ice/entry.server'),
+        },
+        outdir: serverOutputDir,
         // platform: 'node',
         format: 'esm',
+        splitting: true,
         outExtension: { '.js': '.mjs' },
         define: runtimeDefineVars,
         plugins: [
@@ -84,15 +91,38 @@ const webPlugin: Plugin = ({ registerTask, context, onHook }) => {
       if (!devServer) {
         throw new Error('webpack-dev-server is not defined');
       }
-      middlewares.push({
-        name: 'document-render-server',
-        middleware: setupRenderServer({
-          serverCompiler,
-          routeManifest,
-          ssg,
-          ssr,
-        }),
-      });
+
+      if (commandArgs.mock) {
+        // mock
+        const mockContext = {
+          mockConfigs: getMockConfigs(rootDir, userConfig?.mock?.exclude),
+        };
+        addEvent([
+          MOCK_FILE_PATTERN,
+          () => {
+            mockContext.mockConfigs = getMockConfigs(rootDir, userConfig?.mock?.exclude);
+          },
+        ]);
+        middlewares.unshift(
+          {
+            name: 'mock',
+            middleware: createMockMiddleware(mockContext),
+          },
+        );
+      }
+
+      // document
+      middlewares.push(
+        {
+          name: 'document-render-server',
+          middleware: setupRenderServer({
+            serverCompiler,
+            routeManifest,
+            ssg,
+            ssr,
+          }),
+        },
+      );
 
       return middlewares;
     },
