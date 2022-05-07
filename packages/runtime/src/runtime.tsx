@@ -30,7 +30,7 @@ class Runtime {
   private render: Renderer;
 
   public constructor(appContext: AppContext) {
-    this.AppProvider = [];
+    this.AppProvider = [appContext.appConfig.app.addProvider];
     this.appContext = appContext;
     this.render = (container, element) => {
       const root = ReactDOM.createRoot(container);

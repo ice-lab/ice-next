@@ -8,6 +8,12 @@
   "bin": {
     "ice": "./bin/ice-cli.mjs"
   },
+  "files": [
+    "bin",
+    "esm",
+    "template",
+    "!esm/**/*.map"
+  ],
   "engines": {
     "node": ">=12.22.0",
     "npm": ">=3.0.0"
