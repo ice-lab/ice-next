@@ -1,4 +1,4 @@
-import type { RequestHandler } from 'express';
+import type { ExpressRequestHandler } from 'webpack-dev-server';
 import { ServerContext } from '@ice/runtime';
 
 interface Options {
@@ -7,7 +7,7 @@ interface Options {
   ssr: boolean;
 }
 
-export function setupRenderServer(options: Options): RequestHandler {
+export function setupRenderServer(options: Options): ExpressRequestHandler {
   const {
     serverCompiler,
     ssg,

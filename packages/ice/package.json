@@ -61,6 +61,7 @@
   },
   "devDependencies": {
     "@ice/types": "^1.0.0",
+    "@types/body-parser": "^1.19.2",
     "@types/cross-spawn": "^6.0.2",
     "@types/ejs": "^3.1.0",
     "@types/less": "^3.0.3",
@@ -69,7 +70,6 @@
     "@types/sass": "^1.43.1",
     "@types/temp": "^0.9.1",
     "chokidar": "^3.5.3",
-    "express": "^4.18.0",
     "unplugin": "^0.3.2",
     "webpack": "^5.72.0",
     "react": "^18.0.0"

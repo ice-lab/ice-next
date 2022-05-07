@@ -1,4 +1,4 @@
-import type { Request, Response } from 'express';
+import type { Request, Response } from 'webpack-dev-server';
 import type { Action, Location } from 'history';
 import type { ComponentType, ReactNode, ReactChild, PropsWithChildren } from 'react';
 import type { HydrationOptions } from 'react-dom/client';

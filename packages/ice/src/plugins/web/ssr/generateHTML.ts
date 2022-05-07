@@ -1,5 +1,5 @@
 import * as path from 'path';
-import type { Request } from 'express';
+import type { Request } from 'webpack-dev-server';
 import fse from 'fs-extra';
 import type { ServerContext } from '@ice/runtime';
 import type { RouteObject } from 'react-router';

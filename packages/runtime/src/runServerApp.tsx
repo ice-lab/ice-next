@@ -1,4 +1,4 @@
-import type { Response } from 'express';
+import type { Response } from 'webpack-dev-server';
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import { Action, parsePath } from 'history';
