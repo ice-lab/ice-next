@@ -33,7 +33,8 @@ export function setupRenderServer(options: Options) {
       serverEntry = await import(entry);
     } catch (err) {
       // make error clearly, notice typeof err === 'string'
-      return res.end(`import ${entry} error: ${err}`);
+      res.end(`import ${entry} error: ${err}`);
+      return;
     }
 
     const serverContext: ServerContext = {

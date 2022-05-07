@@ -30,7 +30,7 @@ class Runtime {
   private render: Renderer;
 
   public constructor(appContext: AppContext) {
-    this.AppProvider = [appContext.appConfig.app.addProvider];
+    this.AppProvider = [];
     this.appContext = appContext;
     this.render = (container, element) => {
       const root = ReactDOM.createRoot(container);
@@ -77,7 +77,7 @@ class Runtime {
     });
   }
 
-  private addProvider: AddProvider = (Provider) => {
+  public addProvider: AddProvider = (Provider) => {
     // must promise user's providers are wrapped by the plugins' providers
     this.AppProvider.unshift(Provider);
   };
