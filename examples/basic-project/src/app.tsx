@@ -25,8 +25,5 @@ export const getAppConfig: GetAppConfig = (appData) => {
     auth: {
       initialAuth: appData?.auth,
     },
-    router: {
-      basename: '/app',
-    },
   };
 };
