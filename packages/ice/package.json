@@ -26,6 +26,7 @@
   "homepage": "https://next.ice.work",
   "dependencies": {
     "@ice/bundles": "^0.1.0",
+    "@ice/types": "^1.0.0",
     "@ice/route-manifest": "^1.0.0",
     "@ice/runtime": "^1.0.0",
     "@ice/webpack-config": "^1.0.0",
@@ -60,8 +61,6 @@
     "webpack-dev-server": "^4.7.4"
   },
   "devDependencies": {
-    "@ice/types": "^1.0.0",
-    "@types/body-parser": "^1.19.2",
     "@types/cross-spawn": "^6.0.2",
     "@types/ejs": "^3.1.0",
     "@types/less": "^3.0.3",
