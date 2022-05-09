@@ -1,8 +1,5 @@
 lockfileVersion: 5.4
 
-overrides:
-  '@types/express-serve-static-core': 4.17.18
-
 importers:
 
   .:
