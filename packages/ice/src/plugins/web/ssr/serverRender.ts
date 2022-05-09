@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import type { Request, Response, NextFunction } from 'webpack-dev-server';
+import type { ExpressRequestHandler } from 'webpack-dev-server';
 import type { ServerContext } from '@ice/runtime';
 import matchRoutes from '../../../utils/matchRoutes.js';
 
@@ -10,7 +10,7 @@ interface Options {
   ssr: boolean;
 }
 
-export function setupRenderServer(options: Options) {
+export function setupRenderServer(options: Options): ExpressRequestHandler {
   const {
     routeManifest,
     serverCompiler,
@@ -18,7 +18,7 @@ export function setupRenderServer(options: Options) {
     ssr,
   } = options;
 
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (req, res, next) => {
     // Read the latest routes info.
     const routes = JSON.parse(fs.readFileSync(routeManifest, 'utf8'));
 
