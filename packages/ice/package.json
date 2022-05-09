@@ -63,7 +63,6 @@
   "devDependencies": {
     "@types/cross-spawn": "^6.0.2",
     "@types/ejs": "^3.1.0",
-    "@types/express-serve-static-core": "^4.17.28",
     "@types/less": "^3.0.3",
     "@types/micromatch": "^4.0.2",
     "@types/multer": "^1.4.7",
