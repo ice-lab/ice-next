@@ -4,7 +4,7 @@ import type { Navigator } from 'react-router-dom';
 import AppErrorBoundary from './AppErrorBoundary.js';
 import { useAppContext } from './AppContext.js';
 import { createRouteElements } from './routes.js';
-import type { RouteWrapperConfig, AppRouterProps } from './types';
+import type { RouteWrapperConfig, AppRouterProps, RouteModules } from './types';
 
 interface Props {
   action: Action;
@@ -14,6 +14,7 @@ interface Props {
   AppProvider: React.ComponentType<any>;
   RouteWrappers: RouteWrapperConfig[];
   AppRouter: React.ComponentType<AppRouterProps>;
+  routeModules: RouteModules;
 }
 
 export default function App(props: Props) {
@@ -25,6 +26,7 @@ export default function App(props: Props) {
     AppProvider,
     AppRouter,
     RouteWrappers,
+    routeModules,
   } = props;
 
   const { appConfig, routes: originRoutes } = useAppContext();
@@ -36,10 +38,10 @@ export default function App(props: Props) {
   }
 
   const routes = useMemo(
-    () => createRouteElements(originRoutes, RouteWrappers),
+    () => createRouteElements(originRoutes, routeModules, RouteWrappers),
     // `originRoutes` and `RouteWrappers` will not be changed
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [routeModules],
   );
 
   let element: React.ReactNode = (

@@ -6,32 +6,31 @@ import { matchRoutesSingle } from './utils/history-single.js';
 import RouteWrapper from './RouteWrapper.js';
 import type { RouteItem, RouteModules, RouteWrapperConfig, RouteMatch, RequestContext, RoutesConfig, RoutesData } from './types';
 
-// global route modules cache
-const routeModules: RouteModules = {};
-
 type RouteModule = Pick<RouteItem, 'id' | 'load'>;
 
-export async function loadRouteModule(route: RouteModule) {
+export async function loadRouteModule(route: RouteModule, routeModulesCache: RouteModules) {
   const { id, load } = route;
   if (
     typeof window !== 'undefined' && // Don't use module cache and should load again in ssr. Ref: https://github.com/ice-lab/ice-next/issues/82
-    id in routeModules
+    id in routeModulesCache
   ) {
-    return routeModules[id];
+    return routeModulesCache[id];
   }
 
   try {
     const routeModule = await load();
-    routeModules[id] = routeModule;
+    routeModulesCache[id] = routeModule;
     return routeModule;
   } catch (error) {
     console.error('loadRouteModule', error);
   }
 }
 
-export async function loadRouteModules(routes: RouteModule[]) {
+export async function loadRouteModules(routes: RouteModule[], originRouteModules: RouteModules = {}) {
+  const routeModules = { ...originRouteModules };
   for (const route of routes) {
-    await loadRouteModule(route);
+    const routeModule = await loadRouteModule(route, routeModules);
+    routeModules[route.id] = routeModule;
   }
   return routeModules;
 }
@@ -39,7 +38,11 @@ export async function loadRouteModules(routes: RouteModule[]) {
 /**
 * get data for the matched routes.
 */
-export async function loadRoutesData(matches: RouteMatch[], requestContext: RequestContext): Promise<RoutesData> {
+export async function loadRoutesData(
+  matches: RouteMatch[],
+  requestContext: RequestContext,
+  routeModules: RouteModules,
+): Promise<RoutesData> {
   const routesData: RoutesData = {};
 
   const hasGlobalLoader = typeof window !== 'undefined' && (window as any).__ICE_DATA_LOADER__;
@@ -75,7 +78,11 @@ export async function loadRoutesData(matches: RouteMatch[], requestContext: Requ
 /**
  * Get page config for matched routes.
  */
-export function getRoutesConfig(matches: RouteMatch[], routesData: RoutesData): RoutesConfig {
+export function getRoutesConfig(
+  matches: RouteMatch[],
+  routesData: RoutesData,
+  routeModules: RouteModules,
+): RoutesConfig {
   const routesConfig: RoutesConfig = {};
 
   matches.forEach(async (match) => {
@@ -100,13 +107,17 @@ export function getRoutesConfig(matches: RouteMatch[], routesData: RoutesData): 
 /**
  * Create elements in routes which will be consumed by react-router-dom
  */
-export function createRouteElements(routes: RouteItem[], RouteWrappers?: RouteWrapperConfig[]) {
+export function createRouteElements(
+  routes: RouteItem[],
+  routeModules: RouteModules,
+  RouteWrappers?: RouteWrapperConfig[],
+) {
   return routes.map((routeItem: RouteItem) => {
     let { path, children, index, id, layout, element, ...rest } = routeItem;
 
     element = (
       <RouteWrapper id={id} isLayout={layout} wrappers={RouteWrappers}>
-        <RouteComponent id={id} />
+        <RouteComponent id={id} routeModules={routeModules} />
       </RouteWrapper>
     );
 
@@ -119,14 +130,14 @@ export function createRouteElements(routes: RouteItem[], RouteWrappers?: RouteWr
     };
 
     if (children) {
-      route.children = createRouteElements(children, RouteWrappers);
+      route.children = createRouteElements(children, routeModules, RouteWrappers);
     }
 
     return route;
   });
 }
 
-function RouteComponent({ id, ...props }: { id: string }) {
+function RouteComponent({ id, routeModules }: { id: string; routeModules: RouteModules }) {
   // get current route component from latest routeModules
   const { default: Component } = routeModules[id];
   if (process.env.NODE_ENV === 'development') {
@@ -137,7 +148,7 @@ function RouteComponent({ id, ...props }: { id: string }) {
       );
     }
   }
-  return <Component {...props} />;
+  return <Component />;
 }
 
 export function matchRoutes(
