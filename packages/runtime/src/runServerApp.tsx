@@ -134,7 +134,7 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
   }
 
   if (documentOnly) {
-    return renderDocument(matches, {}, renderOptions);
+    return renderDocument(matches, renderOptions, {});
   }
 
   // FIXME: 原来是在 renderDocument 之前执行这段逻辑。
@@ -153,7 +153,7 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
     });
   } catch (err) {
     console.error('Warning: render server entry error, downgrade to csr.', err);
-    return renderDocument(matches, {}, renderOptions);
+    return renderDocument(matches, renderOptions, {});
   }
 }
 
@@ -246,7 +246,7 @@ async function renderServerEntry(
   const pipe = renderToNodeStream(element, false);
 
   const fallback = () => {
-    renderDocument(matches, routeModules, renderOptions);
+    renderDocument(matches, renderOptions, routeModules);
   };
 
   return {
@@ -260,7 +260,7 @@ async function renderServerEntry(
 /**
  * Render Document for CSR.
  */
-function renderDocument(matches: RouteMatch[], routeModules: RouteModules, options: RenderOptions): RenderResult {
+function renderDocument(matches: RouteMatch[], options: RenderOptions, routeModules: RouteModules): RenderResult {
   const {
     routes,
     assetsManifest,

@@ -165,7 +165,7 @@ function BrowserEntry({
           throw new Error(`Routes not found in location ${location.pathname}.`);
         }
 
-        loadNextPage(currentMatches, historyState).then(({ routesData, routesConfig, routeModules }) => {
+        loadNextPage(currentMatches, historyState, routeModules).then(({ routesData, routesConfig, routeModules }) => {
           setHistoryState({
             action,
             location,
@@ -207,13 +207,20 @@ function BrowserEntry({
  * Prepare for the next pages.
  * Load modules、getPageData and preLoad the custom assets.
  */
-async function loadNextPage(currentMatches: RouteMatch[], prevHistoryState: HistoryState) {
+async function loadNextPage(
+  currentMatches: RouteMatch[],
+  prevHistoryState: HistoryState,
+  originalRouteModules: RouteModules,
+) {
   const {
     matches: preMatches,
     routesData: preRoutesData,
   } = prevHistoryState;
 
-  const routeModules = await loadRouteModules(currentMatches.map(({ route: { id, load } }) => ({ id, load })));
+  const routeModules = await loadRouteModules(
+    currentMatches.map(({ route: { id, load } }) => ({ id, load })),
+    originalRouteModules,
+  );
 
   // load data for changed route.
   const initialContext = getRequestContext(window.location);
