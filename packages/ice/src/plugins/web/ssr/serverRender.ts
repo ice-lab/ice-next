@@ -1,5 +1,6 @@
+import * as fs from 'fs';
 import type { ExpressRequestHandler } from 'webpack-dev-server';
-import { ServerContext } from '@ice/runtime';
+import type { ServerContext } from '@ice/runtime';
 
 interface Options {
   serverCompiler: () => Promise<string>;
