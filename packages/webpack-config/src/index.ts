@@ -169,6 +169,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       ignored: watchIgnoredRegexp,
     },
     optimization: {
+      runtimeChunk: 'single',
       splitChunks: getSplitChunksConfig(rootDir),
       minimize: minify,
       minimizer: [
