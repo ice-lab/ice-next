@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import type { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'webpack-dev-server';
 import type { ServerContext } from '@ice/runtime';
 import matchRoutes from '../../../utils/matchRoutes.js';
 
