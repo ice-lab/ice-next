@@ -40,12 +40,12 @@ export default function createSSRMiddleware(options: Options) {
       if (matches.length === 0) return;
 
       const entry = await ssrCompiler();
-      const serverEntry = await import(entry);
+      const serverModule = await import(entry);
       const requestContext = {
         req,
         res,
       };
-      serverEntry.renderToResponse(requestContext, documentOnly);
+      serverModule.renderToResponse(requestContext, documentOnly);
     },
   };
 }
