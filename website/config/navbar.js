@@ -15,14 +15,19 @@ module.exports = {
       label: '指南',
     },
     {
+      to: '/docs/guide/basic/config',
       position: 'right',
-      label: '插件',
-      to: '/docs/plugin/develop/start',
+      label: '配置',
     },
     {
       position: 'right',
       label: '示例',
-      to: '/docs/examples/antd',
+      to: '/docs/examples/tailwind',
+    },
+    {
+      position: 'right',
+      label: '博客',
+      to: '/blog',
     },
     {
       label: '生态',
@@ -33,12 +38,12 @@ module.exports = {
           to: 'http://micro-frontends.ice.work/',
         },
         {
-          label: '可视化工具 AppWorks',
-          to: 'https://appworks.site/',
+          label: '包开发 icepkg',
+          to: 'https://pkg.ice.work/',
         },
         {
-          label: '自定义物料开发',
-          to: 'https://appworks.site/materials/about.html',
+          label: '可视化工具 AppWorks',
+          to: 'https://appworks.site/',
         },
         {
           label: '前端环境 AppToolkit',

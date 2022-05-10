@@ -14,10 +14,10 @@
     "write-heading-ids": "docusaurus write-heading-ids"
   },
   "dependencies": {
-    "@docusaurus/core": "^2.0.0-beta.15",
-    "@docusaurus/preset-classic": "^2.0.0-beta.15",
-    "@docusaurus/theme-search-algolia": "^2.0.0-beta.15",
-    "@easyops-cn/docusaurus-search-local": "^0.19.1",
+    "@docusaurus/core": "^2.0.0-beta.20",
+    "@docusaurus/preset-classic": "^2.0.0-beta.20",
+    "@docusaurus/theme-search-algolia": "^2.0.0-beta.20",
+    "@easyops-cn/docusaurus-search-local": "^0.23.0",
     "@mdx-js/react": "^1.6.21",
     "@svgr/webpack": "^5.5.0",
     "clsx": "^1.1.1",
@@ -25,6 +25,10 @@
     "react": "^18.0.0",
     "react-dom": "^17.0.1",
     "url-loader": "^4.1.1"
+  },
+  "devDependencies": {
+    "glob": "^7.1.7",
+    "gray-matter": "^4.0.3"
   },
   "browserslist": {
     "production": [
@@ -37,12 +41,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "axios": "^0.21.1",
-    "fs-extra": "^10.0.0",
-    "glob": "^7.1.7",
-    "gray-matter": "^4.0.3",
-    "nodejieba": "^2.5.2"
   }
 }

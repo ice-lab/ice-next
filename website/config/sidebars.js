@@ -9,8 +9,9 @@ const getDocsFromDir = require('../scripts/getDocsFromDir');
 module.exports = {
   docs: [
     'guide/about',
-    // 'guide/start',
-    // 'guide/upgrade',
+    'guide/start',
+    'guide/practice',
+    'guide/upgrade',
     {
       type: 'category',
       label: '基础指南',
@@ -22,20 +23,6 @@ module.exports = {
       label: '进阶指南',
       collapsed: false,
       items: getDocsFromDir('guide/advanced'),
-    },
-  ],
-  plugin: [
-    {
-      type: 'category',
-      label: '插件开发',
-      collapsed: false,
-      items: getDocsFromDir('plugin/develop'),
-    },
-    {
-      type: 'category',
-      label: '官方插件',
-      collapsed: false,
-      items: getDocsFromDir('plugin/list'),
     },
   ],
   examples: getDocsFromDir('examples'),
