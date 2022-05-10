@@ -31,7 +31,6 @@ const start = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
     setupMiddlewares: (middlewares, devServer) => {
       const { outputDir } = taskConfigs.find(({ name }) => name === 'web').config;
       const { ssg = true, ssr = true } = userConfig;
-      const mockMiddleware = createMockMiddleware({ rootDir, exclude: userConfig?.mock?.exclude });
       const serverMiddleware = createSSRMiddleware({
         rootDir,
         outputDir,
@@ -40,7 +39,10 @@ const start = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
       });
       const insertIndex = middlewares.findIndex(({ name }) => name === 'serve-index');
       middlewares.splice(insertIndex, 0, serverMiddleware);
-      middlewares.splice(insertIndex, 0, mockMiddleware);
+      if (commandArgs.mock) {
+        const mockMiddleware = createMockMiddleware({ rootDir, exclude: userConfig?.mock?.exclude });
+        middlewares.splice(insertIndex, 0, mockMiddleware);
+      }
       return customMiddlewares ? customMiddlewares(middlewares, devServer) : middlewares;
     },
   };
