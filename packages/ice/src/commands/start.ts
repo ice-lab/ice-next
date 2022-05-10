@@ -9,6 +9,7 @@ import webpack from '@ice/bundles/compiled/webpack/index.js';
 import webpackCompiler from '../service/webpackCompiler.js';
 import prepareURLs from '../utils/prepareURLs.js';
 import createSSRMiddleware from '../middlewares/ssr.js';
+import createMockMiddleware from '../middlewares/mock/createMiddleware.js';
 
 const { defaultsDeep } = lodash;
 
@@ -30,12 +31,16 @@ const start = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
     setupMiddlewares: (middlewares, devServer) => {
       const { outputDir } = taskConfigs.find(({ name }) => name === 'web').config;
       const { ssg = true, ssr = true } = userConfig;
-      middlewares.push(createSSRMiddleware({
+      const mockMiddleware = createMockMiddleware({ rootDir, exclude: userConfig?.mock?.exclude });
+      const serverMiddleware = createSSRMiddleware({
         rootDir,
         outputDir,
         serverCompiler,
         documentOnly: !ssr && !ssg,
-      }));
+      });
+      const insertIndex = middlewares.findIndex(({ name }) => name === 'serve-index');
+      middlewares.splice(insertIndex, 0, serverMiddleware);
+      middlewares.splice(insertIndex, 0, mockMiddleware);
       return customMiddlewares ? customMiddlewares(middlewares, devServer) : middlewares;
     },
   };

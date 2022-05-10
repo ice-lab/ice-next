@@ -15,11 +15,12 @@ import build from './commands/build.js';
 import mergeTaskConfig from './utils/mergeTaskConfig.js';
 import getWatchEvents from './getWatchEvents.js';
 import { getAppConfig } from './analyzeRuntime.js';
-import { defineRuntimeEnv, updateRuntimeEnv } from './utils/runtimeEnv.js';
+import { initProcessEnv, updateRuntimeEnv, getCoreEnvKeys } from './utils/runtimeEnv.js';
 import getRuntimeModules from './utils/getRuntimeModules.js';
 import { generateRoutesInfo } from './routes.js';
 import getWebTask from './tasks/web/index.js';
 import * as config from './config.js';
+import type { AppConfig } from './utils/runtimeEnv.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -79,34 +80,35 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   });
   // get userConfig from ice.config.ts
   const userConfig = await ctx.resolveUserConfig();
+  const { routes: routesConfig } = userConfig;
+
   // get plugins include built-in plugins and custom plugins
   const plugins = await ctx.resolvePlugins();
   const runtimeModules = getRuntimeModules(plugins);
-  const { routes: routesConfig } = userConfig;
+
+  // load dotenv, set to process.env
+  await initProcessEnv(rootDir, command, commandArgs, userConfig);
+  const coreEnvKeys = getCoreEnvKeys();
+
   // register web
   ctx.registerTask('web', getWebTask({ rootDir, command }));
   // register config
   ['userConfig', 'cliOption'].forEach((configType) => ctx.registerConfig(configType, config[configType]));
-  const routesRenderData = generateRoutesInfo(rootDir, routesConfig);
+  const routesInfo = generateRoutesInfo(rootDir, routesConfig);
   // add render data
-  generator.setRenderData({ ...routesRenderData, runtimeModules });
-  dataCache.set('routes', JSON.stringify(routesRenderData.routeManifest));
+  generator.setRenderData({ ...routesInfo, runtimeModules, coreEnvKeys });
+  dataCache.set('routes', JSON.stringify(routesInfo.routeManifest));
 
   let taskConfigs = await ctx.setup();
 
   // render template before webpack compile
   const renderStart = new Date().getTime();
-
   generator.render();
-
   addWatchEvent(
     ...getWatchEvents({ generator, targetDir, templateDir, cache: dataCache, ctx }),
   );
-
   consola.debug('template render cost:', new Date().getTime() - renderStart);
 
-  // define runtime env before get webpack config
-  defineRuntimeEnv();
   const compileIncludes = runtimeModules.map(({ name }) => `${name}/runtime`);
 
   // merge task config with built-in config
@@ -118,13 +120,29 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     task: taskConfigs.find(({ name }) => name === 'web'),
   });
 
+  let appConfig: AppConfig;
+  if (command === 'build') {
+    try {
+      // should after generator, otherwise it will compile error
+      appConfig = await getAppConfig({ serverCompiler, rootDir });
+    } catch (err) {
+      consola.warn('Failed to get app config:', err.message);
+      consola.debug(err);
+    }
+  }
+
+  const disableRouter = userConfig.removeHistoryDeadCode && routesInfo.routesCount <= 1;
+  if (disableRouter) {
+    consola.info('[ice] removeHistoryDeadCode is enabled and only have one route, ice build will remove history and react-router dead code.');
+  }
+
+  updateRuntimeEnv(appConfig, { disableRouter });
+
   return {
     run: async () => {
       if (command === 'start') {
         return await start(ctx, taskConfigs, serverCompiler);
       } else if (command === 'build') {
-        const appConfig = await getAppConfig({ serverCompiler, rootDir });
-        updateRuntimeEnv(appConfig, routesRenderData.routeManifest);
         return await build(ctx, taskConfigs, serverCompiler);
       }
     },
