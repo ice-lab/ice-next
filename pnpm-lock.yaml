@@ -365,7 +365,6 @@ importers:
       react-dom: ^18.0.0
       react-router-dom: ^6.2.2
       regenerator-runtime: ^0.13.9
-      webpack: ^5.72.0
     dependencies:
       history: 5.3.0
       react-router-dom: 6.3.0_zpnidt7m3osuk7shl3s4oenomq
@@ -375,7 +374,6 @@ importers:
       react: 18.0.0
       react-dom: 18.0.0_react@18.0.0
       regenerator-runtime: 0.13.9
-      webpack: 5.72.0
 
   packages/types:
     specifiers:
