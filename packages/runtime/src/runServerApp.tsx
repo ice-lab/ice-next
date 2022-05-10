@@ -1,4 +1,4 @@
-import type { Response } from 'webpack-dev-server';
+import type { ServerResponse } from 'http';
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import { Action, parsePath } from 'history';
@@ -103,7 +103,7 @@ export async function renderToResponse(requestContext: ServerContext, renderOpti
 /**
  * Send string result to ServerResponse.
  */
-async function sendResult(res: Response, result: RenderResult) {
+async function sendResult(res: ServerResponse, result: RenderResult) {
   res.statusCode = result.statusCode;
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.end(result.value);
@@ -112,7 +112,7 @@ async function sendResult(res: Response, result: RenderResult) {
 /**
  * Send stream result to ServerResponse.
  */
-function pipeToResponse(res: Response, pipe: NodeWritablePiper) {
+function pipeToResponse(res: ServerResponse, pipe: NodeWritablePiper) {
   return new Promise((resolve, reject) => {
     pipe(res, (err) => (err ? reject(err) : resolve(null)));
   });
@@ -121,11 +121,14 @@ function pipeToResponse(res: Response, pipe: NodeWritablePiper) {
 async function doRender(serverContext: ServerContext, renderOptions: RenderOptions): Promise<RenderResult> {
   const { req } = serverContext;
   const { routes, documentOnly, app } = renderOptions;
-
   const location = getLocation(req.url);
 
   const requestContext = getRequestContext(location, serverContext);
-  const appData = await getAppData(app, requestContext);
+  let appData = {};
+  // don't need to execute getAppData in CSR
+  if (!documentOnly) {
+    appData = await getAppData(app, requestContext);
+  }
   const appConfig = getAppConfig(app, appData);
   const matches = matchRoutes(routes, location, appConfig?.router?.basename);
 
@@ -205,6 +208,7 @@ async function renderServerEntry(
     routesConfig,
     matches,
     routes,
+    routeModules,
   };
 
   const runtime = new Runtime(appContext);
@@ -229,7 +233,6 @@ async function renderServerEntry(
       AppProvider={AppProvider}
       RouteWrappers={RouteWrappers}
       AppRouter={AppRouter}
-      routeModules={routeModules}
     />,
   };
 
@@ -283,6 +286,7 @@ function renderDocument(matches: RouteMatch[], options: RenderOptions, routeModu
     matches,
     routes,
     documentOnly: true,
+    routeModules,
   };
 
   const documentContext = {

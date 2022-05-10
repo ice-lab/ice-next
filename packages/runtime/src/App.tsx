@@ -14,7 +14,6 @@ interface Props {
   AppProvider: React.ComponentType<any>;
   RouteWrappers: RouteWrapperConfig[];
   AppRouter: React.ComponentType<AppRouterProps>;
-  routeModules: RouteModules;
 }
 
 export default function App(props: Props) {
@@ -26,7 +25,6 @@ export default function App(props: Props) {
     AppProvider,
     AppRouter,
     RouteWrappers,
-    routeModules,
   } = props;
 
   const { appConfig, routes: originRoutes } = useAppContext();
@@ -38,10 +36,10 @@ export default function App(props: Props) {
   }
 
   const routes = useMemo(
-    () => createRouteElements(originRoutes, routeModules, RouteWrappers),
+    () => createRouteElements(originRoutes, RouteWrappers),
     // `originRoutes` and `RouteWrappers` will not be changed
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [routeModules],
+    [],
   );
 
   let element: React.ReactNode = (

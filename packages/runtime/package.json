@@ -25,7 +25,6 @@
     "@types/react": "^18.0.8",
     "@types/react-dom": "^18.0.3",
     "regenerator-runtime": "^0.13.9",
-    "webpack-dev-server": "^4.9.0",
     "webpack": "^5.72.0"
   },
   "sideEffects": false,

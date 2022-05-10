@@ -59,6 +59,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
     routesConfig,
     assetsManifest,
     matches,
+    routeModules,
   };
 
   const runtime = new Runtime(appContext);
@@ -75,16 +76,10 @@ export default async function runClientApp(options: RunClientAppOptions) {
     runtime.loadModule(m);
   });
 
-  render({ runtime, Document, routeModules });
+  render(runtime, Document);
 }
 
-interface RenderOptions {
-  routeModules: RouteModules;
-  runtime: Runtime;
-  Document: ComponentWithChildren<{}>;
-}
-
-async function render({ runtime, Document, routeModules }: RenderOptions) {
+async function render(runtime: Runtime, Document: ComponentWithChildren<{}>) {
   const appContext = runtime.getAppContext();
   const render = runtime.getRender();
   const AppProvider = runtime.composeAppProvider() || React.Fragment;
@@ -105,7 +100,6 @@ async function render({ runtime, Document, routeModules }: RenderOptions) {
       RouteWrappers={RouteWrappers}
       AppRouter={AppRouter}
       Document={Document}
-      routeModules={routeModules}
     />,
   );
 }
@@ -117,12 +111,14 @@ interface BrowserEntryProps {
   RouteWrappers: RouteWrapperConfig[];
   AppRouter: React.ComponentType<AppRouterProps>;
   Document: ComponentWithChildren<{}>;
-  routeModules: RouteModules;
 }
 
 interface HistoryState {
   action: Action;
   location: Location;
+}
+
+interface RouteState {
   routesData: RoutesData;
   routesConfig: RoutesConfig;
   matches: RouteMatch[];
@@ -133,7 +129,6 @@ function BrowserEntry({
   history,
   appContext,
   Document,
-  routeModules: initialRouteModules,
   ...rest
 }: BrowserEntryProps) {
   const {
@@ -143,18 +138,22 @@ function BrowserEntry({
     routesConfig: initialRoutesConfig,
     appData,
     appConfig,
+    routeModules: initialRouteModules,
   } = appContext;
 
   const [historyState, setHistoryState] = useState<HistoryState>({
     action: history.action,
     location: history.location,
+  });
+  const [routeState, setRouteState] = useState<RouteState>({
     routesData: initialRoutesData,
     routesConfig: initialRoutesConfig,
     matches: originMatches,
     routeModules: initialRouteModules,
   });
 
-  const { action, location, routesData, routesConfig, matches, routeModules } = historyState;
+  const { action, location } = historyState;
+  const { routesData, routesConfig, matches, routeModules } = routeState;
 
   // listen the history change and update the state which including the latest action and location
   useLayoutEffect(() => {
@@ -165,10 +164,12 @@ function BrowserEntry({
           throw new Error(`Routes not found in location ${location.pathname}.`);
         }
 
-        loadNextPage(currentMatches, historyState, routeModules).then(({ routesData, routesConfig, routeModules }) => {
+        loadNextPage(currentMatches, routeState).then(({ routesData, routesConfig, routeModules }) => {
           setHistoryState({
             action,
             location,
+          });
+          setRouteState({
             routesData,
             routesConfig,
             matches: currentMatches,
@@ -186,6 +187,7 @@ function BrowserEntry({
     matches,
     routesData,
     routesConfig,
+    routeModules,
   });
 
   return (
@@ -195,7 +197,6 @@ function BrowserEntry({
           action={action}
           location={location}
           navigator={history}
-          routeModules={routeModules}
           {...rest}
         />
       </AppDataProvider>
@@ -209,17 +210,17 @@ function BrowserEntry({
  */
 async function loadNextPage(
   currentMatches: RouteMatch[],
-  prevHistoryState: HistoryState,
-  originalRouteModules: RouteModules,
+  preRouteState: RouteState,
 ) {
   const {
     matches: preMatches,
     routesData: preRoutesData,
-  } = prevHistoryState;
+    routeModules: preRouteModules,
+  } = preRouteState;
 
   const routeModules = await loadRouteModules(
     currentMatches.map(({ route: { id, load } }) => ({ id, load })),
-    originalRouteModules,
+    preRouteModules,
   );
 
   // load data for changed route.

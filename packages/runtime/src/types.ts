@@ -1,4 +1,4 @@
-import type { Request, Response } from 'webpack-dev-server';
+import type { IncomingMessage, ServerResponse } from 'http';
 import type { Action, Location } from 'history';
 import type { ComponentType, ReactNode, ReactChild, PropsWithChildren } from 'react';
 import type { HydrationOptions } from 'react-dom/client';
@@ -63,6 +63,7 @@ export interface AppContext {
   routesData: RoutesData;
   routesConfig: RoutesConfig;
   appData: any;
+  routeModules: RouteModules;
   matches?: RouteMatch[];
   routes?: RouteItem[];
   documentOnly?: boolean;
@@ -76,8 +77,8 @@ export type Renderer = (
 ) => void;
 
 export interface ServerContext {
-  req?: Request;
-  res?: Response;
+  req?: IncomingMessage;
+  res?: ServerResponse;
 }
 
 export interface RequestContext extends ServerContext {

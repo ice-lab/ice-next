@@ -5,6 +5,7 @@ import { matchRoutes as originMatchRoutes } from 'react-router-dom';
 import { matchRoutesSingle } from './utils/history-single.js';
 import RouteWrapper from './RouteWrapper.js';
 import type { RouteItem, RouteModules, RouteWrapperConfig, RouteMatch, RequestContext, RoutesConfig, RoutesData } from './types';
+import { useAppContext } from './AppContext.js';
 
 type RouteModule = Pick<RouteItem, 'id' | 'load'>;
 
@@ -109,7 +110,6 @@ export function getRoutesConfig(
  */
 export function createRouteElements(
   routes: RouteItem[],
-  routeModules: RouteModules,
   RouteWrappers?: RouteWrapperConfig[],
 ) {
   return routes.map((routeItem: RouteItem) => {
@@ -117,7 +117,7 @@ export function createRouteElements(
 
     element = (
       <RouteWrapper id={id} isLayout={layout} wrappers={RouteWrappers}>
-        <RouteComponent id={id} routeModules={routeModules} />
+        <RouteComponent id={id} />
       </RouteWrapper>
     );
 
@@ -130,15 +130,16 @@ export function createRouteElements(
     };
 
     if (children) {
-      route.children = createRouteElements(children, routeModules, RouteWrappers);
+      route.children = createRouteElements(children, RouteWrappers);
     }
 
     return route;
   });
 }
 
-function RouteComponent({ id, routeModules }: { id: string; routeModules: RouteModules }) {
+function RouteComponent({ id }: { id: string }) {
   // get current route component from latest routeModules
+  const { routeModules } = useAppContext();
   const { default: Component } = routeModules[id];
   if (process.env.NODE_ENV === 'development') {
     if (!Component) {
