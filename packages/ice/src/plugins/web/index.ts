@@ -41,6 +41,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
       await esbuildCompile({
         entryPoints: {
           index: path.join(rootDir, '.ice/entry.server'),
+          home: '@/pages/index?browser',
         },
         outdir: serverOutputDir,
         // platform: 'node',

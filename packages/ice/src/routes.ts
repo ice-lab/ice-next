@@ -25,7 +25,6 @@ function generateNestRoutesStr(nestRouteManifest: NestedRouteManifest[]) {
 
     let str = `{
       path: '${routePath || ''}',
-      load: () => import(/* webpackChunkName: "${componentName}" */ '@/pages/${componentFile}'),
       componentName: '${componentName}',
       index: ${index},
       id: '${id}',
