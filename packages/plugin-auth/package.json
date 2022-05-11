@@ -7,17 +7,20 @@
   "main": "./esm/index.js",
   "exports": {
     ".": "./esm/index.js",
-    "./runtime": "./runtime/index.tsx",
-    "./runtime/Auth": "./runtime/Auth.tsx",
-    "./runtime/types": "./runtime/types.ts"
+    "./runtime": "./esm/runtime/index.js",
+    "./runtime/Auth": "./esm/runtime/Auth.js",
+    "./runtime/types": "./esm/runtime/types.js"
   },
   "files": [
     "esm",
-    "runtime",
     "!esm/**/*.map"
   ],
   "dependencies": {
     "@ice/types": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0"
   },
   "peerDependencies": {
     "react": "^18.0.0",
