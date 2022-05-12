@@ -8,6 +8,7 @@ import generateHTML from './ssr/generateHTML.js';
 import { setupRenderServer } from './ssr/serverRender.js';
 import getMockConfigs, { MOCK_FILE_PATTERN } from './mock/getConfigs.js';
 import createMockMiddleware from './mock/createMiddleware.js';
+import { scanImports } from '../../service/analyze.js';
 
 const require = createRequire(import.meta.url);
 
@@ -23,7 +24,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
   const serverEntry = path.join(serverOutputDir, 'index.mjs');
   let serverCompiler = async () => '';
 
-  onHook(`before.${command as 'start' | 'build'}.run`, async ({ esbuildCompile }) => {
+  onHook(`before.${command as 'start' | 'build'}.run`, async ({ esbuildCompile, webpackConfigs }) => {
     await emptyDir(outputDir);
 
     // same as webpack define runtimeEnvs in build-webpack-config
@@ -38,9 +39,14 @@ const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
     });
 
     serverCompiler = async () => {
+      const entryPoint = path.join(rootDir, '.ice/entry.server.ts');
+      const deps = await scanImports([entryPoint], {
+        alias: (webpackConfigs[0].resolve?.alias || {}) as Record<string, string | false>,
+      });
+      console.log('depImport', deps);
       await esbuildCompile({
         entryPoints: {
-          index: path.join(rootDir, '.ice/entry.server'),
+          index: entryPoint,
         },
         outdir: serverOutputDir,
         // platform: 'node',
