@@ -104,6 +104,8 @@ const scanPlugin = (options: Options): Plugin => {
           };
         }
       });
+
+      build.onLoad({ filter: /.*/, namespace: 'EMPTY' }, () => ({ contents: '' }));
     },
   };
 };
