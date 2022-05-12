@@ -4,11 +4,11 @@ import type { Plugin } from '@ice/types';
 import emptyDir from '../../utils/emptyDir.js';
 import openBrowser from '../../utils/openBrowser.js';
 import createAssetsPlugin from '../../esbuild/assets.js';
+import { scanImports } from '../../service/analyze.js';
 import generateHTML from './ssr/generateHTML.js';
 import { setupRenderServer } from './ssr/serverRender.js';
 import getMockConfigs, { MOCK_FILE_PATTERN } from './mock/getConfigs.js';
 import createMockMiddleware from './mock/createMiddleware.js';
-import { scanImports } from '../../service/analyze.js';
 
 const require = createRequire(import.meta.url);
 
