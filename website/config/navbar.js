@@ -15,11 +15,6 @@ module.exports = {
       label: '指南',
     },
     {
-      to: '/docs/guide/basic/config',
-      position: 'right',
-      label: '配置',
-    },
-    {
       position: 'right',
       label: '示例',
       to: '/docs/examples/tailwind',

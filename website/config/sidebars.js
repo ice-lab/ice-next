@@ -11,7 +11,6 @@ module.exports = {
     'guide/about',
     'guide/start',
     'guide/practice',
-    'guide/upgrade',
     {
       type: 'category',
       label: '基础指南',
@@ -24,6 +23,8 @@ module.exports = {
       collapsed: false,
       items: getDocsFromDir('guide/advanced'),
     },
+    'guide/upgrade',
+    'guide/plugin',
   ],
   examples: getDocsFromDir('examples'),
 };
