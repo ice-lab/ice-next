@@ -7,12 +7,15 @@ export function generateRoutesInfo(rootDir: string, routesConfig: UserConfig['ro
   const routeManifest = generateRouteManifest(rootDir, routesConfig.ignoreFiles, routesConfig.defineRoutes);
   const routes = formatNestedRouteManifest(routeManifest);
   const str = generateNestRoutesStr(routes);
+  const strForServer = generateNestRoutesStrForServer(routes);
 
   return {
     routeManifest,
     routesStr: `[${str}]`,
     routes,
     loaders: generateLoadersStr(routes),
+    imports: generateImportStr(routeManifest),
+    routesStrForServer: `[${strForServer}]`,
   };
 }
 
@@ -34,6 +37,45 @@ function generateNestRoutesStr(nestRouteManifest: NestedRouteManifest[]) {
     `;
     if (children) {
       str += `children: [${generateNestRoutesStr(children)}],`;
+    }
+    str += '},';
+    prev += str;
+    return prev;
+  }, '');
+}
+
+function generateImportStr(manifest) {
+  const routes: any = Object.values(manifest);
+
+  const imports = routes.map(route => {
+    const { componentName, file } = route;
+
+    const fileExtname = path.extname(file);
+    const componentFile = file.replace(new RegExp(`${fileExtname}$`), '');
+
+    // All route entry points are virtual modules that will be loaded by the routeModulePlugin.
+    // This allows us to tree-shake code (i.e. getConfig & getData).
+    return `import * as ${componentName} from '@/pages/${componentFile}?server';`;
+  });
+
+  return imports.join('\n');
+}
+
+function generateNestRoutesStrForServer(nestRouteManifest: NestedRouteManifest[]) {
+  return nestRouteManifest.reduce((prev, route) => {
+    const { children, path: routePath, index, componentName, id, layout } = route;
+
+    let str = `{
+      path: '${routePath || ''}',
+      load: () => ${componentName},
+      componentName: '${componentName}',
+      index: ${index},
+      id: '${id}',
+      exact: true,
+      ${layout ? 'layout: true,' : ''}
+    `;
+    if (children) {
+      str += `children: [${generateNestRoutesStrForServer(children)}],`;
     }
     str += '},';
     prev += str;

@@ -32,6 +32,11 @@ const getWatchEvents = (options: Options): WatchEvent[] => {
             routesRenderData,
           );
           generator.renderFile(
+            path.join(templateDir, 'routes.server.ts.ejs'),
+            path.join(rootDir, targetDir, 'routes.server.ts'),
+            routesRenderData,
+          );
+          generator.renderFile(
             path.join(templateDir, 'route-manifest.json.ejs'),
             path.join(rootDir, targetDir, 'route-manifest.json'),
             routesRenderData,
