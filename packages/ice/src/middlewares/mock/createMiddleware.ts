@@ -1,5 +1,5 @@
 import * as path from 'path';
-import type { RequestHandler, Request } from 'express';
+import type { ExpressRequestHandler, Request } from 'webpack-dev-server';
 import { pathToRegexp } from 'path-to-regexp';
 import type { Key } from 'path-to-regexp';
 import bodyParser from 'body-parser';
@@ -24,7 +24,7 @@ export default function createMiddleware(options: MockOptions) {
     }]],
   });
 
-  const middleware: RequestHandler = (req, res, next) => {
+  const middleware: ExpressRequestHandler = (req, res, next) => {
     const matchResult = matchPath(req, mockConfigs);
     if (matchResult) {
       const { match, mockConfig, keys } = matchResult;
