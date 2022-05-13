@@ -2,7 +2,6 @@
 <% if (runtimeModules.length) {%>
   <% runtimeModules.filter((moduleInfo) => !moduleInfo.staticModule).forEach((runtimeModule, index) => { %>
     <% moduleNames.push('module' + index) %>
-    // @ts-expect-error types not found when using exports field
     import module<%= index %> from '<%= runtimeModule.path %>';
   <% }) %>
 <% } %>

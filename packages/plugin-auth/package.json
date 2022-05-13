@@ -4,13 +4,30 @@
   "description": "",
   "license": "MIT",
   "type": "module",
-  "main": "./esm/index.js",
   "exports": {
-    ".": "./esm/index.js",
-    "./runtime": "./esm/runtime/index.js",
-    "./runtime/Auth": "./esm/runtime/Auth.js",
-    "./runtime/types": "./esm/runtime/types.js"
+    ".": {
+      "types": "./esm/index.d.ts",
+      "import": "./esm/index.js",
+      "node": "./esm/index.js"
+    },
+    "./runtime": {
+      "types": "./esm/runtime/index.d.ts",
+      "import": "./esm/runtime/index.js",
+      "node": "./esm/runtime/index.js"
+    },
+    "./runtime/Auth": {
+      "types": "./esm/runtime/Auth.d.ts",
+      "import": "./esm/runtime/Auth.js",
+      "node": "./esm/runtime/Auth.js"
+    },
+    "./runtime/types": {
+      "types": "./esm/runtime/types.d.ts",
+      "import": "./esm/runtime/types.js",
+      "node": "./esm/runtime/types.js"
+    }
   },
+  "main": "./esm/index.js",
+  "types": "./esm/index.d.ts",
   "files": [
     "esm",
     "!esm/**/*.map"
