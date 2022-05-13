@@ -10,6 +10,7 @@ import webpackCompiler from '../service/webpackCompiler.js';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
 import { SERVER_ENTRY, SERVER_OUTPUT } from '../constant.js';
 import generateHTML from '../utils/generateHTML.js';
+import emptyDir from '../utils/emptyDir.js';
 
 const build = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[], serverCompiler: ServerCompiler) => {
   const { applyHook, commandArgs, command, rootDir, userConfig } = context;
@@ -19,6 +20,7 @@ const build = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
     // @ts-expect-error fix type error of compiled webpack
     webpack,
   }));
+  await emptyDir(taskConfigs.find(({ name }) => name === 'web').config.outputDir);
   const compiler = await webpackCompiler({
     rootDir,
     webpackConfigs,
