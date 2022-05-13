@@ -3,6 +3,7 @@ import {
   Outlet,
   useParams,
   useSearchParams,
+  useLocation,
 } from 'react-router-dom';
 import {
   LinkSingle,
@@ -57,6 +58,7 @@ export {
   Outlet,
   useParams,
   useSearchParams,
+  useLocation,
   dataLoader,
   LinkSingle,
   OutletSingle,
