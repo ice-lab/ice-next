@@ -1,10 +1,8 @@
 import * as path from 'path';
-import * as fs from 'fs';
 import type { ServerContext } from '@ice/runtime';
 import type { ServerCompiler } from '@ice/types/esm/plugin.js';
 import type { ExpressRequestHandler } from 'webpack-dev-server';
-import matchRoutes from '../utils/matchRoutes.js';
-import { ROUTER_MANIFEST, SERVER_ENTRY, SERVER_OUTPUT } from '../constant.js';
+import { SERVER_ENTRY, SERVER_OUTPUT } from '../constant.js';
 
 interface Options {
   rootDir: string;
@@ -30,17 +28,7 @@ export default function createSSRMiddleware(options: Options) {
     return `${serverEntry}?version=${new Date().getTime()}`;
   };
 
-  const middleware: ExpressRequestHandler = async (req, res, next) => {
-    // Read the latest routes info.
-    const routeManifest = path.join(rootDir, ROUTER_MANIFEST);
-    const routes = JSON.parse(fs.readFileSync(routeManifest, 'utf8'));
-    // If not match pages routes, hand over to webpack dev server for processing
-    let matches = matchRoutes(routes, req.path);
-    if (matches.length === 0) {
-      next();
-      return;
-    }
-
+  const middleware: ExpressRequestHandler = async (req, res) => {
     const entry = await ssrCompiler();
     let serverModule;
     try {
