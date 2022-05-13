@@ -52,7 +52,7 @@ function generateImportStr(manifest) {
 
     const fileExtname = path.extname(file);
     const componentFile = file.replace(new RegExp(`${fileExtname}$`), '');
-    const moduleName = componentName.replaceAll('/-/g', '_');
+    const moduleName = componentName.replace(/-/g, '_');
 
     // All route entry points are virtual modules that will be loaded by the routeModulePlugin.
     // This allows us to tree-shake code (i.e. getConfig & getData).
@@ -66,7 +66,7 @@ function generateNestRoutesStrForServer(nestRouteManifest: NestedRouteManifest[]
   return nestRouteManifest.reduce((prev, route) => {
     const { children, path: routePath, index, componentName, id, layout } = route;
 
-    const moduleName = componentName.replace('/-/g', '_');
+    const moduleName = componentName.replace(/-/g, '_');
 
     let str = `{
       path: '${routePath || ''}',
