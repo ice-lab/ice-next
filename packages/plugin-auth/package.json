@@ -8,22 +8,22 @@
     ".": {
       "types": "./esm/index.d.ts",
       "import": "./esm/index.js",
-      "node": "./esm/index.js"
+      "default": "./esm/index.js"
     },
     "./runtime": {
       "types": "./esm/runtime/index.d.ts",
       "import": "./esm/runtime/index.js",
-      "node": "./esm/runtime/index.js"
+      "default": "./esm/runtime/index.js"
     },
     "./runtime/Auth": {
       "types": "./esm/runtime/Auth.d.ts",
       "import": "./esm/runtime/Auth.js",
-      "node": "./esm/runtime/Auth.js"
+      "default": "./esm/runtime/Auth.js"
     },
     "./runtime/types": {
       "types": "./esm/runtime/types.d.ts",
       "import": "./esm/runtime/types.js",
-      "node": "./esm/runtime/types.js"
+      "default": "./esm/runtime/types.js"
     }
   },
   "main": "./esm/index.js",
