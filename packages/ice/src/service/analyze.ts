@@ -6,7 +6,6 @@ import moduleLexer from '@ice/bundles/compiled/es-module-lexer/index.js';
 import { transform, build } from 'esbuild';
 import type { Loader } from 'esbuild';
 import consola from 'consola';
-
 import scanPlugin from '../esbuild/scan.js';
 
 interface Options {

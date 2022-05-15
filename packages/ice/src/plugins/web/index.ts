@@ -5,6 +5,7 @@ import emptyDir from '../../utils/emptyDir.js';
 import openBrowser from '../../utils/openBrowser.js';
 import createAssetsPlugin from '../../esbuild/assets.js';
 import { scanImports } from '../../service/analyze.js';
+import preBundle from '../../service/prebundle.js';
 import generateHTML from './ssr/generateHTML.js';
 import { setupRenderServer } from './ssr/serverRender.js';
 import getMockConfigs, { MOCK_FILE_PATTERN } from './mock/getConfigs.js';
@@ -44,6 +45,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
         alias: (webpackConfigs[0].resolve?.alias || {}) as Record<string, string | false>,
       });
       console.log('depImport', deps);
+      await preBundle(deps, rootDir);
       await esbuildCompile({
         entryPoints: {
           index: entryPoint,
