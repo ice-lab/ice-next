@@ -11,7 +11,7 @@ import TerserPlugin from '@ice/bundles/compiled/terser-webpack-plugin/index.js';
 import ForkTsCheckerPlugin from '@ice/bundles/compiled/fork-ts-checker-webpack-plugin/index.js';
 import ESlintPlugin from '@ice/bundles/compiled/eslint-webpack-plugin/index.js';
 import CopyPlugin from '@ice/bundles/compiled/copy-webpack-plugin/index.js';
-import type { Configuration, WebpackPluginInstance } from 'webpack';
+import type { Configuration, WebpackPluginInstance, NormalModule } from 'webpack';
 import type webpack from 'webpack';
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
 import type { Config } from '@ice/types';
@@ -113,6 +113,19 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
   });
   // create plugins
   const webpackPlugins = getTransformPlugins(config).map((plugin) => createUnplugin(() => plugin).webpack());
+  const lazyCompilationConfig = dev && experimental.lazyCompilation ? {
+    lazyCompilation: {
+      test: (module: NormalModule) => {
+        // do not lazy for framework bundles
+        const FRAMEWORK_BUNDLES = [
+          'react', 'react-dom', '@ice/runtime', 'react-router', 'react-router-dom',
+        ];
+        const frameworkRegex = new RegExp(`[\\\\/]node_modules[\\\\/](${FRAMEWORK_BUNDLES.join('|')})[\\\\/]`);
+        // @ts-ignore
+        return !module?.resourceResolveData?.path.match(frameworkRegex);
+      },
+    },
+  } : {};
 
   const terserOptions: any = merge({
     compress: {
@@ -140,6 +153,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       layers: true,
       cacheUnaffected: true,
       topLevelAwait: true,
+      ...lazyCompilationConfig,
       ...(experimental || {}),
     },
     entry: () => getEntry(rootDir),

@@ -24,7 +24,7 @@ interface ConfigurationCtx extends Config {
   webpack: typeof webpack;
 }
 
-type Experimental = Pick<Configuration, 'experiments'>;
+type Experimental = Configuration['experiments'];
 
 export type ModifyWebpackConfig = (config: Configuration, ctx: ConfigurationCtx) => Configuration;
 export interface Config {
