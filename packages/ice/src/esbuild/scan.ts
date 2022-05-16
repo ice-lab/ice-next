@@ -10,6 +10,9 @@ interface Options {
   exclude: string[];
 }
 
+/**
+ * esbuild plugin for analyze import of source code
+ */
 const scanPlugin = (options: Options): Plugin => {
   // deps for record scanned imports
   const { deps, exclude, alias } = options;
