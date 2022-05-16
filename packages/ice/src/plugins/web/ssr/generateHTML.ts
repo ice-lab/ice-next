@@ -3,7 +3,6 @@ import type { Request } from 'webpack-dev-server';
 import fse from 'fs-extra';
 import consola from 'consola';
 import type { ServerContext } from '@ice/runtime';
-import type { RouteObject } from 'react-router';
 
 interface Options {
   rootDir: string;
@@ -33,8 +32,16 @@ export default async function generateHTML(options: Options) {
     throw new Error(`import ${entry} error: ${err}`);
   }
 
-  const routes = JSON.parse(fse.readFileSync(routeManifest, 'utf8'));
-  const paths = getPaths(routes);
+  const routes = fse.readJSONSync(routeManifest);
+  const paths = [];
+
+  routes.values().forEach(route => {
+    if (route.path) {
+      paths.push(route.path);
+    } else if (route.index) {
+      paths.push('/');
+    }
+  });
 
   for (let i = 0, n = paths.length; i < n; i++) {
     const routePath = paths[i];
@@ -58,23 +65,4 @@ export default async function generateHTML(options: Options) {
     await fse.ensureFile(contentPath);
     await fse.writeFile(contentPath, html);
   }
-}
-
-/**
- * get all route path
- * @param routes
- * @returns
- */
-function getPaths(routes: RouteObject[], parentPath = ''): string[] {
-  let pathList = [];
-
-  routes.forEach(route => {
-    if (route.children) {
-      pathList = pathList.concat(getPaths(route.children, route.path));
-    } else {
-      pathList.push(path.join('/', parentPath, route.path || ''));
-    }
-  });
-
-  return pathList;
 }

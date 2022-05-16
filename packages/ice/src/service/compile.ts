@@ -56,7 +56,8 @@ export function createEsbuildCompiler(options: Options) {
       plugins: [
         // FIXME: set by build options.
         routeModulePlugin({
-          exports: isCSR ? ['getConfig'] : [],
+          rootDir: options.rootDir,
+          exports: isCSR ? ['getConfig'] : ['*'],
         }, /\?server$/),
         emptyCSSPlugin(),
         aliasPlugin({

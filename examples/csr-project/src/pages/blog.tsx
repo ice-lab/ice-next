@@ -17,10 +17,3 @@ export default function Blog() {
     </>
   );
 }
-
-export function getConfig() {
-  return {
-    title: 'Blog',
-    auth: ['guest'],
-  };
-}
