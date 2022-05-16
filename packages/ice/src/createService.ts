@@ -94,6 +94,8 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     ...renderData,
     ...routesRenderData,
     coreEnvKeys,
+    isSSG: process.env.ICE_CORE_SSG === 'true',
+    isSSR: process.env.ICE_CORE_SSR === 'true',
   }));
   dataCache.set('routes', JSON.stringify(routeManifest));
 
