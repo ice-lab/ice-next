@@ -2,7 +2,7 @@ import type { Config } from '@ice/types';
 import type { UnpluginOptions } from 'unplugin';
 import compilationPlugin from './compilation.js';
 
-export const SKIP_COMPILE = [
+const SKIP_COMPILE = [
   // polyfill and helpers
   'core-js', 'core-js-pure', '@swc/helpers', '@babel/runtime',
   // built-in runtime
