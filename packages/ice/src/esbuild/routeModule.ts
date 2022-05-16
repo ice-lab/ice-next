@@ -3,7 +3,7 @@ import fse from 'fs-extra';
 import type { Plugin, PluginBuild } from 'esbuild';
 
 /**
- * re-export required route module exports, such as getConfig.
+ * re-export required route module, such as getConfig.
  */
 export default function routeModulePlugin(
   config: {
