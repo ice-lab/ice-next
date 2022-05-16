@@ -109,15 +109,20 @@ function generateLoadersStr(routes: NestedRouteManifest[]) {
 
   function importLoaders(routes) {
     return routes.reduce((prev, route) => {
-      const { children, file, id } = route;
+      const { children, file, id, exports } = route;
 
       const fileExtname = path.extname(file);
       const componentFile = file.replace(new RegExp(`${fileExtname}$`), '');
 
-      const loaderName = `getData_${id}`.replace('/', '_');
-      loaders.push([id, loaderName]);
+      let str = '';
 
-      let str = `import { getData as ${loaderName} } from '@/pages/${componentFile}';\n`;
+      // filter route exports getData.
+      if (exports.indexOf('getData') > -1) {
+        const loaderName = `getData_${id}`.replace('/', '_');
+        loaders.push([id, loaderName]);
+
+        str = `import { getData as ${loaderName} } from '@/pages/${componentFile}';\n`;
+      }
 
       if (children) {
         str += importLoaders(children);
