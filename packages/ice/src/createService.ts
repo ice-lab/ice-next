@@ -88,7 +88,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const coreEnvKeys = getCoreEnvKeys();
 
   const { routes: routesConfig } = userConfig;
-  const routesRenderData = generateRoutesInfo(rootDir, routesConfig);
+  const routesRenderData = await generateRoutesInfo(rootDir, routesConfig);
   const { routeManifest } = routesRenderData;
   generator.modifyRenderData((renderData) => ({
     ...renderData,
