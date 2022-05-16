@@ -3,6 +3,7 @@ import type { Request } from 'webpack-dev-server';
 import fse from 'fs-extra';
 import consola from 'consola';
 import type { ServerContext } from '@ice/runtime';
+import type { RouteObject } from 'react-router';
 
 interface Options {
   rootDir: string;
@@ -35,7 +36,8 @@ export default async function generateHTML(options: Options) {
   const routes = fse.readJSONSync(routeManifest);
   const paths = [];
 
-  routes.values().forEach(route => {
+  const routesInfo: RouteObject[] = Object.values(routes);
+  routesInfo.forEach(route => {
     if (route.path) {
       paths.push(route.path);
     } else if (route.index) {
