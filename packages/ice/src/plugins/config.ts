@@ -264,6 +264,10 @@ const userConfig = [
     name: 'mock',
     validation: 'object',
   },
+  {
+    name: 'experimental',
+    validation: 'object',
+  },
 ];
 
 const cliOptions = [

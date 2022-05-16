@@ -21,7 +21,7 @@ import configAssets from './config/assets.js';
 import configCss from './config/css.js';
 import AssetsManifestPlugin from './webpackPlugins/AssetsManifestPlugin.js';
 import getTransformPlugins from './unPlugins/index.js';
-import getSplitChunksConfig from './config/splitChunks.js';
+import getSplitChunksConfig, { FRAMEWORK_BUNDLES } from './config/splitChunks.js';
 
 const require = createRequire(import.meta.url);
 const { merge } = lodash;
@@ -105,17 +105,14 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
   });
   // create plugins
   const webpackPlugins = getTransformPlugins(config).map((plugin) => createUnplugin(() => plugin).webpack());
-  const lazyCompilationConfig = dev && experimental.lazyCompilation ? {
+  const lazyCompilationConfig = dev && experimental?.lazyCompilation ? {
     lazyCompilation: {
       test: (module: NormalModule) => {
         // do not lazy for framework bundles
-        const FRAMEWORK_BUNDLES = [
-          'react', 'react-dom', '@ice/runtime', 'react-router', 'react-router-dom',
-        ];
         const frameworkRegex = new RegExp(`[\\\\/]node_modules[\\\\/](${FRAMEWORK_BUNDLES.join('|')})[\\\\/]`);
-        // @ts-ignore
         return !module?.resourceResolveData?.path.match(frameworkRegex);
       },
+      ...(typeof experimental?.lazyCompilation === 'object' ? { ...experimental.lazyCompilation } : {}),
     },
   } : {};
 

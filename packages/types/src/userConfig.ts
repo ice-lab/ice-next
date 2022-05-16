@@ -28,4 +28,5 @@ export interface UserConfig {
   ssg?: boolean;
   removeHistoryDeadCode?: boolean;
   mock?: { exclude?: string[] };
+  experimental?: Config['experimental'];
 }
