@@ -41,7 +41,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
 
     serverCompiler = async () => {
       const entryPoint = path.join(rootDir, '.ice/entry.server.ts');
-      const deps = await scanImports([entryPoint], {
+      let deps = await scanImports([entryPoint], {
         alias: (webpackConfigs[0].resolve?.alias || {}) as Record<string, string | false>,
       });
       console.log('depImport', deps);
