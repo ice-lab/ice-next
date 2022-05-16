@@ -81,6 +81,7 @@ importers:
       '@types/react-dom': ^18.0.2
       ahooks: ^3.3.8
       browserslist: ^4.19.3
+      constate: ^3.3.2
       react: ^18.0.0
       react-dom: ^18.0.0
       regenerator-runtime: ^0.13.9
@@ -91,6 +92,7 @@ importers:
       '@ice/plugin-auth': link:../../packages/plugin-auth
       '@ice/runtime': link:../../packages/runtime
       ahooks: 3.3.10_react@18.0.0
+      constate: 3.3.2_react@18.0.0
       react: 18.0.0
       react-dom: 18.0.0_react@18.0.0
     devDependencies:
@@ -2691,6 +2693,14 @@ packages:
 
   /console-control-strings/1.1.0:
     resolution: {integrity: sha1-PXz0Rk22RG6mRL9LOVB/mFEAjo4=}
+
+  /constate/3.3.2_react@18.0.0:
+    resolution: {integrity: sha512-ZnEWiwU6QUTil41D5EGpA7pbqAPGvnR9kBjko8DzVIxpC60mdNKrP568tT5WLJPAxAOtJqJw60+h79ot/Uz1+Q==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.0.0
+    dev: false
 
   /content-disposition/0.5.4:
     resolution: {integrity: sha512-FveZTNuGw04cxlAiWbzi6zTAL/lhehaWbTtgluJh4/E95DqMwTmha3KZN1aAWA8cFIhHzMZUvLevkw5Rqk+tSQ==}

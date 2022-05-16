@@ -5,8 +5,10 @@ import { transform, build } from 'esbuild';
 import type { TransformOptions } from 'esbuild';
 import resolve from 'resolve';
 import moduleLexer from '@ice/bundles/compiled/es-module-lexer/index.js';
+import consola from 'consola';
 import bundlePlugin from '../esbuild/bundle.js';
 import flattenId from '../utils/flattenId.js';
+import formatPath from '../utils/formatPath.js';
 
 export type ExportsData = ReturnType<typeof moduleLexer.parse> & {
   // es-module-lexer has a facade detection but isn't always accurate for our
@@ -28,10 +30,37 @@ interface PackageData {
   dir: string;
 }
 
+interface DepInfo {
+  file: string;
+  src: string;
+}
+
+interface DepMetaData {
+  deps: Record<string, DepInfo>;
+}
+
+interface PreBundleResult {
+  metadata: DepMetaData;
+}
+
 export default async function preBundle(
   depsInfo: Record<string, string>,
   rootDir: string,
-) {
+  cacheDir: string,
+): Promise<PreBundleResult> {
+  const metadata = createDepsMetadata();
+
+  if (!Object.keys(depsInfo)) {
+    return {
+      metadata,
+    };
+  }
+
+  const depsCacheDir = getDepsCacheDir(cacheDir);
+  const metadataJSONPath = getDepsMetaDataJSONPath(cacheDir);
+
+  await fse.ensureDir(depsCacheDir);
+
   const flatIdDeps: Record<string, string> = {};
   const flatIdToExports: Record<string, ExportsData> = {};
 
@@ -46,18 +75,14 @@ export default async function preBundle(
     try {
       exportsData = moduleLexer.parse(entryContent) as ExportsData;
     } catch {
-      console.log(`should transform ${filePath} first`);
-      const loader = (path.extname(filePath).replace(/^\./, '') || 'jsx') as TransformOptions['loader'];
-      const transformed = await transform(entryContent, {
-        sourcemap: true,
-        sourcefile: filePath,
-        loader,
-        // tsconfigRaw: fse.readJSONSync(path.join(rootDir, 'tsconfig.json')),
-        // TODO: 需要从项目根目录中加载 tsconfig.json 中的内容
-        tsconfigRaw: {
-          compilerOptions: {},
-        },
-      });
+      consola.debug(`should transform ${filePath} first.`);
+      // TODO: loader
+      const transformed = await transformWithESBuild(
+        entryContent,
+        filePath,
+        rootDir,
+        {},
+      );
       exportsData = moduleLexer.parse(transformed.code) as ExportsData;
     }
     for (const { ss, se } of exportsData[0]) {
@@ -68,9 +93,8 @@ export default async function preBundle(
     }
     flatIdToExports[flatId] = exportsData;
   }
-  const outdir = path.join(rootDir, 'node_modules', '.ice');
-  await fse.ensureDir(outdir);
-  await build({
+
+  const result = await build({
     absWorkingDir: process.cwd(),
     entryPoints: Object.keys(flatIdDeps),
     bundle: true,
@@ -78,7 +102,7 @@ export default async function preBundle(
     logLevel: 'error',
     splitting: true,
     sourcemap: true,
-    outdir: outdir,
+    outdir: depsCacheDir,
     platform: 'node',
     ignoreAnnotations: true,
     metafile: true,
@@ -86,6 +110,67 @@ export default async function preBundle(
       bundlePlugin({ flatIdDeps, flatIdToExports, rootDir }),
     ],
   });
+
+  for (const depId in depsInfo) {
+    const flatId = flattenId(depId);
+    // add meta info to metadata.deps
+    metadata.deps[depId] = {
+      file: flatId,
+      src: flatIdDeps[flatId],
+    };
+  }
+
+  return {
+    metadata,
+  };
+}
+
+async function transformWithESBuild(
+  input: string,
+  filePath: string,
+  rootDir: string,
+  options: TransformOptions,
+) {
+  let loader = options?.loader as TransformOptions['loader'];
+  if (!loader) {
+    const extname = path.extname(filePath).slice(1);
+    if (extname === 'mjs' || extname === 'cjs') {
+      loader = 'js';
+    } else {
+      loader = extname as TransformOptions['loader'];
+    }
+  }
+
+  let tsconfigRaw = options?.tsconfigRaw;
+  if (!tsconfigRaw) {
+    let tsconfigRaw = {
+      compilerOptions: {},
+    };
+    let loadedCompilerOptions = {};
+    const tsconfigPath = path.join(rootDir, 'tsconfig.json');
+    if ((loader === 'ts' || loader === 'tsx') && fse.pathExistsSync(tsconfigPath)) {
+      const tsconfig = await fse.readJSON(tsconfigPath);
+      loadedCompilerOptions = tsconfig.compilerOptions ?? {};
+    }
+
+    tsconfigRaw = {
+      ...tsconfigRaw,
+      compilerOptions: {
+        ...loadedCompilerOptions,
+        ...tsconfigRaw?.compilerOptions,
+      },
+    };
+  }
+
+  const transformOptions = {
+    sourcemap: true,
+    sourcefile: filePath,
+    ...options,
+    loader,
+    tsconfigRaw,
+  } as TransformOptions;
+
+  return await transform(input, transformOptions);
 }
 
 function resolvePackageEntry(depId: string, rootDir: string) {
@@ -116,4 +201,18 @@ function resolvePackageData(
     data: packageJSONData,
     dir: pkgDir,
   };
+}
+
+function createDepsMetadata(): DepMetaData {
+  return {
+    deps: {},
+  };
+}
+
+export function getDepsCacheDir(cacheDir: string) {
+  return formatPath(path.resolve(cacheDir, 'deps'));
+}
+
+export function getDepsMetaDataJSONPath(cacheDir: string) {
+  return formatPath(path.resolve(getDepsCacheDir(cacheDir), 'metadata.json'));
 }

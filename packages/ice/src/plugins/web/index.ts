@@ -23,6 +23,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
   const assetsManifest = path.join(rootDir, '.ice/assets-manifest.json');
   const serverOutputDir = path.join(outputDir, 'server');
   const serverEntry = path.join(serverOutputDir, 'index.mjs');
+  const cacheDir = path.join(rootDir, 'node_modules', '.ice');
   let serverCompiler = async () => '';
 
   onHook(`before.${command as 'start' | 'build'}.run`, async ({ esbuildCompile, webpackConfigs }) => {
@@ -45,7 +46,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
         alias: (webpackConfigs[0].resolve?.alias || {}) as Record<string, string | false>,
       });
       console.log('depImport', deps);
-      await preBundle(deps, rootDir);
+      await preBundle(deps, rootDir, cacheDir);
       await esbuildCompile({
         entryPoints: {
           index: entryPoint,
@@ -88,7 +89,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
 
   registerTask('web', {
     sourceMap: command === 'start' ? 'cheap-module-source-map' : false,
-    cacheDirectory: path.join(rootDir, 'node_modules', '.cache', 'webpack'),
+    cacheDir,
     mode,
     outputDir,
     alias: {

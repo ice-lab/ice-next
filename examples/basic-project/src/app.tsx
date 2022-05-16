@@ -1,4 +1,7 @@
-import { GetAppData, GetAppConfig } from 'ice';
+import type { GetAppData, GetAppConfig } from 'ice';
+import constate from 'constate';
+
+console.log('constate==>', constate);
 
 if (process.env.ICE_CORE_ERROR_BOUNDARY === 'true') {
   console.error('__REMOVED__');

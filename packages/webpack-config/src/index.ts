@@ -78,7 +78,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     hash,
     minify,
     minimizerOptions = {},
-    cacheDirectory,
+    cacheDir,
     https,
     analyzer,
     tsCheckerOptions,
@@ -204,7 +204,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       type: 'filesystem',
       version: `${process.env.__ICE_VERSION__}|${JSON.stringify(config)}`,
       buildDependencies: { config: [path.join(rootDir, 'package.json')] },
-      cacheDirectory,
+      cacheDirectory: path.join(cacheDir, 'webpack'),
     },
     // custom stat output by stats.toJson() calls in plugin-app
     stats: 'none',
