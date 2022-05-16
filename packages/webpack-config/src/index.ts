@@ -176,6 +176,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       splitChunks: getSplitChunksConfig(rootDir),
       minimize: minify,
       minimizer: [
+        // @ts-ignore
         new TerserPlugin({
           // keep same with compilation
           // use swcMinify with fix error of pure_funcs
@@ -183,6 +184,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
           extractComments: false,
           terserOptions,
         }),
+        // @ts-ignore
         new CssMinimizerPlugin({
           parallel: false,
           minimizerOptions: {
