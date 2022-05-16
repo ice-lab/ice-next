@@ -109,10 +109,8 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   );
   consola.debug('template render cost:', new Date().getTime() - renderStart);
 
-  const compileIncludes = runtimeModules.map(({ name }) => `${name}/runtime`);
-
   // merge task config with built-in config
-  taskConfigs = mergeTaskConfig(taskConfigs, { compileIncludes, port: commandArgs.port });
+  taskConfigs = mergeTaskConfig(taskConfigs, { port: commandArgs.port });
 
   // create serverCompiler with task config
   const serverCompiler = createServerCompiler({
