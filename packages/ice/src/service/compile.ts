@@ -10,6 +10,7 @@ import escapeLocalIdent from '../utils/escapeLocalIdent.js';
 import cssModulesPlugin from '../esbuild/cssModules.js';
 import aliasPlugin from '../esbuild/alias.js';
 import emptyCSSPlugin from '../esbuild/emptyCSS.js';
+import routeModulePlugin from '../esbuild/routeModule.js';
 
 import type { ContextConfig } from '../utils/getContextConfig.js';
 
@@ -44,6 +45,8 @@ export function createEsbuildCompiler(options: Options) {
       ...buildOptions.define,
     };
 
+    const isCSR = process.env.ICE_CORE_SSR === 'false' || process.env.ICE_CORE_SSG === 'false';
+
     const buildResult = await esbuild.build({
       bundle: true,
       target: 'node12.20.0',
@@ -51,6 +54,11 @@ export function createEsbuildCompiler(options: Options) {
       define,
       inject: [path.resolve(__dirname, '../polyfills/react.js')],
       plugins: [
+        // FIXME: set by build options.
+        routeModulePlugin({
+          rootDir: options.rootDir,
+          exports: isCSR ? ['getConfig'] : ['*'],
+        }, /\?server$/),
         emptyCSSPlugin(),
         aliasPlugin({
           alias,

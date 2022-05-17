@@ -45,7 +45,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
         outdir: serverOutputDir,
         // platform: 'node',
         format: 'esm',
-        splitting: true,
+        treeShaking: true,
         outExtension: { '.js': '.mjs' },
         define: runtimeDefineVars,
         plugins: [

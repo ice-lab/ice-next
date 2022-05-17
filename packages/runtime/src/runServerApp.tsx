@@ -136,13 +136,11 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
     return render404();
   }
 
-  if (documentOnly) {
-    return renderDocument(matches, renderOptions, {});
-  }
-
-  // FIXME: 原来是在 renderDocument 之前执行这段逻辑。
-  // 现在为了避免 CSR 时把页面组件都加载进来导致资源（比如 css）加载报错，带来的问题是调用 renderHTML 的时候 getConfig 失效了
   const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
+
+  if (documentOnly) {
+    return renderDocument(matches, renderOptions, routeModules);
+  }
 
   try {
     return await renderServerEntry({
@@ -156,7 +154,7 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
     });
   } catch (err) {
     console.error('Warning: render server entry error, downgrade to csr.', err);
-    return renderDocument(matches, renderOptions, {});
+    return renderDocument(matches, renderOptions, routeModules);
   }
 }
 

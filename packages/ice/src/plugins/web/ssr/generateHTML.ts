@@ -4,6 +4,7 @@ import fse from 'fs-extra';
 import consola from 'consola';
 import type { ServerContext } from '@ice/runtime';
 import type { RouteObject } from 'react-router';
+import { formatNestedRouteManifest } from '@ice/route-manifest';
 
 interface Options {
   rootDir: string;
@@ -33,7 +34,8 @@ export default async function generateHTML(options: Options) {
     throw new Error(`import ${entry} error: ${err}`);
   }
 
-  const routes = JSON.parse(fse.readFileSync(routeManifest, 'utf8'));
+  const manifest = fse.readJSONSync(routeManifest);
+  const routes = formatNestedRouteManifest(manifest);
   const paths = getPaths(routes);
 
   for (let i = 0, n = paths.length; i < n; i++) {
