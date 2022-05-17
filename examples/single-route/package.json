@@ -19,5 +19,8 @@
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "webpack-bundle-analyzer": "^4.5.0"
-  }
+  },
+  "sideEffects": [
+    "*.css"
+  ]
 }

@@ -20,29 +20,38 @@ export async function generateRoutesInfo(rootDir: string, routesConfig: UserConf
   });
   await Promise.all(analyzeTasks);
   const routes = formatNestedRouteManifest(routeManifest);
-  const str = generateNestRoutesStr(routes);
-  const strForServer = generateNestRoutesStrForServer(routes);
+  const routesStr = generateNestRoutesStr(routes, false);
+  const syncRoutesStr = generateNestRoutesStr(routes, true);
 
   return {
     routeManifest,
-    routesStr: `[${str}]`,
     routes,
+    routesStr: `[${routesStr}]`,
+    syncRoutesStr: `[${syncRoutesStr}]`,
+    routesImportStr: generateImportStr(routeManifest),
     loaders: generateLoadersStr(routes),
-    imports: generateImportStr(routeManifest),
-    routesStrForServer: `[${strForServer}]`,
   };
 }
 
-function generateNestRoutesStr(nestRouteManifest: NestedRouteManifest[]) {
+function generateNestRoutesStr(nestRouteManifest: NestedRouteManifest[], sync: boolean): string {
   return nestRouteManifest.reduce((prev, route) => {
     const { children, path: routePath, index, componentName, file, id, layout, exports } = route;
 
     const fileExtname = path.extname(file);
     const componentFile = file.replace(new RegExp(`${fileExtname}$`), '');
 
+    let componentLoader;
+
+    if (sync) {
+      const moduleName = componentName.replace(/-/g, '_');
+      componentLoader = `() => ${moduleName}`;
+    } else {
+      componentLoader = `() => import(/* webpackChunkName: "${componentName}" */ '@/pages/${componentFile}')`;
+    }
+
     let str = `{
       path: '${routePath || ''}',
-      load: () => import(/* webpackChunkName: "${componentName}" */ '@/pages/${componentFile}'),
+      load: ${componentLoader},
       componentName: '${componentName}',
       index: ${index},
       id: '${id}',
@@ -51,7 +60,7 @@ function generateNestRoutesStr(nestRouteManifest: NestedRouteManifest[]) {
       ${layout ? 'layout: true,' : ''}
     `;
     if (children) {
-      str += `children: [${generateNestRoutesStr(children)}],`;
+      str += `children: [${generateNestRoutesStr(children, sync)}],`;
     }
     str += '},';
     prev += str;
@@ -75,30 +84,6 @@ function generateImportStr(manifest) {
   });
 
   return imports.join('\n');
-}
-
-function generateNestRoutesStrForServer(nestRouteManifest: NestedRouteManifest[]) {
-  return nestRouteManifest.reduce((prev, route) => {
-    const { children, path: routePath, index, componentName, id, layout } = route;
-
-    const moduleName = componentName.replace(/-/g, '_');
-
-    let str = `{
-      path: '${routePath || ''}',
-      load: () => ${moduleName},
-      componentName: '${componentName}',
-      index: ${index},
-      id: '${id}',
-      exact: true,
-      ${layout ? 'layout: true,' : ''}
-    `;
-    if (children) {
-      str += `children: [${generateNestRoutesStrForServer(children)}],`;
-    }
-    str += '},';
-    prev += str;
-    return prev;
-  }, '');
 }
 
 /**
