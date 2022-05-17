@@ -4,7 +4,10 @@ import runtimeModules from './runtimeModules';
 import routes from './routes';
 import Document from '@/document';
 
-import { isInIcestark } from '@ice/stark-app';
+
+import { isInIcestark, setLibraryName } from '@ice/stark-app';
+
+setLibraryName('icestark-child');
 
 if (!isInIcestark()) {
   runClientApp({

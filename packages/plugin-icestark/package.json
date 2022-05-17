@@ -33,6 +33,7 @@
     "!esm/**/*.map"
   ],
   "dependencies": {
+    "@ice/stark": "^2.7.3",
     "@ice/types": "^1.0.0",
     "react-dom": "^18.0.0"
   },
