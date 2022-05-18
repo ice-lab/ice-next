@@ -5,7 +5,7 @@
     "baseUrl": ".",
     "outDir": "build",
     "module": "esnext",
-    "target": "es6",
+    "target": "es2017",
     "jsx": "react-jsx",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
