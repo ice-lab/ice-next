@@ -1,6 +1,6 @@
 import path from 'path';
 import type { Plugin } from 'esbuild';
-import type { ExportsData } from '../service/prebundle';
+import type { ExportsData } from '../service/preBundleDeps.js';
 import flattenId from '../utils/flattenId.js';
 import formatPath from '../utils/formatPath.js';
 
@@ -27,12 +27,16 @@ const bundlePlugin = (options: Options): Plugin => {
       build.onResolve(
         { filter: /^[\w@][^:]/ },
         async ({ path: id, importer }) => {
-          let entry: { path: string; namespace: string } | undefined;
+          console.log('id ==>', id);
+          if (id === 'stream') {
+            return {
+              path: '@ice/runtime/node/stream',
+              external: true,
+            };
+          }
           // if this is an entry, return entry namespace resolve result
           if (!importer) {
-            if (entry = resolveEntry(id)) {
-              return entry;
-            }
+            return resolveEntry(id);
           }
         },
       );
@@ -68,7 +72,6 @@ const bundlePlugin = (options: Options): Plugin => {
           }
         }
 
-        console.log('contents: ', contents);
         return {
           loader: 'js',
           contents,

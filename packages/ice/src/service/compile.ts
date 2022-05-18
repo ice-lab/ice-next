@@ -10,7 +10,6 @@ import escapeLocalIdent from '../utils/escapeLocalIdent.js';
 import cssModulesPlugin from '../esbuild/cssModules.js';
 import aliasPlugin from '../esbuild/alias.js';
 import emptyCSSPlugin from '../esbuild/emptyCSS.js';
-
 import type { ContextConfig } from '../utils/getContextConfig.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -52,6 +51,7 @@ export function createEsbuildCompiler(options: Options) {
       inject: [path.resolve(__dirname, '../polyfills/react.js')],
       plugins: [
         emptyCSSPlugin(),
+        ...(buildOptions.plugins || []),
         aliasPlugin({
           alias,
           compileRegex: (taskConfig.compileIncludes || []).map((includeRule) => {
@@ -66,7 +66,7 @@ export function createEsbuildCompiler(options: Options) {
             return escapeLocalIdent(`${name}--${hash.digest('base64').slice(0, 8)}`);
           },
         }),
-        ...(buildOptions.plugins || []),
+
         ...transformPlugins
           // ignore compilation-plugin while esbuild has it's own transform
           .filter(({ name }) => name !== 'compilation-plugin')

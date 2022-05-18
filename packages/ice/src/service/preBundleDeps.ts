@@ -35,19 +35,19 @@ interface DepInfo {
   src: string;
 }
 
-interface DepMetaData {
+export interface DepsMetaData {
   deps: Record<string, DepInfo>;
 }
 
-interface PreBundleResult {
-  metadata: DepMetaData;
+interface PreBundleDepsResult {
+  metadata: DepsMetaData;
 }
 
-export default async function preBundle(
+export default async function preBundleDeps(
   depsInfo: Record<string, string>,
   rootDir: string,
   cacheDir: string,
-): Promise<PreBundleResult> {
+): Promise<PreBundleDepsResult> {
   const metadata = createDepsMetadata();
 
   if (!Object.keys(depsInfo)) {
@@ -94,7 +94,7 @@ export default async function preBundle(
     flatIdToExports[flatId] = exportsData;
   }
 
-  const result = await build({
+  await build({
     absWorkingDir: process.cwd(),
     entryPoints: Object.keys(flatIdDeps),
     bundle: true,
@@ -103,9 +103,10 @@ export default async function preBundle(
     splitting: true,
     sourcemap: true,
     outdir: depsCacheDir,
-    platform: 'node',
+    // platform: 'node',
+    mainFields: ['main', 'module'],
+    outExtension: { '.js': '.mjs' },
     ignoreAnnotations: true,
-    metafile: true,
     plugins: [
       bundlePlugin({ flatIdDeps, flatIdToExports, rootDir }),
     ],
@@ -113,12 +114,15 @@ export default async function preBundle(
 
   for (const depId in depsInfo) {
     const flatId = flattenId(depId);
+    const file = path.join(depsCacheDir, `${flatId}.mjs`);
     // add meta info to metadata.deps
     metadata.deps[depId] = {
-      file: flatId,
+      file,
       src: flatIdDeps[flatId],
     };
   }
+
+  await fse.writeJSON(metadataJSONPath, metadata, { spaces: 2 });
 
   return {
     metadata,
@@ -156,8 +160,7 @@ async function transformWithESBuild(
     tsconfigRaw = {
       ...tsconfigRaw,
       compilerOptions: {
-        ...loadedCompilerOptions,
-        ...tsconfigRaw?.compilerOptions,
+
       },
     };
   }
@@ -167,7 +170,7 @@ async function transformWithESBuild(
     sourcefile: filePath,
     ...options,
     loader,
-    tsconfigRaw,
+    // tsconfigRaw,
   } as TransformOptions;
 
   return await transform(input, transformOptions);
@@ -203,7 +206,7 @@ function resolvePackageData(
   };
 }
 
-function createDepsMetadata(): DepMetaData {
+function createDepsMetadata(): DepsMetaData {
   return {
     deps: {},
   };
@@ -214,5 +217,5 @@ export function getDepsCacheDir(cacheDir: string) {
 }
 
 export function getDepsMetaDataJSONPath(cacheDir: string) {
-  return formatPath(path.resolve(getDepsCacheDir(cacheDir), 'metadata.json'));
+  return formatPath(path.resolve(getDepsCacheDir(cacheDir), '_metadata.json'));
 }

@@ -1,5 +1,4 @@
 import { Link, useData, useConfig } from 'ice';
-// @ts-expect-error
 import url from './ice.png';
 
 interface Data {

@@ -1,7 +1,16 @@
 import type { GetAppData, GetAppConfig } from 'ice';
 import constate from 'constate';
+import React from 'react';
+console.log('constate ', constate);
 
-console.log('constate==>', constate);
+function useCounter() {
+  const [count, setCount] = React.useState(0);
+  const increment = () => setCount(prevCount => prevCount + 1);
+  return { count, increment };
+}
+
+const [CounterProvider, useCounterContext] = constate(useCounter);
+console.log(useCounterContext, CounterProvider);
 
 if (process.env.ICE_CORE_ERROR_BOUNDARY === 'true') {
   console.error('__REMOVED__');

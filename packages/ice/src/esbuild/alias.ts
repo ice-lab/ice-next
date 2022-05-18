@@ -38,8 +38,8 @@ const aliasPlugin = (options: PluginOptions): Plugin => {
         const id = args.path;
         // external ids which is third-party dependencies
         if (id[0] !== '.' && !path.isAbsolute(id) &&
-                // runtime folder need to been bundled while it is not compiled
-                !compileRegex.some((regex) => regex.test(id))) {
+          // runtime folder need to been bundled while it is not compiled
+          !compileRegex.some((regex) => regex.test(id))) {
           return {
             external: true,
           };
