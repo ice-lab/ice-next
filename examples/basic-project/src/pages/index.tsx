@@ -3,6 +3,7 @@ import { Link, useAppData, useData, useConfig } from 'ice';
 // not recommended but works
 import { useAppContext } from '@ice/runtime';
 import { useRequest } from 'ahooks';
+import { Button } from 'antd-mobile';
 import styles from './index.module.css';
 import type { AppData } from '@/types';
 
@@ -30,6 +31,7 @@ export default function Home(props) {
       <h2 className={styles.title}>Home Page</h2>
       <Link to="/about">about</Link>
       <div>count: {data.count}</div>
+      <Button>xxx</Button>
       <Suspense fallback={<div>hello</div>}>
         <Bar />
       </Suspense>
