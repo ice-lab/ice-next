@@ -63,6 +63,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
           createDepRedirectPlugin(metadata),
           createAssetsPlugin(assetsManifest, rootDir),
         ],
+        external: ['react', 'react-dom'],
       });
       // timestamp for disable import cache
       return `${serverEntry}?version=${new Date().getTime()}`;
