@@ -19,19 +19,19 @@ const createDepRedirectPlugin = (metadata: DepsMetaData): Plugin => {
     setup(build) {
       const { deps } = metadata;
       const urls = [];
-      build.onResolve({ filter: /^[\w@][^:]/ }, ({ path: id, importer, resolveDir }) => {
-        console.log('id: ', id);
-        if (id in deps) {
-          return {
-            path: id,
-            namespace: 'dep',
-            pluginData: {
-              importer,
-              resolveDir,
-            },
-          };
-        }
-      });
+      // build.onResolve({ filter: /^[\w@][^:]/ }, ({ path: id, importer, resolveDir }) => {
+      //   console.log('id: ', id);
+      //   if (id in deps) {
+      //     return {
+      //       path: id,
+      //       namespace: 'dep',
+      //       pluginData: {
+      //         importer,
+      //         resolveDir,
+      //       },
+      //     };
+      //   }
+      // });
       build.onResolve({ filter: /.*/ }, ({ path: id }) => {
         if (urls.includes(id)) {
           console.log('-===>', id);
@@ -41,31 +41,19 @@ const createDepRedirectPlugin = (metadata: DepsMetaData): Plugin => {
           };
         }
       });
-      build.onLoad({ filter: /.*/, namespace: 'dep' }, async ({ path: id, pluginData: { importer, resolveDir } }) => {
+      build.onLoad({ filter: /\.(js|jsx|ts|tsx)$/ }, async ({ path: id }) => {
         try {
           await init;
-          let source = await fse.readFile(importer, 'utf-8');
+          let source = await fse.readFile(id, 'utf-8');
           // transformWithParseJS(originSource);
-          const extname = path.extname(importer).slice(1) as TransformOptions['loader'];
+          const extname = path.extname(id).slice(1) as TransformOptions['loader'];
           let imports: readonly ImportSpecifier[] = [];
-          try {
-            imports = parse(source)[0];
-          } catch {
-            try {
-              const transformed = await transformWithESBuild(
-                source,
-                importer,
-              );
-              source = transformed.code;
-              imports = parse(transformed.code)[0];
-            } catch (e) {
-              debugger;
-              console.log(e);
-            }
-
-
-            // const imports = parseImportsByParseJS(source);
-          }
+          const transformed = await transformWithESBuild(
+            source,
+            id,
+          );
+          source = transformed.code;
+          imports = parse(transformed.code)[0];
           const str = new MagicString(source);
           for (let index = 0; index < imports.length; index++) {
             const {
@@ -76,18 +64,18 @@ const createDepRedirectPlugin = (metadata: DepsMetaData): Plugin => {
               se: expEnd,
               n: specifier,
             } = imports[index];
-            if (specifier !== id) {
+            if (!(specifier in deps)) {
               continue;
             }
 
             const importExp = source.slice(expStart, expEnd);
-            const filePath = deps[id].file;
+            const filePath = deps[specifier].file;
             // const url = path.relative(path.join(process.cwd(), 'build/server'), filePath);
             urls.push(filePath);
             const rewritten = transformCjsImport(
               importExp,
               filePath,
-              id,
+              specifier,
               index,
             );
             if (rewritten) {
@@ -98,14 +86,13 @@ const createDepRedirectPlugin = (metadata: DepsMetaData): Plugin => {
               // export * from '...'
               str.overwrite(start, end, filePath, { contentOnly: true });
             }
-            const contents = str.toString();
-            console.log('contents==>', contents);
-            return {
-              contents,
-              loader: extname,
-              resolveDir: '/',
-            };
           }
+
+          const contents = str.toString();
+          return {
+            contents,
+            loader: extname,
+          };
         } catch (e) {
           console.log(e);
         }

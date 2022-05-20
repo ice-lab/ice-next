@@ -47,6 +47,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
         alias: (webpackConfigs[0].resolve?.alias || {}) as Record<string, string | false>,
       });
       console.log('depImport', deps);
+      delete deps['react'];
       const { metadata } = await preBundleDeps(deps, rootDir, cacheDir);
       await esbuildCompile({
         entryPoints: {

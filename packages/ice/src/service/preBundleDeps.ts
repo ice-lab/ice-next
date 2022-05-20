@@ -1,6 +1,7 @@
 import path from 'path';
 import fse from 'fs-extra';
 import { transform, build } from 'esbuild';
+import { resolve as resolveExports } from 'resolve.exports';
 import type { TransformOptions } from 'esbuild';
 import resolve from 'resolve';
 import moduleLexer from '@ice/bundles/compiled/es-module-lexer/index.js';
@@ -78,6 +79,7 @@ export default async function preBundleDeps(
     outdir: depsCacheDir,
     platform: 'node',
     ignoreAnnotations: true,
+    external: ['react', 'react-dom'],
     plugins: [
       bundlePlugin(metadata),
     ],
@@ -92,7 +94,11 @@ export default async function preBundleDeps(
 
 function resolvePackageEntry(depId: string, rootDir: string) {
   const { data: pkgJSONData, dir } = resolvePackageData(depId, rootDir);
-  const entryPoint = pkgJSONData['main'];
+  // resolve exports field
+  let entryPoint = resolveExports(pkgJSONData, depId);
+  if (!entryPoint) {
+    entryPoint = pkgJSONData['module'] || pkgJSONData['main'];
+  }
   const entryPointPath = path.join(dir, entryPoint);
   return entryPointPath;
 }
