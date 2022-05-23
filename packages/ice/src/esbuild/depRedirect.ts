@@ -18,23 +18,10 @@ const createDepRedirectPlugin = (metadata: DepsMetaData): Plugin => {
     name: 'esbuild-dep-redirect',
     setup(build) {
       const { deps } = metadata;
-      const urls = [];
-      // build.onResolve({ filter: /^[\w@][^:]/ }, ({ path: id, importer, resolveDir }) => {
-      //   console.log('id: ', id);
-      //   if (id in deps) {
-      //     return {
-      //       path: id,
-      //       namespace: 'dep',
-      //       pluginData: {
-      //         importer,
-      //         resolveDir,
-      //       },
-      //     };
-      //   }
-      // });
+      const redirectDepIds = [];
+
       build.onResolve({ filter: /.*/ }, ({ path: id }) => {
-        if (urls.includes(id)) {
-          console.log('-===>', id);
+        if (redirectDepIds.includes(id)) {
           return {
             path: id,
             external: true,
@@ -45,7 +32,6 @@ const createDepRedirectPlugin = (metadata: DepsMetaData): Plugin => {
         try {
           await init;
           let source = await fse.readFile(id, 'utf-8');
-          // transformWithParseJS(originSource);
           const extname = path.extname(id).slice(1) as TransformOptions['loader'];
           let imports: readonly ImportSpecifier[] = [];
           const transformed = await transformWithESBuild(
@@ -70,8 +56,7 @@ const createDepRedirectPlugin = (metadata: DepsMetaData): Plugin => {
 
             const importExp = source.slice(expStart, expEnd);
             const filePath = deps[specifier].file;
-            // const url = path.relative(path.join(process.cwd(), 'build/server'), filePath);
-            urls.push(filePath);
+            redirectDepIds.push(filePath);
             const rewritten = transformCjsImport(
               importExp,
               filePath,
@@ -101,6 +86,7 @@ const createDepRedirectPlugin = (metadata: DepsMetaData): Plugin => {
   };
 };
 
+// Fork from https://github.com/vitejs/vite/blob/d98c8a710b8f0804120c05e5bd3eb403f17e7b30/packages/vite/src/node/plugins/esbuild.ts#L60
 async function transformWithESBuild(
   input: string,
   filePath: string,
@@ -124,18 +110,6 @@ async function transformWithESBuild(
   } as TransformOptions;
 
   return await transform(input, transformOptions);
-}
-
-function parseImportsByParseJS(
-  source: string,
-) {
-  const node = (
-    parseJS(source, {
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-    }) as any
-  );
-  console.log('node===>', node);
 }
 
 function transformCjsImport(
