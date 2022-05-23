@@ -17,7 +17,7 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noImplicitAny": false,
-    "importHelpers": true,
+    "importHelpers": false,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
@@ -25,8 +25,10 @@
     "paths": {
       "@/*": ["./src/*"],
       "ice": [".ice"]
-    }
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
-  "include": ["src", ".ice", "ice.config.*"],
-  "exclude": ["node_modules", "build", "public"]
+  "include": ["src", ".ice", "ice.config.*", "midway.config.js"],
+  "exclude": ["node_modules", "build", "public"],
 }

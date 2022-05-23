@@ -4,11 +4,17 @@ import type { Plugin } from '@ice/types';
 import type { RequestHandler } from 'express';
 import { matchRoutes } from '@ice/runtime';
 import type { RouteItem } from '@ice/runtime/esm/types';
+import { createExpressDevPack } from '@midwayjs/dev-pack';
 
 const plugin: Plugin = async ({ onGetConfig, context }) => {
   const { rootDir } = context;
   const routeManifestPath = path.join(rootDir, '.ice/route-manifest.json');
   const serverEntryPath = path.join(rootDir, 'build', 'server', 'index.mjs');
+  const { middleware } = await createExpressDevPack({
+    watch: true,
+    cwd: rootDir,
+    sourceDir: 'src/api',
+  });
 
   onGetConfig(async (config) => {
     const { middlewares: originSetupMiddlewares } = config;
@@ -19,7 +25,7 @@ const plugin: Plugin = async ({ onGetConfig, context }) => {
       const faasMiddlewares = [
         {
           name: 'faas-api-middleware',
-          middleware: createFaaSAPIMiddleware(),
+          middleware,
         },
         {
           name: 'faas-render-middleware',
@@ -58,16 +64,6 @@ function createFaaSRenderMiddleware(
       const result = await serverEntry.renderToHTML(requestContext, false);
       res.set('Content-Type', 'text/html; charset=utf-8');
       res.end(result.value);
-    } else {
-      next();
-    }
-  };
-}
-
-function createFaaSAPIMiddleware(): RequestHandler {
-  return function (req, res, next) {
-    if (req.path.startsWith('/api')) {
-      res.json(['a', 'b']);
     } else {
       next();
     }

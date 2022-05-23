@@ -14,7 +14,8 @@
   ],
   "dependencies": {
     "@ice/runtime": "^1.0.0",
-    "fs-extra": "^10.0.0"
+    "fs-extra": "^10.0.0",
+    "@midwayjs/dev-pack": "dev-pack"
   },
   "devDependencies": {
     "@ice/types": "^1.0.0",

@@ -17,6 +17,7 @@ export default function createServerCompilerMiddleware(options: Options): Expres
     let matches = matchRoutes(routes, req.path);
     if (matches.length === 0) {
       next();
+      return;
     }
     const serverEntry = await serverCompiler();
     // @ts-ignore

@@ -14,12 +14,22 @@
     "@ice/runtime": "^1.0.0",
     "ahooks": "^3.3.9",
     "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react-dom": "^18.0.0",
+    "@midwayjs/core": "^3.1.0",
+    "@midwayjs/decorator": "^3.1.0",
+    "@midwayjs/faas": "^3.1.0",
+    "@midwayjs/hooks": "dev-pack",
+    "@midwayjs/hooks-bundler": "dev-pack",
+    "@midwayjs/rpc": "dev-pack",
+    "@midwayjs/esrun": "^0.0.0-dev-pack-20220517060504"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "browserslist": "^4.19.3",
-    "regenerator-runtime": "^0.13.9"
+    "regenerator-runtime": "^0.13.9",
+    "@midwayjs/serverless-app": "^3.1.0",
+    "@midwayjs/serverless-fc-starter": "^3.1.0",
+    "@midwayjs/serverless-fc-trigger": "^3.1.0"
   }
 }
