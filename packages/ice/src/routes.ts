@@ -47,11 +47,12 @@ function generateNestRoutesStr(nestRouteManifest: NestedRouteManifest[]) {
 
 function createDefaultNotFoundRoute(rootDir: string, routeManifest: RouteManifest): ConfigRoute {
   return {
-    id: '_404',
-    file: path.join(rootDir, '.ice', '_404'),
-    componentName: '_404',
     path: '*',
+    id: '_404',
     parentId: routeManifest['layout'] ? 'layout' : null,
+    file: path.join(rootDir, '.ice', '_404.tsx'),
+    componentName: '_404',
+    layout: false,
   };
 }
 
@@ -67,11 +68,11 @@ function generateLoadersStr(routes: NestedRouteManifest[]) {
 
       const fileExtname = path.extname(file);
       const componentFile = file.replace(new RegExp(`${fileExtname}$`), '');
+      const componentPath = path.isAbsolute(componentFile) ? componentFile : `@/pages/${componentFile}`;
 
       const loaderName = `getData_${id}`.replace('/', '_');
       loaders.push([id, loaderName]);
-
-      let str = `import { getData as ${loaderName} } from '@/pages/${componentFile}';\n`;
+      let str = `import { getData as ${loaderName} } from '${componentPath}';\n`;
 
       if (children) {
         str += importLoaders(children);
