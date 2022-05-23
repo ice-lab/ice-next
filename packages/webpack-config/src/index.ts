@@ -10,6 +10,7 @@ import CssMinimizerPlugin from '@ice/bundles/compiled/css-minimizer-webpack-plug
 import TerserPlugin from '@ice/bundles/compiled/terser-webpack-plugin/index.js';
 import ForkTsCheckerPlugin from '@ice/bundles/compiled/fork-ts-checker-webpack-plugin/index.js';
 import ESlintPlugin from '@ice/bundles/compiled/eslint-webpack-plugin/index.js';
+import CopyPlugin from '@ice/bundles/compiled/copy-webpack-plugin/index.js';
 import type { Configuration, WebpackPluginInstance } from 'webpack';
 import type webpack from 'webpack';
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
@@ -20,6 +21,7 @@ import configAssets from './config/assets.js';
 import configCss from './config/css.js';
 import AssetsManifestPlugin from './webpackPlugins/AssetsManifestPlugin.js';
 import getTransformPlugins from './unPlugins/index.js';
+import getSplitChunksConfig from './config/splitChunks.js';
 
 const require = createRequire(import.meta.url);
 const { merge } = lodash;
@@ -44,13 +46,10 @@ function getEntry(rootDir: string) {
     // use generated file in template directory
     entryFile = path.join(rootDir, '.ice/entry.client.ts');
   }
+  const dataLoaderFile = path.join(rootDir, '.ice/data-loader.ts');
   return {
-    loader: [path.join(rootDir, '.ice/data-loader.ts')],
-    runtime: ['react', 'react-dom', '@ice/runtime'],
-    main: {
-      import: [entryFile],
-      dependOn: 'runtime',
-    },
+    main: [entryFile],
+    loader: [dataLoaderFile],
   };
 }
 
@@ -171,6 +170,10 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       ignored: watchIgnoredRegexp,
     },
     optimization: {
+      // share runtime chunk when dev, ref: https://github.com/pmmmwh/react-refresh-webpack-plugin/issues/88#issuecomment-627558799
+      // loader chunk will load before main chunk in production
+      runtimeChunk: dev ? 'single' : 'multiple',
+      splitChunks: getSplitChunksConfig(rootDir),
       minimize: minify,
       minimizer: [
         new TerserPlugin({
@@ -222,6 +225,21 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       analyzer && new BundleAnalyzerPlugin(),
       tsCheckerOptions && new ForkTsCheckerPlugin(tsCheckerOptions),
       eslintOptions && new ESlintPlugin(eslintOptions),
+      // copy plugin only active in production
+      // otherwise it will add assets to webpack compilation
+      !dev && new CopyPlugin({
+        patterns: [{
+          from: path.join(rootDir, 'public'),
+          to: outputDir,
+          // ignore assets already in compilation.assets such as js and css files
+          force: false,
+          noErrorOnMissing: true,
+          globOptions: {
+            dot: true,
+            gitignore: true,
+          },
+        }],
+      }),
     ].filter(Boolean) as unknown as WebpackPluginInstance[],
     devServer: {
       allowedHosts: 'all',

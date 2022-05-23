@@ -10,15 +10,22 @@ export default function createServerRenderMiddleware(options: Options): ExpressR
   return async (req, res, next) => {
     // @ts-ignore
     const entry = req.serverEntry;
+    let serverModule;
     if (entry) {
-      const serverEntry = await import(entry);
+      try {
+        serverModule = await import(entry);
+      } catch (err) {
+        // make error clearly, notice typeof err === 'string'
+        res.end(`import ${entry} error: ${err}`);
+        return;
+      }
+
       const requestContext = {
         req,
         res,
       };
-
       const documentOnly = !(ssg || ssr);
-      serverEntry.renderToResponse(requestContext, documentOnly);
+      serverModule.renderToResponse(requestContext, documentOnly);
     } else {
       next();
     }

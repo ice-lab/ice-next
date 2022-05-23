@@ -9,7 +9,7 @@ type VoidFunction = () => void;
 type AppLifecycle = 'onShow' | 'onHide' | 'onPageNotFound' | 'onShareAppMessage' | 'onUnhandledRejection' | 'onLaunch' | 'onError' | 'onTabItemClick';
 type App = Partial<{
   strict?: boolean;
-  addProvider?: ({ children }: { children: ReactNode }) => ReactNode;
+  addProvider?: ComponentWithChildren;
 } & Record<AppLifecycle, VoidFunction>>;
 
 export type AppData = any;
@@ -43,7 +43,7 @@ export type GetConfig = (args: { data: RouteData }) => RouteConfig;
 export interface AppConfig extends Record<string, any> {
   app?: App;
   router?: {
-    type: 'hash' | 'browser';
+    type?: 'hash' | 'browser';
     basename?: string;
   };
 }
@@ -63,6 +63,7 @@ export interface AppContext {
   routesData: RoutesData;
   routesConfig: RoutesConfig;
   appData: any;
+  routeModules: RouteModules;
   matches?: RouteMatch[];
   routes?: RouteItem[];
   documentOnly?: boolean;
@@ -72,8 +73,8 @@ export interface AppContext {
 // export type Renderer = typeof hydrateRoot;
 export type Renderer = (
   container: Element | Document,
-    initialChildren: React.ReactNode,
-    options?: HydrationOptions,
+  initialChildren: React.ReactNode,
+  options?: HydrationOptions,
 ) => void;
 
 export interface ServerContext {
@@ -161,6 +162,7 @@ export interface AppRouterProps {
   navigator: Navigator;
   routes: RouteItem[];
   static?: boolean;
+  basename?: string;
 }
 
 export interface AppRouteProps {

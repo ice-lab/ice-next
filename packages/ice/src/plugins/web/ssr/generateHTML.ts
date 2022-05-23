@@ -1,10 +1,12 @@
 import * as path from 'path';
+import type { Request } from 'webpack-dev-server';
 import fse from 'fs-extra';
-import type { IncomingMessage } from 'http';
+import consola from 'consola';
 import type { ServerContext } from '@ice/runtime';
 import type { RouteObject } from 'react-router';
 
 interface Options {
+  rootDir: string;
   entry: string;
   routeManifest: string;
   outDir: string;
@@ -14,6 +16,7 @@ interface Options {
 
 export default async function generateHTML(options: Options) {
   const {
+    rootDir,
     entry,
     routeManifest,
     outDir,
@@ -41,13 +44,16 @@ export default async function generateHTML(options: Options) {
     };
 
     const serverContext: ServerContext = {
-      req: req as IncomingMessage,
+      req: req as Request,
     };
 
     const documentOnly = !(ssg || ssr);
     const { value: html } = await serverEntry.renderToHTML(serverContext, documentOnly);
 
     const fileName = routePath === '/' ? 'index.html' : `${routePath}.html`;
+    if (fse.existsSync(path.join(rootDir, 'public', fileName))) {
+      consola.warn(`${fileName} is overwrite by framework, rename file name if it is necessary`);
+    }
     const contentPath = path.join(outDir, fileName);
     await fse.ensureFile(contentPath);
     await fse.writeFile(contentPath, html);
