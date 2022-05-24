@@ -1,8 +1,7 @@
 import path from 'path';
 import fse from 'fs-extra';
-import { transform, build } from 'esbuild';
+import { build } from 'esbuild';
 import { resolve as resolveExports } from 'resolve.exports';
-import type { TransformOptions } from 'esbuild';
 import resolve from 'resolve';
 import moduleLexer from '@ice/bundles/compiled/es-module-lexer/index.js';
 import bundlePlugin from '../esbuild/bundle.js';
