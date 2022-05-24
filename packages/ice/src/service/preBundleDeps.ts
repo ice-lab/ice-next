@@ -79,7 +79,7 @@ export default async function preBundleDeps(
     outdir: depsCacheDir,
     platform: 'node',
     ignoreAnnotations: true,
-    external: ['react', 'react-dom'],
+    external: ['react', 'react-dom', '@ice/runtime'],
     plugins: [
       bundlePlugin(metadata),
     ],

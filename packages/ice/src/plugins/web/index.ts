@@ -48,6 +48,9 @@ const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
       });
       console.log('depImport', deps);
       delete deps['react'];
+      delete deps['react-dom'];
+      delete deps['@ice/runtime'];
+      delete deps['@ice/runtime/server'];
       const { metadata } = await preBundleDeps(deps, rootDir, cacheDir);
       await esbuildCompile({
         entryPoints: {
@@ -63,7 +66,7 @@ const webPlugin: Plugin = ({ registerTask, context, onHook, watch }) => {
           createDepRedirectPlugin(metadata),
           createAssetsPlugin(assetsManifest, rootDir),
         ],
-        external: ['react', 'react-dom'],
+        external: ['react', 'react-dom', '@ice/runtime'],
       });
       // timestamp for disable import cache
       return `${serverEntry}?version=${new Date().getTime()}`;

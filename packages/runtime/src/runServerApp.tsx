@@ -2,6 +2,7 @@ import type { ServerResponse } from 'http';
 import * as React from 'react';
 import { Action, parsePath } from 'history';
 import type { Location } from 'history';
+import * as ReactDOMServer from 'react-dom/server';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
@@ -23,8 +24,6 @@ import type {
   RouteModules,
 } from './types';
 import getRequestContext from './requestContext.js';
-// import * as ReactDOMServer from 'react-dom/server';
-const ReactDOMServer = require('react-dom/server');
 
 interface RenderOptions {
   app: AppEntry;

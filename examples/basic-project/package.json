@@ -14,9 +14,7 @@
     "@ice/runtime": "workspace:*",
     "ahooks": "^3.3.8",
     "antd-mobile": "^5.12.4",
-    "constate": "^3.3.2",
-    "react": "^18.1.0",
-    "react-dom": "^18.1.0"
+    "constate": "^3.3.2"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",

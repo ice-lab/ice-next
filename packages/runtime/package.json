@@ -20,8 +20,6 @@
   "bugs": "https://github.com/ice-lab/ice-next/issues",
   "homepage": "https://next.ice.work",
   "devDependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
     "@types/react": "^18.0.8",
     "@types/react-dom": "^18.0.3",
     "regenerator-runtime": "^0.13.9"
@@ -30,5 +28,9 @@
   "dependencies": {
     "history": "^5.3.0",
     "react-router-dom": "^6.2.2"
+  },
+  "peerDependencies": {
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0"
   }
 }
