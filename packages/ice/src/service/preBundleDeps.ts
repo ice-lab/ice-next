@@ -1,4 +1,5 @@
 import path from 'path';
+import { createHash } from 'crypto';
 import fse from 'fs-extra';
 import { build } from 'esbuild';
 import { resolve as resolveExports } from 'resolve.exports';
@@ -29,6 +30,7 @@ interface DepInfo {
 }
 
 export interface DepsMetaData {
+  hash: string;
   deps: Record<string, DepInfo>;
 }
 
@@ -41,7 +43,7 @@ export default async function preBundleDeps(
   rootDir: string,
   cacheDir: string,
 ): Promise<PreBundleDepsResult> {
-  const metadata = createDepsMetadata();
+  const metadata = createDepsMetadata(depsInfo);
 
   if (!Object.keys(depsInfo)) {
     return {
@@ -51,7 +53,16 @@ export default async function preBundleDeps(
 
   const depsCacheDir = getDepsCacheDir(cacheDir);
   const metadataJSONPath = getDepsMetaDataJSONPath(cacheDir);
-  // TODO: don't remove it if don't need to update the deps cache
+  if (fse.pathExistsSync(metadataJSONPath)) {
+    const prevMetadata = await fse.readJSON(metadataJSONPath) as DepsMetaData;
+    if (metadata.hash === prevMetadata.hash) {
+      // don't need to pre bundle the deps again if the deps info is not updated
+      return {
+        metadata: prevMetadata,
+      };
+    }
+  }
+
   await fse.emptyDir(depsCacheDir);
 
   const flatIdDeps: Record<string, string> = {};
@@ -122,10 +133,21 @@ function resolvePackageData(
   };
 }
 
-function createDepsMetadata(): DepsMetaData {
+function createDepsMetadata(depsInfo: Record<string, string>): DepsMetaData {
+  const hash = getDepHash(depsInfo);
   return {
+    hash,
     deps: {},
   };
+}
+
+function getDepHash(depsInfo: Record<string, string>) {
+  let content = JSON.stringify(depsInfo);
+  return getHash(content);
+}
+
+function getHash(text: Buffer | string): string {
+  return createHash('sha1').update(text).digest('hex').substring(0, 8);
 }
 
 export function getDepsCacheDir(cacheDir: string) {
