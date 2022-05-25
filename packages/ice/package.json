@@ -32,8 +32,8 @@
     "@ice/webpack-config": "^1.0.0",
     "acorn": "^8.7.1",
     "address": "^1.1.2",
-    "build-scripts": "^2.0.0-21",
     "body-parser": "^1.20.0",
+    "build-scripts": "^2.0.0-21",
     "chalk": "^4.0.0",
     "commander": "^9.0.0",
     "consola": "^2.15.3",
@@ -65,6 +65,7 @@
   "devDependencies": {
     "@types/cross-spawn": "^6.0.2",
     "@types/ejs": "^3.1.0",
+    "@types/estree": "^0.0.51",
     "@types/less": "^3.0.3",
     "@types/micromatch": "^4.0.2",
     "@types/multer": "^1.4.7",
