@@ -46,8 +46,11 @@ function getEntry(rootDir: string) {
     entryFile = path.join(rootDir, '.ice/entry.client.ts');
   }
 
+  // const dataLoaderFile = path.join(rootDir, '.ice/data-loader.ts');
   return {
     main: [entryFile],
+    // FIXME: https://github.com/ice-lab/ice-next/issues/217, https://github.com/ice-lab/ice-next/issues/199
+    // loader: [dataLoaderFile],
   };
 }
 
