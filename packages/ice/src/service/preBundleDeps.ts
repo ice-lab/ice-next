@@ -5,6 +5,7 @@ import { build } from 'esbuild';
 import { resolve as resolveExports } from 'resolve.exports';
 import resolve from 'resolve';
 import moduleLexer from '@ice/bundles/compiled/es-module-lexer/index.js';
+import type { Config } from '@ice/types';
 import bundlePlugin from '../esbuild/bundle.js';
 import flattenId from '../utils/flattenId.js';
 import formatPath from '../utils/formatPath.js';
@@ -38,12 +39,16 @@ interface PreBundleDepsResult {
   metadata: DepsMetaData;
 }
 
-export default async function preBundleDeps(
-  depsInfo: Record<string, string>,
-  rootDir: string,
-  cacheDir: string,
-): Promise<PreBundleDepsResult> {
-  const metadata = createDepsMetadata(depsInfo);
+interface PreBundleDepsOptions {
+  depsInfo: Record<string, string>;
+  rootDir: string;
+  cacheDir: string;
+  taskConfig: Config;
+}
+
+export default async function preBundleDeps(options: PreBundleDepsOptions): Promise<PreBundleDepsResult> {
+  const { depsInfo, rootDir, cacheDir, taskConfig } = options;
+  const metadata = createDepsMetadata(depsInfo, taskConfig);
 
   if (!Object.keys(depsInfo)) {
     return {
@@ -133,16 +138,16 @@ function resolvePackageData(
   };
 }
 
-function createDepsMetadata(depsInfo: Record<string, string>): DepsMetaData {
-  const hash = getDepHash(depsInfo);
+function createDepsMetadata(depsInfo: Record<string, string>, taskConfig: Config): DepsMetaData {
+  const hash = getDepHash(depsInfo, taskConfig);
   return {
     hash,
     deps: {},
   };
 }
 
-function getDepHash(depsInfo: Record<string, string>) {
-  let content = JSON.stringify(depsInfo);
+function getDepHash(depsInfo: Record<string, string>, taskConfig: Config) {
+  let content = JSON.stringify(depsInfo) + JSON.stringify(taskConfig);
   return getHash(content);
 }
 

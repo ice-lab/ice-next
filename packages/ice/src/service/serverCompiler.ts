@@ -60,7 +60,7 @@ export function createServerCompiler(options: Options) {
       delete deps[dep];
     }
     const cacheDir = path.join(rootDir, CACHE_DIR);
-    const { metadata } = await preBundleDeps(deps, rootDir, cacheDir);
+    const { metadata } = await preBundleDeps({ depsInfo: deps, rootDir, cacheDir, taskConfig: task.config });
 
     const startTime = new Date().getTime();
     consola.debug('[esbuild]', `start compile for: ${buildOptions.entryPoints}`);

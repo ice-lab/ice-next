@@ -82,9 +82,7 @@ importers:
       '@types/react': ^18.0.0
       '@types/react-dom': ^18.0.2
       ahooks: ^3.3.8
-      antd-mobile: ^5.12.4
       browserslist: ^4.19.3
-      constate: ^3.3.2
       regenerator-runtime: ^0.13.9
       speed-measure-webpack-plugin: ^1.5.0
       webpack: ^5.72.0
@@ -93,8 +91,6 @@ importers:
       '@ice/plugin-auth': link:../../packages/plugin-auth
       '@ice/runtime': link:../../packages/runtime
       ahooks: 3.3.10_react@18.0.0
-      antd-mobile: 5.12.4_react-dom@18.0.0+react@18.0.0
-      constate: 3.3.2_react@18.0.0
     devDependencies:
       '@types/react': 18.0.7
       '@types/react-dom': 18.0.2

@@ -1,6 +1,6 @@
 import * as path from 'path';
 import type { Config } from '@ice/types';
-import { CACHE_DIR } from '../../constant';
+import { CACHE_DIR } from '../../constant.js';
 
 const getWebTask = ({ rootDir, command }): Config => {
   // basic task config of web task
