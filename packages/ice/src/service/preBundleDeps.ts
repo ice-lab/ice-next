@@ -7,6 +7,7 @@ import moduleLexer from '@ice/bundles/compiled/es-module-lexer/index.js';
 import bundlePlugin from '../esbuild/bundle.js';
 import flattenId from '../utils/flattenId.js';
 import formatPath from '../utils/formatPath.js';
+import { EXCLUDE_PRE_BUNDLE_DEPS } from '../constant.js';
 
 interface PackageData {
   data: {
@@ -78,7 +79,7 @@ export default async function preBundleDeps(
     outdir: depsCacheDir,
     platform: 'node',
     ignoreAnnotations: true,
-    external: ['react', 'react-dom', '@ice/runtime'],
+    external: EXCLUDE_PRE_BUNDLE_DEPS,
     plugins: [
       bundlePlugin(metadata),
     ],

@@ -172,6 +172,27 @@ importers:
       browserslist: 4.20.3
       webpack-bundle-analyzer: 4.5.0
 
+  examples/with-antd-mobile:
+    specifiers:
+      '@ice/app': workspace:*
+      '@ice/runtime': workspace:*
+      '@types/react': ^18.0.0
+      '@types/react-dom': ^18.0.2
+      antd-mobile: ^5.12.4
+      browserslist: ^4.19.3
+      constate: ^3.3.2
+      regenerator-runtime: ^0.13.9
+    dependencies:
+      '@ice/app': link:../../packages/ice
+      '@ice/runtime': link:../../packages/runtime
+      antd-mobile: 5.12.4_react-dom@18.0.0+react@18.0.0
+      constate: 3.3.2_react@18.0.0
+    devDependencies:
+      '@types/react': 18.0.8
+      '@types/react-dom': 18.0.3
+      browserslist: 4.20.3
+      regenerator-runtime: 0.13.9
+
   packages/bundles:
     specifiers:
       '@swc/core': 1.2.168
@@ -7974,7 +7995,6 @@ packages:
       source-map: 0.6.1
       terser: 5.12.1
       webpack: 5.72.0_esbuild@0.14.38
-    dev: true
 
   /terser-webpack-plugin/5.3.1_webpack@5.72.0:
     resolution: {integrity: sha512-GvlZdT6wPQKbDNW/GDQzZFg/j4vKU96yl2q6mcUkzKOgW4gwf1Z8cZToUCrz31XHlPWH8MVb1r2tFtdDtTGJ7g==}
@@ -7998,6 +8018,7 @@ packages:
       source-map: 0.6.1
       terser: 5.12.1
       webpack: 5.72.0
+    dev: true
 
   /terser/5.12.1:
     resolution: {integrity: sha512-NXbs+7nisos5E+yXwAD+y7zrcTkMqb0dEJxIGtSKPdCBzopf7ni4odPul2aechpV7EXNvOudYOX2bb5tln1jbQ==}
@@ -8548,6 +8569,7 @@ packages:
       - '@swc/core'
       - esbuild
       - uglify-js
+    dev: true
 
   /webpack/5.72.0_@swc+core@1.2.168:
     resolution: {integrity: sha512-qmSmbspI0Qo5ld49htys8GY9XhS9CGqFoHTsOVAnjBdg0Zn79y135R+k4IR4rKK6+eKaabMhJwiVB7xw0SJu5w==}
@@ -8626,7 +8648,6 @@ packages:
       - '@swc/core'
       - esbuild
       - uglify-js
-    dev: true
 
   /websocket-driver/0.7.4:
     resolution: {integrity: sha512-b17KeDIQVjvb0ssuSDF2cYXSg2iztliJ4B9WdsuB6J952qCPKmnVq4DyW5motImXHDC1cBT/1UezrJVsKw5zjg==}

@@ -12,7 +12,7 @@ import escapeLocalIdent from '../utils/escapeLocalIdent.js';
 import cssModulesPlugin from '../esbuild/cssModules.js';
 import aliasPlugin from '../esbuild/alias.js';
 import createAssetsPlugin from '../esbuild/assets.js';
-import { ASSETS_MANIFEST, CACHE_DIR, SERVER_ENTRY } from '../constant.js';
+import { ASSETS_MANIFEST, CACHE_DIR, EXCLUDE_PRE_BUNDLE_DEPS, SERVER_ENTRY } from '../constant.js';
 import emptyCSSPlugin from '../esbuild/emptyCSS.js';
 import createDepRedirectPlugin from '../esbuild/depRedirect.js';
 import { scanImports } from './analyze.js';
@@ -55,11 +55,10 @@ export function createServerCompiler(options: Options) {
     const deps = await scanImports([serverEntry], {
       alias: (task.config?.alias || {}) as Record<string, string | false>,
     });
-    console.log('depImport', deps);
-    delete deps['react'];
-    delete deps['react-dom'];
-    delete deps['@ice/runtime'];
-    delete deps['@ice/runtime/server'];
+    // don't pre bundle the deps because they can run in node env
+    for (const dep of EXCLUDE_PRE_BUNDLE_DEPS) {
+      delete deps[dep];
+    }
     const cacheDir = path.join(rootDir, CACHE_DIR);
     const { metadata } = await preBundleDeps(deps, rootDir, cacheDir);
 

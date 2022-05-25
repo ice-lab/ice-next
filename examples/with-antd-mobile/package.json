@@ -1,5 +1,6 @@
 {
-  "name": "basic-project",
+  "name": "with-antd-mobile",
+  "private": true,
   "version": "1.0.0",
   "scripts": {
     "start": "ice start",
@@ -10,16 +11,14 @@
   "license": "MIT",
   "dependencies": {
     "@ice/app": "workspace:*",
-    "@ice/plugin-auth": "workspace:*",
     "@ice/runtime": "workspace:*",
-    "ahooks": "^3.3.8"
+    "antd-mobile": "^5.12.4",
+    "constate": "^3.3.2"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.2",
     "browserslist": "^4.19.3",
-    "regenerator-runtime": "^0.13.9",
-    "speed-measure-webpack-plugin": "^1.5.0",
-    "webpack": "^5.72.0"
+    "regenerator-runtime": "^0.13.9"
   }
 }
