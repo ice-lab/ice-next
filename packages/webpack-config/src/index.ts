@@ -49,7 +49,7 @@ function getEntry(rootDir: string) {
   const dataLoaderFile = path.join(rootDir, '.ice/data-loader.ts');
   return {
     main: [entryFile],
-    loader: [dataLoaderFile],
+    // loader: [dataLoaderFile],
   };
 }
 

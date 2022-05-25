@@ -18,10 +18,10 @@
     "@midwayjs/core": "^3.1.0",
     "@midwayjs/decorator": "^3.1.0",
     "@midwayjs/faas": "^3.1.0",
-    "@midwayjs/hooks": "dev-pack",
-    "@midwayjs/hooks-bundler": "dev-pack",
-    "@midwayjs/rpc": "dev-pack",
-    "@midwayjs/esrun": "^0.0.0-dev-pack-20220517060504"
+    "@midwayjs/hooks": "0.0.0-dev-pack-20220525075005",
+    "@midwayjs/hooks-bundler": "0.0.0-dev-pack-20220525075005",
+    "@midwayjs/rpc": "0.0.0-dev-pack-20220525075005",
+    "@midwayjs/esrun": "0.0.0-dev-pack-20220525075005"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",

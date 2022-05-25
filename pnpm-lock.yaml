@@ -79,11 +79,11 @@ importers:
       '@ice/runtime': ^1.0.0
       '@midwayjs/core': ^3.1.0
       '@midwayjs/decorator': ^3.1.0
-      '@midwayjs/esrun': ^0.0.0-dev-pack-20220517060504
+      '@midwayjs/esrun': 0.0.0-dev-pack-20220525075005
       '@midwayjs/faas': ^3.1.0
-      '@midwayjs/hooks': dev-pack
-      '@midwayjs/hooks-bundler': dev-pack
-      '@midwayjs/rpc': dev-pack
+      '@midwayjs/hooks': 0.0.0-dev-pack-20220525075005
+      '@midwayjs/hooks-bundler': 0.0.0-dev-pack-20220525075005
+      '@midwayjs/rpc': 0.0.0-dev-pack-20220525075005
       '@midwayjs/serverless-app': ^3.1.0
       '@midwayjs/serverless-fc-starter': ^3.1.0
       '@midwayjs/serverless-fc-trigger': ^3.1.0
@@ -100,11 +100,11 @@ importers:
       '@ice/runtime': link:../../packages/runtime
       '@midwayjs/core': 3.3.5_@midwayjs+decorator@3.3.4
       '@midwayjs/decorator': 3.3.4
-      '@midwayjs/esrun': 0.0.0-dev-pack-20220520025017_typescript@4.6.4
+      '@midwayjs/esrun': 0.0.0-dev-pack-20220525075005_typescript@4.6.4
       '@midwayjs/faas': 3.3.5_@midwayjs+decorator@3.3.4
-      '@midwayjs/hooks': 0.0.0-dev-pack-20220520025017
-      '@midwayjs/hooks-bundler': 0.0.0-dev-pack-20220520025017_typescript@4.6.4
-      '@midwayjs/rpc': 0.0.0-dev-pack-20220520025017
+      '@midwayjs/hooks': 0.0.0-dev-pack-20220525075005
+      '@midwayjs/hooks-bundler': 0.0.0-dev-pack-20220525075005_typescript@4.6.4
+      '@midwayjs/rpc': 0.0.0-dev-pack-20220525075005
       ahooks: 3.3.10_react@18.1.0
       react: 18.1.0
       react-dom: 18.1.0_react@18.1.0
@@ -409,7 +409,7 @@ importers:
       fs-extra: ^10.0.0
     dependencies:
       '@ice/runtime': link:../runtime
-      '@midwayjs/dev-pack': 0.0.0-dev-pack-20220520025017_typescript@4.6.4
+      '@midwayjs/dev-pack': 0.0.0-dev-pack-20220525075005_typescript@4.6.4
       fs-extra: 10.1.0
     devDependencies:
       '@ice/types': link:../types
@@ -1314,11 +1314,11 @@ packages:
     engines: {node: '>=12'}
     dev: true
 
-  /@midwayjs/bundler/0.0.0-dev-pack-20220520025017_typescript@4.6.4:
-    resolution: {integrity: sha512-/pMPI9CdfXqQEseZgK4iGzB/wneMZ0OW64sW0bcVoAfFE3A8xyzI/SyuvGIcj2JIZVBQOQL0nXB7F4dTyUMmeg==, tarball: '@midwayjs/bundler/download/@midwayjs/bundler-0.0.0-dev-pack-20220520025017.tgz'}
+  /@midwayjs/bundler/0.0.0-dev-pack-20220525075005_typescript@4.6.4:
+    resolution: {integrity: sha512-geFVwn0H5wBWf/g8p95j4nIUa2/qHiN1xTN16NYpDemi7QRa3MB1PGjF0LRqrJBAS4lu0H/MRSZxH2I4tcjDRA==, tarball: '@midwayjs/bundler/download/@midwayjs/bundler-0.0.0-dev-pack-20220525075005.tgz'}
     dependencies:
-      '@midwayjs/esrun': 0.0.0-dev-pack-20220520025017_typescript@4.6.4
-      '@midwayjs/hooks-core': 0.0.0-dev-pack-20220520025017
+      '@midwayjs/esrun': 0.0.0-dev-pack-20220525075005_typescript@4.6.4
+      '@midwayjs/hooks-core': 0.0.0-dev-pack-20220525075005
       unplugin: 0.6.3
     transitivePeerDependencies:
       - esbuild
@@ -1404,14 +1404,15 @@ packages:
       reflect-metadata: 0.1.13
     dev: false
 
-  /@midwayjs/dev-pack/0.0.0-dev-pack-20220520025017_typescript@4.6.4:
-    resolution: {integrity: sha512-jaBHqP/CfALAIbT1zzR4avLhO0298trTlis895tFWFQawU+dvPn+zBWXCDCszRAF6f2Po7aHEfHAZ+GUDDTbJA==, tarball: '@midwayjs/dev-pack/download/@midwayjs/dev-pack-0.0.0-dev-pack-20220520025017.tgz'}
+  /@midwayjs/dev-pack/0.0.0-dev-pack-20220525075005_typescript@4.6.4:
+    resolution: {integrity: sha512-RtOpryU9eQDEtpZZOnNdA8Oc/Gr7FxKTewmoBkDJkSP3IpADLVMQPN14V+5rgw7QAVRWV+D0fY+m2pHzLEZUpQ==, tarball: '@midwayjs/dev-pack/download/@midwayjs/dev-pack-0.0.0-dev-pack-20220525075005.tgz'}
     dependencies:
-      '@midwayjs/esrun': 0.0.0-dev-pack-20220520025017_typescript@4.6.4
-      '@midwayjs/hooks': 0.0.0-dev-pack-20220520025017
-      '@midwayjs/hooks-core': 0.0.0-dev-pack-20220520025017
+      '@midwayjs/esrun': 0.0.0-dev-pack-20220525075005_typescript@4.6.4
+      '@midwayjs/hooks': 0.0.0-dev-pack-20220525075005
+      '@midwayjs/hooks-core': 0.0.0-dev-pack-20220525075005
       '@midwayjs/mock': 3.3.5
       chokidar: 3.5.3
+      consola: 2.15.3
       detect-port: 1.3.0
       http-proxy-middleware: 2.0.6
       p-event: 4.2.0
@@ -1424,8 +1425,8 @@ packages:
       - zod
     dev: false
 
-  /@midwayjs/esrun/0.0.0-dev-pack-20220520025017_typescript@4.6.4:
-    resolution: {integrity: sha512-3KTgsGRXpSjzOgTNShMPNrj/promD1yrOxY/VEl8hHYWPHwMnEH8RarrGojh2wev5L/XfQMwYOGqOkOjRUZ+0Q==, tarball: '@midwayjs/esrun/download/@midwayjs/esrun-0.0.0-dev-pack-20220520025017.tgz'}
+  /@midwayjs/esrun/0.0.0-dev-pack-20220525075005_typescript@4.6.4:
+    resolution: {integrity: sha512-Ft4Zz/vmZGqlFzSOT3gTrB2rsNN/FG//hRhNmLNy1Yh0RPJAbAof/fhI1OiqmxLYrFk6azLgIY9waw3832kuqw==, tarball: '@midwayjs/esrun/download/@midwayjs/esrun-0.0.0-dev-pack-20220525075005.tgz'}
     dependencies:
       '@swc-node/register': 1.5.1_typescript@4.6.4
       tsconfig-paths: 4.0.0
@@ -1466,13 +1467,13 @@ packages:
     dependencies:
       picomatch: 2.3.1
 
-  /@midwayjs/hooks-bundler/0.0.0-dev-pack-20220520025017_typescript@4.6.4:
-    resolution: {integrity: sha512-c7mU4V49AGBWCHmBloeH8GnLHKjFttVpo/HvLmmFMR5envB7/9N8P1SY4fPSOHpYFPo46pfQYjQJt3+XGayMdQ==, tarball: '@midwayjs/hooks-bundler/download/@midwayjs/hooks-bundler-0.0.0-dev-pack-20220520025017.tgz'}
+  /@midwayjs/hooks-bundler/0.0.0-dev-pack-20220525075005_typescript@4.6.4:
+    resolution: {integrity: sha512-jsT3pma1YJH+WwrAyyWzJlR3hkBeZRwf9XiIcbwMAyKKtMbVPQJczPmC1JMFQG5/miyslR88CcRcwYOgtYulMg==, tarball: '@midwayjs/hooks-bundler/download/@midwayjs/hooks-bundler-0.0.0-dev-pack-20220525075005.tgz'}
     dependencies:
-      '@midwayjs/bundler': 0.0.0-dev-pack-20220520025017_typescript@4.6.4
-      '@midwayjs/dev-pack': 0.0.0-dev-pack-20220520025017_typescript@4.6.4
-      '@midwayjs/hooks': 0.0.0-dev-pack-20220520025017
-      '@midwayjs/hooks-core': 0.0.0-dev-pack-20220520025017
+      '@midwayjs/bundler': 0.0.0-dev-pack-20220525075005_typescript@4.6.4
+      '@midwayjs/dev-pack': 0.0.0-dev-pack-20220525075005_typescript@4.6.4
+      '@midwayjs/hooks': 0.0.0-dev-pack-20220525075005
+      '@midwayjs/hooks-core': 0.0.0-dev-pack-20220525075005
       '@midwayjs/serverless-dev-pack': 1.3.4
       lodash: 4.17.21
       upath: 2.0.1
@@ -1492,8 +1493,8 @@ packages:
       - zod
     dev: false
 
-  /@midwayjs/hooks-core/0.0.0-dev-pack-20220520025017:
-    resolution: {integrity: sha512-9JVZA5AYPJqt3MtDm7l0kRbdZbSIBwNepuzHkeJJ/1VG4Cmyt8Ey87talexKbIHm1u1LzbykqrM66aIBLSXdYg==, tarball: '@midwayjs/hooks-core/download/@midwayjs/hooks-core-0.0.0-dev-pack-20220520025017.tgz'}
+  /@midwayjs/hooks-core/0.0.0-dev-pack-20220525075005:
+    resolution: {integrity: sha512-3d1MIo8S8XioVkDOrSKIV8XpTucY0IGG5Pd/PAxEL0QAcFl4S3r5JWNGKOmqwheqq9BsceCtjRZpQu2D/bNcGg==, tarball: '@midwayjs/hooks-core/download/@midwayjs/hooks-core-0.0.0-dev-pack-20220525075005.tgz'}
     dependencies:
       '@midwayjs/asynchronous-local-storage': 1.0.2
       debug: 4.3.4
@@ -1503,21 +1504,21 @@ packages:
       lodash: 4.17.21
       proper-url-join: 2.1.1
       reflect-metadata: 0.1.13
-      type-fest: 2.12.2
+      type-fest: 2.13.0
       upath: 2.0.1
     transitivePeerDependencies:
       - supports-color
     dev: false
 
-  /@midwayjs/hooks/0.0.0-dev-pack-20220520025017:
-    resolution: {integrity: sha512-1UZWgPBQq197es+wf/ljpwS8MfqfWceYJLaX+Ku3Pz0E84KfpN3EmG4NieuN1kcdLozhqGh0gXuD/L5+8+vwOA==, tarball: '@midwayjs/hooks/download/@midwayjs/hooks-0.0.0-dev-pack-20220520025017.tgz'}
+  /@midwayjs/hooks/0.0.0-dev-pack-20220525075005:
+    resolution: {integrity: sha512-cSv4mzKDWSBfuXtZ/Oc/IrBASKi0C6zWYUDdwgpixsNhK0Yzo97QD9eeiNt5sMs+IIEj21+iEnuLbFolnhEpdg==, tarball: '@midwayjs/hooks/download/@midwayjs/hooks-0.0.0-dev-pack-20220525075005.tgz'}
     peerDependencies:
       zod: '>=3.0.0'
     dependencies:
       '@midwayjs/core': 3.3.5_@midwayjs+decorator@3.3.4
       '@midwayjs/decorator': 3.3.4
       '@midwayjs/glob': 1.0.6
-      '@midwayjs/hooks-core': 0.0.0-dev-pack-20220520025017
+      '@midwayjs/hooks-core': 0.0.0-dev-pack-20220525075005
       find-up: 5.0.0
       lodash: 4.17.21
       tslib: 2.4.0
@@ -1547,8 +1548,8 @@ packages:
       - supports-color
     dev: false
 
-  /@midwayjs/rpc/0.0.0-dev-pack-20220520025017:
-    resolution: {integrity: sha512-BqADIfYjh/v6lzg6rs3s0Manfc9y4VAl5Ghz7AYNcNkUBHOSUCheW59l1Hg/hPH85dMFBhbBmKO2JMcBkQZrwg==, tarball: '@midwayjs/rpc/download/@midwayjs/rpc-0.0.0-dev-pack-20220520025017.tgz'}
+  /@midwayjs/rpc/0.0.0-dev-pack-20220525075005:
+    resolution: {integrity: sha512-lHIXBswiUuxPTo31VFLRT+Vmd2RBeqhw8YsBeZ7WV+z7LjOBUCDb0ZdyWoObQ2w1e69KsCY6cbX6TRJu1HmX2A==, tarball: '@midwayjs/rpc/download/@midwayjs/rpc-0.0.0-dev-pack-20220525075005.tgz'}
     dependencies:
       isomorphic-unfetch: 3.1.0
       koa-compose: 4.1.0
@@ -9274,8 +9275,8 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /type-fest/2.12.2:
-    resolution: {integrity: sha512-qt6ylCGpLjZ7AaODxbpyBZSs9fCI9SkL3Z9q2oxMBQhs/uyY+VD8jHA8ULCGmWQJlBgqvO3EJeAngOHD8zQCrQ==, tarball: type-fest/download/type-fest-2.12.2.tgz}
+  /type-fest/2.13.0:
+    resolution: {integrity: sha512-lPfAm42MxE4/456+QyIaaVBAwgpJb6xZ8PRu09utnhPdWwcyj9vgy6Sq0Z5yNbJ21EdxB5dRU/Qg8bsyAMtlcw==, tarball: type-fest/download/type-fest-2.13.0.tgz}
     engines: {node: '>=12.20'}
     dev: false
 
