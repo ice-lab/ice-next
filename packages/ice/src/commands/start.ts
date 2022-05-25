@@ -36,7 +36,6 @@ const start = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
         outputDir,
         serverCompiler,
         documentOnly: !ssr && !ssg,
-        webpackConfigs,
       });
       const insertIndex = middlewares.findIndex(({ name }) => name === 'serve-index');
       middlewares.splice(insertIndex, 0, serverMiddleware);

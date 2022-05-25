@@ -11,7 +11,6 @@ import formatWebpackMessages from '../utils/formatWebpackMessages.js';
 import { SERVER_ENTRY, SERVER_OUTPUT, SERVER_OUTPUT_DIR } from '../constant.js';
 import generateHTML from '../utils/generateHTML.js';
 import emptyDir from '../utils/emptyDir.js';
-import { scanImports } from '../service/analyze.js';
 
 const build = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[], serverCompiler: ServerCompiler) => {
   const { applyHook, commandArgs, command, rootDir, userConfig } = context;
@@ -55,12 +54,8 @@ const build = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
         compiler?.close?.(() => {});
         const isSuccessful = !messages.errors.length;
         const { outputDir } = taskConfigs.find(({ name }) => name === 'web').config;
-        const serverEntry = path.join(rootDir, SERVER_ENTRY);
-        const deps = await scanImports([serverEntry], {
-          alias: (webpackConfigs[0].resolve?.alias || {}) as Record<string, string | false>,
-        });
-        console.log('depImport', deps);
         // compile server bundle
+        const serverEntry = path.join(rootDir, SERVER_ENTRY);
         const outfile = path.join(outputDir, SERVER_OUTPUT);
         await serverCompiler({
           entryPoints: { index: serverEntry },
