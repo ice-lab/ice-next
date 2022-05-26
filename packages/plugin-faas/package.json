@@ -15,10 +15,11 @@
   "dependencies": {
     "@ice/runtime": "^1.0.0",
     "fs-extra": "^10.0.0",
-    "@midwayjs/dev-pack": "dev-pack"
+    "@midwayjs/dev-pack": "0.0.0-dev-pack-20220525075005"
   },
   "devDependencies": {
     "@ice/types": "^1.0.0",
-    "express": "^4.18.1"
+    "webpack-dev-server": "^4.9.0",
+    "webpack": "^5.72.1"
   }
 }

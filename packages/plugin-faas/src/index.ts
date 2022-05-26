@@ -17,18 +17,15 @@ const plugin: Plugin = async ({ onGetConfig, context }) => {
   });
 
   onGetConfig(async (config) => {
-    const { middlewares: originSetupMiddlewares } = config;
-    config.middlewares = (webpackMiddlewares, devServer) => {
-      const middlewares = originSetupMiddlewares(webpackMiddlewares, devServer);
+    config.middlewares = (middlewares) => {
       const routes = fse.readJSONSync(routeManifestPath, 'utf8') as RouteItem[];
-
       const faasMiddlewares = [
         {
-          name: 'faas-api-middleware',
+          name: 'faas-api',
           middleware,
         },
         {
-          name: 'faas-render-middleware',
+          name: 'faas-render',
           middleware: createFaaSRenderMiddleware(
             (req) => {
               const matches = matchRoutes(routes, req.path);
@@ -38,7 +35,7 @@ const plugin: Plugin = async ({ onGetConfig, context }) => {
           ),
         },
       ];
-      const serverRenderMiddlewareIndex = middlewares.findIndex(middleware => middleware.name === 'ice-server-render');
+      const serverRenderMiddlewareIndex = middlewares.findIndex(middleware => middleware.name === 'server-render');
       if (serverRenderMiddlewareIndex > -1) {
         // use faas render instead of default server render
         middlewares.splice(serverRenderMiddlewareIndex, 1, ...faasMiddlewares);
@@ -70,4 +67,7 @@ function createFaaSRenderMiddleware(
   };
 }
 
-export default plugin;
+export default () => ({
+  name: '@ice/plugin-faas',
+  plugin,
+});

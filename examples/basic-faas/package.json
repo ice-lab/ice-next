@@ -9,9 +9,9 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@ice/app": "file:../../packages/ice",
-    "@ice/plugin-faas": "^1.0.0",
-    "@ice/runtime": "^1.0.0",
+    "@ice/app": "workspace:*",
+    "@ice/plugin-faas": "workspace:*",
+    "@ice/runtime": "workspace:*",
     "ahooks": "^3.3.9",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
