@@ -48,6 +48,7 @@ export function Links() {
   const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
   const styles = entryAssets.concat(pageAssets).filter(path => path.indexOf('.css') > -1);
+  const scripts = entryAssets.concat(pageAssets).filter(path => path.indexOf('.js') > -1);
 
   return (
     <>
@@ -57,7 +58,12 @@ export function Links() {
           return <link key={link.href} {...props} data-route-link />;
         })
       }
-      {styles.map(style => <link key={style} rel="stylesheet" type="text/css" href={style} />)}
+      {
+        styles.map(style => <link key={style} rel="stylesheet" type="text/css" href={style} />)
+      }
+      {
+        scripts.map(script => <link rel="preload" key={`preload_${script}`} href={script} as="script" />)
+      }
     </>
   );
 }
