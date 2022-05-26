@@ -7,7 +7,6 @@
     { "path": "packages/types" },
     { "path": "packages/webpack-config" },
     { "path": "packages/ice" },
-    { "path": "packages/plugin-auth" },
-    { "path": "packages/plugin-faas" }
+    { "path": "packages/plugin-auth" }
   ]
 }
