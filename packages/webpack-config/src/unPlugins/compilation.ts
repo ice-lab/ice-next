@@ -1,6 +1,5 @@
 import { createRequire } from 'module';
 import type { ReactConfig } from '@builder/swc';
-import consola from 'consola';
 import { transform, type Config as SwcConfig } from '@builder/swc';
 import type { UnpluginOptions } from 'unplugin';
 import lodash from '@ice/bundles/compiled/lodash/index.js';
