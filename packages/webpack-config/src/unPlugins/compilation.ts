@@ -50,10 +50,13 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
               !Object.prototype.hasOwnProperty.call(programmaticOptions.jsc.transform.react, 'development')) {
         programmaticOptions.jsc.transform.react.development = mode === 'development';
       }
-      const output = await transform(source, programmaticOptions);
-      const { code, map } = output;
-
-      return { code, map };
+      try {
+        const output = await transform(source, programmaticOptions);
+        const { code, map } = output;
+        return { code, map };
+      } catch (e) {
+        // catch error for Unhandled promise rejection
+      }
     },
   };
 };
@@ -64,7 +67,6 @@ function getSwcTransformOptions({
 }: {
   suffix: JSXSuffix;
   dev: boolean;
-  isServer?: boolean;
 }) {
   const reactTransformConfig: ReactConfig = {
     refresh: dev,
