@@ -1,5 +1,6 @@
 import { createRequire } from 'module';
 import type { ReactConfig } from '@builder/swc';
+import consola from 'consola';
 import { transform, type Config as SwcConfig } from '@builder/swc';
 import type { UnpluginOptions } from 'unplugin';
 import lodash from '@ice/bundles/compiled/lodash/index.js';
@@ -50,10 +51,13 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
               !Object.prototype.hasOwnProperty.call(programmaticOptions.jsc.transform.react, 'development')) {
         programmaticOptions.jsc.transform.react.development = mode === 'development';
       }
-      const output = await transform(source, programmaticOptions);
-      const { code, map } = output;
-
-      return { code, map };
+      try {
+        const output = await transform(source, programmaticOptions);
+        const { code, map } = output;
+        return { code, map };
+      } catch (e) {
+        // catch error for Unhandled promise rejection
+      }
     },
   };
 };
