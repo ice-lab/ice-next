@@ -10,6 +10,7 @@ import {
   OutletSingle,
   useParamsSingle,
   useSearchParamsSingle,
+  useLocationSingle,
 } from './utils/history-single.js';
 import Runtime from './runtime.js';
 import App from './App.js';
@@ -53,17 +54,19 @@ export {
   Links,
   Scripts,
   Main,
+  dataLoader,
   // react-router-dom API
   Link,
   Outlet,
   useParams,
   useSearchParams,
   useLocation,
-  dataLoader,
+  // Single Route API
   LinkSingle,
   OutletSingle,
   useParamsSingle,
   useSearchParamsSingle,
+  useLocationSingle,
 };
 
 export type {
