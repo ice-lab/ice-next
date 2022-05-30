@@ -66,6 +66,8 @@ nrm use taobao
 
 - [Visual Studio Code](https://code.visualstudio.com/)（推荐）
 - [WebStorm](https://www.jetbrains.com/webstorm/)
+- [Sublime Text](https://www.sublimetext.com/)
+- [Atom](https://atom.io/)
 
 ## 创建应用
 
