@@ -8,7 +8,9 @@ import {
   useParamsSingle,
   useSearchParamsSingle,
 } from '@ice/runtime';
-
+<% if (globalStyle) {%>
+  import '<%= globalStyle %>'
+<% } %>
 let Link, Outlet, useParams, useSearchParams;
 if (process.env.ICE_CORE_ROUTER === 'true') {
   Link = OriginLink;

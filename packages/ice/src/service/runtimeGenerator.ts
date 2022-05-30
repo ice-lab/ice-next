@@ -188,7 +188,7 @@ export default class Generator {
       ...this.renderData,
       ...exportsData,
       staticConfig: staticConfig.length && staticConfig[0],
-      globalStyle: globalStyles.length && formatPath(path.relative(path.join(this.targetDir, 'core'), globalStyles[0])),
+      globalStyle: globalStyles.length && formatPath(path.relative(path.join(this.targetDir), globalStyles[0])),
     };
   };
 
