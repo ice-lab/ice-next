@@ -15,12 +15,11 @@ import type { Configuration, WebpackPluginInstance } from 'webpack';
 import type webpack from 'webpack';
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
 import type { Config } from '@ice/types';
-import { createUnplugin } from 'unplugin';
 import browserslist from 'browserslist';
 import configAssets from './config/assets.js';
 import configCss from './config/css.js';
 import AssetsManifestPlugin from './webpackPlugins/AssetsManifestPlugin.js';
-import getTransformPlugins from './unPlugins/index.js';
+import getCompilerPlugins from './getCompilerPlugins.js';
 import getSplitChunksConfig from './config/splitChunks.js';
 
 const require = createRequire(import.meta.url);
@@ -33,7 +32,7 @@ interface GetWebpackConfigOptions {
   config: Config;
   webpack: typeof webpack;
 }
-type WebpackConfig = Configuration & { devServer?: DevServerConfiguration };
+export type WebpackConfig = Configuration & { devServer?: DevServerConfiguration };
 type GetWebpackConfig = (options: GetWebpackConfigOptions) => WebpackConfig;
 
 function getEntry(rootDir: string) {
@@ -46,10 +45,12 @@ function getEntry(rootDir: string) {
     // use generated file in template directory
     entryFile = path.join(rootDir, '.ice/entry.client.ts');
   }
-  const dataLoaderFile = path.join(rootDir, '.ice/data-loader.ts');
+
+  // const dataLoaderFile = path.join(rootDir, '.ice/data-loader.ts');
   return {
     main: [entryFile],
-    loader: [dataLoaderFile],
+    // FIXME: https://github.com/ice-lab/ice-next/issues/217, https://github.com/ice-lab/ice-next/issues/199
+    // loader: [dataLoaderFile],
   };
 }
 
@@ -103,8 +104,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
         ? webpack.DefinePlugin.runtimeValue(() => JSON.stringify(process.env[key]), true)
         : JSON.stringify(process.env[key]);
   });
-  // create plugins
-  const webpackPlugins = getTransformPlugins(config).map((plugin) => createUnplugin(() => plugin).webpack());
+  // get compile plugins
+  const webpackPlugins = getCompilerPlugins(config, 'webpack');
 
   const terserOptions: any = merge({
     compress: {
@@ -213,6 +214,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       ...webpackPlugins,
       dev && new ReactRefreshWebpackPlugin({
         exclude: [/node_modules/, /bundles\/compiled/],
+        // use webpack-dev-server overlay instead
+        overlay: false,
       }),
       new webpack.DefinePlugin({
         ...defineVars,
@@ -268,7 +271,18 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       https,
     },
   };
+  // tnpm / cnpm 安装时，webpack 5 的持久缓存无法生成，长时间将导致 OOM
+  // 原因：[managedPaths](https://webpack.js.org/configuration/other-options/#managedpaths) 在 tnpm / cnpm 安装的情况下失效，导致持久缓存在处理 node_modules
+  // 通过指定 [immutablePaths](https://webpack.js.org/configuration/other-options/#immutablepaths) 进行兼容
+  // 依赖路径中同时包含包名和版本号即可满足 immutablePaths 的使用
 
+  // 通过安装后的 package.json 中是否包含 __npminstall_done 字段来判断是否为 tnpm / cnpm 安装模式
+  if (require('../package.json').__npminstall_done) {
+    const nodeModulesPath = path.join(rootDir, 'node_modules');
+    webpackConfig.snapshot = {
+      immutablePaths: [nodeModulesPath],
+    };
+  }
   if (dev) {
     if (!webpackConfig.optimization) {
       webpackConfig.optimization = {};
@@ -329,5 +343,5 @@ function getSupportedBrowsers(
 
 export {
   getWebpackConfig,
-  getTransformPlugins,
+  getCompilerPlugins,
 };

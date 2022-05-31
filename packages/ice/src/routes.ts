@@ -21,7 +21,16 @@ export async function generateRoutesInfo(rootDir: string, routesConfig: UserConf
   await Promise.all(analyzeTasks);
   const routes = formatNestedRouteManifest(routeManifest);
   const str = generateNestRoutesStr(routes);
+  let routesCount = 0;
+  Object.keys(routeManifest).forEach((key) => {
+    const routeItem = routeManifest[key];
+    if (!routeItem.layout) {
+      routesCount += 1;
+    }
+  });
+
   return {
+    routesCount,
     routeManifest,
     routesStr: `[${str}]`,
     routes,

@@ -2,7 +2,7 @@ import { createRequire } from 'module';
 import { certificateFor } from 'trusted-cert';
 import fse from 'fs-extra';
 import consola from 'consola';
-import type { UserConfig, Config, Plugin } from '@ice/types';
+import type { UserConfig, Config } from '@ice/types';
 import type { UserConfigContext } from 'build-scripts';
 
 const require = createRequire(import.meta.url);
@@ -43,14 +43,14 @@ const userConfig = [
   {
     name: 'devPublicPath',
     validation: 'string',
-    setConfig: (config: Config, publicPath: UserConfig['publicPath'], context: UserConfigContext<Config>) => {
+    setConfig: (config: Config, publicPath: UserConfig['publicPath'], context: UserConfigContext) => {
       return mergeDefaultValue(config, 'publicPath', context.command === 'start' && publicPath);
     },
   },
   {
     name: 'publicPath',
     validation: 'string',
-    setConfig: (config: Config, publicPath: UserConfig['publicPath'], context: UserConfigContext<Config>) => {
+    setConfig: (config: Config, publicPath: UserConfig['publicPath'], context: UserConfigContext) => {
       return mergeDefaultValue(config, 'publicPath', context.command === 'build' && publicPath);
     },
   },
@@ -160,13 +160,9 @@ const userConfig = [
   {
     name: 'compileDependencies',
     validation: 'array|boolean',
-    setConfig: (config: Config, customValue: UserConfig['compileDependencies'], context: UserConfigContext<Config>) => {
-      const { command } = context;
+    defaultValue: process.env.NODE_ENV === 'development' ? false : [/node_modules\/*/],
+    setConfig: (config: Config, customValue: UserConfig['compileDependencies']) => {
       let compileRegex: RegExp | false;
-      if (customValue === undefined) {
-        // compile all node_modules dependencies when build
-        compileRegex = command === 'start' ? false : /node_modules\/*/;
-      }
       if (customValue === true) {
         compileRegex = /node_modules\/*/;
       } else if (customValue && customValue.length > 0) {
@@ -215,7 +211,7 @@ const userConfig = [
   {
     name: 'eslint',
     validation: 'boolean|object',
-    setConfig: (config: Config, eslint: UserConfig['eslint'], context: UserConfigContext<Config>) => {
+    setConfig: (config: Config, eslint: UserConfig['eslint'], context: UserConfigContext) => {
       const { command } = context;
       if (eslint) {
         let dependencyError = false;
@@ -266,7 +262,7 @@ const userConfig = [
   },
 ];
 
-const cliOptions = [
+const cliOption = [
   {
     name: 'open',
     commands: ['start'],
@@ -323,9 +319,8 @@ const cliOptions = [
   },
 ];
 
-const configPlugin: Plugin = ({ registerUserConfig, registerCliOption }) => {
-  registerUserConfig(userConfig);
-  registerCliOption(cliOptions);
-};
 
-export default configPlugin;
+export {
+  userConfig,
+  cliOption,
+};
