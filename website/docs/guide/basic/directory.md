@@ -19,7 +19,7 @@ ICE 的默认应用目录提供了良好的代码分层结构。约定的目录�
 |  |  ├── index.tsx
 |  |  └── layout.tsx // 全局 layout
 │ ├── global.scss    // 全局样式
-│ ├── document.tsx   // 全局样式
+│ ├── document.tsx   // 使用 JSX 描述 HTML 模板
 │ └── app.tsx        // 应用入口
 ├── .env
 ├── ice.config.ts    // 工程配置
