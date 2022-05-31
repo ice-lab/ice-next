@@ -119,4 +119,4 @@ export default {
 };
 ```
 
-完整的语法情参考 [Mock.js 文档](http://mockjs.com/examples.html)。
+完整的语法请参考 [Mock.js 文档](http://mockjs.com/examples.html)。
