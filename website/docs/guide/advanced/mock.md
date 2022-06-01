@@ -24,8 +24,7 @@ ICE 提供了开箱即用的 Mock 方案，支持 CRUD 等操作，在启动本�
 
 在 mock 服务文件中写入以下代码：
 
-```ts
-// mock/user.ts
+```ts title="./mock/user.ts"
 export default {
   'GET /api/users': [
     { name: 'foo', id: 0 },
