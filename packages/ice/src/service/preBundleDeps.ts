@@ -9,7 +9,7 @@ import type { Config } from '@ice/types';
 import bundlePlugin from '../esbuild/bundle.js';
 import flattenId from '../utils/flattenId.js';
 import formatPath from '../utils/formatPath.js';
-import { EXCLUDE_PRE_BUNDLE_DEPS } from '../constant.js';
+import { BUILDIN_CJS_DEPS, BUILDIN_ESM_DEPS } from '../constant.js';
 
 interface PackageData {
   data: {
@@ -93,9 +93,10 @@ export default async function preBundleDeps(options: PreBundleDepsOptions): Prom
     logLevel: 'error',
     sourcemap: true,
     outdir: depsCacheDir,
+    format: 'cjs',
     platform: 'node',
     ignoreAnnotations: true,
-    external: EXCLUDE_PRE_BUNDLE_DEPS,
+    external: [...BUILDIN_CJS_DEPS, ...BUILDIN_ESM_DEPS],
     plugins: [
       bundlePlugin(metadata),
     ],

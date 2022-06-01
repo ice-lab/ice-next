@@ -102,8 +102,11 @@ const userConfig = [
   },
   {
     name: 'ssr',
-    validation: 'boolean',
-    defaultValue: true,
+    validation: 'boolean|object',
+    defaultValue: {
+      format: 'esm',
+      bundle: false,
+    },
   },
   {
     name: 'webpack',

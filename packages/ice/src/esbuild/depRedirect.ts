@@ -29,58 +29,52 @@ const createDepRedirectPlugin = (metadata: DepsMetaData): Plugin => {
         }
       });
       build.onLoad({ filter: /\.(js|jsx|ts|tsx)$/ }, async ({ path: id }) => {
-        try {
-          await init;
-          let source = await fse.readFile(id, 'utf-8');
-          const extname = path.extname(id).slice(1) as TransformOptions['loader'];
-          let imports: readonly ImportSpecifier[] = [];
-          const transformed = await transformWithESBuild(
-            source,
-            id,
-          );
-          source = transformed.code;
-          imports = parse(transformed.code)[0];
-          const str = new MagicString(source);
-          for (let index = 0; index < imports.length; index++) {
-            const {
-              // depId start and end
-              s: start,
-              e: end,
-              ss: expStart,
-              se: expEnd,
-              n: specifier,
-            } = imports[index];
-            if (!(specifier in deps)) {
-              continue;
-            }
-
-            const importExp = source.slice(expStart, expEnd);
-            const filePath = deps[specifier].file;
-            redirectDepIds.push(filePath);
-            const rewritten = transformCjsImport(
-              importExp,
-              filePath,
-              specifier,
-              index,
-            );
-            if (rewritten) {
-              str.overwrite(expStart, expEnd, rewritten, {
-                contentOnly: true,
-              });
-            } else {
-              // export * from '...'
-              str.overwrite(start, end, filePath, { contentOnly: true });
-            }
+        await init;
+        let source = await fse.readFile(id, 'utf-8');
+        let imports: readonly ImportSpecifier[] = [];
+        const transformed = await transformWithESBuild(
+          source,
+          id,
+        );
+        source = transformed.code;
+        imports = parse(transformed.code)[0];
+        const str = new MagicString(source);
+        for (let index = 0; index < imports.length; index++) {
+          const {
+            // depId start and end
+            s: start,
+            e: end,
+            ss: expStart,
+            se: expEnd,
+            n: specifier,
+          } = imports[index];
+          if (!(specifier in deps)) {
+            continue;
           }
 
-          const contents = str.toString();
-          return {
-            contents,
-            loader: extname,
-          };
-        } catch (e) {
-          console.log(e);
+          const importExp = source.slice(expStart, expEnd);
+          const filePath = deps[specifier].file;
+          redirectDepIds.push(filePath);
+          const rewritten = transformCjsImport(
+            importExp,
+            filePath,
+            specifier,
+            index,
+          );
+          if (rewritten) {
+            str.overwrite(expStart, expEnd, rewritten, {
+              contentOnly: true,
+            });
+          } else {
+            // export * from '...'
+            str.overwrite(start, end, filePath, { contentOnly: true });
+          }
         }
+
+        const contents = str.toString();
+        return {
+          contents,
+        };
       });
     },
   };
@@ -194,7 +188,7 @@ function transformCjsImport(
     return lines.join('; ');
   }
 }
-
+// avoid the import name is not valid in import statement
 const reservedWords = 'break case class catch const continue debugger default delete do else export extends finally for function if import in instanceof let new return super switch this throw try typeof var void while with yield enum await implements package protected static interface private public';
 const builtins = 'arguments Infinity NaN undefined null true false eval uneval isFinite isNaN parseFloat parseInt decodeURI decodeURIComponent encodeURI encodeURIComponent escape unescape Object Function Boolean Symbol Error EvalError InternalError RangeError ReferenceError SyntaxError TypeError URIError Number Math Date String RegExp Array Int8Array Uint8Array Uint8ClampedArray Int16Array Uint16Array Int32Array Uint32Array Float32Array Float64Array Map Set WeakMap WeakSet SIMD ArrayBuffer DataView JSON Promise Generator GeneratorFunction Reflect Proxy Intl';
 const forbiddenIdentifiers = new Set(`${reservedWords} ${builtins}`.split(' '));

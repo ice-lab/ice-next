@@ -2,13 +2,15 @@ import * as path from 'path';
 import type { ServerContext } from '@ice/runtime';
 import type { ServerCompiler } from '@ice/types/esm/plugin.js';
 import type { ExpressRequestHandler } from 'webpack-dev-server';
-import { SERVER_ENTRY, SERVER_OUTPUT, SERVER_OUTPUT_DIR } from '../constant.js';
+import type { Config } from '@ice/types';
+import type { Context } from 'build-scripts';
+import { SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
 
 interface Options {
   rootDir: string;
   outputDir: string;
   serverCompiler: ServerCompiler;
-  documentOnly: boolean;
+  userConfig: Context<Config>['userConfig'];
 }
 
 export default function createSSRMiddleware(options: Options) {
@@ -16,15 +18,24 @@ export default function createSSRMiddleware(options: Options) {
     rootDir,
     outputDir,
     serverCompiler,
-    documentOnly,
+    userConfig,
   } = options;
+  const { ssr, ssg } = userConfig;
+  const documentOnly = !ssr && !ssg;
+
   const ssrCompiler = async () => {
     const entryPoint = path.join(rootDir, SERVER_ENTRY);
-    const serverEntry = path.join(outputDir, SERVER_OUTPUT);
+    const format = typeof ssr === 'object' ? ssr.format : 'esm';
+    const esm = format === 'esm';
+    const outJSExtension = esm ? '.mjs' : '.cjs';
+    const serverEntry = path.join(outputDir, SERVER_OUTPUT_DIR, `index${outJSExtension}`);
     await serverCompiler({
       entryPoints: { index: entryPoint },
       outdir: path.join(outputDir, SERVER_OUTPUT_DIR),
-      splitting: true,
+      splitting: esm,
+      format,
+      platform: esm ? 'browser' : 'node',
+      outExtension: { '.js': outJSExtension },
     });
     // timestamp for disable import cache
     return `${serverEntry}?version=${new Date().getTime()}`;
