@@ -131,7 +131,7 @@ export default function () {
 - [css-modules 官方文档](https://github.com/css-modules/css-modules)
 - [CSS Modules 详解及 React 中实践](https://zhuanlan.zhihu.com/p/20495964)
 
-## Tailwindcss
+## 原子化 CSS
 
 > WIP
 
