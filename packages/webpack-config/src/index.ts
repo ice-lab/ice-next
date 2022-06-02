@@ -76,6 +76,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     analyzer,
     tsCheckerOptions,
     eslintOptions,
+    entry,
   } = config;
 
   const dev = mode !== 'production';
@@ -127,6 +128,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     },
   }, minimizerOptions);
 
+  console.log('entry', entry);
+
   const webpackConfig: WebpackConfig = {
     mode,
     experiments: {
@@ -135,7 +138,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       topLevelAwait: true,
       ...(experimental || {}),
     },
-    entry: () => getEntry(rootDir),
+    entry: entry || (() => getEntry(rootDir)),
     externals,
     output: {
       publicPath,
@@ -221,7 +224,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
         ...defineVars,
         ...runtimeDefineVars,
       }),
-      new AssetsManifestPlugin({
+      !entry && new AssetsManifestPlugin({
         fileName: 'assets-manifest.json',
         outputDir: path.join(rootDir, '.ice'),
       }),

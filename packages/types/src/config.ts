@@ -81,4 +81,8 @@ export interface Config {
   tsCheckerOptions?: ForkTsCheckerWebpackPluginOptions;
 
   eslintOptions?: Options;
+
+  swcOptions?: any;
+
+  entry?: any;
 }

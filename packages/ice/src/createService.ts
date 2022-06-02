@@ -19,6 +19,7 @@ import { initProcessEnv, updateRuntimeEnv, getCoreEnvKeys } from './utils/runtim
 import getRuntimeModules from './utils/getRuntimeModules.js';
 import { generateRoutesInfo } from './routes.js';
 import getWebTask from './tasks/web/index.js';
+import getDataLoaderTask from './tasks/web/data-loader.js';
 import * as config from './config.js';
 import type { AppConfig } from './utils/runtimeEnv.js';
 
@@ -92,6 +93,10 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
 
   // register web
   ctx.registerTask('web', getWebTask({ rootDir, command }));
+
+  // register data-loader
+  ctx.registerTask('data-loader', getDataLoaderTask({ rootDir, command }));
+
   // register config
   ['userConfig', 'cliOption'].forEach((configType) => ctx.registerConfig(configType, config[configType]));
   const routesInfo = await generateRoutesInfo(rootDir, routesConfig);

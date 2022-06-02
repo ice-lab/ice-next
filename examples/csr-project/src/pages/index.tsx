@@ -2,12 +2,14 @@ import { Suspense, lazy } from 'react';
 import { Link, useAppData, useData, useConfig } from 'ice';
 // not recommended but works
 import { useAppContext } from '@ice/runtime';
+import { Button } from 'antd-mobile';
 import styles from './index.module.css';
 import type { AppData } from '@/types';
 
 const Bar = lazy(() => import('../components/bar'));
 
 export default function Home(props) {
+  debugger;
   console.log('render Home', props);
 
   const appData = useAppData<AppData>();
@@ -50,10 +52,12 @@ export function getConfig() {
 }
 
 export function getData() {
+  debugger;
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
-        name: 'Home',
+        name: 'Home2111',
+        button: Button,
       });
     }, 1 * 100);
   });

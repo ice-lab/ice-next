@@ -2,6 +2,7 @@ import type { Config } from '@ice/types';
 import type { BuildOptions } from 'esbuild';
 import { createUnplugin } from 'unplugin';
 import compilationPlugin from './unPlugins/compilation.js';
+import treeShaking from './unPlugins/treeShaking.js';
 import type { WebpackConfig } from './index.js';
 
 type Compiler = 'webpack' | 'esbuild';
@@ -33,6 +34,17 @@ function getCompilerPlugins(config: Config, compiler: Compiler) {
     ...transformPlugins,
     ...transforms.map((transform, index) => ({ name: `transform_${index}`, transform })),
   );
+
+  const { swcOptions } = config;
+  if (swcOptions && swcOptions.treeShaking) {
+    console.log('apply swc tree shaking');
+    console.log(config.entry);
+
+    compilerPlugins.push(
+      treeShaking({ treeShaking: swcOptions.treeShaking, compileIncludes, compileExcludes: [] }),
+    );
+  }
+
   return compiler === 'webpack'
     ? compilerPlugins.map(plugin => createUnplugin(() => plugin).webpack())
     : compilerPlugins.map(plugin => createUnplugin(() => plugin).esbuild());
