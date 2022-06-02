@@ -1,16 +1,17 @@
 import path from 'path';
-import type { Plugin, PluginBuild } from 'esbuild';
+import type { Plugin, PluginBuild, BuildOptions } from 'esbuild';
 import fg from 'fast-glob';
 import { resolveId } from '../service/analyze.js';
-import isExcludePreBundleDep from '../utils/isExcludePreBundleDep.js';
+import isExternalBuiltinDep from '../utils/isExternalBuiltinDep.js';
 
 interface PluginOptions {
   alias: Record<string, string | false>;
   ssrBundle: boolean;
+  format: BuildOptions['format'];
 }
 
 const aliasPlugin = (options: PluginOptions): Plugin => {
-  const { alias, ssrBundle } = options;
+  const { alias, ssrBundle, format } = options;
   return {
     name: 'esbuild-alias',
     setup(build: PluginBuild) {
@@ -38,7 +39,7 @@ const aliasPlugin = (options: PluginOptions): Plugin => {
       build.onResolve({ filter: /.*/ }, (args) => {
         const id = args.path;
         // external ids which is third-party dependencies
-        if (id[0] !== '.' && !path.isAbsolute(id) && !ssrBundle && isExcludePreBundleDep(id)) {
+        if (id[0] !== '.' && !path.isAbsolute(id) && !ssrBundle && isExternalBuiltinDep(id, format)) {
           return {
             external: true,
           };

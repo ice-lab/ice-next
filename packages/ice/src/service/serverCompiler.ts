@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url';
 import { createHash } from 'crypto';
 import * as fs from 'fs';
 import consola from 'consola';
-import esbuild, { type BuildOptions } from 'esbuild';
+import esbuild from 'esbuild';
 import type { Config } from '@ice/types';
 import type { ServerCompiler } from '@ice/types/esm/plugin.js';
 import type { TaskConfig } from 'build-scripts';
@@ -15,7 +15,7 @@ import createAssetsPlugin from '../esbuild/assets.js';
 import { ASSETS_MANIFEST, CACHE_DIR, SERVER_ENTRY } from '../constant.js';
 import emptyCSSPlugin from '../esbuild/emptyCSS.js';
 import createDepRedirectPlugin from '../esbuild/depRedirect.js';
-import isExcludePreBundleDep from '../utils/isExcludePreBundleDep.js';
+import isExternalBuiltinDep from '../utils/isExternalBuiltinDep.js';
 import { scanImports } from './analyze.js';
 import preBundleDeps from './preBundleDeps.js';
 
@@ -27,8 +27,6 @@ interface Options {
   command: string;
   ssrBundle: boolean;
 }
-
-type CompilerOptions = Pick<BuildOptions, 'entryPoints' | 'outfile' | 'plugins' | 'bundle' | 'format'>;
 
 export function createServerCompiler(options: Options) {
   const { task, rootDir, command, ssrBundle } = options;
@@ -54,7 +52,7 @@ export function createServerCompiler(options: Options) {
     }
   });
 
-  const serverCompiler: ServerCompiler = async (buildOptions: CompilerOptions) => {
+  const serverCompiler: ServerCompiler = async (buildOptions: Parameters<ServerCompiler>[0]) => {
     const serverEntry = path.join(rootDir, SERVER_ENTRY);
     let metadata;
     if (buildOptions?.format !== 'cjs') {
@@ -65,7 +63,7 @@ export function createServerCompiler(options: Options) {
       function filterPreBundleDeps(deps: Record<string, string>) {
         const preBundleDepsInfo = {};
         for (const dep in deps) {
-          if (!isExcludePreBundleDep(dep, ssrBundle)) {
+          if (!isExternalBuiltinDep(dep, buildOptions?.format)) {
             preBundleDepsInfo[dep] = deps[dep];
           }
         }
@@ -106,6 +104,7 @@ export function createServerCompiler(options: Options) {
         aliasPlugin({
           alias,
           ssrBundle,
+          format: buildOptions?.format || 'esm',
         }),
         cssModulesPlugin({
           extract: false,
