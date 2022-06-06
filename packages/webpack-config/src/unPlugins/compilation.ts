@@ -14,13 +14,14 @@ interface Options {
   compileIncludes?: (string | RegExp)[];
   sourceMap?: Config['sourceMap'];
   compileExcludes?: RegExp[];
+  swcOptions?: any;
 }
 
 const require = createRequire(import.meta.url);
 const regeneratorRuntimePath = require.resolve('regenerator-runtime');
 
 const compilationPlugin = (options: Options): UnpluginOptions => {
-  const { sourceMap, mode, compileIncludes = [], compileExcludes } = options;
+  const { sourceMap, mode, compileIncludes = [], compileExcludes, swcOptions = {} } = options;
   const dev = mode !== 'production';
   const compileRegex = compileIncludes.map((includeRule) => {
     return includeRule instanceof RegExp ? includeRule : new RegExp(includeRule);
@@ -39,17 +40,34 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
       }
 
       const suffix = (['jsx', 'tsx'] as JSXSuffix[]).find(suffix => new RegExp(`\\.${suffix}?$`).test(id));
-      const programmaticOptions = {
+
+      const programmaticOptions: any = {
         filename: id,
-        sourceMaps: !!sourceMap,
-        ...getSwcTransformOptions({ suffix, dev }),
       };
-      // auto detect development mode
-      if (mode && programmaticOptions.jsc && programmaticOptions.jsc.transform &&
-              programmaticOptions.jsc.transform.react &&
-              !Object.prototype.hasOwnProperty.call(programmaticOptions.jsc.transform.react, 'development')) {
-        programmaticOptions.jsc.transform.react.development = mode === 'development';
+
+      const { commonTransform = true, treeShaking } = swcOptions;
+
+      if (commonTransform) {
+        const commonOptions = getSwcTransformOptions({ suffix, dev });
+
+        // auto detect development mode
+        if (mode && commonOptions.jsc && commonOptions.jsc.transform &&
+          commonOptions.jsc.transform.react &&
+            !Object.prototype.hasOwnProperty.call(commonOptions.jsc.transform.react, 'development')) {
+          commonOptions.jsc.transform.react.development = mode === 'development';
+        }
+
+        Object.assign(programmaticOptions, { sourceMaps: !!sourceMap }, commonOptions);
       }
+
+      if (treeShaking) {
+        if (/pages/.test(id)) {
+          Object.assign(programmaticOptions, { removeExportExprs: treeShaking });
+        } else if (!commonTransform) {
+          return;
+        }
+      }
+
       try {
         const output = await transform(source, programmaticOptions);
         const { code, map } = output;

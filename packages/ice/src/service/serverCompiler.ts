@@ -26,7 +26,15 @@ type CompilerOptions = Pick<BuildOptions, 'entryPoints' | 'outfile' | 'plugins' 
 
 export function createServerCompiler(options: Options) {
   const { task, rootDir } = options;
-  const transformPlugins = getCompilerPlugins(task.config, 'esbuild');
+  const { config } = task;
+
+  const transformPlugins = getCompilerPlugins({ ...config,
+    swcOptions: {
+      treeShaking: ['default', 'getData'],
+      commonTransform: false,
+    },
+  }, 'esbuild');
+
   const alias = (task.config?.alias || {}) as Record<string, string | false>;
   const assetsManifest = path.join(rootDir, ASSETS_MANIFEST);
   const defineVars = task.config?.define || {};
