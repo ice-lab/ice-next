@@ -6,10 +6,6 @@ import { getRouteExports } from './service/analyze.js';
 
 export async function generateRoutesInfo(rootDir: string, routesConfig: UserConfig['routes'] = {}) {
   const routeManifest = generateRouteManifest(rootDir, routesConfig.ignoreFiles, routesConfig.defineRoutes);
-  if (!routeManifest['$']) {
-    const defaultNotFoundRoute = createDefaultNotFoundRoute(rootDir, routeManifest);
-    routeManifest['$'] = defaultNotFoundRoute;
-  }
 
   const analyzeTasks = Object.keys(routeManifest).map(async (key) => {
     const routeItem = routeManifest[key];
@@ -24,6 +20,13 @@ export async function generateRoutesInfo(rootDir: string, routesConfig: UserConf
     });
   });
   await Promise.all(analyzeTasks);
+
+  if (!routeManifest['$']) {
+    // create default 404 page
+    const defaultNotFoundRoute = createDefaultNotFoundRoute(rootDir, routeManifest);
+    routeManifest['$'] = defaultNotFoundRoute;
+  }
+
   const routes = formatNestedRouteManifest(routeManifest);
   const str = generateNestRoutesStr(routes);
   let routesCount = 0;
