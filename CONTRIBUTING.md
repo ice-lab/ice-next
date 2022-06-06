@@ -4,7 +4,7 @@
 
 1. 保证 Node.js 版本是 Node.js 14 以上。推荐安装 Node.js 16+ 版本，会大大提升本地调试速度；
 2. ICE 仓库是 `monorepo`，并使用 `pnpm workspace`。因此需要安装 [pnpm](https://pnpm.io/) 包管理工具
-3. 在项目根目录下执行 `npm run setup` 后会安装依赖和编译代码
+3. 在项目根目录下执行 `pnpm run setup` 后会安装依赖和编译代码
 
 ## 目录说明
 
@@ -38,7 +38,7 @@ ice-next
 此命令用于监听 `packages` 目录下代码变更，并增量编译代码。
 
 ```bash
-pnpm run watch
+pnpm watch
 ```
 
 ### 跑 example
@@ -68,11 +68,11 @@ ICE 使用 [vitest](https://vitest.dev/) 进行单元测试和集成测试。执
 
 ```bash
 # 执行一次测试并生成代码覆盖率
-$ pnpm run test
+$ pnpm test
 # 启用 Test Watch 模式
-$ pnpm run test:watch
+$ pnpm test:watch
 # 只跑部分测试用例
-$ pnpm run test basic-project.test.ts
+$ pnpm test basic-project.test.ts
 ```
 
 ## 文档
@@ -92,7 +92,7 @@ $ yarn start
 
 ```bash
 # 发布 alpha 版本
-$ pnpm run publish:alpha
+$ pnpm publish:alpha
 # 发布 beta 版本
-$ pnpm run publish:beta
+$ pnpm publish:beta
 ```
