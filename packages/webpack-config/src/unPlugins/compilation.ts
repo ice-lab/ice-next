@@ -14,7 +14,11 @@ interface Options {
   compileIncludes?: (string | RegExp)[];
   sourceMap?: Config['sourceMap'];
   compileExcludes?: RegExp[];
-  swcOptions?: any;
+  swcOptions?: Config['swcOptions'];
+}
+
+interface TransformOptions extends SwcConfig {
+  filename: string;
 }
 
 const require = createRequire(import.meta.url);
@@ -41,7 +45,7 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
 
       const suffix = (['jsx', 'tsx'] as JSXSuffix[]).find(suffix => new RegExp(`\\.${suffix}?$`).test(id));
 
-      const programmaticOptions: any = {
+      const programmaticOptions: TransformOptions = {
         filename: id,
       };
 

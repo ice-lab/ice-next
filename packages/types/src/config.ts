@@ -24,6 +24,11 @@ interface ConfigurationCtx extends Config {
   webpack: typeof webpack;
 }
 
+interface SwcOptions {
+  commonTransform?: boolean;
+  removeExportExprs?: string[];
+}
+
 type Experimental = Pick<Configuration, 'experiments'>;
 
 export type ModifyWebpackConfig = (config: Configuration, ctx: ConfigurationCtx) => Configuration;
@@ -82,7 +87,7 @@ export interface Config {
 
   eslintOptions?: Options;
 
-  swcOptions?: any;
+  swcOptions?: SwcOptions;
 
   entry?: any;
 }
