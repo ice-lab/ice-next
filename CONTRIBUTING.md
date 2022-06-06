@@ -2,7 +2,7 @@
 
 ## 环境准备
 
-1. 保证 Node.js 版本是 Node.js 14 以上。推荐安装 Node.js 16+ 版本，会大大提升本地调试速度；
+1. 保证 Node.js 版本是 Node.js 14 以上。推荐安装 Node.js 16+ 版本，会大大提升本地调试速度
 2. ICE 仓库是 `monorepo`，并使用 `pnpm workspace`。因此需要安装 [pnpm](https://pnpm.io/) 包管理工具
 3. 在项目根目录下执行 `pnpm run setup` 后会安装依赖和编译代码
 
