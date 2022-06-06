@@ -70,7 +70,6 @@ export interface AppContext {
   matchedIds?: string[];
 }
 
-// export type Renderer = typeof hydrateRoot;
 export type Renderer = (
   container: Element | Document,
   initialChildren: React.ReactNode,
