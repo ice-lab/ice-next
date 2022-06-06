@@ -15,7 +15,7 @@ const getWebTask = ({ rootDir, command }): Config => {
       'data-loader': path.join(rootDir, '.ice/data-loader'),
     },
     swcOptions: {
-      treeShaking: ['default', 'getConfig'],
+      removeExportExprs: ['default', 'getConfig'],
     },
   };
 };

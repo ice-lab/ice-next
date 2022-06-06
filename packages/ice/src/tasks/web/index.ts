@@ -15,7 +15,7 @@ const getWebTask = ({ rootDir, command }): Config => {
       'webpack/hot': '@ice/bundles/compiled/webpack/hot',
     },
     swcOptions: {
-      treeShaking: ['getData'],
+      removeExportExprs: ['getData'],
     },
   };
 };

@@ -24,7 +24,7 @@ function getCompilerPlugins(config: Config, compiler: Compiler) {
     new RegExp(SKIP_COMPILE.map((dep) => `node_modules/?.+${dep}/`).join('|')),
     /bundles\/compiled/,
   ];
-    // compilationPlugin only works for webpack, esbuild has it's own compilation
+
   compilerPlugins.push(compilationPlugin({ sourceMap, mode, compileIncludes, compileExcludes, swcOptions }));
 
   compilerPlugins.push(

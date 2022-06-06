@@ -30,7 +30,7 @@ export function createServerCompiler(options: Options) {
 
   const transformPlugins = getCompilerPlugins({ ...config,
     swcOptions: {
-      treeShaking: ['default', 'getData'],
+      removeExportExprs: ['default', 'getData'],
       commonTransform: false,
     },
   }, 'esbuild');

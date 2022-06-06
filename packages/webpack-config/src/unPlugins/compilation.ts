@@ -45,8 +45,11 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
         filename: id,
       };
 
-      const { commonTransform = true, treeShaking } = swcOptions;
+      const { commonTransform = true, removeExportExprs } = swcOptions;
 
+      let needTransform = false;
+
+      // common transform only works for webpack, esbuild has it's own compilation
       if (commonTransform) {
         const commonOptions = getSwcTransformOptions({ suffix, dev });
 
@@ -58,14 +61,17 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
         }
 
         Object.assign(programmaticOptions, { sourceMaps: !!sourceMap }, commonOptions);
+        needTransform = true;
       }
 
-      if (treeShaking) {
-        if (/pages/.test(id)) {
-          Object.assign(programmaticOptions, { removeExportExprs: treeShaking });
-        } else if (!commonTransform) {
-          return;
-        }
+      if (removeExportExprs && /pages/.test(id)) {
+        Object.assign(programmaticOptions, { removeExportExprs });
+        needTransform = true;
+      }
+
+      // Files other than page entries do not need to be transform in esbuild.
+      if (!needTransform) {
+        return false;
       }
 
       try {
