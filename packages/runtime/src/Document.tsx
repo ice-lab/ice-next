@@ -138,12 +138,17 @@ export function getPageAssets(matches: RouteMatch[], assetsManifest: AssetsManif
 
 export function getEntryAssets(assetsManifest: AssetsManifest): string[] {
   const { entries, publicPath } = assetsManifest;
-  let result = [
-    'js/data-loader.js',
-  ];
+  const result = [];
 
   Object.values(entries).forEach(assets => {
-    result = result.concat(assets);
+    // @ts-expect-error
+    assets.forEach((filePath) => {
+      result.push(filePath);
+
+      if (filePath.indexOf('runtime') > -1) {
+        result.push('js/data-loader.js');
+      }
+    });
   });
 
   return result.map(filePath => `${publicPath}${filePath}`);

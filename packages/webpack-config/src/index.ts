@@ -128,8 +128,6 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     },
   }, minimizerOptions);
 
-  console.log('entry', entry);
-
   const webpackConfig: WebpackConfig = {
     mode,
     experiments: {
