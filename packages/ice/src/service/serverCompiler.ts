@@ -17,7 +17,7 @@ import emptyCSSPlugin from '../esbuild/emptyCSS.js';
 import createDepRedirectPlugin from '../esbuild/depRedirect.js';
 import isExternalBuiltinDep from '../utils/isExternalBuiltinDep.js';
 import { scanImports } from './analyze.js';
-import preBundleDeps from './preBundleDeps.js';
+import preBundleCJSDeps from './preBundleCJSDeps.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -55,7 +55,7 @@ export function createServerCompiler(options: Options) {
   const serverCompiler: ServerCompiler = async (buildOptions: Parameters<ServerCompiler>[0]) => {
     const serverEntry = path.join(rootDir, SERVER_ENTRY);
     let metadata;
-    if (buildOptions?.format !== 'cjs') {
+    if (buildOptions?.format === 'esm') {
       const deps = await scanImports([serverEntry], {
         alias: (task.config?.alias || {}) as Record<string, string | false>,
       });
@@ -69,10 +69,11 @@ export function createServerCompiler(options: Options) {
         }
         return preBundleDepsInfo;
       }
-      // don't pre bundle the deps because they can run in node env
+      // don't pre bundle the deps because they can run in node env.
+      // For examples: react, react-dom, @ice/runtime
       const preBundleDepsInfo = filterPreBundleDeps(deps);
       const cacheDir = path.join(rootDir, CACHE_DIR);
-      const ret = await preBundleDeps({
+      const ret = await preBundleCJSDeps({
         depsInfo: preBundleDepsInfo,
         rootDir,
         cacheDir,
@@ -103,7 +104,7 @@ export function createServerCompiler(options: Options) {
       inject: [path.resolve(__dirname, '../polyfills/react.js')],
       plugins: [
         emptyCSSPlugin(),
-        dev && buildOptions?.format !== 'cjs' && createDepRedirectPlugin(metadata),
+        dev && buildOptions?.format === 'esm' && createDepRedirectPlugin(metadata),
         aliasPlugin({
           alias,
           ssrBundle,

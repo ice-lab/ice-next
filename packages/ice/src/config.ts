@@ -103,7 +103,6 @@ const userConfig = [
   {
     name: 'ssr',
     validation: 'boolean|object',
-    // TODO: default Value should be true
     defaultValue: {
       format: 'esm',
       bundle: false,

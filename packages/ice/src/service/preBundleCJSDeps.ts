@@ -6,7 +6,6 @@ import { resolve as resolveExports } from 'resolve.exports';
 import resolve from 'resolve';
 import moduleLexer from '@ice/bundles/compiled/es-module-lexer/index.js';
 import type { Config } from '@ice/types';
-import bundlePlugin from '../esbuild/bundle.js';
 import flattenId from '../utils/flattenId.js';
 import formatPath from '../utils/formatPath.js';
 import { BUILDIN_CJS_DEPS, BUILDIN_ESM_DEPS } from '../constant.js';
@@ -46,7 +45,7 @@ interface PreBundleDepsOptions {
   taskConfig: Config;
 }
 
-export default async function preBundleDeps(options: PreBundleDepsOptions): Promise<PreBundleDepsResult> {
+export default async function preBundleCJSDeps(options: PreBundleDepsOptions): Promise<PreBundleDepsResult> {
   const { depsInfo, rootDir, cacheDir, taskConfig } = options;
   const metadata = createDepsMetadata(depsInfo, taskConfig);
 
@@ -98,9 +97,6 @@ export default async function preBundleDeps(options: PreBundleDepsOptions): Prom
     loader: { '.js': 'jsx' },
     ignoreAnnotations: true,
     external: [...BUILDIN_CJS_DEPS, ...BUILDIN_ESM_DEPS],
-    plugins: [
-      bundlePlugin(metadata),
-    ],
   });
 
   await fse.writeJSON(metadataJSONPath, metadata, { spaces: 2 });

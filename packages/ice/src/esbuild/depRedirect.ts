@@ -7,7 +7,7 @@ import MagicString from 'magic-string';
 import esModuleLexer from '@ice/bundles/compiled/es-module-lexer/index.js';
 import type { ImportSpecifier } from '@ice/bundles/compiled/es-module-lexer/index.js';
 import type { Node } from 'estree';
-import type { DepsMetaData } from '../service/preBundleDeps.js';
+import type { DepsMetaData } from '../service/preBundleCJSDeps.js';
 
 const { init, parse } = esModuleLexer;
 
