@@ -6,6 +6,8 @@ import moduleLexer from '@ice/bundles/compiled/es-module-lexer/index.js';
 import { transform, build } from 'esbuild';
 import type { Loader } from 'esbuild';
 import consola from 'consola';
+import { getRouteCache, setRouteCache } from '../utils/persistentCache.js';
+import { getFileHash } from '../utils/hash.js';
 
 import scanPlugin from '../esbuild/scan.js';
 
@@ -114,7 +116,7 @@ export async function analyzeImports(files: string[], options: Options) {
             const regexpForIce = /import\s?(?:type)?\s?\{([\w*\s{},]*)\}\s+from\s+['"]ice['"]/;
             const matched = importStr.match(regexpForIce);
             if (matched) {
-              const [,specifierStr] = matched;
+              const [, specifierStr] = matched;
               specifierStr.trim().split(',').forEach((importStr) => {
                 if (!importSet.has(importStr)) importSet.add(importStr);
               });
@@ -189,4 +191,49 @@ function orderedDependencies(deps: Record<string, string>) {
   // Ensure the same browserHash for the same set of dependencies
   depsList.sort((a, b) => a[0].localeCompare(b[0]));
   return Object.fromEntries(depsList);
+}
+interface RouteOptions {
+  rootDir: string;
+  routeConfig: {
+    file: string;
+    routeId: string;
+  };
+}
+
+type CachedRouteExports = { hash: string; exports: string[] };
+
+export async function getRouteExports(options: RouteOptions): Promise<string[]> {
+  const { rootDir, routeConfig: { file, routeId } } = options;
+  const routePath = path.join(rootDir, file);
+  let cached: CachedRouteExports | null = null;
+  try {
+    cached = await getRouteCache(rootDir, routeId);
+  } catch (err) {
+    // ignore cache error
+  }
+  const fileHash = await getFileHash(routePath);
+  if (!cached || cached.hash !== fileHash) {
+    // get route export by esbuild
+    const result = await build({
+      entryPoints: [routePath],
+      platform: 'neutral',
+      format: 'esm',
+      metafile: true,
+      write: false,
+      logLevel: 'silent',
+    });
+    for (let key in result.metafile.outputs) {
+      let output = result.metafile.outputs[key];
+      if (output.entryPoint) {
+        cached = {
+          exports: output.exports,
+          hash: fileHash,
+        };
+        // write cached
+        setRouteCache(rootDir, routeId, cached);
+        break;
+      }
+    }
+  }
+  return cached.exports;
 }
