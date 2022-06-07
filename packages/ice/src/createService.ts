@@ -80,7 +80,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   });
   // get userConfig from ice.config.ts
   const userConfig = await ctx.resolveUserConfig();
-  const { routes: routesConfig } = userConfig;
+  const { routes: routesConfig, ssr } = userConfig;
 
   // get plugins include built-in plugins and custom plugins
   const plugins = await ctx.resolvePlugins();
@@ -116,6 +116,8 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const serverCompiler = createServerCompiler({
     rootDir,
     task: taskConfigs.find(({ name }) => name === 'web'),
+    command,
+    ssrBundle: typeof ssr === 'object' ? ssr.bundle : false,
   });
 
   let appConfig: AppConfig;

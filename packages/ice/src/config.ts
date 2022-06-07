@@ -102,8 +102,12 @@ const userConfig = [
   },
   {
     name: 'ssr',
-    validation: 'boolean',
-    defaultValue: true,
+    validation: 'boolean|object',
+    // TODO: default Value should be true
+    defaultValue: {
+      format: 'esm',
+      bundle: false,
+    },
   },
   {
     name: 'webpack',
@@ -282,8 +286,8 @@ const cliOption = [
     name: 'force',
     commands: ['start'],
     setConfig: (config: Config, force: boolean) => {
-      if (force && fse.existsSync(config.cacheDirectory)) {
-        fse.emptyDirSync(config.cacheDirectory);
+      if (force && fse.existsSync(config.cacheDir)) {
+        fse.emptyDirSync(config.cacheDir);
       }
       return config;
     },
