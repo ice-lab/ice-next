@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { createRequire } from 'module';
 import consola from 'consola';
 import type { ServerContext } from '@ice/runtime';
 import type { ServerCompiler } from '@ice/types/esm/plugin.js';
@@ -6,6 +7,8 @@ import type { ExpressRequestHandler } from 'webpack-dev-server';
 import type { Config } from '@ice/types';
 import type { Context } from 'build-scripts';
 import { SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
+
+const require = createRequire(import.meta.url);
 
 interface Options {
   rootDir: string;
@@ -39,21 +42,28 @@ export default function createSSRMiddleware(options: Options) {
       outExtension: { '.js': outJSExtension },
     });
     // timestamp for disable import cache
-    return `${serverEntry}?version=${new Date().getTime()}`;
+    return {
+      serverEntry,
+      serverEntryWithVersion: `${serverEntry}?version=${new Date().getTime()}`,
+    };
   };
-  let entry: string;
+  let serverEntry: string;
+  let serverEntryWithVersion: string;
   const middleware: ExpressRequestHandler = async (req, res) => {
     let serverModule;
     try {
-      entry = await ssrCompiler();
+      const ssrCompilerRet = await ssrCompiler();
+      serverEntry = ssrCompilerRet.serverEntry;
+      serverEntryWithVersion = ssrCompilerRet.serverEntryWithVersion;
     } catch (err) {
       consola.error(`fail to compile in ssr middleware: ${err}`);
     }
     try {
-      serverModule = await import(entry);
+      delete require.cache[serverEntry];
+      serverModule = await import(serverEntryWithVersion);
     } catch (err) {
       // make error clearly, notice typeof err === 'string'
-      consola.error(`import ${entry} error: ${err}`);
+      consola.error(`import ${serverEntry} error: ${err}`);
       return;
     }
     const requestContext: ServerContext = {

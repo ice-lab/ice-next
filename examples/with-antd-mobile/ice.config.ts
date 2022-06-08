@@ -2,7 +2,7 @@ import { defineConfig } from '@ice/app';
 
 export default defineConfig({
   ssr: {
-    bundle: false,
+    bundle: true,
     format: 'cjs',
   },
 });
