@@ -107,6 +107,12 @@ const userConfig = [
       format: 'esm',
       bundle: false,
     },
+    setConfig: (_config: Config, ssr: UserConfig['ssr']) => {
+      if (typeof ssr === 'object' && ssr.format === 'esm' && ssr.bundle) {
+        consola.error('Not support bundle in ESM mode. Please set `ssr.bundle` to false.');
+        process.exit(1);
+      }
+    },
   },
   {
     name: 'webpack',
