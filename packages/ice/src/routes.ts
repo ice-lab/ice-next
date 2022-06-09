@@ -73,10 +73,10 @@ function generateNestRoutesStr(nestRouteManifest: NestedRouteManifest[]) {
 function createDefaultNotFoundRoute(rootDir: string, routeManifest: RouteManifest): ConfigRoute {
   return {
     path: '*',
-    id: '_404',
+    id: 'ice/default/404',
     parentId: routeManifest['layout'] ? 'layout' : null,
-    file: path.join(rootDir, '.ice', '_404.tsx'),
-    componentName: '_404',
+    file: path.join(rootDir, '.ice', '404.tsx'),
+    componentName: 'ice-default-404',
     layout: false,
   };
 }
