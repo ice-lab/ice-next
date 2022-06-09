@@ -50,9 +50,7 @@ function generateNestRoutesStr(nestRouteManifest: NestedRouteManifest[]) {
   return nestRouteManifest.reduce((prev, route) => {
     const { children, path: routePath, index, componentName, file, id, layout, exports } = route;
 
-    const fileExtname = path.extname(file);
-    const componentFile = file.replace(new RegExp(`${fileExtname}$`), '');
-    const componentPath = path.isAbsolute(componentFile) ? componentFile : `@/pages/${componentFile}`;
+    const componentPath = path.isAbsolute(file) ? file : `@/pages/${file}`.replace(new RegExp(`${path.extname(file)}$`), '');
     let str = `{
       path: '${routePath || ''}',
       load: () => import(/* webpackChunkName: "${componentName}" */ '${componentPath}'),
