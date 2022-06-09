@@ -108,10 +108,10 @@ export default async function preBundleCJSDeps(options: PreBundleDepsOptions): P
 
 function resolvePackageEntry(depId: string, rootDir: string) {
   const { data: pkgJSONData, dir } = resolvePackageData(depId, rootDir);
-  // resolve exports field
-  let entryPoint = resolveExports(pkgJSONData, depId);
+  // resolve exports cjs field
+  let entryPoint = resolveExports(pkgJSONData, depId, { require: true });
   if (!entryPoint) {
-    entryPoint = pkgJSONData['module'] || pkgJSONData['main'];
+    entryPoint = pkgJSONData['main'];
   }
   const entryPointPath = path.join(dir, entryPoint);
   return entryPointPath;
@@ -121,6 +121,7 @@ function resolvePackageData(
   id: string,
   rootDir: string,
 ): PackageData {
+  // Find the actual package name. For examples: @ice/runtime/server -> @ice/runtime
   const idSplits = id.split('/');
   const pkgId = idSplits.slice(0, 2).join('/');
   const packageJSONPath = resolve.sync(`${pkgId}/package.json`, {

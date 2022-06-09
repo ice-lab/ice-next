@@ -6,7 +6,7 @@ export default function Home() {
   const { count, increment, decrement } = useCounterContext();
   return (
     <>
-      <h2 className={styles.title}>344</h2>
+      <h2 className={styles.title}>Counter</h2>
       <Button onClick={() => increment()}>+</Button>
       <span className={styles.count}>{count}</span>
       <Button onClick={() => decrement()}>-</Button>

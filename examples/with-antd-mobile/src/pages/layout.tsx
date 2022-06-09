@@ -1,10 +1,11 @@
 import { Outlet } from 'ice';
+import { StoreProvider } from '@/store';
 
 export default () => {
   return (
-    <div>
+    <StoreProvider>
       <h1>Layout</h1>
       <Outlet />
-    </div>
+    </StoreProvider>
   );
 };

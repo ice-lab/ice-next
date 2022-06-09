@@ -24,8 +24,12 @@ export interface UserConfig {
   sourceMap?: string | boolean;
   tsChecker?: boolean;
   eslint?: Config['eslintOptions'] | boolean;
-  ssr?: false | { format?: 'esm' | 'cjs'; bundle?: boolean };
+  ssr?: boolean;
   ssg?: boolean;
+  server?: {
+    format?: 'esm' | 'cjs';
+    bundle?: boolean;
+  };
   removeHistoryDeadCode?: boolean;
   mock?: { exclude?: string[] };
 }

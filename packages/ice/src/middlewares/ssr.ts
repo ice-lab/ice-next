@@ -24,12 +24,12 @@ export default function createSSRMiddleware(options: Options) {
     serverCompiler,
     userConfig,
   } = options;
-  const { ssr, ssg } = userConfig;
+  const { ssr, ssg, server } = userConfig;
   const documentOnly = !ssr && !ssg;
 
   const ssrCompiler = async () => {
     const entryPoint = path.join(rootDir, SERVER_ENTRY);
-    const format = typeof ssr === 'object' ? ssr.format : 'esm';
+    const format = server?.format;
     const esm = format === 'esm';
     const outJSExtension = esm ? '.mjs' : '.cjs';
     const serverEntry = path.join(outputDir, SERVER_OUTPUT_DIR, `index${outJSExtension}`);
@@ -41,25 +41,21 @@ export default function createSSRMiddleware(options: Options) {
       platform: esm ? 'browser' : 'node',
       outExtension: { '.js': outJSExtension },
     });
-    // timestamp for disable import cache
-    return {
-      serverEntry,
-      serverEntryWithVersion: `${serverEntry}?version=${new Date().getTime()}`,
-    };
+
+    return serverEntry;
   };
   let serverEntry: string;
-  let serverEntryWithVersion: string;
   const middleware: ExpressRequestHandler = async (req, res) => {
     let serverModule;
     try {
-      const ssrCompilerRet = await ssrCompiler();
-      serverEntry = ssrCompilerRet.serverEntry;
-      serverEntryWithVersion = ssrCompilerRet.serverEntryWithVersion;
+      serverEntry = await ssrCompiler();
     } catch (err) {
       consola.error(`fail to compile in ssr middleware: ${err}`);
     }
     try {
       delete require.cache[serverEntry];
+      // timestamp for disable import cache
+      const serverEntryWithVersion = `${serverEntry}?version=${new Date().getTime()}`;
       serverModule = await import(serverEntryWithVersion);
     } catch (err) {
       // make error clearly, notice typeof err === 'string'

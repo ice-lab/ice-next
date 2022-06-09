@@ -25,11 +25,11 @@ interface Options {
   rootDir: string;
   task: TaskConfig<Config>;
   command: string;
-  ssrBundle: boolean;
+  serverBundle: boolean;
 }
 
 export function createServerCompiler(options: Options) {
-  const { task, rootDir, command, ssrBundle } = options;
+  const { task, rootDir, command, serverBundle } = options;
   const transformPlugins = getCompilerPlugins(task.config, 'esbuild');
   const alias = (task.config?.alias || {}) as Record<string, string | false>;
   const assetsManifest = path.join(rootDir, ASSETS_MANIFEST);
@@ -107,7 +107,7 @@ export function createServerCompiler(options: Options) {
         dev && buildOptions?.format === 'esm' && createDepRedirectPlugin(metadata),
         aliasPlugin({
           alias,
-          ssrBundle,
+          serverBundle,
           format: buildOptions?.format || 'esm',
         }),
         cssModulesPlugin({

@@ -102,14 +102,19 @@ const userConfig = [
   },
   {
     name: 'ssr',
-    validation: 'boolean|object',
+    validation: 'boolean',
+    defaultValue: true,
+  },
+  {
+    name: 'server',
+    validation: 'object',
     defaultValue: {
       format: 'esm',
       bundle: false,
     },
-    setConfig: (_config: Config, ssr: UserConfig['ssr']) => {
-      if (typeof ssr === 'object' && ssr.format === 'esm' && ssr.bundle) {
-        consola.error('Not support bundle in ESM mode. Please set `ssr.bundle` to false.');
+    setConfig: (_config: Config, server: UserConfig['server']) => {
+      if (server.format === 'esm' && server.bundle) {
+        consola.error('Do not support bundle in ESM mode. Please set `server.bundle` to false.');
         process.exit(1);
       }
     },

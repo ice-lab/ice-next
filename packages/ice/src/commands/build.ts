@@ -54,18 +54,17 @@ const build = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
         compiler?.close?.(() => {});
         const isSuccessful = !messages.errors.length;
         const { outputDir } = taskConfigs.find(({ name }) => name === 'web').config;
-        const { ssg, ssr } = userConfig;
+        const { ssg, ssr, server } = userConfig;
         // compile server bundle
         const entryPoint = path.join(rootDir, SERVER_ENTRY);
-        const format = typeof ssr === 'object' ? ssr.format : 'esm';
-        const esm = format === 'esm';
+        const esm = server?.format === 'esm';
         const outJSExtension = esm ? '.mjs' : '.cjs';
         const serverEntry = path.join(outputDir, SERVER_OUTPUT_DIR, `index${outJSExtension}`);
         await serverCompiler({
           entryPoints: { index: entryPoint },
           outdir: path.join(outputDir, SERVER_OUTPUT_DIR),
           splitting: esm,
-          format,
+          format: server?.format,
           platform: esm ? 'browser' : 'node',
           outExtension: { '.js': outJSExtension },
         });

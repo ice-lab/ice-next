@@ -6,12 +6,12 @@ import isExternalBuiltinDep from '../utils/isExternalBuiltinDep.js';
 
 interface PluginOptions {
   alias: Record<string, string | false>;
-  ssrBundle: boolean;
+  serverBundle: boolean;
   format: BuildOptions['format'];
 }
 
 const aliasPlugin = (options: PluginOptions): Plugin => {
-  const { alias, ssrBundle, format } = options;
+  const { alias, serverBundle, format } = options;
   return {
     name: 'esbuild-alias',
     setup(build: PluginBuild) {
@@ -39,7 +39,7 @@ const aliasPlugin = (options: PluginOptions): Plugin => {
       build.onResolve({ filter: /.*/ }, (args) => {
         const id = args.path;
         // external ids which is third-party dependencies
-        if (id[0] !== '.' && !path.isAbsolute(id) && !ssrBundle && isExternalBuiltinDep(id, format)) {
+        if (id[0] !== '.' && !path.isAbsolute(id) && !serverBundle && isExternalBuiltinDep(id, format)) {
           return {
             external: true,
           };
