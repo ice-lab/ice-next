@@ -106,6 +106,7 @@ function getSwcTransformOptions({
         exportDefaultFrom: true,
         exportNamespaceFrom: true,
         decorators: true,
+        topLevelAwait: true,
       },
     },
   }, commonOptions);

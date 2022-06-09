@@ -262,11 +262,13 @@ importers:
       '@ice/webpack-config': ^1.0.0
       '@types/cross-spawn': ^6.0.2
       '@types/ejs': ^3.1.0
+      '@types/estree': ^0.0.51
       '@types/less': ^3.0.3
       '@types/micromatch': ^4.0.2
       '@types/multer': ^1.4.7
       '@types/sass': ^1.43.1
       '@types/temp': ^0.9.1
+      acorn: ^8.7.1
       address: ^1.1.2
       body-parser: ^1.20.0
       build-scripts: ^2.0.0-21
@@ -285,6 +287,7 @@ importers:
       find-up: ^5.0.0
       fs-extra: ^10.0.0
       less: ^4.1.2
+      magic-string: ^0.26.1
       micromatch: ^4.0.5
       mrmime: ^1.0.0
       multer: ^1.4.4
@@ -306,6 +309,7 @@ importers:
       '@ice/runtime': link:../runtime
       '@ice/types': link:../types
       '@ice/webpack-config': link:../webpack-config
+      acorn: 8.7.1
       address: 1.1.2
       body-parser: 1.20.0
       build-scripts: 2.0.0-21
@@ -323,6 +327,7 @@ importers:
       find-up: 5.0.0
       fs-extra: 10.1.0
       less: 4.1.2
+      magic-string: 0.26.1
       micromatch: 4.0.5
       mrmime: 1.0.0
       multer: 1.4.4
@@ -338,6 +343,7 @@ importers:
     devDependencies:
       '@types/cross-spawn': 6.0.2
       '@types/ejs': 3.1.0
+      '@types/estree': 0.0.51
       '@types/less': 3.0.3
       '@types/micromatch': 4.0.2
       '@types/multer': 1.4.7
@@ -2027,6 +2033,14 @@ packages:
       acorn: 8.7.0
     dev: true
 
+  /acorn-import-assertions/1.8.0_acorn@8.7.1:
+    resolution: {integrity: sha512-m7VZ3jwz4eK6A4Vtt8Ew1/mNbP24u0FhdyfA7fSvnJR6LMdfOYnmuIrrJAgrYfYJ10F/otaHTtrtrtmHdMNzEw==}
+    peerDependencies:
+      acorn: ^8
+    dependencies:
+      acorn: 8.7.1
+    dev: true
+
   /acorn-jsx/5.3.2_acorn@8.7.0:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
     peerDependencies:
@@ -2064,6 +2078,11 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
     dev: true
+
+  /acorn/8.7.1:
+    resolution: {integrity: sha512-Xx54uLJQZ19lKygFXOWsscKUbsBZW0CPykPhVQdhIeIwrbPmJzqeASDInc8nKBnp/JT6igTs82qPXz069H8I/A==}
+    engines: {node: '>=0.4.0'}
+    hasBin: true
 
   /address/1.1.2:
     resolution: {integrity: sha512-aT6camzM4xEA54YVJYSqxz1kv4IHnQZRtThJJHhUMRExaU5spC7jX5ugSwTaTgJliIgs4VhZOk7htClvQ/LmRA==}
@@ -7947,7 +7966,7 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
     dependencies:
-      acorn: 8.7.0
+      acorn: 8.7.1
       commander: 2.20.3
       source-map: 0.7.3
       source-map-support: 0.5.21
@@ -8412,7 +8431,7 @@ packages:
       mime-types: 2.1.35
       range-parser: 1.2.1
       schema-utils: 4.0.0
-      webpack: 5.72.0_@swc+core@1.2.168
+      webpack: 5.72.0_esbuild@0.14.38
 
   /webpack-dev-server/4.8.1_webpack@5.72.0:
     resolution: {integrity: sha512-dwld70gkgNJa33czmcj/PlKY/nOy/BimbrgZRaR9vDATBQAYgLzggR0nxDtPLJiLrMgZwbE6RRfJ5vnBBasTyg==}
@@ -8452,7 +8471,7 @@ packages:
       serve-index: 1.9.1
       sockjs: 0.3.24
       spdy: 4.0.2
-      webpack: 5.72.0_@swc+core@1.2.168
+      webpack: 5.72.0_esbuild@0.14.38
       webpack-dev-middleware: 5.3.1_webpack@5.72.0
       ws: 8.5.0
     transitivePeerDependencies:
@@ -8564,8 +8583,8 @@ packages:
       '@webassemblyjs/ast': 1.11.1
       '@webassemblyjs/wasm-edit': 1.11.1
       '@webassemblyjs/wasm-parser': 1.11.1
-      acorn: 8.7.0
-      acorn-import-assertions: 1.8.0_acorn@8.7.0
+      acorn: 8.7.1
+      acorn-import-assertions: 1.8.0_acorn@8.7.1
       browserslist: 4.20.3
       chrome-trace-event: 1.0.3
       enhanced-resolve: 5.9.3
