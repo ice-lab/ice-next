@@ -27,8 +27,8 @@ export interface UserConfig {
   ssr?: boolean;
   ssg?: boolean;
   server?: {
-    format?: 'esm' | 'cjs';
-    bundle?: boolean;
+    format: 'esm' | 'cjs';
+    bundle: boolean;
   };
   removeHistoryDeadCode?: boolean;
   mock?: { exclude?: string[] };
