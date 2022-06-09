@@ -23,7 +23,7 @@ export async function generateRoutesInfo(rootDir: string, routesConfig: UserConf
 
   if (!routeManifest['$']) {
     // create default 404 page
-    const defaultNotFoundRoute = createDefaultNotFoundRoute(rootDir, routeManifest);
+    const defaultNotFoundRoute = createDefaultNotFoundRoute(routeManifest);
     routeManifest['$'] = defaultNotFoundRoute;
   }
 
@@ -50,7 +50,7 @@ function generateNestRoutesStr(nestRouteManifest: NestedRouteManifest[]) {
   return nestRouteManifest.reduce((prev, route) => {
     const { children, path: routePath, index, componentName, file, id, layout, exports } = route;
 
-    const componentPath = path.isAbsolute(file) ? file : `@/pages/${file}`.replace(new RegExp(`${path.extname(file)}$`), '');
+    const componentPath = id.startsWith('__') ? file : `@/pages/${file}`.replace(new RegExp(`${path.extname(file)}$`), '');
     let str = `{
       path: '${routePath || ''}',
       load: () => import(/* webpackChunkName: "${componentName}" */ '${componentPath}'),
@@ -70,13 +70,14 @@ function generateNestRoutesStr(nestRouteManifest: NestedRouteManifest[]) {
   }, '');
 }
 
-function createDefaultNotFoundRoute(rootDir: string, routeManifest: RouteManifest): ConfigRoute {
+function createDefaultNotFoundRoute(routeManifest: RouteManifest): ConfigRoute {
   return {
     path: '*',
-    id: 'ice/default/404',
+    // TODO: git warning if the id startsWith __
+    id: '__404',
     parentId: routeManifest['layout'] ? 'layout' : null,
-    file: path.join(rootDir, '.ice', '404.tsx'),
-    componentName: 'ice-default-404',
+    file: './404.tsx',
+    componentName: '__404',
     layout: false,
   };
 }
