@@ -31,12 +31,22 @@ const start = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
     https,
     setupMiddlewares: (middlewares, devServer) => {
       const { outputDir } = taskConfigs.find(({ name }) => name === 'web').config;
-      const { ssg = true, ssr = true } = userConfig;
+      const { ssg, ssr, server } = userConfig;
 
       const serverCompileMiddleware = createCompileMiddleware({ rootDir, outputDir, serverCompiler });
       const serverRenderMiddleware = createRenderMiddleware({ documentOnly: !ssr && !ssg });
+      // const serverMiddleware = createSSRMiddleware({
+      //   rootDir,
+      //   outputDir,
+      //   serverCompiler,
+      //   userConfig,
+      // });
       const insertIndex = middlewares.findIndex(({ name }) => name === 'serve-index');
-      middlewares.splice(insertIndex, 0, serverCompileMiddleware, serverRenderMiddleware);
+      middlewares.splice(
+        insertIndex, 0,
+        serverCompileMiddleware,
+        serverRenderMiddleware,
+      );
       if (commandArgs.mock) {
         const mockMiddleware = createMockMiddleware({ rootDir, exclude: userConfig?.mock?.exclude });
         middlewares.splice(insertIndex, 0, mockMiddleware);
