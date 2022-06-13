@@ -26,19 +26,16 @@ interface Options {
   task: TaskConfig<Config>;
   command: string;
   serverBundle: boolean;
+  swcOptions: Config['swcOptions'];
 }
 
 export function createServerCompiler(options: Options) {
-  const { task, rootDir, command, serverBundle } = options;
+  const { task, rootDir, command, serverBundle, swcOptions } = options;
   const { config } = task;
 
-  const isCSR = process.env.ICE_CORE_SSG == 'false' && process.env.ICE_CORE_SSR == 'false';
-
-  const transformPlugins = getCompilerPlugins({ ...config,
-    swcOptions: {
-      removeExportExprs: isCSR ? ['default', 'getData'] : [],
-      commonTransform: false,
-    },
+  const transformPlugins = getCompilerPlugins({
+    ...config,
+    swcOptions,
   }, 'esbuild');
 
   const alias = (task.config?.alias || {}) as Record<string, string | false>;
