@@ -81,7 +81,7 @@ export interface Config {
 
   port?: string | number;
 
-  cacheDirectory?: string;
+  cacheDir?: string;
 
   tsCheckerOptions?: ForkTsCheckerWebpackPluginOptions;
 
