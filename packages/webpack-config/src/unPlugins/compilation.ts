@@ -81,6 +81,16 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
       try {
         const output = await transform(source, programmaticOptions);
         const { code, map } = output;
+
+        // if (removeExportExprs.join(',') == 'getData' && removeExportExprs && /pages/.test(id)) {
+        //   console.log(id);
+        //   console.log('source--------------------------------');
+        //   console.log(source);
+
+        //   console.log('output--------------------------------');
+        //   console.log(code);
+        // }
+
         return { code, map };
       } catch (e) {
         // catch error for Unhandled promise rejection
@@ -114,7 +124,6 @@ function getSwcTransformOptions({
       externalHelpers: false,
     },
     module: {
-      // @ts-expect-error module type only support cjs umd amd, fix me when @builder/swc fix type error
       type: 'es6',
       noInterop: false,
       // webpack will evaluate dynamic import, so there need preserve it

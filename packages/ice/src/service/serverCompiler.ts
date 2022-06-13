@@ -28,9 +28,11 @@ export function createServerCompiler(options: Options) {
   const { task, rootDir } = options;
   const { config } = task;
 
+  const isCSR = process.env.ICE_CORE_SSG == 'false' && process.env.ICE_CORE_SSR == 'false';
+
   const transformPlugins = getCompilerPlugins({ ...config,
     swcOptions: {
-      removeExportExprs: ['default', 'getData'],
+      removeExportExprs: isCSR ? ['default', 'getData'] : [],
       commonTransform: false,
     },
   }, 'esbuild');

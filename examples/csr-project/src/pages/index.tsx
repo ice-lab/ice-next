@@ -9,7 +9,6 @@ import type { AppData } from '@/types';
 const Bar = lazy(() => import('../components/bar'));
 
 export default function Home(props) {
-  debugger;
   console.log('render Home', props);
 
   const appData = useAppData<AppData>();
@@ -29,6 +28,7 @@ export default function Home(props) {
       <Link to="/about">about</Link>
       <Suspense fallback={<div>hello</div>}>
         <Bar />
+        <Button />
       </Suspense>
     </>
   );
@@ -52,12 +52,10 @@ export function getConfig() {
 }
 
 export function getData() {
-  debugger;
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
         name: 'Home2111',
-        button: Button,
       });
     }, 1 * 100);
   });

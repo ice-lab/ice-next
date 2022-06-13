@@ -14,7 +14,7 @@ export default () => {
   );
 };
 
-export function getConfig(data) {
+export function getConfig() {
   return {
     title: 'Layout',
     meta: [
@@ -27,18 +27,7 @@ export function getConfig(data) {
   };
 }
 
-export function getStaticData() {
-
-}
-
-export function getServerData() {
-
-}
-
-export function getClientData() {
-  // if (ssg) {
-  //   return {}
-  // }
+export function getData() {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({

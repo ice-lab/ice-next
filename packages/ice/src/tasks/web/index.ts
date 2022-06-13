@@ -17,6 +17,7 @@ const getWebTask = ({ rootDir, command }): Config => {
     swcOptions: {
       removeExportExprs: ['getData'],
     },
+    assetsManifest: true,
   };
 };
 

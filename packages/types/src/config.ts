@@ -89,5 +89,13 @@ export interface Config {
 
   swcOptions?: SwcOptions;
 
-  entry?: any;
+  entry?: {
+    [key: string]: string;
+  };
+
+  splitChunks?: boolean;
+
+  runtimeChunk?: boolean;
+
+  assetsManifest?: boolean;
 }

@@ -77,6 +77,9 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     tsCheckerOptions,
     eslintOptions,
     entry,
+    runtimeChunk,
+    splitChunks,
+    assetsManifest,
   } = config;
 
   const dev = mode !== 'production';
@@ -111,7 +114,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
   const terserOptions: any = merge({
     compress: {
       ecma: 5,
-      unused: false,
+      unused: true,
       // The following two options are known to break valid JavaScript code
       // https://github.com/vercel/next.js/issues/7178#issuecomment-493048965
       comparisons: false,
@@ -174,8 +177,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     optimization: {
       // share runtime chunk when dev, ref: https://github.com/pmmmwh/react-refresh-webpack-plugin/issues/88#issuecomment-627558799
       // loader chunk will load before main chunk in production
-      runtimeChunk: dev ? 'single' : 'multiple',
-      splitChunks: getSplitChunksConfig(rootDir),
+      runtimeChunk: runtimeChunk == false ? undefined : (dev ? 'single' : 'multiple'),
+      splitChunks: splitChunks == false ? undefined : getSplitChunksConfig(rootDir),
       minimize: minify,
       minimizer: [
         new TerserPlugin({
@@ -222,7 +225,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
         ...defineVars,
         ...runtimeDefineVars,
       }),
-      !entry && new AssetsManifestPlugin({
+      assetsManifest && new AssetsManifestPlugin({
         fileName: 'assets-manifest.json',
         outputDir: path.join(rootDir, '.ice'),
       }),
