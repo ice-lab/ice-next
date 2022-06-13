@@ -68,7 +68,7 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
         needTransform = true;
       }
 
-      if (removeExportExprs && /pages/.test(id)) {
+      if (removeExportExprs && /(.*)pages(.*)\.(jsx?|tsx?|mjs)$/.test(id)) {
         Object.assign(programmaticOptions, { removeExportExprs });
         needTransform = true;
       }
