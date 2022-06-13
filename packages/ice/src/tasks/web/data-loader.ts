@@ -1,5 +1,6 @@
 import * as path from 'path';
 import type { Config } from '@ice/types';
+import { CACHE_DIR } from '../../constant.js';
 
 const getWebTask = ({ rootDir, command }): Config => {
   // basic task config of data-loader
@@ -10,6 +11,7 @@ const getWebTask = ({ rootDir, command }): Config => {
     mode: command === 'start' ? 'development' : 'production',
     sourceMap: command === 'start' ? 'cheap-module-source-map' : false,
     outputDir: path.join(rootDir, 'build'),
+    cacheDir: path.join(rootDir, CACHE_DIR),
     alias: {
       ice: path.join(rootDir, '.ice', 'index.ts'),
       '@': path.join(rootDir, 'src'),

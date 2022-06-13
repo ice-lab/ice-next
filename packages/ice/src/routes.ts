@@ -92,6 +92,11 @@ function generateLoadersStr(routes: NestedRouteManifest[]) {
     return routes.reduce((prev, route) => {
       const { children, file, id } = route;
 
+      // don't include .ice/__404.tsx, it will import react and can not be transformed by swc.
+      if (id.startsWith('__')) {
+        return prev;
+      }
+
       const fileExtname = path.extname(file);
       const componentFile = file.replace(new RegExp(`${fileExtname}$`), '');
       const componentPath = path.isAbsolute(componentFile) ? componentFile : `@/pages/${componentFile}`;

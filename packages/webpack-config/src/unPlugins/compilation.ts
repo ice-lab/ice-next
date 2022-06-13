@@ -82,15 +82,6 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
         const output = await transform(source, programmaticOptions);
         const { code, map } = output;
 
-        // if (removeExportExprs.join(',') == 'getData' && removeExportExprs && /pages/.test(id)) {
-        //   console.log(id);
-        //   console.log('source--------------------------------');
-        //   console.log(source);
-
-        //   console.log('output--------------------------------');
-        //   console.log(code);
-        // }
-
         return { code, map };
       } catch (e) {
         // catch error for Unhandled promise rejection
