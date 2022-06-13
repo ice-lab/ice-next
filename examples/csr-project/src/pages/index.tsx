@@ -55,7 +55,7 @@ export function getData() {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
-        name: 'Home2111',
+        name: 'Home',
       });
     }, 1 * 100);
   });
