@@ -16,6 +16,7 @@ const getWebTask = ({ rootDir, command }): Config => {
       'webpack/hot': '@ice/bundles/compiled/webpack/hot',
     },
     swcOptions: {
+      // getData is built by data-loader
       removeExportExprs: ['getData'],
     },
     assetsManifest: true,
