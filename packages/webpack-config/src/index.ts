@@ -80,6 +80,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     runtimeChunk,
     splitChunks,
     assetsManifest,
+    concatenateModules,
   } = config;
 
   const dev = mode !== 'production';
@@ -287,7 +288,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       immutablePaths: [nodeModulesPath],
     };
   }
-  if (dev) {
+  if (dev && !concatenateModules) {
     if (!webpackConfig.optimization) {
       webpackConfig.optimization = {};
     }

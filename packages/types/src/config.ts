@@ -98,4 +98,6 @@ export interface Config {
   runtimeChunk?: boolean;
 
   assetsManifest?: boolean;
+
+  concatenateModules?: boolean;
 }
