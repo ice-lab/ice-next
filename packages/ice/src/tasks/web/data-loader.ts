@@ -20,7 +20,6 @@ const getWebTask = ({ rootDir, command }): Config => {
       removeExportExprs: ['default', 'getConfig'],
     },
     splitChunks: false,
-    runtimeChunk: false,
     // enable concatenateModules will tree shaking unused `react/react-dom` in dev mod.
     concatenateModules: true,
   };

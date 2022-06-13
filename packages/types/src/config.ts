@@ -95,8 +95,6 @@ export interface Config {
 
   splitChunks?: boolean;
 
-  runtimeChunk?: boolean;
-
   assetsManifest?: boolean;
 
   concatenateModules?: boolean;
