@@ -2,7 +2,7 @@ import * as path from 'path';
 import type { Config } from '@ice/types';
 import { CACHE_DIR } from '../../constant.js';
 
-const getWebTask = ({ rootDir, command }): Config => {
+const getTask = ({ rootDir, command }): Config => {
   // basic task config of data-loader
   return {
     entry: {
@@ -25,4 +25,4 @@ const getWebTask = ({ rootDir, command }): Config => {
   };
 };
 
-export default getWebTask;
+export default getTask;
