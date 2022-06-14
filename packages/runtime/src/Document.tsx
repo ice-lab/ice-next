@@ -138,9 +138,7 @@ export function getPageAssets(matches: RouteMatch[], assetsManifest: AssetsManif
 
 export function getEntryAssets(assetsManifest: AssetsManifest): string[] {
   const { entries, publicPath } = assetsManifest;
-  let result = [
-    'js/data-loader.js',
-  ];
+  let result = [];
 
   Object.values(entries).forEach(assets => {
     result = result.concat(assets);
