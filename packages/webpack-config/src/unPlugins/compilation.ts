@@ -49,13 +49,13 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
         filename: id,
       };
 
-      const { commonTransform = true, removeExportExprs } = swcOptions;
+      const { jsxTransform = true, removeExportExprs } = swcOptions;
 
       let needTransform = false;
 
       // common transform only works for webpack, esbuild has it's own compilation
-      if (commonTransform) {
-        const commonOptions = getSwcTransformOptions({ suffix, dev });
+      if (jsxTransform) {
+        const commonOptions = getJsxTransformOptions({ suffix, dev });
 
         // auto detect development mode
         if (mode && commonOptions.jsc && commonOptions.jsc.transform &&
@@ -90,7 +90,7 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
   };
 };
 
-function getSwcTransformOptions({
+function getJsxTransformOptions({
   suffix,
   dev,
 }: {
