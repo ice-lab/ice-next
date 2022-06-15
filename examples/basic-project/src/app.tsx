@@ -1,3 +1,4 @@
+import { defineAppConfig } from 'ice';
 import type { Auth } from '@ice/plugin-auth/esm/runtime';
 
 if (process.env.ICE_CORE_ERROR_BOUNDARY === 'true') {
@@ -19,8 +20,8 @@ export const auth: Auth = () => {
   });
 };
 
-export default {
+export default defineAppConfig({
   app: {
     rootId: 'app',
   },
-};
+});
