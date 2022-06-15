@@ -58,9 +58,11 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
         const commonOptions = getJsxTransformOptions({ suffix, dev });
 
         // auto detect development mode
-        if (mode && commonOptions.jsc && commonOptions.jsc.transform &&
-          commonOptions.jsc.transform.react &&
-            !Object.prototype.hasOwnProperty.call(commonOptions.jsc.transform.react, 'development')) {
+        if (
+          mode &&
+          commonOptions?.jsc?.transform?.react &&
+          !Object.prototype.hasOwnProperty.call(commonOptions.jsc.transform.react, 'development')
+        ) {
           commonOptions.jsc.transform.react.development = mode === 'development';
         }
 

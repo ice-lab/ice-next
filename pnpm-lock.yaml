@@ -451,7 +451,7 @@ importers:
 
   packages/webpack-config:
     specifiers:
-      '@builder/swc': 0.1.4-beta.13
+      '@builder/swc': 0.2.0-beta.2
       '@ice/bundles': ^0.1.0
       '@ice/types': ^1.0.0
       '@pmmmwh/react-refresh-webpack-plugin': ^0.5.7
@@ -470,7 +470,7 @@ importers:
       webpack: ^5.72.0
       webpack-dev-server: ^4.7.4
     dependencies:
-      '@builder/swc': 0.1.4-beta.13
+      '@builder/swc': 0.2.0-beta.2
       '@ice/bundles': link:../bundles
       '@pmmmwh/react-refresh-webpack-plugin': 0.5.7_bztoarqhvh7yes5xglqu4xqupe
       '@rollup/pluginutils': 4.2.1
@@ -905,8 +905,8 @@ packages:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
     dev: true
 
-  /@builder/swc-darwin-arm64/0.1.4-beta.12:
-    resolution: {integrity: sha512-hPxwpgpkSj8AMxWi2rgPOMq9YvhpEsu0NE3pa0aEwOPDdWqhSgXqEXkalDXgAK46uryO/0QGmCNZbePH0peOFQ==}
+  /@builder/swc-darwin-arm64/0.2.0-beta.1:
+    resolution: {integrity: sha512-2/NjILc7pweVHikhqotCmXoZ3tv5XZl8caYo4E6fGx/aTA/8lk0IX+982z3YJGsuoNi0yim9PC+GXsJOCf3tsw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
@@ -914,8 +914,8 @@ packages:
     dev: false
     optional: true
 
-  /@builder/swc-darwin-x64/0.1.4-beta.12:
-    resolution: {integrity: sha512-y0A3f0xRQEZPsi4OV0kA1RPMPybe7A+ClA7PCtJxZJz9L/AkjhKlRcMELdrvOQ8nCaHLciRX5cNju1wF8wyPaA==}
+  /@builder/swc-darwin-x64/0.2.0-beta.1:
+    resolution: {integrity: sha512-iwGKiw/sFTxpb/b8aCm1txcx6TyX0HZXMCJinpgeo2NHHX0e9UGbr3rQmhhj5+BY/MdMmfUVtxwvNd/qs8qLmw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
@@ -923,8 +923,8 @@ packages:
     dev: false
     optional: true
 
-  /@builder/swc-linux-arm64-gnu/0.1.4-beta.12:
-    resolution: {integrity: sha512-wn4FKVhTWvzrI0e4Pn3J80O342rnf4ByFdlDTpIwFsj0bBWNaffyTqk0quaU0cfIs+dPeYgG1xsZtStERKQXVg==}
+  /@builder/swc-linux-arm64-gnu/0.2.0-beta.1:
+    resolution: {integrity: sha512-FSgPlTGyhwk+u+K2t30icnTAN61OOccK7NfR65cipZI6f/keIw6HdguLdlMbngTjhoTNMB2dMvRaIz1Z0fiqQw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -932,8 +932,8 @@ packages:
     dev: false
     optional: true
 
-  /@builder/swc-linux-arm64-musl/0.1.4-beta.12:
-    resolution: {integrity: sha512-va4ZYW1lQUPV47WwwudbgoTgYbPsWlZZifoyF9P0fzBrykQG9JJexCc5mlxLfSkPSPTH3pCxElsLK2/f4ZtxEw==}
+  /@builder/swc-linux-arm64-musl/0.2.0-beta.1:
+    resolution: {integrity: sha512-dCuI5lmhuzi7gCyREukr4ZCngdIwikp+gcNCcDkQNbM26kDVoFGBV0qccEd7rrMUQD1/BCcE2tak76AB7dwtTg==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -941,8 +941,8 @@ packages:
     dev: false
     optional: true
 
-  /@builder/swc-linux-x64-gnu/0.1.4-beta.12:
-    resolution: {integrity: sha512-oonQGuNWYlk7lbutZSdooGO62CSBt7Z6/OWYsk1OWiW6/rE7l9j517Je2cfNEBGAHQo7JApRD8g4DBdbSG/Xtw==}
+  /@builder/swc-linux-x64-gnu/0.2.0-beta.1:
+    resolution: {integrity: sha512-taePL2jvEfRnYp3hcp47WZs+qLrx3fl09gsiBJB1umdHtj25CMFmTRj0ToB96CUPaSnzbe7jrNDNc7q+z5pnRQ==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -950,8 +950,8 @@ packages:
     dev: false
     optional: true
 
-  /@builder/swc-linux-x64-musl/0.1.4-beta.12:
-    resolution: {integrity: sha512-JqZvnylWeaV7zJNPDfpRf6I0oHRI2UCzwb4X/5c/Tt2/KNbdLsCbNbW9SNUQR+ocLmO1R8WzWZavh2+8/1O2bw==}
+  /@builder/swc-linux-x64-musl/0.2.0-beta.1:
+    resolution: {integrity: sha512-/qAZ4HPYrLE76qQsVN1ouk0ynBEQZW0ZuecMH3D8aSz2Nfcaj2OGgOOmBcgOSPecur4BiGIaTOz7Ul0uJL8sTQ==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -959,8 +959,8 @@ packages:
     dev: false
     optional: true
 
-  /@builder/swc-win32-arm64-msvc/0.1.4-beta.5:
-    resolution: {integrity: sha512-LQlmGEkmnQENk0cf8laQm65MdtbxpDE9W03lV1UR+6Ouf0CXbMzQDbBMCJyGQNyzMBifjfWWmv4oemFNlZTwww==}
+  /@builder/swc-win32-arm64-msvc/0.2.0-beta.1:
+    resolution: {integrity: sha512-+sHPVNR6lpS74pUuTWBgZw/LLkSgRv8Dlg+e3ZopTNgUS7oWkIDKiLTk55RZyWcGIHaunsfmEhOb4w9UiBw/6A==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [win32]
@@ -968,8 +968,8 @@ packages:
     dev: false
     optional: true
 
-  /@builder/swc-win32-ia32-msvc/0.1.4-beta.12:
-    resolution: {integrity: sha512-V1z0FuqUAgFvi/o8PvcEo5j36BZEFL2wEo90fa24UgTu/yyXG5dLyFoDxGpHbMXneskdIckjemuRG9qYlmxrEw==}
+  /@builder/swc-win32-ia32-msvc/0.2.0-beta.1:
+    resolution: {integrity: sha512-52x9eTb1vTSSEZP08CcIZ5iRLxFoSjuuQfyysJFzAqeHmxlmdjbJOF2Dkx7rWxqa0zvwLMIIyWO3S3Pd5d0etA==}
     engines: {node: '>= 10'}
     cpu: [ia32]
     os: [win32]
@@ -977,8 +977,8 @@ packages:
     dev: false
     optional: true
 
-  /@builder/swc-win32-x64-msvc/0.1.4-beta.12:
-    resolution: {integrity: sha512-rzSBZ8TeSYpQXhZEsbzsdM4g33R4k0MaLR3fU7jWb/+vuxmnNUrM+SyyVc5eo2kJPF10nJCekIl9g3MapNJK6A==}
+  /@builder/swc-win32-x64-msvc/0.2.0-beta.1:
+    resolution: {integrity: sha512-Q1dY1R1/S1YM+477EX09Kofy9uq/L31b4TyP7b9p7qtdmDzEsKW7bNgJADY8NrNo5eoxm4PX918h23JL2CxARg==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
@@ -986,21 +986,21 @@ packages:
     dev: false
     optional: true
 
-  /@builder/swc/0.1.4-beta.13:
-    resolution: {integrity: sha512-tF48VvpjuCqfA8hdWokQ+4cs10oPPqBINYQVMLfH1pU0Qd8vCPZsItVW6KEcZDyj5T5Nxj6zJovbhelcWQSJkQ==}
+  /@builder/swc/0.2.0-beta.2:
+    resolution: {integrity: sha512-/d7dYpVfgVNn50capMxstqals4cGFiz5H4DxNJasO2qlm+qSdC4Hb92icP7ROvAS+dTvc9UdjVzGYLGIW2jbqQ==}
     engines: {node: '>= 12'}
     dependencies:
       '@napi-rs/triples': 1.1.0
     optionalDependencies:
-      '@builder/swc-darwin-arm64': 0.1.4-beta.12
-      '@builder/swc-darwin-x64': 0.1.4-beta.12
-      '@builder/swc-linux-arm64-gnu': 0.1.4-beta.12
-      '@builder/swc-linux-arm64-musl': 0.1.4-beta.12
-      '@builder/swc-linux-x64-gnu': 0.1.4-beta.12
-      '@builder/swc-linux-x64-musl': 0.1.4-beta.12
-      '@builder/swc-win32-arm64-msvc': 0.1.4-beta.5
-      '@builder/swc-win32-ia32-msvc': 0.1.4-beta.12
-      '@builder/swc-win32-x64-msvc': 0.1.4-beta.12
+      '@builder/swc-darwin-arm64': 0.2.0-beta.1
+      '@builder/swc-darwin-x64': 0.2.0-beta.1
+      '@builder/swc-linux-arm64-gnu': 0.2.0-beta.1
+      '@builder/swc-linux-arm64-musl': 0.2.0-beta.1
+      '@builder/swc-linux-x64-gnu': 0.2.0-beta.1
+      '@builder/swc-linux-x64-musl': 0.2.0-beta.1
+      '@builder/swc-win32-arm64-msvc': 0.2.0-beta.1
+      '@builder/swc-win32-ia32-msvc': 0.2.0-beta.1
+      '@builder/swc-win32-x64-msvc': 0.2.0-beta.1
     dev: false
 
   /@commitlint/cli/16.2.3:
