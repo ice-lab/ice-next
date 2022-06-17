@@ -10,7 +10,7 @@
     "setup": "rm -rf node_modules packages/*/node_modules && pnpm install && pnpm run build",
     "rebuild": "pnpm install && pnpm run build",
     "watch": "pnpm clean && esmo ./scripts/watch.ts",
-    "build": "pnpm clean && pnpm --filter=./packages/* run build",
+    "build": "pnpm clean && esmo ./scripts/build.ts",
     "prebundle": "esmo packages/bundles/scripts/packDependencies.ts",
     "clean": "rimraf packages/*/esm",
     "dependency:check": "esmo ./scripts/dependencyCheck.ts",

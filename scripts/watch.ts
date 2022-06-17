@@ -1,13 +1,9 @@
 import path from 'path';
 import glob from 'glob';
-import fse from 'fs-extra';
 import concurrently from 'concurrently';
 import * as chokidar from 'chokidar';
-
-const icePkgPackages = [
-  'rax-compat',
-  'jsx-runtime',
-];
+import { ICE_PKG_PACKAGES } from '../constants';
+import copyFile from './copyFile';
 
 (async () => {
   const filePatten = '*/src/**/!(*.ts|*.tsx|*.rs)';
@@ -15,7 +11,7 @@ const icePkgPackages = [
   const cwd = path.join(process.cwd(), 'packages');
   const files = glob.sync(filePatten, { cwd, nodir: true });
   for (const file of files) {
-    await copyOneFile(file, cwd);
+    await copyFile(file, cwd);
   }
 
   const watcher = chokidar.watch(cwd, { ignoreInitial: true });
@@ -25,13 +21,13 @@ const icePkgPackages = [
       if (availableEvents.includes(event) &&
         filePath.match(/.+[\\/]src[\\/].+\.(?!ts$|tsx$|rs$)/)) {
         console.log('non-ts change detected:', filePath);
-        copyOneFile(path.relative(cwd, filePath), cwd);
+        copyFile(path.relative(cwd, filePath), cwd);
       }
     });
 
-  const waitOnIcePkgPackagesCommand = `wait-on ${icePkgPackages.map(p => `./packages/${p}/esm`).join(' ')}`;
+  const waitOnIcePkgPackagesCommand = `wait-on ${ICE_PKG_PACKAGES.map(p => `./packages/${p}/esm`).join(' ')}`;
   const { result } = concurrently([
-    ...(icePkgPackages.map(p => ({ command: 'npm run watch', cwd: path.join(`./packages/${p}`) }))),
+    ...(ICE_PKG_PACKAGES.map(p => ({ command: 'pnpm watch', cwd: path.join(`./packages/${p}`) }))),
     { command: `${waitOnIcePkgPackagesCommand} && pnpm tsc --build ./tsconfig.json -w`, cwd: process.cwd() },
   ]);
   await result;
@@ -39,9 +35,3 @@ const icePkgPackages = [
   console.trace(e);
   process.exit(128);
 });
-
-async function copyOneFile(file: string, cwd: string) {
-  const from = path.join(cwd, file);
-  const to = path.join(cwd, file.replace(/\/src\//, '/esm/'));
-  await fse.copy(from, to);
-}
