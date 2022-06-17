@@ -35,7 +35,7 @@
     "component"
   ],
   "dependencies": {
-    "@swc/helpers": "^0.3.8",
+    "@swc/helpers": "^0.4.2",
     "@uni/system-info": "^1.0.8",
     "classnames": "^2.3.1",
     "universal-env": "^3.0.0"

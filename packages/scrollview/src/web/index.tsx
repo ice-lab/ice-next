@@ -96,6 +96,7 @@ const ScrollView: ForwardRefExoticComponent<ScrollViewProps> = forwardRef(
       onEndReachedThreshold,
       onScroll,
       children,
+      ...rest
     } = props;
     const lastScrollDistance = useRef(0);
     const lastScrollContentSize = useRef(0);
@@ -250,9 +251,8 @@ const ScrollView: ForwardRefExoticComponent<ScrollViewProps> = forwardRef(
       }
 
       const webProps = {
-        ...props,
+        ...rest,
       };
-      delete webProps.onEndReachedThreshold;
       return (
         // @ts-ignore
         <div

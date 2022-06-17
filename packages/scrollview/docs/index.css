@@ -1,0 +1,48 @@
+.root {
+  padding-top: 20rpx;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.sticky {
+  position: sticky;
+  position: -webkit-sticky;
+  background-color: #cccccc;
+  top: 0;
+  z-index: 1000;
+}
+
+.container {
+  padding: 20rpx;
+  border-style: solid;
+  border-color: #dddddd;
+  border-width: 1px;
+  margin-left: 20rpx;
+  margin-right: 20rpx;
+  margin-bottom: 10rpx;
+  overflow: hidden;
+}
+
+.button {
+  margin: 7rpx;
+  padding: 5rpx;
+  align-items: center;
+  background-color: #eaeaea;
+  border-radius: 3;
+}
+
+.box {
+  width: 64rpx;
+  height: 64rpx;
+}
+.eventLogBox {
+  padding: 10rpx;
+  margin: 10rpx;
+  height: 80rpx;
+  border-width: 1;
+  border-color: #f0f0f0;
+  background-color: #f9f9f9;
+}
