@@ -3,7 +3,6 @@ import glob from 'glob';
 import concurrently from 'concurrently';
 import { ICE_PKG_PACKAGES } from '../constants';
 import copyFile from './copyFile';
-import { run } from './shell';
 
 (async () => {
   const filePattern = '*/src/**/!(*.ts|*.tsx|*.rs)';
@@ -15,9 +14,6 @@ import { run } from './shell';
   for (const file of files) {
     copyFile(file, cwd);
   }
-
-  // pre compile deps
-  await run('pnpm build', { cwd: path.join('./packages/bundles') });
 
   const waitOnPackagesCompiledCommand = `wait-on ${ICE_PKG_PACKAGES.map(p => `./packages/${p}/esm`).join(' ')}`;
   const { result } = concurrently([
