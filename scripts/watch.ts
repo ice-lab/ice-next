@@ -32,8 +32,6 @@ const icePkgPackages = [
   const waitOnIcePkgPackagesCommand = `wait-on ${icePkgPackages.map(p => `./packages/${p}/esm`).join(' ')}`;
   const { result } = concurrently([
     ...(icePkgPackages.map(p => ({ command: 'npm run watch', cwd: path.join(`./packages/${p}`) }))),
-    { command: 'npm run watch', cwd: path.join('./packages/rax-compat') },
-    { command: 'npm run watch', cwd: path.join('./packages/jsx-runtime') },
     { command: `${waitOnIcePkgPackagesCommand} && pnpm tsc --build ./tsconfig.json -w`, cwd: process.cwd() },
   ]);
   await result;
