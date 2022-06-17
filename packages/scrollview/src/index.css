@@ -1,0 +1,17 @@
+.ice-scrollview-vertical {
+  display: flex;
+  flex-direction: column;
+}
+
+.ice-scrollview-horizontal {
+  display: flex;
+  flex-direction: row;
+}
+
+.ice-scrollview-content-container-horizontal {
+  flex-direction: row;
+}
+
+.ice-scrollview-webcontainer {
+  display: block;
+}
