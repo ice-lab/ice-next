@@ -25,10 +25,10 @@ import copyFile from './copyFile';
       }
     });
 
-  const waitOnIcePkgPackagesCommand = `wait-on ${ICE_PKG_PACKAGES.map(p => `./packages/${p}/esm`).join(' ')}`;
+  const waitOnPackagesCompiledCommand = `wait-on ${ICE_PKG_PACKAGES.map(p => `./packages/${p}/esm`).join(' ')}`;
   const { result } = concurrently([
     ...(ICE_PKG_PACKAGES.map(p => ({ command: 'pnpm watch', cwd: path.join(`./packages/${p}`) }))),
-    { command: `${waitOnIcePkgPackagesCommand} && pnpm tsc --build ./tsconfig.json -w`, cwd: process.cwd() },
+    { command: `${waitOnPackagesCompiledCommand} && pnpm tsc --build ./tsconfig.json -w`, cwd: process.cwd() },
   ]);
   await result;
 })().catch((e) => {
