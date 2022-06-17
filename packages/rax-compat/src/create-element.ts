@@ -113,6 +113,7 @@ function AppearOrDisappear(props: any, ref: RefObject<EventTarget>) {
 
   function listen(eventName: string, handler: EventListenerOrEventListenerObject) {
     if (isFunction(handler) && ref != null) {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       useEffect(() => {
         const { current } = ref;
         if (current != null) {
