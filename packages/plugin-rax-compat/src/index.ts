@@ -18,7 +18,7 @@ const alias = {
 };
 
 const ruleSetStylesheet = {
-  test: /\.css$/,
+  test: /\.css$/i,
   use: [
     {
       loader: require.resolve('stylesheet-loader'),
@@ -38,8 +38,16 @@ function getPlugin(options: CompatRaxOptions): Plugin {
           if (Array.isArray(rules)) {
             for (let i = 0, l = rules.length; i < l; i++) {
               const rule: RuleSetRule | any = rules[i];
+              // Find the css rule, that default to CSS Modules.
               if (rule.test && rule.test.source.indexOf('.css') > -1) {
-                rules[i] = ruleSetStylesheet;
+                rule.test = /\.module\.css$/i;
+                rules[i] = {
+                  test: /\.css$/i,
+                  oneOf: [
+                    rule,
+                    ruleSetStylesheet,
+                  ],
+                };
               }
             }
           }
