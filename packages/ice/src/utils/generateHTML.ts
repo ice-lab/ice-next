@@ -44,7 +44,7 @@ export default async function generateHTML(options: Options) {
     const serverContext: ServerContext = {
       req: req as Request,
     };
-    const { value: html } = await serverEntry.renderToHTML(serverContext, documentOnly);
+    const { value: html } = await serverEntry.renderToHTML(serverContext, { documentOnly });
 
     const fileName = routePath === '/' ? 'index.html' : `${routePath}.html`;
     if (fse.existsSync(path.join(rootDir, 'public', fileName))) {

@@ -41,10 +41,10 @@ export function Title() {
 }
 
 export function Links() {
-  const { routesConfig, matches, assetsManifest } = useAppContext();
+  const { routesConfig, matches, assetsManifest, publicPath } = useAppContext();
 
   const routeLinks = getLinks(matches, routesConfig);
-  const pageAssets = getPageAssets(matches, assetsManifest);
+  const pageAssets = getPageAssets(matches, assetsManifest, publicPath);
   const entryAssets = getEntryAssets(assetsManifest);
   const styles = entryAssets.concat(pageAssets).filter(path => path.indexOf('.css') > -1);
 
@@ -107,7 +107,7 @@ export function Main() {
   const { main } = useDocumentContext();
   const { appConfig } = useAppContext();
   return (
-    <div id={appConfig.app.rootId} >
+    <div id={appConfig.app.rootId}>
       {main}
     </div>
   );
@@ -116,16 +116,16 @@ export function Main() {
 /**
  * merge assets info for matched route
  */
-export function getPageAssets(matches: RouteMatch[], assetsManifest: AssetsManifest): string[] {
-  // TODO：publicPath from runtime
-  const { pages, publicPath } = assetsManifest;
+export function getPageAssets(matches: RouteMatch[], assetsManifest: AssetsManifest, publicPath?: string): string[] {
+  const { pages } = assetsManifest;
+  publicPath = publicPath || assetsManifest.publicPath;
 
   let result = [];
 
   matches.forEach(match => {
     const { componentName } = match.route;
     const assets = pages[componentName];
-    assets && assets.forEach(filePath => {
+    assets && assets.forEach((filePath: string) => {
       result.push(`${publicPath}${filePath}`);
     });
   });

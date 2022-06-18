@@ -66,6 +66,7 @@ export interface AppContext {
   documentOnly?: boolean;
   matchedIds?: string[];
   appExport?: AppExport;
+  publicPath?: string;
 }
 
 export type Renderer = (

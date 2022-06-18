@@ -11,24 +11,29 @@ import Document from '@/document';
 import assetsManifest from './assets-manifest.json';
 import routes from './routes';
 
-export async function renderToHTML(requestContext, documentOnly) {
+interface RenderOptions {
+  documentOnly?: boolean;
+  publicPath?: string;
+}
+
+export async function renderToHTML(requestContext, options: RenderOptions) {
   return await runtime.renderToHTML(requestContext, {
     app,
     assetsManifest,
     routes,
     runtimeModules,
     Document,
-    documentOnly,
+    ...options,
   });
 }
 
-export async function renderToResponse(requestContext, documentOnly) {
+export async function renderToResponse(requestContext, options: RenderOptions) {
   runtime.renderToResponse(requestContext, {
     app,
     assetsManifest,
     routes,
     runtimeModules,
     Document,
-    documentOnly,
+    ...options,
   });
 }

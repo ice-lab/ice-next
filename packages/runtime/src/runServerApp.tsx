@@ -30,12 +30,14 @@ interface RenderOptions {
   runtimeModules: (RuntimePlugin | CommonJsRuntime)[];
   Document: ComponentWithChildren<{}>;
   documentOnly?: boolean;
+  publicPath?: string;
 }
 
 interface Piper {
   pipe: NodeWritablePiper;
   fallback: Function;
 }
+
 interface RenderResult {
   statusCode?: number;
   value?: string | Piper;
@@ -118,7 +120,7 @@ function pipeToResponse(res: ServerResponse, pipe: NodeWritablePiper) {
 
 async function doRender(serverContext: ServerContext, renderOptions: RenderOptions): Promise<RenderResult> {
   const { req } = serverContext;
-  const { routes, documentOnly, app } = renderOptions;
+  const { routes, documentOnly, app, publicPath } = renderOptions;
   const location = getLocation(req.url);
 
   const requestContext = getRequestContext(location, serverContext);
@@ -130,7 +132,7 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
   }
 
   if (documentOnly) {
-    return renderDocument(matches, renderOptions, {});
+    return renderDocument({ matches, renderOptions, routeModules: {}, publicPath });
   }
 
   // FIXME: 原来是在 renderDocument 之前执行这段逻辑。
@@ -146,10 +148,11 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
       location,
       appConfig,
       routeModules,
+      publicPath,
     });
   } catch (err) {
     console.error('Warning: render server entry error, downgrade to csr.', err);
-    return renderDocument(matches, renderOptions, {});
+    return renderDocument({ matches, renderOptions, routeModules: {}, publicPath });
   }
 }
 
@@ -159,6 +162,16 @@ function render404(): RenderResult {
     value: 'Not Found',
     statusCode: 404,
   };
+}
+interface renderServerEntryOptions {
+  appExport: AppExport;
+  requestContext: RequestContext;
+  renderOptions: RenderOptions;
+  matches: RouteMatch[];
+  location: Location;
+  appConfig: AppConfig;
+  routeModules: RouteModules;
+  publicPath: string;
 }
 
 /**
@@ -173,15 +186,8 @@ async function renderServerEntry(
     appConfig,
     renderOptions,
     routeModules,
-  }: {
-    appExport: AppExport;
-    requestContext: RequestContext;
-    renderOptions: RenderOptions;
-    matches: RouteMatch[];
-    location: Location;
-    appConfig: AppConfig;
-    routeModules: RouteModules;
-  },
+    publicPath,
+  }: renderServerEntryOptions,
 ): Promise<RenderResult> {
   const {
     assetsManifest,
@@ -202,6 +208,7 @@ async function renderServerEntry(
     matches,
     routes,
     routeModules,
+    publicPath,
   };
 
   const runtime = new Runtime(appContext);
@@ -235,7 +242,7 @@ async function renderServerEntry(
   const pipe = renderToNodeStream(element, false);
 
   const fallback = () => {
-    return renderDocument(matches, renderOptions, routeModules);
+    return renderDocument({ matches, renderOptions, routeModules, publicPath });
   };
 
   return {
@@ -246,16 +253,29 @@ async function renderServerEntry(
   };
 }
 
+interface RenderDocumentOptions {
+  matches: RouteMatch[];
+  renderOptions: RenderOptions;
+  routeModules: RouteModules;
+  publicPath?: string;
+}
 /**
  * Render Document for CSR.
  */
-function renderDocument(matches: RouteMatch[], options: RenderOptions, routeModules: RouteModules): RenderResult {
+function renderDocument(
+  {
+    matches,
+    renderOptions,
+    routeModules,
+    publicPath,
+  }: RenderDocumentOptions,
+): RenderResult {
   const {
     routes,
     assetsManifest,
     app,
     Document,
-  } = options;
+  } = renderOptions;
 
   const routesData = null;
   const appConfig = getAppConfig(app);
@@ -270,6 +290,7 @@ function renderDocument(matches: RouteMatch[], options: RenderOptions, routeModu
     routes,
     documentOnly: true,
     routeModules,
+    publicPath,
   };
 
   const documentContext = {
