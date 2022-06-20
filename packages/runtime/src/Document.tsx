@@ -45,7 +45,7 @@ export function Links() {
 
   const routeLinks = getLinks(matches, routesConfig);
   const pageAssets = getPageAssets(matches, assetsManifest, publicPath);
-  const entryAssets = getEntryAssets(assetsManifest);
+  const entryAssets = getEntryAssets(assetsManifest, publicPath);
   const styles = entryAssets.concat(pageAssets).filter(path => path.indexOf('.css') > -1);
 
   return (
@@ -62,11 +62,11 @@ export function Links() {
 }
 
 export function Scripts() {
-  const { routesData, routesConfig, matches, assetsManifest, documentOnly, routeModules } = useAppContext();
+  const { routesData, routesConfig, matches, assetsManifest, documentOnly, routeModules, publicPath } = useAppContext();
 
   const routeScripts = getScripts(matches, routesConfig);
-  const pageAssets = getPageAssets(matches, assetsManifest);
-  const entryAssets = getEntryAssets(assetsManifest);
+  const pageAssets = getPageAssets(matches, assetsManifest, publicPath);
+  const entryAssets = getEntryAssets(assetsManifest, publicPath);
   // entry assets need to be load before page assets
   const scripts = entryAssets.concat(pageAssets).filter(path => path.indexOf('.js') > -1);
 
@@ -116,7 +116,11 @@ export function Main() {
 /**
  * merge assets info for matched route
  */
-export function getPageAssets(matches: RouteMatch[], assetsManifest: AssetsManifest, publicPath?: string): string[] {
+export function getPageAssets(
+  matches: RouteMatch[],
+  assetsManifest: AssetsManifest,
+  publicPath?: string,
+): string[] {
   const { pages } = assetsManifest;
   publicPath = publicPath || assetsManifest.publicPath;
 
@@ -133,8 +137,9 @@ export function getPageAssets(matches: RouteMatch[], assetsManifest: AssetsManif
   return result;
 }
 
-export function getEntryAssets(assetsManifest: AssetsManifest): string[] {
-  const { entries, publicPath } = assetsManifest;
+export function getEntryAssets(assetsManifest: AssetsManifest, publicPath?: string): string[] {
+  const { entries } = assetsManifest;
+  publicPath = publicPath || assetsManifest.publicPath;
   let result = [];
 
   Object.values(entries).forEach(assets => {
