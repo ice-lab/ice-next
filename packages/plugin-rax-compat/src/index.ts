@@ -1,6 +1,7 @@
 import { createRequire } from 'module';
 import type { Plugin } from '@ice/types';
 import type { RuleSetRule } from 'webpack';
+import consola from 'consola';
 
 const require = createRequire(import.meta.url);
 
@@ -32,6 +33,8 @@ function getPlugin(options: CompatRaxOptions): Plugin {
     onGetConfig((config) => {
       Object.assign(config.alias, alias);
       if (options.inlineStyle) {
+        consola.warn('[WARN] Enabling inline style is not recommended.');
+        consola.warn('       It is recommended to use CSS modules (as default). Only allow old projects to migrate and use.');
         config.configureWebpack ??= [];
         config.configureWebpack.unshift((config) => {
           const { rules } = config.module || {};

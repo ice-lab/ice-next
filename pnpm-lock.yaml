@@ -441,9 +441,11 @@ importers:
     specifiers:
       '@ice/types': ^1.0.0
       '@types/webpack': ^5.28.0
+      consola: ^2.15.3
       rax-compat: ^0.1.0
       stylesheet-loader: ^0.9.1
     dependencies:
+      consola: registry.npmjs.org/consola/2.15.3
       rax-compat: link:../rax-compat
       stylesheet-loader: registry.npmjs.org/stylesheet-loader/0.9.1
     devDependencies:
@@ -16028,6 +16030,12 @@ packages:
     name: commander
     version: 2.20.3
     dev: true
+
+  registry.npmjs.org/consola/2.15.3:
+    resolution: {integrity: sha512-9vAdYbHj6x2fLKC4+oPH0kFzY/orMZyG2Aj+kNylHxKGJ/Ed4dpNyAQYwJOdqO4zdM7XpVHmyejQDcQHrnuXbw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/consola/-/consola-2.15.3.tgz}
+    name: consola
+    version: 2.15.3
+    dev: false
 
   registry.npmjs.org/css/2.2.4:
     resolution: {integrity: sha512-oUnjmWpy0niI3x/mPL8dVEI1l7MnG3+HHyRPHf+YFSbK+svOhXpmSOcDURUh2aOCgl2grzrOPt1nHLuCVFULLw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/css/-/css-2.2.4.tgz}
