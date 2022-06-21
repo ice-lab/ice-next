@@ -1,5 +1,5 @@
 import { defineAppConfig } from 'ice';
-import { defineAuthConfig } from '@ice/plugin-auth/runtime';
+import { defineAuthConfig } from '@ice/plugin-auth/esm/runtime';
 
 if (process.env.ICE_CORE_ERROR_BOUNDARY === 'true') {
   console.error('__REMOVED__');
