@@ -53,6 +53,10 @@ const runtime: RuntimePlugin = async ({ appContext, useConfig, addProvider, addW
   addWrapper(AuthRouteWrapper);
 };
 
+export function defineAuthConfig(fn: Auth) {
+  return fn;
+}
+
 export type {
   Auth,
 };

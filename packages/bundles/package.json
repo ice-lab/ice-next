@@ -9,8 +9,8 @@
     "compiled"
   ],
   "scripts": {
-    "build": "esmo scripts/build.ts && tsc",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "build": "esmo scripts/build.ts && tsc"
   },
   "main": "./esm/index.js",
   "type": "module",

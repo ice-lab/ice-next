@@ -1,6 +1,5 @@
 import { defineAppConfig } from 'ice';
-// @ts-expect-error
-import { defineAuthConfig } from '@ice/plugin-auth/runtime/types';
+import { defineAuthConfig } from '@ice/plugin-auth/runtime';
 
 if (process.env.ICE_CORE_ERROR_BOUNDARY === 'true') {
   console.error('__REMOVED__');

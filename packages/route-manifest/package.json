@@ -18,7 +18,7 @@
     "minimatch": "^5.0.1"
   },
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "build": "tsc"
   }
 }

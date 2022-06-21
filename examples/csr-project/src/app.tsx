@@ -1,6 +1,5 @@
 import { defineAppConfig } from 'ice';
-// @ts-expect-error
-import { defineAuthConfig } from '@ice/plugin-auth/runtime/types';
+import { defineAuthConfig } from '@ice/plugin-auth/runtime';
 
 console.log('__LOG__');
 console.warn('__WARN__');
