@@ -61,6 +61,7 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
           ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
           ACCESS_KEY_SECRET: ${{ secrets.ACCESS_KEY_SECRET }}
           CI: true
