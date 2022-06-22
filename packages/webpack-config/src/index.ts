@@ -116,7 +116,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       test: (module: NormalModule) => {
         // do not lazy for framework bundles
         const frameworkRegex = new RegExp(`[\\\\/]node_modules[\\\\/](${FRAMEWORK_BUNDLES.join('|')})[\\\\/]`);
-        return !module?.resourceResolveData?.path.match(frameworkRegex);
+        return !frameworkRegex.test(module?.resourceResolveData?.path);
       },
       ...(typeof experimental?.lazyCompilation === 'object' ? { ...experimental.lazyCompilation } : {}),
     },
