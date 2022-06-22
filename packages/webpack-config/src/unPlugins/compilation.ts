@@ -84,6 +84,7 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
         const output = await transform(source, programmaticOptions);
         const { code } = output;
         let { map } = output;
+        // FIXME: swc transform should return the sourcemap which the type is object
         if (typeof map === 'string') {
           // map require object type
           map = JSON.parse(map);
