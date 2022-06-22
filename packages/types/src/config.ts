@@ -1,6 +1,6 @@
 import type webpack from 'webpack';
-import type { RuleSetRule, Configuration } from 'webpack';
-import type { ProxyConfigArray, ProxyConfigArrayItem, ProxyConfigMap, Middleware, ServerOptions } from 'webpack-dev-server';
+import type { RuleSetRule, Configuration, Compiler, WebpackPluginInstance } from 'webpack';
+import type { ProxyConfigArray, ProxyConfigArrayItem, ProxyConfigMap, Middleware, ServerOptions, Configuration as DevServerConfiguration } from 'webpack-dev-server';
 import type { Options } from 'eslint-webpack-plugin';
 import type { ForkTsCheckerWebpackPluginOptions } from 'fork-ts-checker-webpack-plugin/lib/plugin-options';
 import type { UnpluginOptions } from 'unplugin';
@@ -22,6 +22,11 @@ interface ConfigurationCtx extends Config {
   supportedBrowsers: string[];
   hashKey: string;
   webpack: typeof webpack;
+}
+
+interface SwcOptions {
+  jsxTransform?: boolean;
+  removeExportExprs?: string[];
 }
 
 type Experimental = Pick<Configuration, 'experiments'>;
@@ -49,6 +54,11 @@ export interface Config {
   publicPath?: string;
 
   loaders?: (RuleSetRule | '...')[];
+
+  plugins?: (
+    | ((this: Compiler, compiler: Compiler) => void)
+    | WebpackPluginInstance
+  )[];
 
   alias?: Record<string, any>;
 
@@ -81,4 +91,18 @@ export interface Config {
   tsCheckerOptions?: ForkTsCheckerWebpackPluginOptions;
 
   eslintOptions?: Options;
+
+  swcOptions?: SwcOptions;
+
+  entry?: {
+    [key: string]: string;
+  };
+
+  splitChunks?: boolean;
+
+  assetsManifest?: boolean;
+
+  concatenateModules?: boolean;
+
+  devServer?: DevServerConfiguration;
 }

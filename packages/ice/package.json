@@ -18,7 +18,10 @@
     "node": ">=12.22.0",
     "npm": ">=3.0.0"
   },
-  "scripts": {},
+  "scripts": {
+    "watch": "tsc -w",
+    "build": "tsc"
+  },
   "author": "ice-admin",
   "license": "MIT",
   "repository": "ice-lab/ice-next",
