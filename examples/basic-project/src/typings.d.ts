@@ -13,4 +13,4 @@ declare module '*.module.scss' {
   export default classes;
 }
 
-declare module '@ice/plugin-auth/runtime';
+declare module '@ice/plugin-auth/runtime/types';
