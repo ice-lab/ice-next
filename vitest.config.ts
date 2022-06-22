@@ -20,7 +20,7 @@ export default defineConfig({
       '**/tests/fixtures/**',
     ],
     coverage: {
-      reporter: ['cobertura'],
+      reporter: ['cobertura', 'text'],
       include: ['**/packages/**'],
       exclude: [
         '**/bundles/compiled/**',
