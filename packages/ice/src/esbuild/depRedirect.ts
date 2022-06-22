@@ -67,7 +67,7 @@ const createDepRedirectPlugin = (metadata: DepsMetaData): Plugin => {
             });
           } else {
             // export * from '...'
-            str.overwrite(start, end, `'${filePath}'`, { contentOnly: true });
+            str.overwrite(start, end, filePath, { contentOnly: true });
           }
         }
 
