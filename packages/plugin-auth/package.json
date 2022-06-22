@@ -25,7 +25,7 @@
       "import": "./esm/types.js",
       "default": "./esm/types.js"
     },
-    "./esm/runtime/types": {
+    "./esm/types": {
       "types": "./esm/types.d.ts",
       "import": "./esm/types.js",
       "default": "./esm/types.js"
