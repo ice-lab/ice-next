@@ -35,6 +35,8 @@ export function createServerCompiler(options: Options) {
 
   const transformPlugins = getCompilerPlugins({
     ...config,
+    // don't bundle fast refresh code
+    mode: 'production',
     swcOptions,
   }, 'esbuild');
 

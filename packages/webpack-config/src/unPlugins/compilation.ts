@@ -82,8 +82,12 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
 
       try {
         const output = await transform(source, programmaticOptions);
-        const { code, map } = output;
-
+        const { code } = output;
+        let { map } = output;
+        if (typeof map === 'string') {
+          // map require object type
+          map = JSON.parse(map);
+        }
         return { code, map };
       } catch (e) {
         // catch error for Unhandled promise rejection
