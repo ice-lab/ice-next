@@ -16,9 +16,7 @@ jobs:
         working-directory: ./website
     steps:
       # 拉取代码
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v2
 
       - name: Use Node.js 14.x
         uses: actions/setup-node@v3
