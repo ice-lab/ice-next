@@ -1,5 +1,5 @@
 import { defineAppConfig } from 'ice';
-import { defineAuthConfig } from '@ice/plugin-auth/runtime/types';
+import { defineAuthConfig } from '@ice/plugin-auth/esm/runtime/types';
 
 console.log('__LOG__');
 console.warn('__WARN__');

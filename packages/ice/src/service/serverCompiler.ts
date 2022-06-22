@@ -103,7 +103,7 @@ export function createServerCompiler(options: Options) {
     const buildResult = await esbuild.build({
       bundle: true,
       format: 'esm',
-      target: 'node14.8.0',
+      target: 'node12.20.0',
       // enable JSX syntax in .js files by default for compatible with migrate project
       // while it is not recommended
       loader: { '.js': 'jsx' },

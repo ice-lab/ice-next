@@ -24,6 +24,11 @@
       "types": "./esm/runtime/types.d.ts",
       "import": "./esm/runtime/types.js",
       "default": "./esm/runtime/types.js"
+    },
+    "./esm/runtime/types": {
+      "types": "./esm/runtime/types.d.ts",
+      "import": "./esm/runtime/types.js",
+      "default": "./esm/runtime/types.js"
     }
   },
   "main": "./esm/index.js",
