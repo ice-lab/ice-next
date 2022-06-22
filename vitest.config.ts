@@ -19,5 +19,12 @@ export default defineConfig({
       '**/esm/**',
       '**/tests/fixtures/**',
     ],
+    coverage: {
+      include: ['**/packages/**'],
+      exclude: [
+        '**/bundles/compiled/**',
+        '**/tests/**',
+      ],
+    },
   },
 });
