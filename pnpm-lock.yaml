@@ -16,7 +16,6 @@ importers:
       c8: ^7.11.0
       chalk: ^4.1.2
       chokidar: ^3.5.3
-      concurrently: ^7.2.2
       dependency-check: ^4.1.0
       dts-bundle: ^0.7.3
       eslint: ^8.7.0
@@ -39,7 +38,6 @@ importers:
       stylelint: ^14.3.0
       typescript: ^4.7.0
       vitest: ^0.15.2
-      wait-on: ^6.0.1
     devDependencies:
       '@applint/spec': 1.2.3_jbe2eclbj3u3z6itw6gmfdmt3a
       '@commitlint/cli': 16.2.3
@@ -53,7 +51,6 @@ importers:
       c8: 7.11.2
       chalk: 4.1.2
       chokidar: 3.5.3
-      concurrently: 7.2.2
       dependency-check: 4.1.0
       dts-bundle: 0.7.3
       eslint: 8.14.0
@@ -76,7 +73,6 @@ importers:
       stylelint: 14.7.1
       typescript: 4.7.3
       vitest: 0.15.2_c8@7.11.2
-      wait-on: 6.0.1
 
   examples/basic-project:
     specifiers:
@@ -2373,7 +2369,7 @@ packages:
     dev: true
 
   /@builder/swc-darwin-arm64/0.2.0:
-    resolution: {integrity: sha512-+nmnScnq40eMKqCLpVwl7P/JCHrzm9q1ECvD/nGTNATweMB0hhTjX7V/5DfHELl1RHGnw7NchAuVJDesNa9daw==}
+    resolution: {integrity: sha512-+nmnScnq40eMKqCLpVwl7P/JCHrzm9q1ECvD/nGTNATweMB0hhTjX7V/5DfHELl1RHGnw7NchAuVJDesNa9daw==, tarball: '@builder/swc-darwin-arm64/download/@builder/swc-darwin-arm64-0.2.0.tgz'}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
@@ -2382,7 +2378,7 @@ packages:
     optional: true
 
   /@builder/swc-darwin-x64/0.2.0:
-    resolution: {integrity: sha512-vR9H+o5WmrasoAgMmL9HA2DfUosreGt0Pak54iOIyu3V6hSXaLxKuSidqEMcWBG1nN2wEYBvlzP8s04WusqPRQ==}
+    resolution: {integrity: sha512-vR9H+o5WmrasoAgMmL9HA2DfUosreGt0Pak54iOIyu3V6hSXaLxKuSidqEMcWBG1nN2wEYBvlzP8s04WusqPRQ==, tarball: '@builder/swc-darwin-x64/download/@builder/swc-darwin-x64-0.2.0.tgz'}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
@@ -2391,43 +2387,47 @@ packages:
     optional: true
 
   /@builder/swc-linux-arm64-gnu/0.2.0:
-    resolution: {integrity: sha512-O18+aSQ7ZGcBwongjsatQ7OcJo9D0YDsBujPkQfQ0sBwnxmzGTw4kkXHr/K9Bou9wcy8TEpXRfaauaLHzzecAA==}
+    resolution: {integrity: sha512-O18+aSQ7ZGcBwongjsatQ7OcJo9D0YDsBujPkQfQ0sBwnxmzGTw4kkXHr/K9Bou9wcy8TEpXRfaauaLHzzecAA==, tarball: '@builder/swc-linux-arm64-gnu/download/@builder/swc-linux-arm64-gnu-0.2.0.tgz'}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
     requiresBuild: true
     dev: false
     optional: true
 
   /@builder/swc-linux-arm64-musl/0.2.0:
-    resolution: {integrity: sha512-0vkGpqmJNOfsWh7qb3Mqga0gJPsAomxPitWapRlFQ736Q0qHL4Bb270/VZO3xcjA0zZKaN8VdwVw+Pxqg3ziQA==}
+    resolution: {integrity: sha512-0vkGpqmJNOfsWh7qb3Mqga0gJPsAomxPitWapRlFQ736Q0qHL4Bb270/VZO3xcjA0zZKaN8VdwVw+Pxqg3ziQA==, tarball: '@builder/swc-linux-arm64-musl/download/@builder/swc-linux-arm64-musl-0.2.0.tgz'}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
     requiresBuild: true
     dev: false
     optional: true
 
   /@builder/swc-linux-x64-gnu/0.2.0:
-    resolution: {integrity: sha512-6gPaiwQq1l/eeNthOBvWInHU5i2bfbnGuw4YDsTF2pHhbHd7eR++N5viTROJLjFaZevWrNUbfMc47IMRGQg7WA==}
+    resolution: {integrity: sha512-6gPaiwQq1l/eeNthOBvWInHU5i2bfbnGuw4YDsTF2pHhbHd7eR++N5viTROJLjFaZevWrNUbfMc47IMRGQg7WA==, tarball: '@builder/swc-linux-x64-gnu/download/@builder/swc-linux-x64-gnu-0.2.0.tgz'}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
     requiresBuild: true
     dev: false
     optional: true
 
   /@builder/swc-linux-x64-musl/0.2.0:
-    resolution: {integrity: sha512-01zpp3sHM48x1Tl1fzM6si1E6ZIooJkXts+vPu36v265gXEb1winhFHCXXtQXvSHZ/XEyRFD1BcgdCm3goSJRw==}
+    resolution: {integrity: sha512-01zpp3sHM48x1Tl1fzM6si1E6ZIooJkXts+vPu36v265gXEb1winhFHCXXtQXvSHZ/XEyRFD1BcgdCm3goSJRw==, tarball: '@builder/swc-linux-x64-musl/download/@builder/swc-linux-x64-musl-0.2.0.tgz'}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
     requiresBuild: true
     dev: false
     optional: true
 
   /@builder/swc-win32-arm64-msvc/0.2.0:
-    resolution: {integrity: sha512-+06kFldeVV1Yzy2tfkeClwsglW50j6qG2vpTA3Tqwp5kEAGFNT1tUwsoWcbySJSCRlGBAVHDZxJlsUMqSK34Yw==}
+    resolution: {integrity: sha512-+06kFldeVV1Yzy2tfkeClwsglW50j6qG2vpTA3Tqwp5kEAGFNT1tUwsoWcbySJSCRlGBAVHDZxJlsUMqSK34Yw==, tarball: '@builder/swc-win32-arm64-msvc/download/@builder/swc-win32-arm64-msvc-0.2.0.tgz'}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [win32]
@@ -2436,7 +2436,7 @@ packages:
     optional: true
 
   /@builder/swc-win32-ia32-msvc/0.2.0:
-    resolution: {integrity: sha512-wc9GA1YWv5ZxVYl73KDdRuX3All8reNIUbtPEKz2LwQ5locUX6gb7pdDzDz0et/xXjshZRGka7wDU2wzgi8Giw==}
+    resolution: {integrity: sha512-wc9GA1YWv5ZxVYl73KDdRuX3All8reNIUbtPEKz2LwQ5locUX6gb7pdDzDz0et/xXjshZRGka7wDU2wzgi8Giw==, tarball: '@builder/swc-win32-ia32-msvc/download/@builder/swc-win32-ia32-msvc-0.2.0.tgz'}
     engines: {node: '>= 10'}
     cpu: [ia32]
     os: [win32]
@@ -2445,7 +2445,7 @@ packages:
     optional: true
 
   /@builder/swc-win32-x64-msvc/0.2.0:
-    resolution: {integrity: sha512-l8eMGTigKHrA46HAkXWblYwxQeT/SEe9yKrIYi2kfngWHNUALUFlPnnoJOSmLCGwPRZTHUgcx45Ta+15ahj5DQ==}
+    resolution: {integrity: sha512-l8eMGTigKHrA46HAkXWblYwxQeT/SEe9yKrIYi2kfngWHNUALUFlPnnoJOSmLCGwPRZTHUgcx45Ta+15ahj5DQ==, tarball: '@builder/swc-win32-x64-msvc/download/@builder/swc-win32-x64-msvc-0.2.0.tgz'}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
@@ -2471,7 +2471,7 @@ packages:
     dev: false
 
   /@colors/colors/1.5.0:
-    resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
+    resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==, tarball: '@colors/colors/download/@colors/colors-1.5.0.tgz'}
     engines: {node: '>=0.1.90'}
     requiresBuild: true
     dev: true
@@ -3181,7 +3181,7 @@ packages:
     dev: true
 
   /@docusaurus/react-loadable/5.5.2_react@18.0.0:
-    resolution: {integrity: sha512-A3dYjdBGuy0IGT+wyLIGIKLRE+sAk1iNk0f1HjNDysO7u8lhL4N3VEm+FAubmJbAztn94F7MxBTPmnixbiyFdQ==}
+    resolution: {integrity: sha1-garg24Hsr72u42UfEoBFgIaPps4=, tarball: '@docusaurus/react-loadable/download/@docusaurus/react-loadable-5.5.2.tgz'}
     peerDependencies:
       react: '*'
     dependencies:
@@ -4139,7 +4139,7 @@ packages:
     dev: true
 
   /@swc/core-android-arm-eabi/1.2.168:
-    resolution: {integrity: sha512-RjjudVdJxm1KoNrbFxQIppJQjB1mzMYKW6+HYKVl8ktc7i/mnjwcl0cXVBWGbw1xsRWbTjHMHPs/kJ3hOESoeg==}
+    resolution: {integrity: sha512-RjjudVdJxm1KoNrbFxQIppJQjB1mzMYKW6+HYKVl8ktc7i/mnjwcl0cXVBWGbw1xsRWbTjHMHPs/kJ3hOESoeg==, tarball: '@swc/core-android-arm-eabi/download/@swc/core-android-arm-eabi-1.2.168.tgz'}
     engines: {node: '>=10'}
     cpu: [arm]
     os: [android]
@@ -4147,7 +4147,7 @@ packages:
     optional: true
 
   /@swc/core-android-arm64/1.2.168:
-    resolution: {integrity: sha512-K83gxb578LJid4GI047oSdaK90REnaXfXa+f+DT3Ud5hKFDrF7zkpyF6oxfHJGTl9LCUMXhijwg8aRXaFZFqWQ==}
+    resolution: {integrity: sha512-K83gxb578LJid4GI047oSdaK90REnaXfXa+f+DT3Ud5hKFDrF7zkpyF6oxfHJGTl9LCUMXhijwg8aRXaFZFqWQ==, tarball: '@swc/core-android-arm64/download/@swc/core-android-arm64-1.2.168.tgz'}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [android]
@@ -4155,7 +4155,7 @@ packages:
     optional: true
 
   /@swc/core-darwin-arm64/1.2.168:
-    resolution: {integrity: sha512-/kciTqYbEryg3e2C+/Twpww7LBc+zaF7yhz2AmxOrA7nQKuUNHA3Q/Y4sXthSXD2BLqPABJETbRmfmumNi8gQA==}
+    resolution: {integrity: sha512-/kciTqYbEryg3e2C+/Twpww7LBc+zaF7yhz2AmxOrA7nQKuUNHA3Q/Y4sXthSXD2BLqPABJETbRmfmumNi8gQA==, tarball: '@swc/core-darwin-arm64/download/@swc/core-darwin-arm64-1.2.168.tgz'}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [darwin]
@@ -4163,7 +4163,7 @@ packages:
     optional: true
 
   /@swc/core-darwin-x64/1.2.168:
-    resolution: {integrity: sha512-PbciVgB24OX6QCUmJmkD2hfZQh9LostC89vALfasUwT/wj3rHeg2SD2rvoPlIf0lYZjUPNfpbhDoxkUeEt+SEg==}
+    resolution: {integrity: sha512-PbciVgB24OX6QCUmJmkD2hfZQh9LostC89vALfasUwT/wj3rHeg2SD2rvoPlIf0lYZjUPNfpbhDoxkUeEt+SEg==, tarball: '@swc/core-darwin-x64/download/@swc/core-darwin-x64-1.2.168.tgz'}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [darwin]
@@ -4171,7 +4171,7 @@ packages:
     optional: true
 
   /@swc/core-freebsd-x64/1.2.168:
-    resolution: {integrity: sha512-lp3lNrjF2vNSOtsRFVRDs0EBpwoXQSD0MeZugX9EwHbHXavPlY+Kmo6cNqHfdrxIVOoVOYMlqQn+kO3/4mwYAQ==}
+    resolution: {integrity: sha512-lp3lNrjF2vNSOtsRFVRDs0EBpwoXQSD0MeZugX9EwHbHXavPlY+Kmo6cNqHfdrxIVOoVOYMlqQn+kO3/4mwYAQ==, tarball: '@swc/core-freebsd-x64/download/@swc/core-freebsd-x64-1.2.168.tgz'}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [freebsd]
@@ -4179,7 +4179,7 @@ packages:
     optional: true
 
   /@swc/core-linux-arm-gnueabihf/1.2.168:
-    resolution: {integrity: sha512-TVYXoITQTCPOthHXhmBHFR77mXKE3tGN8CRAHtFYC0mUb42LY5nUQ8yc6peNpcvSqAUzK9K079koDltWIDfWKw==}
+    resolution: {integrity: sha512-TVYXoITQTCPOthHXhmBHFR77mXKE3tGN8CRAHtFYC0mUb42LY5nUQ8yc6peNpcvSqAUzK9K079koDltWIDfWKw==, tarball: '@swc/core-linux-arm-gnueabihf/download/@swc/core-linux-arm-gnueabihf-1.2.168.tgz'}
     engines: {node: '>=10'}
     cpu: [arm]
     os: [linux]
@@ -4187,39 +4187,43 @@ packages:
     optional: true
 
   /@swc/core-linux-arm64-gnu/1.2.168:
-    resolution: {integrity: sha512-Xw7Vj/4EJA5V8kQ5cziUbj3qZQSt8n5Pr2TnFCZ3NkCL8og2JYf2N1mOTAI+PIknaDqh1boz+k9xEs1araQ2lA==}
+    resolution: {integrity: sha512-Xw7Vj/4EJA5V8kQ5cziUbj3qZQSt8n5Pr2TnFCZ3NkCL8og2JYf2N1mOTAI+PIknaDqh1boz+k9xEs1araQ2lA==, tarball: '@swc/core-linux-arm64-gnu/download/@swc/core-linux-arm64-gnu-1.2.168.tgz'}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
     requiresBuild: true
     optional: true
 
   /@swc/core-linux-arm64-musl/1.2.168:
-    resolution: {integrity: sha512-71HHYhyNxpv1Maiqv/U5cHFMitU3MP2TN77vTi5ifPw+6H7A3fG86aqE8zr7YEGsSmOzgQUrMMblqvwe52IrlQ==}
+    resolution: {integrity: sha512-71HHYhyNxpv1Maiqv/U5cHFMitU3MP2TN77vTi5ifPw+6H7A3fG86aqE8zr7YEGsSmOzgQUrMMblqvwe52IrlQ==, tarball: '@swc/core-linux-arm64-musl/download/@swc/core-linux-arm64-musl-1.2.168.tgz'}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
     requiresBuild: true
     optional: true
 
   /@swc/core-linux-x64-gnu/1.2.168:
-    resolution: {integrity: sha512-kEP3VN6Seoz73Fyu+80qkKtIURl/FvlT6NNju55uTMqeeiF3su0CRC60A2/IWHwAZ8sjlorgcXQeaiNTyJmWBQ==}
+    resolution: {integrity: sha512-kEP3VN6Seoz73Fyu+80qkKtIURl/FvlT6NNju55uTMqeeiF3su0CRC60A2/IWHwAZ8sjlorgcXQeaiNTyJmWBQ==, tarball: '@swc/core-linux-x64-gnu/download/@swc/core-linux-x64-gnu-1.2.168.tgz'}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
     requiresBuild: true
     optional: true
 
   /@swc/core-linux-x64-musl/1.2.168:
-    resolution: {integrity: sha512-IEDB4T5KyUB0BEdIsSJuFm1CV9Y1wIEG15870J0dONkvO1iv5lqWZ7GwA52w/YaI61iNC8+cZYWqfwr4MWj1EQ==}
+    resolution: {integrity: sha512-IEDB4T5KyUB0BEdIsSJuFm1CV9Y1wIEG15870J0dONkvO1iv5lqWZ7GwA52w/YaI61iNC8+cZYWqfwr4MWj1EQ==, tarball: '@swc/core-linux-x64-musl/download/@swc/core-linux-x64-musl-1.2.168.tgz'}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
     requiresBuild: true
     optional: true
 
   /@swc/core-win32-arm64-msvc/1.2.168:
-    resolution: {integrity: sha512-cBiYhBdrW+GdfKJdNhIE/7Pw+45Kn7SKZ78TPc/0ibGXDdx2IkuDhO7x1eZy0eLlS+Br6OLUs9FkgbcMrpZAGw==}
+    resolution: {integrity: sha512-cBiYhBdrW+GdfKJdNhIE/7Pw+45Kn7SKZ78TPc/0ibGXDdx2IkuDhO7x1eZy0eLlS+Br6OLUs9FkgbcMrpZAGw==, tarball: '@swc/core-win32-arm64-msvc/download/@swc/core-win32-arm64-msvc-1.2.168.tgz'}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [win32]
@@ -4227,7 +4231,7 @@ packages:
     optional: true
 
   /@swc/core-win32-ia32-msvc/1.2.168:
-    resolution: {integrity: sha512-ShbX43+hFqDWLU4R8FnDFIPXR8OzC0zBwJBj8QPV3YmeoQD+wyA7NGBccm/8UbnEY5uE2t7P4Pz8891d6TW3Ww==}
+    resolution: {integrity: sha512-ShbX43+hFqDWLU4R8FnDFIPXR8OzC0zBwJBj8QPV3YmeoQD+wyA7NGBccm/8UbnEY5uE2t7P4Pz8891d6TW3Ww==, tarball: '@swc/core-win32-ia32-msvc/download/@swc/core-win32-ia32-msvc-1.2.168.tgz'}
     engines: {node: '>=10'}
     cpu: [ia32]
     os: [win32]
@@ -4235,7 +4239,7 @@ packages:
     optional: true
 
   /@swc/core-win32-x64-msvc/1.2.168:
-    resolution: {integrity: sha512-e+SPSiBHSlAI4+RM+Fcz8HVqpHQaGFiDL4b8LwguVgRdoDVeJAjamw53r2UJ23X++9PXamT3rhzPs5XEH0PQhg==}
+    resolution: {integrity: sha512-e+SPSiBHSlAI4+RM+Fcz8HVqpHQaGFiDL4b8LwguVgRdoDVeJAjamw53r2UJ23X++9PXamT3rhzPs5XEH0PQhg==, tarball: '@swc/core-win32-x64-msvc/download/@swc/core-win32-x64-msvc-1.2.168.tgz'}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [win32]
@@ -4659,7 +4663,7 @@ packages:
       '@types/node': 17.0.27
 
   /@types/yauzl/2.10.0:
-    resolution: {integrity: sha512-Cn6WYCm0tXv8p6k+A8PvbDG763EDpBoTzHdA+Q/MF6H3sapGjCm9NzoaJncJS9tUKSuCoDs9XHxYYsQDgxR6kw==}
+    resolution: {integrity: sha512-Cn6WYCm0tXv8p6k+A8PvbDG763EDpBoTzHdA+Q/MF6H3sapGjCm9NzoaJncJS9tUKSuCoDs9XHxYYsQDgxR6kw==, tarball: '@types/yauzl/download/@types/yauzl-2.10.0.tgz'}
     requiresBuild: true
     dependencies:
       '@types/node': 17.0.27
@@ -6310,22 +6314,6 @@ packages:
       source-map: 0.6.1
     dev: true
 
-  /concurrently/7.2.2:
-    resolution: {integrity: sha512-DcQkI0ruil5BA/g7Xy3EWySGrFJovF5RYAYxwGvv9Jf9q9B1v3jPFP2tl6axExNf1qgF30kjoNYrangZ0ey4Aw==}
-    engines: {node: ^12.20.0 || ^14.13.0 || >=16.0.0}
-    hasBin: true
-    dependencies:
-      chalk: 4.1.2
-      date-fns: 2.28.0
-      lodash: 4.17.21
-      rxjs: 7.5.5
-      shell-quote: 1.7.3
-      spawn-command: 0.0.2-1
-      supports-color: 8.1.1
-      tree-kill: 1.2.2
-      yargs: 17.4.1
-    dev: true
-
   /configstore/5.0.1:
     resolution: {integrity: sha512-aMKprgk5YhBNyH25hj8wGt2+D52Sw1DRRIzqBwLp2Ya9mFmY8KPvvtvmna8SxVR9JMZ4kzMD68N22vlaRpkeFA==}
     engines: {node: '>=8'}
@@ -6898,11 +6886,6 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /date-fns/2.28.0:
-    resolution: {integrity: sha512-8d35hViGYx/QH0icHYCeLmsLmMUheMmTyV9Fcm6gvNwdw31yXXH+O85sOBJ+OLnLQMKZowvpKb6FgMIQjcpvQw==}
-    engines: {node: '>=0.11'}
-    dev: true
-
   /dayjs/1.11.2:
     resolution: {integrity: sha512-F4LXf1OeU9hrSYRPTTj/6FbO4HTjPKXvEIC1P2kcnFurViINCVk3ZV0xAS3XVx9MkMsXbbqlK6hjseaYbgKEHw==}
     dev: false
@@ -7382,7 +7365,7 @@ packages:
     dev: true
 
   /errno/0.1.8:
-    resolution: {integrity: sha512-dJ6oBr5SQ1VSd9qkk7ByRgb/1SH4JZjCHSW/mr63/QcXO9zLVxvJ6Oy13nio03rxpSnVDDjFor75SjVeZWPW/A==}
+    resolution: {integrity: sha1-i7Ppx9Rjvkl2/4iPdrSAnrwugR8=, tarball: errno/download/errno-0.1.8.tgz}
     hasBin: true
     requiresBuild: true
     dependencies:
@@ -7448,7 +7431,7 @@ packages:
       is-symbol: 1.0.4
 
   /esbuild-android-64/0.14.38:
-    resolution: {integrity: sha512-aRFxR3scRKkbmNuGAK+Gee3+yFxkTJO/cx83Dkyzo4CnQl/2zVSurtG6+G86EQIZ+w+VYngVyK7P3HyTBKu3nw==}
+    resolution: {integrity: sha512-aRFxR3scRKkbmNuGAK+Gee3+yFxkTJO/cx83Dkyzo4CnQl/2zVSurtG6+G86EQIZ+w+VYngVyK7P3HyTBKu3nw==, tarball: esbuild-android-64/download/esbuild-android-64-0.14.38.tgz}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [android]
@@ -7456,7 +7439,7 @@ packages:
     optional: true
 
   /esbuild-android-arm64/0.14.38:
-    resolution: {integrity: sha512-L2NgQRWuHFI89IIZIlpAcINy9FvBk6xFVZ7xGdOwIm8VyhX1vNCEqUJO3DPSSy945Gzdg98cxtNt8Grv1CsyhA==}
+    resolution: {integrity: sha512-L2NgQRWuHFI89IIZIlpAcINy9FvBk6xFVZ7xGdOwIm8VyhX1vNCEqUJO3DPSSy945Gzdg98cxtNt8Grv1CsyhA==, tarball: esbuild-android-arm64/download/esbuild-android-arm64-0.14.38.tgz}
     engines: {node: '>=12'}
     cpu: [arm64]
     os: [android]
@@ -7464,7 +7447,7 @@ packages:
     optional: true
 
   /esbuild-darwin-64/0.14.38:
-    resolution: {integrity: sha512-5JJvgXkX87Pd1Og0u/NJuO7TSqAikAcQQ74gyJ87bqWRVeouky84ICoV4sN6VV53aTW+NE87qLdGY4QA2S7KNA==}
+    resolution: {integrity: sha512-5JJvgXkX87Pd1Og0u/NJuO7TSqAikAcQQ74gyJ87bqWRVeouky84ICoV4sN6VV53aTW+NE87qLdGY4QA2S7KNA==, tarball: esbuild-darwin-64/download/esbuild-darwin-64-0.14.38.tgz}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [darwin]
@@ -7472,7 +7455,7 @@ packages:
     optional: true
 
   /esbuild-darwin-arm64/0.14.38:
-    resolution: {integrity: sha512-eqF+OejMI3mC5Dlo9Kdq/Ilbki9sQBw3QlHW3wjLmsLh+quNfHmGMp3Ly1eWm981iGBMdbtSS9+LRvR2T8B3eQ==}
+    resolution: {integrity: sha512-eqF+OejMI3mC5Dlo9Kdq/Ilbki9sQBw3QlHW3wjLmsLh+quNfHmGMp3Ly1eWm981iGBMdbtSS9+LRvR2T8B3eQ==, tarball: esbuild-darwin-arm64/download/esbuild-darwin-arm64-0.14.38.tgz}
     engines: {node: '>=12'}
     cpu: [arm64]
     os: [darwin]
@@ -7480,7 +7463,7 @@ packages:
     optional: true
 
   /esbuild-freebsd-64/0.14.38:
-    resolution: {integrity: sha512-epnPbhZUt93xV5cgeY36ZxPXDsQeO55DppzsIgWM8vgiG/Rz+qYDLmh5ts3e+Ln1wA9dQ+nZmVHw+RjaW3I5Ig==}
+    resolution: {integrity: sha512-epnPbhZUt93xV5cgeY36ZxPXDsQeO55DppzsIgWM8vgiG/Rz+qYDLmh5ts3e+Ln1wA9dQ+nZmVHw+RjaW3I5Ig==, tarball: esbuild-freebsd-64/download/esbuild-freebsd-64-0.14.38.tgz}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [freebsd]
@@ -7488,7 +7471,7 @@ packages:
     optional: true
 
   /esbuild-freebsd-arm64/0.14.38:
-    resolution: {integrity: sha512-/9icXUYJWherhk+y5fjPI5yNUdFPtXHQlwP7/K/zg8t8lQdHVj20SqU9/udQmeUo5pDFHMYzcEFfJqgOVeKNNQ==}
+    resolution: {integrity: sha512-/9icXUYJWherhk+y5fjPI5yNUdFPtXHQlwP7/K/zg8t8lQdHVj20SqU9/udQmeUo5pDFHMYzcEFfJqgOVeKNNQ==, tarball: esbuild-freebsd-arm64/download/esbuild-freebsd-arm64-0.14.38.tgz}
     engines: {node: '>=12'}
     cpu: [arm64]
     os: [freebsd]
@@ -7496,7 +7479,7 @@ packages:
     optional: true
 
   /esbuild-linux-32/0.14.38:
-    resolution: {integrity: sha512-QfgfeNHRFvr2XeHFzP8kOZVnal3QvST3A0cgq32ZrHjSMFTdgXhMhmWdKzRXP/PKcfv3e2OW9tT9PpcjNvaq6g==}
+    resolution: {integrity: sha512-QfgfeNHRFvr2XeHFzP8kOZVnal3QvST3A0cgq32ZrHjSMFTdgXhMhmWdKzRXP/PKcfv3e2OW9tT9PpcjNvaq6g==, tarball: esbuild-linux-32/download/esbuild-linux-32-0.14.38.tgz}
     engines: {node: '>=12'}
     cpu: [ia32]
     os: [linux]
@@ -7504,7 +7487,7 @@ packages:
     optional: true
 
   /esbuild-linux-64/0.14.38:
-    resolution: {integrity: sha512-uuZHNmqcs+Bj1qiW9k/HZU3FtIHmYiuxZ/6Aa+/KHb/pFKr7R3aVqvxlAudYI9Fw3St0VCPfv7QBpUITSmBR1Q==}
+    resolution: {integrity: sha512-uuZHNmqcs+Bj1qiW9k/HZU3FtIHmYiuxZ/6Aa+/KHb/pFKr7R3aVqvxlAudYI9Fw3St0VCPfv7QBpUITSmBR1Q==, tarball: esbuild-linux-64/download/esbuild-linux-64-0.14.38.tgz}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [linux]
@@ -7512,7 +7495,7 @@ packages:
     optional: true
 
   /esbuild-linux-arm/0.14.38:
-    resolution: {integrity: sha512-FiFvQe8J3VKTDXG01JbvoVRXQ0x6UZwyrU4IaLBZeq39Bsbatd94Fuc3F1RGqPF5RbIWW7RvkVQjn79ejzysnA==}
+    resolution: {integrity: sha512-FiFvQe8J3VKTDXG01JbvoVRXQ0x6UZwyrU4IaLBZeq39Bsbatd94Fuc3F1RGqPF5RbIWW7RvkVQjn79ejzysnA==, tarball: esbuild-linux-arm/download/esbuild-linux-arm-0.14.38.tgz}
     engines: {node: '>=12'}
     cpu: [arm]
     os: [linux]
@@ -7520,7 +7503,7 @@ packages:
     optional: true
 
   /esbuild-linux-arm64/0.14.38:
-    resolution: {integrity: sha512-HlMGZTEsBrXrivr64eZ/EO0NQM8H8DuSENRok9d+Jtvq8hOLzrxfsAT9U94K3KOGk2XgCmkaI2KD8hX7F97lvA==}
+    resolution: {integrity: sha512-HlMGZTEsBrXrivr64eZ/EO0NQM8H8DuSENRok9d+Jtvq8hOLzrxfsAT9U94K3KOGk2XgCmkaI2KD8hX7F97lvA==, tarball: esbuild-linux-arm64/download/esbuild-linux-arm64-0.14.38.tgz}
     engines: {node: '>=12'}
     cpu: [arm64]
     os: [linux]
@@ -7528,7 +7511,7 @@ packages:
     optional: true
 
   /esbuild-linux-mips64le/0.14.38:
-    resolution: {integrity: sha512-qd1dLf2v7QBiI5wwfil9j0HG/5YMFBAmMVmdeokbNAMbcg49p25t6IlJFXAeLzogv1AvgaXRXvgFNhScYEUXGQ==}
+    resolution: {integrity: sha512-qd1dLf2v7QBiI5wwfil9j0HG/5YMFBAmMVmdeokbNAMbcg49p25t6IlJFXAeLzogv1AvgaXRXvgFNhScYEUXGQ==, tarball: esbuild-linux-mips64le/download/esbuild-linux-mips64le-0.14.38.tgz}
     engines: {node: '>=12'}
     cpu: [mips64el]
     os: [linux]
@@ -7536,7 +7519,7 @@ packages:
     optional: true
 
   /esbuild-linux-ppc64le/0.14.38:
-    resolution: {integrity: sha512-mnbEm7o69gTl60jSuK+nn+pRsRHGtDPfzhrqEUXyCl7CTOCLtWN2bhK8bgsdp6J/2NyS/wHBjs1x8aBWwP2X9Q==}
+    resolution: {integrity: sha512-mnbEm7o69gTl60jSuK+nn+pRsRHGtDPfzhrqEUXyCl7CTOCLtWN2bhK8bgsdp6J/2NyS/wHBjs1x8aBWwP2X9Q==, tarball: esbuild-linux-ppc64le/download/esbuild-linux-ppc64le-0.14.38.tgz}
     engines: {node: '>=12'}
     cpu: [ppc64]
     os: [linux]
@@ -7544,7 +7527,7 @@ packages:
     optional: true
 
   /esbuild-linux-riscv64/0.14.38:
-    resolution: {integrity: sha512-+p6YKYbuV72uikChRk14FSyNJZ4WfYkffj6Af0/Tw63/6TJX6TnIKE+6D3xtEc7DeDth1fjUOEqm+ApKFXbbVQ==}
+    resolution: {integrity: sha512-+p6YKYbuV72uikChRk14FSyNJZ4WfYkffj6Af0/Tw63/6TJX6TnIKE+6D3xtEc7DeDth1fjUOEqm+ApKFXbbVQ==, tarball: esbuild-linux-riscv64/download/esbuild-linux-riscv64-0.14.38.tgz}
     engines: {node: '>=12'}
     cpu: [riscv64]
     os: [linux]
@@ -7552,7 +7535,7 @@ packages:
     optional: true
 
   /esbuild-linux-s390x/0.14.38:
-    resolution: {integrity: sha512-0zUsiDkGJiMHxBQ7JDU8jbaanUY975CdOW1YDrurjrM0vWHfjv9tLQsW9GSyEb/heSK1L5gaweRjzfUVBFoybQ==}
+    resolution: {integrity: sha512-0zUsiDkGJiMHxBQ7JDU8jbaanUY975CdOW1YDrurjrM0vWHfjv9tLQsW9GSyEb/heSK1L5gaweRjzfUVBFoybQ==, tarball: esbuild-linux-s390x/download/esbuild-linux-s390x-0.14.38.tgz}
     engines: {node: '>=12'}
     cpu: [s390x]
     os: [linux]
@@ -7560,7 +7543,7 @@ packages:
     optional: true
 
   /esbuild-netbsd-64/0.14.38:
-    resolution: {integrity: sha512-cljBAApVwkpnJZfnRVThpRBGzCi+a+V9Ofb1fVkKhtrPLDYlHLrSYGtmnoTVWDQdU516qYI8+wOgcGZ4XIZh0Q==}
+    resolution: {integrity: sha512-cljBAApVwkpnJZfnRVThpRBGzCi+a+V9Ofb1fVkKhtrPLDYlHLrSYGtmnoTVWDQdU516qYI8+wOgcGZ4XIZh0Q==, tarball: esbuild-netbsd-64/download/esbuild-netbsd-64-0.14.38.tgz}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [netbsd]
@@ -7574,7 +7557,7 @@ packages:
     dev: true
 
   /esbuild-openbsd-64/0.14.38:
-    resolution: {integrity: sha512-CDswYr2PWPGEPpLDUO50mL3WO/07EMjnZDNKpmaxUPsrW+kVM3LoAqr/CE8UbzugpEiflYqJsGPLirThRB18IQ==}
+    resolution: {integrity: sha512-CDswYr2PWPGEPpLDUO50mL3WO/07EMjnZDNKpmaxUPsrW+kVM3LoAqr/CE8UbzugpEiflYqJsGPLirThRB18IQ==, tarball: esbuild-openbsd-64/download/esbuild-openbsd-64-0.14.38.tgz}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [openbsd]
@@ -7589,7 +7572,7 @@ packages:
       esbuild: 0.14.38
 
   /esbuild-sunos-64/0.14.38:
-    resolution: {integrity: sha512-2mfIoYW58gKcC3bck0j7lD3RZkqYA7MmujFYmSn9l6TiIcAMpuEvqksO+ntBgbLep/eyjpgdplF7b+4T9VJGOA==}
+    resolution: {integrity: sha512-2mfIoYW58gKcC3bck0j7lD3RZkqYA7MmujFYmSn9l6TiIcAMpuEvqksO+ntBgbLep/eyjpgdplF7b+4T9VJGOA==, tarball: esbuild-sunos-64/download/esbuild-sunos-64-0.14.38.tgz}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [sunos]
@@ -7597,7 +7580,7 @@ packages:
     optional: true
 
   /esbuild-windows-32/0.14.38:
-    resolution: {integrity: sha512-L2BmEeFZATAvU+FJzJiRLFUP+d9RHN+QXpgaOrs2klshoAm1AE6Us4X6fS9k33Uy5SzScn2TpcgecbqJza1Hjw==}
+    resolution: {integrity: sha512-L2BmEeFZATAvU+FJzJiRLFUP+d9RHN+QXpgaOrs2klshoAm1AE6Us4X6fS9k33Uy5SzScn2TpcgecbqJza1Hjw==, tarball: esbuild-windows-32/download/esbuild-windows-32-0.14.38.tgz}
     engines: {node: '>=12'}
     cpu: [ia32]
     os: [win32]
@@ -7605,7 +7588,7 @@ packages:
     optional: true
 
   /esbuild-windows-64/0.14.38:
-    resolution: {integrity: sha512-Khy4wVmebnzue8aeSXLC+6clo/hRYeNIm0DyikoEqX+3w3rcvrhzpoix0S+MF9vzh6JFskkIGD7Zx47ODJNyCw==}
+    resolution: {integrity: sha512-Khy4wVmebnzue8aeSXLC+6clo/hRYeNIm0DyikoEqX+3w3rcvrhzpoix0S+MF9vzh6JFskkIGD7Zx47ODJNyCw==, tarball: esbuild-windows-64/download/esbuild-windows-64-0.14.38.tgz}
     engines: {node: '>=12'}
     cpu: [x64]
     os: [win32]
@@ -7613,7 +7596,7 @@ packages:
     optional: true
 
   /esbuild-windows-arm64/0.14.38:
-    resolution: {integrity: sha512-k3FGCNmHBkqdJXuJszdWciAH77PukEyDsdIryEHn9cKLQFxzhT39dSumeTuggaQcXY57UlmLGIkklWZo2qzHpw==}
+    resolution: {integrity: sha512-k3FGCNmHBkqdJXuJszdWciAH77PukEyDsdIryEHn9cKLQFxzhT39dSumeTuggaQcXY57UlmLGIkklWZo2qzHpw==, tarball: esbuild-windows-arm64/download/esbuild-windows-arm64-0.14.38.tgz}
     engines: {node: '>=12'}
     cpu: [arm64]
     os: [win32]
@@ -8628,7 +8611,7 @@ packages:
     resolution: {integrity: sha1-FQStJSMVjKpA20onh8sBQRmU6k8=}
 
   /fsevents/2.3.2:
-    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
+    resolution: {integrity: sha1-ilJveLj99GI7cJ4Ll1xSwkwC/Ro=, tarball: fsevents/download/fsevents-2.3.2.tgz}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     requiresBuild: true
@@ -8922,7 +8905,7 @@ packages:
     dev: true
 
   /graceful-fs/4.2.10:
-    resolution: {integrity: sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==}
+    resolution: {integrity: sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==, tarball: graceful-fs/download/graceful-fs-4.2.10.tgz}
 
   /gray-matter/4.0.3:
     resolution: {integrity: sha512-5v6yZd4JK3eMI3FqqCouswVqwugaA9r4dNZB1wwcmrD02QkV5H0y7XBQW8QwQqEaZY1pM9aqORSORhJRdNK44Q==}
@@ -9361,7 +9344,7 @@ packages:
     dev: true
 
   /image-size/0.5.5:
-    resolution: {integrity: sha512-6TDAlDPZxUFCv+fuOkIoXT/V/f3Qbq8e37p+YOiYrUv3v9cc3/6x78VdfPgFVaB9dZYeLUfKgHRebpkm/oP2VQ==}
+    resolution: {integrity: sha1-Cd/Uq50g4p6xw+gLiZA3jfnjy5w=, tarball: image-size/download/image-size-0.5.5.tgz}
     engines: {node: '>=0.10.0'}
     hasBin: true
     requiresBuild: true
@@ -10284,7 +10267,7 @@ packages:
     dev: false
 
   /make-dir/2.1.0:
-    resolution: {integrity: sha512-LS9X+dc8KLxXCb8dni79fLIIUA5VyZoyjSMCwTluaXA0o27cCK0bhXkpgw+sTXVpPy/lSO57ilRixqk0vDmtRA==}
+    resolution: {integrity: sha1-XwMQ4YuL6JjMBwCSlaMK5B6R5vU=, tarball: make-dir/download/make-dir-2.1.0.tgz}
     engines: {node: '>=6'}
     requiresBuild: true
     dependencies:
@@ -10479,7 +10462,7 @@ packages:
       mime-db: 1.52.0
 
   /mime/1.6.0:
-    resolution: {integrity: sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==}
+    resolution: {integrity: sha1-Ms2eXGRVO9WNGaVor0Uqz/BJgbE=, tarball: mime/download/mime-1.6.0.tgz}
     engines: {node: '>=4'}
     hasBin: true
     requiresBuild: true
@@ -10670,7 +10653,7 @@ packages:
     dev: true
 
   /needle/2.9.1:
-    resolution: {integrity: sha512-6R9fqJ5Zcmf+uYaFgdIHmLwNldn5HbK8L5ybn7Uz+ylX/rnOsSp1AHcvQSrCaFN+qNM1wpymHqD7mVasEOlHGQ==}
+    resolution: {integrity: sha1-ItHf++NJDCuD4wH3cJtnNs2PJoQ=, tarball: needle/download/needle-2.9.1.tgz}
     engines: {node: '>= 4.4.x'}
     hasBin: true
     requiresBuild: true
@@ -13929,7 +13912,7 @@ packages:
     dev: true
 
   /source-map/0.6.1:
-    resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
+    resolution: {integrity: sha1-dHIq8y6WFOnCh6jQu95IteLxomM=, tarball: source-map/download/source-map-0.6.1.tgz}
     engines: {node: '>=0.10.0'}
 
   /source-map/0.7.3:
@@ -13941,10 +13924,6 @@ packages:
 
   /space-separated-tokens/1.1.5:
     resolution: {integrity: sha512-q/JSVd1Lptzhf5bkYm4ob4iWPjx0KiRe3sRFBNrVqbJkFaBm5vbbowy1mymoPNLRa52+oadOhJ+K49wsSeSjTA==}
-    dev: true
-
-  /spawn-command/0.0.2-1:
-    resolution: {integrity: sha512-n98l9E2RMSJ9ON1AKisHzz7V42VDiBQGY6PB1BwRglz99wpVsSuGzQ+jOi6lFXBGVTCrRpltvjm+/XA+tpeJrg==}
     dev: true
 
   /spdx-correct/3.1.1:
@@ -14712,11 +14691,6 @@ packages:
     resolution: {integrity: sha1-gYT9NH2snNwYWZLzpmIuFLnZq2o=}
     dev: true
 
-  /tree-kill/1.2.2:
-    resolution: {integrity: sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==}
-    hasBin: true
-    dev: true
-
   /trim-newlines/3.0.1:
     resolution: {integrity: sha512-c1PTsA3tYrIsLGkJkzHF+w9F2EyxfXGo4UyJc4pFL++FMjnq0HJS69T3M7d//gKrFKwy429bouPescbjecU+Zw==}
     engines: {node: '>=8'}
@@ -14895,7 +14869,7 @@ packages:
     dev: true
 
   /uglify-js/3.15.5:
-    resolution: {integrity: sha512-hNM5q5GbBRB5xB+PMqVRcgYe4c8jbyZ1pzZhS6jbq54/4F2gFK869ZheiE5A8/t+W5jtTNpWef/5Q9zk639FNQ==}
+    resolution: {integrity: sha512-hNM5q5GbBRB5xB+PMqVRcgYe4c8jbyZ1pzZhS6jbq54/4F2gFK869ZheiE5A8/t+W5jtTNpWef/5Q9zk639FNQ==, tarball: uglify-js/download/uglify-js-3.15.5.tgz}
     engines: {node: '>=0.8.0'}
     hasBin: true
     requiresBuild: true
