@@ -8,12 +8,12 @@ sidebar_label: Usage
 import * as React from 'react';
 import { useRef } from 'react';
 import ScrollView from '@ice/scrollview';
-import './index.css';
+import styles from './index.module.css';
 
 function Thumb({ index }) {
   return (
-    <div id={'id_' + index} className="button">
-      <div className="box">{index}</div>
+    <div id={'id_' + index} className={styles.button}>
+      <div className={styles.box}>{index}</div>
     </div>
   );
 }
@@ -26,8 +26,8 @@ export default function App() {
   const horizontalScrollViewRef = useRef(null);
   const scrollViewRef = useRef(null);
   return (
-    <div className="root">
-      <div className="container">
+    <div className={styles.root}>
+      <div className={styles.container}>
         <ScrollView
           ref={horizontalScrollViewRef}
           horizontal
@@ -40,13 +40,13 @@ export default function App() {
           {list.map(createThumbRow)}
         </ScrollView>
         <div
-          className="button"
+          className={styles.button}
           onClick={() => horizontalScrollViewRef.current.scrollTo({ x: 0 })}
         >
           <span>Scroll to start</span>
         </div>
         <div
-          className="button"
+          className={styles.button}
           onClick={() =>
             horizontalScrollViewRef.current.scrollIntoView({ id: 'id_2' })
           }
@@ -54,7 +54,7 @@ export default function App() {
           <span>Scroll to the third item</span>
         </div>
       </div>
-      <div className="container" style={{ flex: 1 }}>
+      <div className={styles.container} style={{ flex: 1 }}>
         <ScrollView
           ref={scrollViewRef}
           showsHorizontalScrollIndicator={false}
@@ -64,17 +64,17 @@ export default function App() {
           }}
         >
           <div>
-            <div className='sticky'>
+            <div className={styles.sticky}>
               <span>Cannot sticky</span>
             </div>
           </div>
-          <div className='sticky'>
+          <div className={styles.sticky}>
             <span>Sticky view must in ScrollView root</span>
           </div>
           {list.map(createThumbRow)}
         </ScrollView>
         <div
-          className="button"
+          className={styles.button}
           onClick={() => scrollViewRef.current.scrollTo({ y: 0 })}
         >
           <span>Scroll to top</span>
