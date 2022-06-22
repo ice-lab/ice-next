@@ -20,6 +20,10 @@
       "types": "./esm/generator.d.ts"
     }
   },
+  "scripts": {
+    "watch": "tsc -w",
+    "build": "tsc"
+  },
   "author": "ICE",
   "license": "MIT",
   "repository": "ice-lab/ice-next",

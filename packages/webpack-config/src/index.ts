@@ -62,6 +62,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     publicPath = '/',
     outputDir = path.join(rootDir, 'build'),
     loaders = [],
+    plugins = [],
     alias = {},
     sourceMap,
     middlewares,
@@ -71,11 +72,16 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     hash,
     minify,
     minimizerOptions = {},
-    cacheDirectory,
+    cacheDir,
     https,
     analyzer,
     tsCheckerOptions,
     eslintOptions,
+    entry,
+    splitChunks,
+    assetsManifest,
+    concatenateModules,
+    devServer,
   } = config;
 
   const dev = mode !== 'production';
@@ -116,12 +122,12 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     },
   } : {};
   // get compile plugins
-  const webpackPlugins = getCompilerPlugins(config, 'webpack');
+  const compilerWebpackPlugins = getCompilerPlugins(config, 'webpack');
 
   const terserOptions: any = merge({
     compress: {
       ecma: 5,
-      unused: false,
+      unused: true,
       // The following two options are known to break valid JavaScript code
       // https://github.com/vercel/next.js/issues/7178#issuecomment-493048965
       comparisons: false,
@@ -147,7 +153,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       ...lazyCompilationConfig,
       ...(experimental || {}),
     },
-    entry: () => getEntry(rootDir),
+    entry: entry || (() => getEntry(rootDir)),
     externals,
     output: {
       publicPath,
@@ -183,10 +189,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       ignored: watchIgnoredRegexp,
     },
     optimization: {
-      // share runtime chunk when dev, ref: https://github.com/pmmmwh/react-refresh-webpack-plugin/issues/88#issuecomment-627558799
-      // loader chunk will load before main chunk in production
-      runtimeChunk: dev ? 'single' : 'multiple',
-      splitChunks: getSplitChunksConfig(rootDir),
+      splitChunks: splitChunks == false ? undefined : getSplitChunksConfig(rootDir),
       minimize: minify,
       minimizer: [
         new TerserPlugin({
@@ -213,7 +216,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       type: 'filesystem',
       version: `${process.env.__ICE_VERSION__}|${JSON.stringify(config)}`,
       buildDependencies: { config: [path.join(rootDir, 'package.json')] },
-      cacheDirectory,
+      cacheDirectory: path.join(cacheDir, 'webpack'),
     },
     // custom stat output by stats.toJson() calls in plugin-app
     stats: 'none',
@@ -223,7 +226,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     performance: false,
     devtool: getDevtoolValue(sourceMap),
     plugins: [
-      ...webpackPlugins,
+      ...plugins,
+      ...compilerWebpackPlugins,
       dev && new ReactRefreshWebpackPlugin({
         exclude: [/node_modules/, /bundles\/compiled/],
         // use webpack-dev-server overlay instead
@@ -233,7 +237,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
         ...defineVars,
         ...runtimeDefineVars,
       }),
-      new AssetsManifestPlugin({
+      assetsManifest && new AssetsManifestPlugin({
         fileName: 'assets-manifest.json',
         outputDir: path.join(rootDir, '.ice'),
       }),
@@ -256,7 +260,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
         }],
       }),
     ].filter(Boolean) as unknown as WebpackPluginInstance[],
-    devServer: {
+    devServer: merge({
       allowedHosts: 'all',
       headers: {
         'Access-Control-Allow-Origin': '*',
@@ -281,7 +285,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       },
       setupMiddlewares: middlewares,
       https,
-    },
+    }, devServer || {}),
   };
   // tnpm / cnpm 安装时，webpack 5 的持久缓存无法生成，长时间将导致 OOM
   // 原因：[managedPaths](https://webpack.js.org/configuration/other-options/#managedpaths) 在 tnpm / cnpm 安装的情况下失效，导致持久缓存在处理 node_modules
@@ -295,7 +299,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       immutablePaths: [nodeModulesPath],
     };
   }
-  if (dev) {
+  if (dev && !concatenateModules) {
     if (!webpackConfig.optimization) {
       webpackConfig.optimization = {};
     }
