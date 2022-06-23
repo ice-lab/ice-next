@@ -9,6 +9,7 @@
 }
 
 .ice-scrollview-content-container-horizontal {
+  display: flex;
   flex-direction: row;
 }
 

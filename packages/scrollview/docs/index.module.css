@@ -1,11 +1,4 @@
-.root {
-  padding-top: 20rpx;
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-}
+.root {}
 
 .sticky {
   position: sticky;
@@ -16,6 +9,8 @@
 }
 
 .container {
+  display: flex;
+  flex-direction: column;
   padding: 20rpx;
   border-style: solid;
   border-color: #dddddd;

@@ -179,8 +179,16 @@ const ScrollView: ForwardRefExoticComponent<ScrollViewProps> = forwardRef(
           throw new Error('Params missing id.');
         }
         const targetElement = document.getElementById(id);
-        if (targetElement) {
-          scrollTo(scrollerRef, targetElement.offsetLeft, targetElement.offsetTop, animated, duration);
+        if (targetElement && contentContainerRef.current) {
+          const targetRect = targetElement.getBoundingClientRect();
+          const contentContainerRect = contentContainerRef.current.getBoundingClientRect();
+          const targetDistance = {
+            x: targetRect.x - contentContainerRect.x,
+            y: targetRect.y - contentContainerRect.y,
+          };
+          // @NOTE: targetElement's offsetParent is not scrollerRef.current, so do not use
+          // offsetLeft/offsetTop to calculate distance.
+          scrollTo(scrollerRef, targetDistance.x, targetDistance.y, animated, duration);
         }
       },
     }));

@@ -54,7 +54,7 @@ export default function App() {
           <span>Scroll to the third item</span>
         </div>
       </div>
-      <div className={styles.container} style={{ flex: 1 }}>
+      <div className={styles.container} style={{ flex: 1, maxHeight: '50vh' }}>
         <ScrollView
           ref={scrollViewRef}
           showsHorizontalScrollIndicator={false}
