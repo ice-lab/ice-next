@@ -23,8 +23,8 @@ let pixelRatio: number;
  */
 function scrollTo(scrollerRef: RefObject<HTMLDivElement>, x: number, y: number, animated: boolean, duration: number) {
   const scrollView = scrollerRef.current;
-  const scrollLeft = scrollView.scrollLeft;
-  const scrollTop = scrollView.scrollTop;
+  const { scrollLeft } = scrollView;
+  const { scrollTop } = scrollView;
   if (animated) {
     const timer = new Timer({
       duration,
@@ -69,13 +69,13 @@ function translateToPx(origin: string | number): number {
   const matched = /^(\d+)(r?px)?$/.exec(origin);
   if (matched) {
     if (!matched[2]) {
-      return parseInt(matched[1]) * dpr;
+      return parseInt(matched[1], 10) * dpr;
     }
     if (matched[2] === 'rpx') {
-      return parseInt(matched[1]) * dpr;
+      return parseInt(matched[1], 10) * dpr;
     }
     if (matched[2] === 'px') {
-      return parseInt(matched[1]);
+      return parseInt(matched[1], 10);
     }
   }
   return 0;
@@ -142,8 +142,7 @@ const ScrollView: ForwardRefExoticComponent<ScrollViewProps> = forwardRef(
           endReachedThreshold;
 
         const isScrollToEnd = scrollDistance > lastScrollDistance.current;
-        const isLoadedMoreContent =
-          scrollContentSize != lastScrollContentSize.current;
+        const isLoadedMoreContent = scrollContentSize !== lastScrollContentSize.current;
 
         if (isEndReached && isScrollToEnd && isLoadedMoreContent) {
           lastScrollContentSize.current = scrollContentSize;
@@ -195,7 +194,7 @@ const ScrollView: ForwardRefExoticComponent<ScrollViewProps> = forwardRef(
 
     if (style) {
       // @ts-ignore
-      const childLayoutProps = ['alignItems', 'justifyContent'].filter(prop => style[prop] !== undefined);
+      const childLayoutProps = ['alignItems', 'justifyContent'].filter((prop) => style[prop] !== undefined);
 
       if (childLayoutProps.length !== 0) {
         // eslint-disable-next-line no-console

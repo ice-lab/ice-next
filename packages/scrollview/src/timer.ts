@@ -23,10 +23,10 @@ const easing = {
 
 const MIN_DURATION = 1;
 
-const noop = (args: any) => {};
+const noop = (arg: any) => {};
 
 class Timer {
-  public config = {
+  config = {
     easing: 'linear',
     duration: Infinity,
     onStart: noop,
@@ -34,14 +34,14 @@ class Timer {
     onStop: noop,
     onEnd: noop,
   };
-  public isfinished = false;
-  public start: number;
-  public percent: number;
-  public easingFn: (x: number) => number;
-  public now: number;
-  public t: number;
-  public duration: number;
-  public progress: number;
+  isfinished = false;
+  start: number;
+  percent: number;
+  easingFn: (x: number) => number;
+  now: number;
+  t: number;
+  duration: number;
+  progress: number;
   private _hasFinishedPercent: number;
   private _stop: null | {
     duration?: number;
@@ -49,14 +49,14 @@ class Timer {
     now?: number;
   };
   private _raf: number | ReturnType<typeof setTimeout>;
-  public constructor(config: object) {
+  constructor(config: object) {
     this.config = {
       ...this.config,
       ...config,
     };
   }
 
-  public run() {
+  run() {
     const { duration, onStart, onRun } = this.config;
     if (duration <= MIN_DURATION) {
       this.isfinished = true;
@@ -128,7 +128,7 @@ class Timer {
     });
   }
 
-  public stop() {
+  stop() {
     const { onEnd } = this.config;
     this._stop = {
       percent: this.percent,
