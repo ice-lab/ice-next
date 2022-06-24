@@ -17,7 +17,8 @@ const cache = new Map<string, Result>();
  */
 function loadInitialData(loaders: Loaders) {
   const context = (window as any).__ICE_APP_CONTEXT__ || {};
-  const { routesData = {}, matchedIds } = context;
+  const matchedIds = context.matchedIds || [];
+  const routesData = context.routesData || {};
 
   matchedIds.forEach(id => {
     const dataFromSSR = routesData[id];
