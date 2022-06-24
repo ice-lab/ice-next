@@ -53,7 +53,7 @@ export function createServerCompiler(options: Options) {
       return;
     }
 
-    defineVars[key] = JSON.stringify(defineVars[key]);
+    defineVars[key] = JSON.stringify(define[key]);
   });
 
   // get runtime variable for server build
