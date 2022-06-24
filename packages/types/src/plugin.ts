@@ -74,7 +74,7 @@ export interface ExtendsPluginAPI {
   };
 }
 
-interface OverwritePluginAPI extends ExtendsPluginAPI {
+export interface OverwritePluginAPI extends ExtendsPluginAPI {
   onHook: OnHook;
 }
 
