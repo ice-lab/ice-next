@@ -128,7 +128,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     command,
     serverBundle: server.bundle,
     swcOptions: {
-      removeExportExprs: isCSR ? ['default', 'getData'] : [],
+      removeExportExprs: isCSR ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
     },
   });
 

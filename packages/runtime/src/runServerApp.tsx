@@ -125,6 +125,7 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
     process.env.ICE_CORE_IS_SSG = 'true';
   } else {
     process.env.ICE_CORE_IS_SSR = 'true';
+    process.env.ICE_CORE_IS_SSG = 'false';
   }
 
   const location = getLocation(req.url);
