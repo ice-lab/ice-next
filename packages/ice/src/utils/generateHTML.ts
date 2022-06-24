@@ -52,7 +52,7 @@ export default async function generateHTML(options: Options) {
     if (fse.existsSync(path.join(rootDir, 'public', fileName))) {
       consola.warn(`${fileName} is overwrite by framework, rename file name if it is necessary`);
     }
-    const contentPath = path.join(outputDir, fileName);
+    const contentPath = path.join(rootDir, outputDir, fileName);
     await fse.ensureFile(contentPath);
     await fse.writeFile(contentPath, html);
   }

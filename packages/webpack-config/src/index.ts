@@ -60,7 +60,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     define = {},
     externals = {},
     publicPath = '/',
-    outputDir = path.join(rootDir, 'build'),
+    outputDir,
     loaders = [],
     plugins = [],
     alias = {},
