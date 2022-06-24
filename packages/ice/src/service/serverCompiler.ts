@@ -41,11 +41,12 @@ export function createServerCompiler(options: Options) {
 
   const alias = (task.config?.alias || {}) as Record<string, string | false>;
   const assetsManifest = path.join(rootDir, ASSETS_MANIFEST);
-  const defineVars = task.config?.define || {};
+  const define = task.config?.define || {};
   const dev = command === 'start';
 
+  const defineVars = {};
   // auto stringify define value
-  Object.keys(defineVars).forEach((key) => {
+  Object.keys(define).forEach((key) => {
     // ssr runtime env should not be replaced in build time.
     // server bundle may be used both in ssg or ssr, this is defined during runtime.
     if (key === 'process.env.ICE_CORE_IS_SSG' || key === 'process.env.ICE_CORE_IS_SSR') {
