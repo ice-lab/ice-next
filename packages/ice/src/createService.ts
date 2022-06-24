@@ -119,7 +119,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   // merge task config with built-in config
   taskConfigs = mergeTaskConfig(taskConfigs, { port: commandArgs.port });
 
-  const isCSR = process.env.ICE_CORE_SSG == 'false' && process.env.ICE_CORE_SSR == 'false';
+  const isCSR = process.env.ICE_CORE_RENDER_TYPE == 'CSR';
 
   // create serverCompiler with task config
   const serverCompiler = createServerCompiler({

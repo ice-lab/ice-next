@@ -59,7 +59,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
   };
 
   const runtime = new Runtime(appContext);
-  if (process.env.ICE_CORE_SSR === 'true' || process.env.ICE_CORE_SSG === 'true') {
+  if (process.env.ICE_CORE_RENDER_TYPE !== 'CSR') {
     runtime.setRender((container, element) => {
       ReactDOM.hydrateRoot(container, element);
     });
