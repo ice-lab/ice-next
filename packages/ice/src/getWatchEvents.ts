@@ -47,11 +47,23 @@ const getWatchEvents = (options: Options): WatchEvent[] => {
   ];
 
   const watchGlobalStyle: WatchEvent = [
-    /src\/global.(scss|less|css)/,
+    /src\/global.(scss|less|css)$/,
     (event: string, filePath: string) => {
-      if (event === 'unlink' || event === 'add') {
-        consola.debug('[event]', `style '${filePath}': ${event}`);
-        // TODO render global style template
+      if (event === 'unlink') {
+        consola.log('[event]', `style '${filePath}': ${event}`);
+        generator.renderFile(
+          path.join(templateDir, 'index.ts.ejs'),
+          path.join(rootDir, targetDir, 'index.ts'),
+          { globalStyle: undefined },
+        );
+      }
+      if (event === 'add') {
+        consola.log('[event]', `style '${filePath}': ${event}`);
+        generator.renderFile(
+          path.join(templateDir, 'index.ts.ejs'),
+          path.join(rootDir, targetDir, 'index.ts'),
+          { globalStyle: `@/${path.basename(filePath)}` },
+        );
       }
     },
   ];

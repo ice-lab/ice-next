@@ -174,7 +174,7 @@ export default class Generator {
 
   public parseRenderData: ParseRenderData = () => {
     const staticConfig = fg.sync(['src/manifest.json'], { cwd: this.rootDir });
-    const globalStyles = fg.sync(['global.@(scss|less|styl|css)'], { cwd: path.join(this.rootDir, 'src') });
+    const globalStyles = fg.sync(['global.@(scss|less|css)'], { cwd: path.join(this.rootDir, 'src') });
     let exportsData = {};
     this.contentTypes.forEach(item => {
       const data = this.getExportStr(item, ['imports', 'exports']);
