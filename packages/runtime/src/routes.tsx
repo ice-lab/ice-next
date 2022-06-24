@@ -73,8 +73,7 @@ export async function loadRoutesData(
       // SSR -> getServerData || getData
       // CSR -> getData
       if (process.env.ICE_CORE_IS_SSG === 'true') {
-        // if getStaticData not exists, return {} as data.
-        dataLoader = getStaticData || (() => { return {}; });
+        dataLoader = getStaticData;
       } else if (process.env.ICE_CORE_IS_SSR === 'true') {
         dataLoader = getServerData || getData;
       } else {
