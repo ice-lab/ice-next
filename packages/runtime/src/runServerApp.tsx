@@ -30,6 +30,7 @@ interface RenderOptions {
   runtimeModules: (RuntimePlugin | CommonJsRuntime)[];
   Document: ComponentWithChildren<{}>;
   documentOnly?: boolean;
+  isSSG?: boolean;
 }
 
 interface Piper {
@@ -118,7 +119,14 @@ function pipeToResponse(res: ServerResponse, pipe: NodeWritablePiper) {
 
 async function doRender(serverContext: ServerContext, renderOptions: RenderOptions): Promise<RenderResult> {
   const { req } = serverContext;
-  const { routes, documentOnly, app } = renderOptions;
+  const { routes, documentOnly, app, isSSG } = renderOptions;
+
+  if (isSSG) {
+    process.env.ICE_CORE_IS_SSG = 'true';
+  } else {
+    process.env.ICE_CORE_IS_SSR = 'true';
+  }
+
   const location = getLocation(req.url);
 
   const requestContext = getRequestContext(location, serverContext);

@@ -66,6 +66,7 @@ const build = async (
         const esm = server?.format === 'esm';
         const outJSExtension = esm ? '.mjs' : '.cjs';
         const serverEntry = path.join(outputDir, SERVER_OUTPUT_DIR, `index${outJSExtension}`);
+
         await serverCompiler({
           entryPoints: { index: entryPoint },
           outdir: path.join(outputDir, SERVER_OUTPUT_DIR),
@@ -81,6 +82,7 @@ const build = async (
           entry: serverEntry,
           documentOnly: !ssg && !ssr,
           basename: appConfig?.router?.basename,
+          isSSG: ssg,
         });
         resolve({
           stats,

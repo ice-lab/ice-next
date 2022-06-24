@@ -19,7 +19,7 @@ const getTask = ({ rootDir, command }): Config => {
       'webpack/hot': '@ice/bundles/compiled/webpack/hot',
     },
     swcOptions: {
-      removeExportExprs: ['default', 'getConfig'],
+      removeExportExprs: ['default', 'getConfig', 'getServerData', 'getStaticData'],
     },
     splitChunks: false,
     // enable concatenateModules will tree shaking unused `react/react-dom` in dev mod.
@@ -29,6 +29,10 @@ const getTask = ({ rootDir, command }): Config => {
       client: false,
     },
     fastRefresh: command === 'start',
+    define: {
+      'process.env.ICE_CORE_IS_SSG': false,
+      'process.env.ICE_CORE_IS_SSR': false,
+    },
   };
 };
 

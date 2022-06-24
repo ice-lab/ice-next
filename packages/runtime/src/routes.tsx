@@ -65,10 +65,23 @@ export async function loadRoutesData(
     matches.map(async (match) => {
       const { id } = match.route;
       const routeModule = routeModules[id];
-      const { getData } = routeModule ?? {};
+      const { getData, getServerData, getStaticData } = routeModule ?? {};
 
-      if (getData) {
-        routesData[id] = await getData(requestContext);
+      let dataLoader;
+
+      // SSG -> getStaticData
+      // SSR -> getServerData || getData
+      // CSR -> getData
+      if (process.env.ICE_CORE_IS_SSG === 'true') {
+        dataLoader = getStaticData;
+      } else if (process.env.ICE_CORE_IS_SSR === 'true') {
+        dataLoader = getServerData || getData;
+      } else {
+        dataLoader = getData;
+      }
+
+      if (dataLoader) {
+        routesData[id] = await dataLoader(requestContext);
       }
     }),
   );

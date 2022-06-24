@@ -67,3 +67,11 @@ export function getData({ pathname, query }) {
     }, 1 * 100);
   });
 }
+
+export function getStaticData() {
+  return {
+    name: 'Home',
+    count: 100,
+    isSSG: true,
+  };
+}
