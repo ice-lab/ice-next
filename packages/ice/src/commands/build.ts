@@ -65,10 +65,12 @@ const build = async (
         const entryPoint = path.join(rootDir, SERVER_ENTRY);
         const esm = server?.format === 'esm';
         const outJSExtension = esm ? '.mjs' : '.cjs';
-        const serverEntry = path.join(rootDir, outputDir, SERVER_OUTPUT_DIR, `index${outJSExtension}`);
+        const absoluteOutputDir = path.join(rootDir, outputDir);
+        const serverOutputDir = path.join(absoluteOutputDir, SERVER_OUTPUT_DIR);
+        const serverEntry = path.join(serverOutputDir, `index${outJSExtension}`);
         await serverCompiler({
           entryPoints: { index: entryPoint },
-          outdir: path.join(outputDir, SERVER_OUTPUT_DIR),
+          outdir: serverOutputDir,
           splitting: esm,
           format: server?.format,
           platform: esm ? 'browser' : 'node',
@@ -77,7 +79,7 @@ const build = async (
         // generate html
         await generateHTML({
           rootDir,
-          outputDir,
+          absoluteOutputDir,
           entry: serverEntry,
           documentOnly: !ssg && !ssr,
           basename: appConfig?.router?.basename,
