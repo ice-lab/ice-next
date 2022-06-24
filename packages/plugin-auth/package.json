@@ -20,10 +20,15 @@
       "import": "./esm/runtime/Auth.js",
       "default": "./esm/runtime/Auth.js"
     },
-    "./runtime/types": {
-      "types": "./esm/runtime/types.d.ts",
-      "import": "./esm/runtime/types.js",
-      "default": "./esm/runtime/types.js"
+    "./types": {
+      "types": "./esm/types.d.ts",
+      "import": "./esm/types.js",
+      "default": "./esm/types.js"
+    },
+    "./esm/types": {
+      "types": "./esm/types.d.ts",
+      "import": "./esm/types.js",
+      "default": "./esm/types.js"
     }
   },
   "main": "./esm/index.js",
@@ -37,7 +42,8 @@
   },
   "devDependencies": {
     "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0"
+    "@types/react-dom": "^18.0.0",
+    "regenerator-runtime": "^0.13.9"
   },
   "peerDependencies": {
     "react": "^18.0.0",
@@ -46,5 +52,9 @@
   "repository": {
     "type": "http",
     "url": "https://github.com/ice-lab/ice-next/tree/master/packages/plugin-auth"
+  },
+  "scripts": {
+    "watch": "tsc -w",
+    "build": "tsc"
   }
 }
