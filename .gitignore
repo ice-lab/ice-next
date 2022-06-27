@@ -35,6 +35,7 @@ coverage
 # Packages
 packages/*/lib/
 packages/*/esm/
+packages/*/es2017/
 
 # temp folder .ice
 examples/*/.ice
