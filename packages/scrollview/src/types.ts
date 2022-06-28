@@ -1,4 +1,4 @@
-import { RefAttributes, HTMLAttributes, UIEvent } from 'react';
+import type { RefAttributes, HTMLAttributes, UIEvent } from 'react';
 
 export interface ScrollViewRefObject {
   _nativeNode: HTMLDivElement;

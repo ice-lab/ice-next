@@ -1,9 +1,9 @@
 import type { CSSProperties, ForwardRefExoticComponent } from 'react';
 import { forwardRef, useRef, useState, useImperativeHandle } from 'react';
 import cx from 'classnames';
-import { ScrollViewProps } from '../types';
-import defaultProps from '../defaultProps';
 import { getInfoSync } from '@uni/system-info';
+import type { ScrollViewProps } from '../types';
+import defaultProps from '../defaultProps';
 import '../index.css';
 
 const FULL_WIDTH = 750;

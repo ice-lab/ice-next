@@ -1,8 +1,8 @@
-import type { CSSProperties, ForwardRefExoticComponent } from 'react';
-import { forwardRef, useRef, useImperativeHandle, RefObject } from 'react';
+import type { CSSProperties, ForwardRefExoticComponent, RefObject } from 'react';
+import { forwardRef, useRef, useImperativeHandle } from 'react';
 import cx from 'classnames';
+import type { ScrollViewProps } from '../types';
 import Timer from '../timer';
-import { ScrollViewProps } from '../types';
 import throttle from '../throttle';
 import defaultProps from '../defaultProps';
 import '../index.css';
