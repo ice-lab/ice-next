@@ -1,4 +1,4 @@
-import type { GetData } from './types';
+import type { GetData } from './types.js';
 import getRequestContext from './requestContext.js';
 
 interface Loaders {
@@ -18,8 +18,6 @@ const cache = new Map<string, Result>();
 function loadInitialData(loaders: Loaders) {
   const context = (window as any).__ICE_APP_CONTEXT__ || {};
   const matches = context.matchedIds || [];
-
-  matches.unshift('__app');
 
   matches.forEach(id => {
     const getData = loaders[id];
