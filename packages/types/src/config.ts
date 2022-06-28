@@ -104,4 +104,6 @@ export interface Config {
   concatenateModules?: boolean;
 
   devServer?: DevServerConfiguration;
+
+  fastRefresh?: boolean;
 }
