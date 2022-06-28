@@ -1,5 +1,5 @@
 ---
-title: 工程配置
+title: 配置
 order: 12
 ---
 
@@ -16,7 +16,6 @@ ice.config.js
 
 --mode
 
-## dotenv
 
 ## 配置项
 

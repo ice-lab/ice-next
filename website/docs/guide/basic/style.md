@@ -1,6 +1,6 @@
 ---
-title: 样式方案
-order: 6
+title: 样式
+order: 5
 ---
 
 About ICE 3.0
