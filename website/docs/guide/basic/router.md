@@ -1,5 +1,5 @@
 ---
-title: 路由方案
+title: 路由
 order: 4
 ---
 

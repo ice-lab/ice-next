@@ -13,18 +13,18 @@ module.exports = {
     'guide/practice',
     {
       type: 'category',
-      label: '基础指南',
+      label: '基础',
       collapsed: false,
       items: getDocsFromDir('guide/basic'),
     },
     {
       type: 'category',
-      label: '进阶指南',
+      label: '进阶',
       collapsed: false,
       items: getDocsFromDir('guide/advanced'),
     },
-    'guide/upgrade',
     'guide/plugin',
+    'guide/upgrade',
   ],
   examples: getDocsFromDir('examples'),
 };
