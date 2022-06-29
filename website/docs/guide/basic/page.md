@@ -28,7 +28,7 @@ export default function Home() {
 };
 ```
 
-### getData
+## getData
 
 详见[数据请求](./request.md)
 
