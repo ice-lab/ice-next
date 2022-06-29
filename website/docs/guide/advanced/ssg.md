@@ -81,6 +81,8 @@ export function getStaticData() {
 }
 ```
 
+构建 Client 端的 Bundle 时，会移除 `getStaticData` 及其相关依赖。
+
 ## 关闭 SSG
 
 在 `ice.config.ts` 下，按如下配置修改
