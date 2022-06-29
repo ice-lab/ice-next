@@ -3,8 +3,8 @@ const navbar = require('./config/navbar');
 const footer = require('./config/footer');
 
 const config = {
-  title: '飞冰',
-  tagline: '基于 React 的应用研发框架',
+  title: '飞冰 ',
+  tagline: ' 基于 React 的应用研发框架',
   url: 'https://beta.ice.work',
   baseUrl: '/',
   onBrokenLinks: 'throw',

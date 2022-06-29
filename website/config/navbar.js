@@ -29,11 +29,11 @@ module.exports = {
       position: 'right',
       items: [
         {
-          label: '微前端 icestark',
+          label: '微前端 ICESTARK',
           to: 'http://micro-frontends.ice.work/',
         },
         {
-          label: '包开发 icepkg',
+          label: 'NPM 包开发 ICE PKG',
           to: 'https://pkg.ice.work/',
         },
         {
