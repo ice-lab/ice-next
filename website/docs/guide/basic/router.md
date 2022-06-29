@@ -41,6 +41,104 @@ export default function Home() {
 };
 ```
 
+### 页面级信息配置
+
+路由组件，可以通过导出 `getConfig` 方法，来声明页面级信息, 示例：
+
+```tsx
+export function getConfig() {
+  return {
+    title: 'Home'
+  };
+}
+```
+
+支持配置的页面级信息包含:
+
+#### 页面标题
+
+```tsx
+export function getConfig() {
+  return {
+    title: 'Home'
+  };
+}
+```
+
+#### Meta 信息
+
+```tsx
+export function getConfig() {
+  return {
+    metas: [
+      { charset: 'utf-8' },
+      {
+        title: 'Something cool',
+        description: 'This becomes the nice preview on search results.',
+      },
+    ]
+  };
+}
+```
+
+#### Link 标签
+
+页面级需要额外插入的 Link 标签，会被插入 `head` 标签内，先于页面自身的 Bundle 加载，是阻塞型的。
+
+>> 框架提供了这个能力，但不推荐使用，除非确有需要前置加载。
+
+```tsx
+export function getConfig() {
+  return {
+    links: [
+      {
+        rel: 'icon',
+        href: '/favicon.png',
+        type: 'image/png',
+      },
+      {
+        rel: 'stylesheet',
+        href: 'https://example.com/some/styles.css',
+      },
+    ]
+  };
+}
+```
+
+推荐，在页面组件内延迟加载，以达到更好的性能体验。
+
+```tsx
+// src/pages/index.tsx
+export default function Home() {
+  return (
+    <>
+      <div>Hello ICE</div>
+      <link rel="stylesheet" href="https://example.com/some/styles.css" />
+    <>
+  );
+};
+```
+
+### Script 标签
+
+页面级需要前置加载的 Script 资源，会被插入在主 Bundle 前，是阻塞型的。
+
+>> 框架提供了这个能力，但不推荐使用，除非确有需要前置加载。
+
+```tsx
+export function getConfig() {
+  return {
+    scripts: [
+      {
+        src: 'https://example.com/some/index.js',
+      },
+    ],
+  };
+}
+```
+
+推荐，在页面组件内，按需异步加载，以达到更好的性能体验。
+
 ## 路由跳转
 
 ICE 3 通过 Link 组件，来提供路由间的跳转能力。基于 Link 组件，可以只加载下一个页面相比于当前页面差异化的 Bundle，进行渲染，以达到更好的性能体验。
