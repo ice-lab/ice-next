@@ -5,6 +5,18 @@ order: 2
 
 SSR 的全称是 Server Side Rendering，即服务器端渲染是。SSR 相比传统在浏览器端渲染的模式(CSR)，受设备性能和网络情况的影响更小，可以达到更好的性能体验和 SEO 能力。
 
+## 开启 SSR
+
+在 `ice.config.ts` 下，增加如下配置：
+
+```tsx
+import { defineConfig } from '@ice/app';
+
+export default defineConfig({
+  ssr: true,
+});
+```
+
 ## 数据请求
 
 开启 SSR 后，`getData` 将会在 Server 端被执行，如果 SSR 渲染成功，在 Client 端将不会再次调用 `getData`，而会复用 SSR 的结果。当页面在浏览器侧通过路由跳转，或页面降级时，才会在 Client 端调用 `getData`。
@@ -32,15 +44,3 @@ export function getStaticData() {
 ```
 
 构建 Client 端的 Bundle 时，会移除 `getServerData` 及其相关依赖。
-
-## 关闭 SSR
-
-在 `ice.config.ts` 下，按如下配置修改
-
-```tsx
-import { defineConfig } from '@ice/app';
-
-export default defineConfig({
-  ssr: false,
-});
-```
