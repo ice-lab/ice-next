@@ -30,11 +30,11 @@ const start = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
     host,
     https,
     setupMiddlewares: (middlewares, devServer) => {
-      const { outputDir } = taskConfigs.find(({ name }) => name === 'web').config;
+      const { outputDir, basename } = taskConfigs.find(({ name }) => name === 'web').config;
       const { ssg, ssr, server } = userConfig;
 
       const serverCompileMiddleware = createCompileMiddleware({ rootDir, outputDir, serverCompiler, server });
-      const serverRenderMiddleware = createRenderMiddleware({ documentOnly: !ssr && !ssg });
+      const serverRenderMiddleware = createRenderMiddleware({ documentOnly: !ssr && !ssg, basename });
       const insertIndex = middlewares.findIndex(({ name }) => name === 'serve-index');
       middlewares.splice(
         insertIndex, 0,

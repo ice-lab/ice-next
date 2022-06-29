@@ -6,11 +6,12 @@ import consola from 'consola';
 const require = createRequire(import.meta.url);
 
 interface Options {
-  documentOnly: boolean;
+  documentOnly?: boolean;
+  basename?: string;
 }
 
 export default function createRenderMiddleware(options: Options): Middleware {
-  const { documentOnly } = options;
+  const { documentOnly, basename } = options;
   const middleware: ExpressRequestHandler = async function (req, res) {
     // @ts-ignore
     const { serverEntry } = req;
@@ -33,7 +34,7 @@ export default function createRenderMiddleware(options: Options): Middleware {
       req,
       res,
     };
-    serverModule.renderToResponse(requestContext, documentOnly);
+    serverModule.renderToResponse(requestContext, { documentOnly, basename });
   };
 
   return {
