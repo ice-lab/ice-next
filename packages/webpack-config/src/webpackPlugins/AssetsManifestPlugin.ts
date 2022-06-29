@@ -1,12 +1,16 @@
-import { mkdirSync, writeFileSync } from 'fs';
+import { mkdirSync, writeFileSync, existsSync } from 'fs';
 import { dirname, resolve } from 'path';
 import type { Compiler, Compilation } from 'webpack';
 
 const pluginName = 'AssetsManifestPlugin';
 
-function getEntrypointFiles(entrypoint: any): string[] {
+interface Assets {
+  getFiles: () => string[];
+}
+
+function filterAssets(assets: Assets): string[] {
   return (
-    entrypoint
+    assets
       ?.getFiles()
       .filter((file: string) => {
         // We don't want to include `.hot-update.js` files into the initial page
@@ -41,14 +45,13 @@ export default class AssetsManifestPlugin {
 
     for (const entrypoint of entrypoints) {
       const entryName = entrypoint.name;
-      const mainFiles = getEntrypointFiles(entrypoint);
-
+      const mainFiles = filterAssets(entrypoint);
       entries[entryName] = mainFiles;
 
       const chunks = entrypoint?.getChildren();
-      chunks.forEach((chunk: any) => {
+      chunks.forEach((chunk) => {
         const chunkName = chunk.name;
-        const chunkFiles = chunk.getFiles();
+        const chunkFiles = filterAssets(chunk);
         pages[chunkName] = chunkFiles;
       });
     }
@@ -61,6 +64,13 @@ export default class AssetsManifestPlugin {
     };
 
     const manifestFileName = resolve(this.outputDir, this.fileName);
+
+    // FIXME: append data-loader to the entry by hard code
+    // data-loader is built by another webpack task
+    const dataLoader = resolve(this.outputDir, './data-loader.ts');
+    if (existsSync(dataLoader)) {
+      manifest.entries['main']?.unshift('js/data-loader.js');
+    }
 
     const output = JSON.stringify(manifest, null, 2);
 

@@ -1,5 +1,5 @@
 ---
-title: 关于飞冰
+title: 关于
 order: 1
 ---
 

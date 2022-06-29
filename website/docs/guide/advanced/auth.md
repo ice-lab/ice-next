@@ -1,4 +1,4 @@
 ---
-title: 权限方案
+title: 权限
 order: 7
 ---

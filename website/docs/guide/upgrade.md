@@ -1,4 +1,4 @@
 ---
-title: 版本升级
-order: 1
+title: 从 Rax 升级
+order: 20
 ---

@@ -1,4 +1,4 @@
 ---
 title: 插件开发
-order: 20
+order: 6
 ---
