@@ -14,8 +14,10 @@ import { useData } from "ice";
 export default function Home() {
   const data = useData();
   return (
-    <div>Hello ICE</div>
-    <div>{JSON.stringify(data)}</div>
+    <>
+      <div>Hello ICE</div>
+      <div>{JSON.stringify(data)}</div>
+    </>
   );
 };
 
@@ -42,8 +44,10 @@ export default function Home() {
   }, [])
 
   return (
-    <div>Hello ICE</div>
-    <div>{JSON.stringify(data)}</div>
+    <>
+      <div>Hello ICE</div>
+      <div>{JSON.stringify(data)}</div>
+    </>
   );
 };
 ```
@@ -79,8 +83,10 @@ import { useData } from "ice";
 export default function Home() {
   const data = useData();
   return (
-    <div>Hello ICE</div>
-    <div>{JSON.stringify(data)}</div>
+    <>
+      <div>Hello ICE</div>
+      <div>{JSON.stringify(data)}</div>
+    </>
   );
 };
 ```
