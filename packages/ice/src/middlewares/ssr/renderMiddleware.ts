@@ -7,11 +7,10 @@ const require = createRequire(import.meta.url);
 
 interface Options {
   documentOnly?: boolean;
-  basename?: string;
 }
 
 export default function createRenderMiddleware(options: Options): Middleware {
-  const { documentOnly, basename } = options;
+  const { documentOnly } = options;
   const middleware: ExpressRequestHandler = async function (req, res) {
     // @ts-ignore
     const { serverEntry } = req;
@@ -34,7 +33,7 @@ export default function createRenderMiddleware(options: Options): Middleware {
       req,
       res,
     };
-    serverModule.renderToResponse(requestContext, { documentOnly, basename });
+    serverModule.renderToResponse(requestContext, documentOnly);
   };
 
   return {
