@@ -15,16 +15,20 @@ order: 20
 
 Ice 3 提供了 [rax-compat](https://github.com/ice-lab/ice-next/tree/master/packages/rax-compat) 以支持 [Rax](https://github.com/alibaba/rax) 到 React 运行时的切换。
 
-rax-compat 通过对 React 的能力的封装，导出了与 Rax 一致的 API 等能力，开发者只需通过 alias 来将源码中的 rax 用 rax-compat 来替换，即可桥接上 React 的运行时能力。
+rax-compat 通过对 React 的能力的封装，在内部抹平了 Rax 与 React 使用上的一些差异，同时导出了与 Rax 一致的 API 等能力，通过 alias 来将源码中的 rax 用 rax-compat 来替换，即可桥接上 React 的运行时能力。
 
-## 安装
+## 使用与安装
+
+用户可以直接通过插件 [@ice/plugin-rax-compat](https://www.npmjs.com/package/@ice/plugin-rax-compat) 来完成在 ICE 3 中运行 Rax DSL。
 
 ```bash
-npm i install rax-compat
+npm i @ice/plugin-rax-compat
 ```
 
-通过 
-
 ```js
+import compatRax from '@ice/plugin-rax-compat';
 
+export default defineConfig({
+  plugins: [ compatRax() ],
+});
 ```
