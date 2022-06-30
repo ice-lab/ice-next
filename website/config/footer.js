@@ -26,11 +26,11 @@ module.exports = {
       title: '生态',
       items: [
         {
-          label: '微前端 icestark',
-          href: 'http://micro-frontends.ice.work/',
+          label: '微前端 ICESTARK',
+          href: 'https://micro-frontends.ice.work/',
         },
         {
-          label: '包开发 icepkg',
+          label: '包开发 ICE PKG',
           href: 'https://pkg.ice.work/',
         },
       ],
@@ -46,10 +46,10 @@ module.exports = {
           label: 'AppWorks',
           href: 'https://appworks.site',
         },
-        {
-          label: 'Kraken',
-          href: 'https://openkraken.com/',
-        },
+        // {
+        //   label: 'Kraken',
+        //   href: 'https://openkraken.com/',
+        // },
         {
           label: 'Midway',
           href: 'https://midwayjs.org/',
