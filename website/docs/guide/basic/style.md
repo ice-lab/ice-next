@@ -5,12 +5,7 @@ order: 5
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-本文介绍在项目中如何编写样式。
-
-## 样式方案
-
-推荐使用原生 CSS + PostCSS 的方案编写样式，不建议引入 less/sass 之类的预编译方案，CSS 写法目前扩展支持了 `@import` 以及嵌套写法：
-> 在 VS Code 编辑器中需要安装 [PostCSS Language Support 插件](https://marketplace.visualstudio.com/items?itemName=csstools.postcss) 以支持嵌套写法。
+ICE 3 推荐使用原生 CSS + PostCSS 的方案编写样式，不建议使用 `less/sass` 之类的预编译方案，CSS 写法目前扩展支持了 `@import` 以及嵌套写法。
 
 <Tabs>
 <TabItem value="css" label="index.css">
@@ -45,11 +40,11 @@ function Home() {
 </TabItem>
 </Tabs>
 
-在工程能力上 ICE 同时支持 less/scss/sass 这样的预编译器，只要保证文件后缀匹配即可。
+> ICE 3 同时支持 `less/scss` 预编译器，只要保证文件后缀匹配即可。
 
 ## 全局样式
 
-对于整个项目的全局样式，统一定义在 src/global.[scss|less|css] 文件中，框架会默认引入该文件：
+对于整个项目的全局样式，统一定义在 `src/global.css` 文件中，框架会默认引入该文件：
 
 ```css
 body {
@@ -61,17 +56,17 @@ body {
 
 对于页面级和组件级的样式，我们推荐使用 CSS Modules 的方案，这能很好的解决样式开发中的两个痛点问题：
 
-全局污染：CSS 使用全局选择器机制来设置样式，优点是方便重写样式。缺点是所有的样式都是全局生效，样式可能被错误覆盖，因此产生了非常丑陋的 !important，甚至 inline !important 等问题。
-命名混乱：由于全局污染的问题，多人协同开发时为了避免样式冲突，选择器越来越复杂，容易形成不同的命名风格，很难统一，样式变多后，命名将更加混乱。
+1. 全局污染：CSS 使用全局选择器机制来设置样式，优点是方便重写样式。缺点是所有的样式都是全局生效，样式可能被错误覆盖，因此产生了非常丑陋的 !important，甚至 inline !important 等问题。
+2. 命名混乱：由于全局污染的问题，多人协同开发时为了避免样式冲突，选择器越来越复杂，容易形成不同的命名风格，很难统一，样式变多后，命名将更加混乱。
 
 具体规范规则如下：
 
 - 文件名：约定文件名格式如 `xxx.module.css`
 - 模块化：一个页面或者一个组件对应一个样式文件
 
-比如有以下的目录结构和代码：
+如有以下的目录结构和代码：
 
-```markdown
+```
 ├── src
 |  ├── pages
 |  |  ├── index.module.css
@@ -104,24 +99,22 @@ function Home() {
 
 </TabItem>
 </Tabs>
-使用该方案之后，上文中的 className 都会被编译为唯一性的名字，避免因为重名 className 而产生样式冲突。如果在浏览器里查看这个示例的 DOM 结构，你会发现实际渲染出来是这样的：
+使用该方案之后，上文中的 `className` 都会被编译为唯一性的名字，避免因为重名 `class` 而产生样式冲突。如果在浏览器里查看这个示例的 DOM 结构，你会发现实际渲染出来是这样的：
 
 ```html
-<div class="container--WZ5p3kdM">title</div>
+<div class="container--WZ5p3kdM"><h2>CSS Modules</h2></div>
 ```
 
-同时 CSS Modules 支持 less/scss/sass 预编译器：
+同时 CSS Modules 支持 less/scss 预编译器：
 
 ```tsx
 import lessStyles from './index.module.less';
 import scssStyles from './index.module.scss';
-import sassStyles from './index.module.sass';
  
 export default function () {
   return <div className={lessStyles.title}>
     Hello World
     <p className={scssStyles.blue}>I am blue</p>
-    <p className={sassStyles.red}>I am red</p>
   </div>;
 }
 ```
@@ -131,13 +124,9 @@ export default function () {
 - [css-modules 官方文档](https://github.com/css-modules/css-modules)
 - [CSS Modules 详解及 React 中实践](https://zhuanlan.zhihu.com/p/20495964)
 
-## 原子化 CSS
-
-> WIP
-
 ## 常见问题
 
-### 如何全局覆盖基础组件（next/antd）样式？
+### 如何覆盖全局基础组件（next/antd）样式
 
 推荐通过 `src/global.css` 覆盖全局样式：
 
@@ -152,9 +141,9 @@ body {
 }
 ```
 
-该方式会把项目里所有 Button 组件的 font-size 属性修改掉。
+该方式会覆盖应用中所有 `Button` 组件的 `font-size` 属性。
 
-### 如何局部覆盖基础组件样式？
+### 如何覆盖局部基础组件样式
 
 如果只是想覆盖某个页面/模块里的组件样式，则推荐采用局部覆盖的方式：
 
@@ -177,8 +166,12 @@ body {
 export default function () {
   return (
     <>
-      <Button style={{ fontSize: 16 }}>OK</Button>
+      <Button style={{ fontSize: '16px' }}>OK</Button>
     </>
   );
 }
 ```
+
+### 如何获得 CSS 嵌套的类型提示
+
+可以在 VSCode 编辑器中需要安装 [PostCSS Language Support 插件](https://marketplace.visualstudio.com/items?itemName=csstools.postcss) 以支持嵌套写法。

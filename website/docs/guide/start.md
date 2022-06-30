@@ -8,10 +8,7 @@ order: 2
 在终端执行以下命令：
 
 ```bash
-# npm
 $ npx create-ice ice-app --template ice-scaffold-simple
-# pnpm
-$ pnpx create-ice ice-app --template ice-scaffold-simple   
 ```
 
 看到如下信息说明项目创建成功：
@@ -35,25 +32,27 @@ Starts the development server.
 # 进入项目目录
 $ cd ice-app
 # 安装依赖
-$ pnpm install
+$ npm install
 ```
 
 安装依赖完成以后，执行以下命令以启动调试：
 
 ```bash
 # 启动调试
-$ pnpm start
+$ npm start
 ```
 
 此时会自动打开浏览器窗口并访问 <http://localhost:3333>，这时会看到默认页面。
+
+![img](https://img.alicdn.com/imgextra/i1/O1CN01wu2tKv1vctzonOD8L_!!6000000006194-2-tps-1094-1132.png_790x10000.jpg)
 
 ## 部署发布
 
 执行以下命令以构建生产环境产物：
 
 ```bash
-# 打包构建
-$ pnpm build
+# 构建
+$ npm build
 ```
 
 产物默认生成到 `build` 目录下：
@@ -63,16 +62,10 @@ $ pnpm build
 ├── css
 |  └── index.css
 ├── index.html
-├── js
-|  ├── home.js
-|  ├── framework.js
-|  ├── index.js
-|  ├── main.js
-|  └── runtime~main.js
-└── server
-   ├── chunk-TV7GBSEJ.mjs
-   ├── index.mjs
-   └── pages-PEJFEQVO.mjs
+└── js
+   ├── framework.js
+   ├── index.js
+   └── main.js
 ```
 
 这时你可以把 `build` 目录部署到服务器上。

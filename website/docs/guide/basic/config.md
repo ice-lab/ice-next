@@ -80,7 +80,7 @@ console.log(ASSETS_VERSION);
 console.log(process.env.TEST);
 ```
 
-对于运行时变量，ICE 3 更加推荐通过[环境变量](/basic/env.md)的方式注入
+对于运行时变量，ICE 3 更加推荐通过[环境变量](/guide/advanced/env.md)的方式注入
 
 ### publicPath
 
@@ -116,7 +116,7 @@ export default defineConfig({
 类型：`Record<string, string>`
 默认值：`{}`
 
-设置哪些模块不打包，转而通过 <script> 或其他方式引入，比如：
+设置哪些模块不打包，转而通过 `<script>` 或其他方式引入，比如：
 
 ```js
 import { defineConfig } from '@ice/app';

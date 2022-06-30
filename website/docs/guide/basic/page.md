@@ -3,15 +3,15 @@ title: 页面
 order: 4.1
 ---
 
-每一张页面，都可以由 `路由组件` 和 `零或多个 Layout` 组装而成。路由组件和 Layout 的开发规范基本一致，可以包含以下内容：
+每一张页面，都可以由 `路由组件` 和 `零或多个布局组件` 组装而成。路由组件和布局组件的开发规范基本一致，可以包含以下内容：
 
-- Component 约定组件的具体实现，需要通过 `export default` 导出，必须。
-- getData 方法，约定页面的数据请求，可选，但推荐配置。
-- getConfig 方法，约定页面的 Title、Meta 等信息，可选。
+- 默认导出 (`export default`) 是组件的具体实现，必选。
+- 导出 `getData` 方法，约定页面的数据请求，可选。
+- 导出 `getConfig` 方法，约定页面的 `Title`、`Meta` 等信息，可选。
 
-## Component
+## 组件
 
-对应路由组件或 Layout 在页面中需要渲染的内容。
+对应路由组件或布局组件在页面中需要渲染的内容。
 
 ```tsx
 // src/pages/index.tsx
@@ -25,38 +25,34 @@ export default function Home() {
       <div>{JSON.stringify(data)}</div>
     </>
   );
-};
+}
 ```
 
 ## getData
 
-详见[数据请求](./request.md)
+获取页面初始数据的方法，详见[数据请求](./request.md)。
 
 ## getConfig
 
-页面主体内容之外的，其他需要通用 HTML 模板上差异化显示的内容，可以通过导出 `getConfig` 方法来声明。 示例：
+获取页面运行时配置的方法，页面主体内容之外的，其他需要通用 HTML 模板上差异化显示的内容，可以通过导出 `getConfig` 方法来声明。
+
+支持的页面级配置包含:
+
+#### title
+
+标题会显示在文档上，可以通过 `title` 属性来设置。 示例：
 
 ```tsx
 export function getConfig() {
   return {
-    title: 'Home'
+    title: 'Home',
   };
 }
 ```
 
-支持配置的页面级信息包含:
+#### metas
 
-#### 页面标题
-
-```tsx
-export function getConfig() {
-  return {
-    title: 'Home'
-  };
-}
-```
-
-#### Meta 信息
+Meta 信息会显示在文档上，可以通过 `meta` 属性来设置。 示例：
 
 ```tsx
 export function getConfig() {
@@ -67,16 +63,16 @@ export function getConfig() {
         title: 'Something cool',
         description: 'This becomes the nice preview on search results.',
       },
-    ]
+    ],
   };
 }
 ```
 
-#### Link 标签
+#### links
 
-页面级需要额外插入的 Link 标签，会被插入 `head` 标签内，先于页面自身的 Bundle 加载，是阻塞型的。
+页面级需要额外插入的 `<link />` 标签，会被插入 `<head>` 标签内，先于页面自身的 Bundle 加载，是阻塞型的。
 
->> 框架提供了这个能力，但不推荐使用，除非确有需要前置加载。
+> 框架提供了这个能力，但不推荐使用，除非确有需要前置加载。
 
 ```tsx
 export function getConfig() {
@@ -105,16 +101,14 @@ export default function Home() {
     <>
       <div>Hello ICE</div>
       <link rel="stylesheet" href="https://example.com/some/styles.css" />
-    <>
+    </>
   );
-};
+}
 ```
 
-### Script 标签
+### scripts
 
-页面级需要前置加载的 Script 资源，会被插入在主 Bundle 前，是阻塞型的。
-
->> 框架提供了这个能力，但不推荐使用，除非确有需要前置加载。
+页面级需要前置加载的脚本资源，会被插入在主 Bundle 前，但是会阻塞渲染。通常用于加载全局 JS SDK 或 Polyfill。
 
 ```tsx
 export function getConfig() {
@@ -128,4 +122,5 @@ export function getConfig() {
 }
 ```
 
-推荐，在页面组件内，按需异步加载，以达到更好的性能体验。
+推荐在页面组件内按需异步加载，以达到更好的性能体验。
+@TODO 补充推荐的方式示例

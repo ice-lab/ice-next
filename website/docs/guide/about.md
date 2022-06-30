@@ -54,7 +54,7 @@ ICE3 相比之前的版本，增加了更多对移动端能力的优化和适配
 
 应用框架 ICE3 默认使用的是 React 18，你可以查看 React 18 官方说明[对 JavaScript 环境的要求](https://zh-hans.reactjs.org/docs/javascript-environment-requirements.html)。如果你支持旧的浏览器和设备，可能需要引入对应的 Polyfill。
 
-此外，飞冰官方 React 物料默认使用 React 16+ 进行开发。
+此外，飞冰官方 React 物料默认使用 React 16+ 进行开发，.....xxx。
 
 ### 飞冰可以使用哪些 UI 组件？
 
@@ -68,9 +68,5 @@ ICE3 相比之前的版本，增加了更多对移动端能力的优化和适配
 
 - 反馈/建议：https://github.com/alibaba/ice/issues/new
 - 答疑钉钉群：
-
-**阿里内部同学请搜索「飞冰（ICE）万能群」，社区同学请扫以下二维码**
-**阿里内部同学请搜索「飞冰（ICE）万能群」，社区同学请扫以下二维码**
-**阿里内部同学请搜索「飞冰（ICE）万能群」，社区同学请扫以下二维码**
 
 <img src="https://ice.alicdn.com/assets/images/qrcode.png" width="300px" align="left"/>
