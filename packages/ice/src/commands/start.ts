@@ -35,7 +35,7 @@ const start = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
 
       const serverCompileMiddleware = createCompileMiddleware({ rootDir, outputDir, serverCompiler, server });
       // If ssr is set to true, use ssr for preview.
-      const serverRenderMiddleware = createRenderMiddleware({ documentOnly: !ssr && !ssg, isSSG: ssg && !ssr });
+      const serverRenderMiddleware = createRenderMiddleware({ documentOnly: !ssr && !ssg, ssg: ssg && !ssr });
       const insertIndex = middlewares.findIndex(({ name }) => name === 'serve-index');
       middlewares.splice(
         insertIndex, 0,

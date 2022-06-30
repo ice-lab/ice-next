@@ -126,7 +126,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   consola.debug('template render cost:', new Date().getTime() - renderStart);
 
 
-  const isCSR = process.env.ICE_CORE_RENDER_TYPE == 'CSR';
+  const isCSR = process.env.ICE_CORE_RENDER_TYPE === 'CSR';
 
   // create serverCompiler with task config
   const serverCompiler = createServerCompiler({

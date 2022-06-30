@@ -30,7 +30,7 @@ interface RenderOptions {
   runtimeModules: (RuntimePlugin | CommonJsRuntime)[];
   Document: ComponentWithChildren<{}>;
   documentOnly?: boolean;
-  isSSG?: boolean;
+  ssg?: boolean;
   basename?: string;
 }
 
@@ -120,13 +120,14 @@ function pipeToResponse(res: ServerResponse, pipe: NodeWritablePiper) {
 
 async function doRender(serverContext: ServerContext, renderOptions: RenderOptions): Promise<RenderResult> {
   const { req } = serverContext;
-  const { routes, documentOnly, app, isSSG, basename } = renderOptions;
+  const { routes, documentOnly, app, ssg, basename } = renderOptions;
 
-  if (isSSG) {
-    process.env.ICE_CORE_IS_SSG = 'true';
+  if (ssg) {
+    process.env.ICE_CORE_SSR = 'false';
+    process.env.ICE_CORE_SSG = 'true';
   } else {
-    process.env.ICE_CORE_IS_SSR = 'true';
-    process.env.ICE_CORE_IS_SSG = 'false';
+    process.env.ICE_CORE_SSR = 'true';
+    process.env.ICE_CORE_SSG = 'false';
   }
 
   const location = getLocation(req.url);

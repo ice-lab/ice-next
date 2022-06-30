@@ -82,7 +82,7 @@ const build = async (
           entry: serverEntry,
           documentOnly: !ssg && !ssr,
           basename: basename || appConfig?.router?.basename,
-          isSSG: ssg,
+          ssg,
         });
         resolve({
           stats,

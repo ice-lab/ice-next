@@ -6,7 +6,7 @@ import Document from '@/document';
 import assetsManifest from './assets-manifest.json';
 import routes from './routes';
 
-export async function renderToHTML(requestContext, options) {
+export async function renderToHTML(requestContext, options = {}) {
   return await runtime.renderToHTML(requestContext, {
     app,
     assetsManifest,
@@ -20,7 +20,7 @@ export async function renderToHTML(requestContext, options) {
   });
 }
 
-export async function renderToResponse(requestContext, options) {
+export async function renderToResponse(requestContext, options = {}) {
   runtime.renderToResponse(requestContext, {
     app,
     assetsManifest,

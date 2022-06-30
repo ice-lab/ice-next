@@ -7,11 +7,11 @@ const require = createRequire(import.meta.url);
 
 interface Options {
   documentOnly?: boolean;
-  isSSG?: boolean;
+  ssg?: boolean;
 }
 
 export default function createRenderMiddleware(options: Options): Middleware {
-  const { documentOnly, isSSG } = options;
+  const { documentOnly, ssg } = options;
   const middleware: ExpressRequestHandler = async function (req, res) {
     // @ts-ignore
     const { serverEntry } = req;
@@ -35,7 +35,7 @@ export default function createRenderMiddleware(options: Options): Middleware {
       res,
     };
     serverModule.renderToResponse(requestContext, {
-      isSSG,
+      ssg,
       documentOnly,
     });
   };
