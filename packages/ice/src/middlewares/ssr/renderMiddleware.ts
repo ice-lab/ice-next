@@ -6,7 +6,7 @@ import consola from 'consola';
 const require = createRequire(import.meta.url);
 
 interface Options {
-  documentOnly: boolean;
+  documentOnly?: boolean;
   isSSG?: boolean;
 }
 
