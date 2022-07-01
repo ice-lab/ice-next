@@ -17,7 +17,6 @@ export async function initProcessEnv(
   rootDir: string,
   command: CommandName,
   commandArgs: CommandArgs,
-  userConfig: UserConfig,
 ): Promise<void> {
   const { mode } = commandArgs;
 
