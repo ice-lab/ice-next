@@ -103,7 +103,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const { routes: routesConfig, server } = userConfig;
 
   // load dotenv, set to process.env
-  await initProcessEnv(rootDir, command, commandArgs, userConfig);
+  await initProcessEnv(rootDir, command, commandArgs);
   const coreEnvKeys = getCoreEnvKeys();
 
   const routesInfo = await generateRoutesInfo(rootDir, routesConfig);
