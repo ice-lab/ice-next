@@ -108,12 +108,15 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
 
   const routesInfo = await generateRoutesInfo(rootDir, routesConfig);
 
+  const isCSR = !userConfig.ssr && !userConfig.ssg;
+
   // add render data
   generator.setRenderData({
     ...routesInfo,
     runtimeModules,
     coreEnvKeys,
     basename: webTaskConfig.config.basename || '/',
+    hydrate: !isCSR,
   });
   dataCache.set('routes', JSON.stringify(routesInfo.routeManifest));
 
@@ -124,9 +127,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     ...getWatchEvents({ generator, targetDir, templateDir, cache: dataCache, ctx }),
   );
   consola.debug('template render cost:', new Date().getTime() - renderStart);
-
-
-  const isCSR = process.env.ICE_CORE_RENDER_TYPE === 'CSR';
 
   // create serverCompiler with task config
   const serverCompiler = createServerCompiler({

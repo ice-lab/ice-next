@@ -56,14 +56,6 @@ export async function initProcessEnv(
   process.env.ICE_CORE_ROUTER = 'true';
   process.env.ICE_CORE_ERROR_BOUNDARY = 'true';
   process.env.ICE_CORE_INITIAL_DATA = 'true';
-
-  let renderType = 'CSR';
-  if (userConfig.ssr) {
-    renderType = 'SSR';
-  } else if (userConfig.ssg) {
-    renderType = 'SSG';
-  }
-  process.env.ICE_CORE_RENDER_TYPE = renderType;
 }
 
 export const updateRuntimeEnv = (appConfig: AppConfig, options: EnvOptions) => {
