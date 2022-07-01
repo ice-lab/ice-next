@@ -5,9 +5,9 @@ order: 4.1
 
 每一张页面，都可以由 `路由组件` 和 `零或多个布局组件` 组装而成。路由组件和布局组件的开发规范基本一致，可以包含以下内容：
 
-- 默认导出 (`export default`) 是组件的具体实现，必选。
-- 导出 `getData` 方法，约定页面的数据请求，可选。
-- 导出 `getConfig` 方法，约定页面的 `Title`、`Meta` 等信息，可选。
+- 默认导出是组件的具体实现，必选。
+- 导出 `getData()` 方法，约定页面的数据请求，可选。
+- 导出 `getConfig()` 方法，约定页面的 `Title`、`Meta` 等信息，可选。
 
 ## 组件
 
@@ -15,7 +15,7 @@ order: 4.1
 
 ```tsx
 // src/pages/index.tsx
-import { useData } from "ice";
+import { useData } from 'ice';
 
 export default function Home() {
   const data = useData();
@@ -28,11 +28,11 @@ export default function Home() {
 }
 ```
 
-## getData
+## getData()
 
 获取页面初始数据的方法，详见[数据请求](./request.md)。
 
-## getConfig
+## getConfig()
 
 获取页面运行时配置的方法，页面主体内容之外的，其他需要通用 HTML 模板上差异化显示的内容，可以通过导出 `getConfig` 方法来声明。
 

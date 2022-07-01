@@ -1,23 +1,23 @@
 ---
 title: 定制 HTML
-order: 1
+order: 12
 ---
 
-ICE 3 使用 JSX 维护页面的 HTML 模板结构，其入口位于 `src/document.tsx`。
+ICE 使用 JSX 维护页面的 HTML 模板结构，其入口位于 `src/document.tsx`。
 
 ## 初始模板
 
-Document 的初始模板如下：
+`Document` 的初始模板如下：
 
 ```jsx
 import { Meta, Title, Links, Main, Scripts } from 'ice';
 
 function Document() {
   return (
-    <html lang="en">
+    <html>
       <head>
         <meta charSet="utf-8" />
-        <meta name="description" content="ICE 3.0 Demo" />
+        <meta name="description" content="ICE DEMO" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Title />
@@ -36,17 +36,17 @@ export default Document;
 
 默认引入了以下组件：
 
-- Meta 页面的 Meta 信息
-- Title 页面的 Title 信息
-- Links 页面面依赖的 css 资源及其他 link 标签
-- Scripts 页面依赖的 js 资源
-- Main 页面渲染的容器节点
+- `Meta`：页面的元信息
+- `Title` 页面的标题信息
+- `Links` 页面面依赖的 CSS 资源及其他 `link` 标签
+- `Scripts` 页面依赖的 JS 资源
+- `Main` 页面渲染的容器节点
 
-这些组件，配合各路由组件的 `getConfig` 配置，可以实现不同页面 HTML 模板的差异化渲染。
+这些组件，配合各路由组件的 `getConfig()` 配置，可以实现不同页面 HTML 模板的差异化渲染。
 
 ## 内容定制
 
-像开发其他 JSX 组件一样，可以在 Document 组件内插入自定义的其他 HTML 内容。例如：
+像开发其他 JSX 组件一样，可以在 `Document` 组件内插入自定义的其他 HTML 内容。例如：
 
 ```jsx
 <body>

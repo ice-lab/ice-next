@@ -5,7 +5,7 @@ order: 5
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-ICE 3 推荐使用原生 CSS + PostCSS 的方案编写样式，不建议使用 `less/sass` 之类的预编译方案，CSS 写法目前扩展支持了 `@import` 以及嵌套写法。
+ICE 推荐使用原生 CSS + PostCSS 的方案编写样式，不建议使用 `less/sass` 之类的预编译方案，CSS 写法目前扩展支持了 `@import` 以及嵌套写法。
 
 <Tabs>
 <TabItem value="css" label="index.css">
@@ -40,7 +40,7 @@ function Home() {
 </TabItem>
 </Tabs>
 
-> ICE 3 同时支持 `less/scss` 预编译器，只要保证文件后缀匹配即可。
+> ICE 同时支持 `less/scss` 预编译器，只要保证文件后缀匹配即可。
 
 ## 全局样式
 

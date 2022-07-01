@@ -10,10 +10,10 @@ module.exports = {
   docs: [
     'guide/about',
     'guide/start',
-    'guide/practice',
+    // 'guide/practice',
     {
       type: 'category',
-      label: '基础',
+      label: 'ICE 指南',
       collapsed: false,
       items: getDocsFromDir('guide/basic'),
     },

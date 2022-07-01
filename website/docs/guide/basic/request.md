@@ -1,15 +1,15 @@
 ---
-title: 数据请求
+title: 页面数据请求
 order: 6
 ---
 
-在 ICE 3 中，推荐为路由组件定义 getData 方法，来发起页面的数据请求。在 `getData` 中定义的数据请求，会和页面的资源加载并行发起，以达到更好的性能体验。
+在 ICE 中，推荐为页面组件定义 `getData()` 方法，来发起页面的数据请求。在 `getData()` 中定义的数据请求，会和页面的资源加载并行发起，以达到更好的性能体验。
 
 示例：
 
 ```tsx
 // src/pages/index.tsx
-import { useData } from "ice";
+import { useData } from 'ice';
 
 export default function Home() {
   const data = useData();
@@ -52,14 +52,14 @@ export default function Home() {
 };
 ```
 
-相比之下，`getData` 变数据请求从串行到并行，天然带来了更好的性能体验，是框架推荐的数据方法。
+相比之下，`getData()` 变数据请求从串行到并行，天然带来了更好的性能体验，是框架推荐的数据方法。
 
 ## 入参
 
-`getData` 的入参包含：
+`getData()` 的入参包含：
 
-- pathname: string, 当前页面的 pathname
-- query: object, 当前页面的 query 信息
+- `pathname`: `string`, 当前页面的路径名。
+- `query`: `object`, 当前页面的 `query` 信息，会被提前解析。
 
 ```tsx
 export async function getData(params) {
@@ -72,13 +72,13 @@ export async function getData(params) {
 }
 ```
 
-## useData
+## useData()
 
-在路由组件里使用 `getData` 返回的数据，需配合 `useData` 使用。 示例：
+在路由组件里使用 `getData()` 返回的数据，需配合 `useData()` 使用。 示例：
 
 ```tsx
 // src/pages/index.tsx
-import { useData } from "ice";
+import { useData } from 'ice';
 
 export default function Home() {
   const data = useData();

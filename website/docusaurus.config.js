@@ -3,9 +3,9 @@ const navbar = require('./config/navbar');
 const footer = require('./config/footer');
 
 const config = {
-  title: '飞冰 ',
+  title: '飞冰 ICE ',
   tagline: ' 基于 React 的应用研发框架',
-  url: 'https://beta.ice.work',
+  url: 'https://v3.ice.work',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'throw',
@@ -13,17 +13,24 @@ const config = {
   organizationName: 'alibaba',
   projectName: 'ice',
   themeConfig: {
-    // announcementBar: {
-    //   id: 'announcementBar-2',
-    //   content: 'icejs 2.0 版本已发布，支持 Webpack 5 和 Vite 两种构建模式，点击 <a href="/docs/guide/upgrade">快速升级</a>',
-    //   isCloseable: true,
-    // },
+    announcementBar: {
+      id: 'announcementBar-2',
+      content: 'ICE 3 已开始 Beta，不仅是 PC，更适配移动端能力，<a href="/docs/guide/upgrade">快速升级</a>',
+      isCloseable: true,
+    },
     navbar,
     footer,
     // algolia: {
     //   apiKey: '01f284e7e1c13eac3dc14beb6d8b153d',
     //   indexName: 'ice',
     // },
+  },
+  i18n: {
+    defaultLocale: 'zh-CN',
+    locales: [
+      'zh-CN',
+      'en',
+    ],
   },
   presets: [
     [
@@ -57,7 +64,7 @@ config.plugins.push([
   require.resolve('@easyops-cn/docusaurus-search-local'),
   {
     hashed: true,
-    language: ['en', 'zh'],
+    language: ['zh', 'en'],
   },
 ]);
 // }

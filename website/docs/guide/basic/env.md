@@ -3,10 +3,10 @@ title: 环境变量
 order: 13
 ---
 
-ICE 3 内置通过环境变量实现给构建或运行时传递参数的功能。
+ICE 内置通过环境变量实现给构建或运行时传递参数的功能。
 
 - 使用 `.env` 文件来配置环境变量
-- 配置 `ICE_CORE_` 开头的环境变量则会同时暴露到运行时环境中
+- 配置 `ICE_` 开头的环境变量则会同时暴露到运行时环境中
 
 ## 如何配置环境变量
 
@@ -18,16 +18,16 @@ ICE 3 内置通过环境变量实现给构建或运行时传递参数的功能�
 $ cross-env PORT=9999 npm start
 ```
 
-> 示例中使用 cross-env 兼容不容操作系统的环境变量配置方式。
+> 示例中使用了 cross-env 来兼容不容操作系统的环境变量配置方式。
 
 ### 使用 `.env` 文件
 
-ICE 3 内置了加载 `.env` 文件的支持，在该文件中设置的环境变量会被自动加载到 `process.env` 上。
+ICE 内置了加载 `.env` 文件的支持，在该文件中设置的环境变量会被自动加载到 `process.env` 上。
 
 `.env` 文件的示例：
 
 ```shell
-PORT=3000
+DEV_PORT=3000
 FOO=bar
 ```
 
@@ -35,7 +35,7 @@ FOO=bar
 
 ```shell
 # The .env.local should not be committed.
-PORT=9999
+DEV_PORT=9999
 ```
 
 此外你也可以在 `.env.${mode}` 和 `.env.${mode}.local` 文件中指定不同模式下的环境变量。`${mode}` 的取值是 `development` 或 `production`。
@@ -50,11 +50,20 @@ PORT=9999
 
 ## 使用环境变量
 
-在 ICE 3 中，环境变量的使用场景分构建时与运行时两种类型。
+在 ICE 中，环境变量的使用场景分构建时与运行时两种类型。
+
+特别注意：环境变量在使用时的类型都是 `string`，特别是设置为 `true` 或 `false` 时需要注意判断为字符串类型：
+
+```js
+// ICE_DISABLE_FOO=false
+if (process.env.ICE_DISABLE_FOO === "false") {
+  // ...
+}
+```
 
 ### 构建时
 
-默认情况下，所有设置的环境变量都会被注入到构建环境，你可以在 `ice.config.ts` 文件或其它构建插件中通过 `process.env` 变量访问。
+默认情况下，所有设置的环境变量都会被注入到构建环境，你可以在 `ice.config.mts` 文件或其它构建插件中通过 `process.env` 变量访问。
 
 ```js
 const port = process.env.PORT;
@@ -76,17 +85,17 @@ ICE_APP_ID=123456
 import React from 'react';
 
 export default function AppID() {
-  return <h1>AppId is ${process.env.ICE_APP_ID}.</h1>
+  return <h1>AppId is {process.env.ICE_APP_ID}.</h1>
 }
 ```
 
 ## 内置的环境变量
 
-ICE 3 会内置一些环境变量方便使用，通常由 `ICE_CORE_` 开头，如下：
+ICE 会内置一些环境变量方便使用，通常由 `ICE_CORE_` 开头，如下：
 
 ### ICE_CORE_MODE
 
-用于 ICE 3 的运行模式，可能是 `"development"` 或 `"production"`。
+用于 ICE 的运行模式，可能是 `development` 或 `production`。
 
 ### ICE_CORE_ROUTER
 

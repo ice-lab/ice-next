@@ -3,7 +3,7 @@ title: 应用入口
 order: 4
 ---
 
-ICE 3 通过应用配置的方式渲染整个应用，开发者可以根据提供的配置定制应用。
+ICE 通过应用配置的方式渲染整个应用，开发者可以根据提供的配置定制应用。
 
 ## 应用配置文件
 
@@ -19,7 +19,7 @@ export default defineAppConfig({
 });
 ```
 
-> 推荐通过 defineAppConfig 的方式导出应用配置，以获得良好的类型提示。
+> 推荐通过 `defineAppConfig()` 的方式导出应用配置，以获得良好的类型提示。
 
 ## 配置项
 
@@ -27,14 +27,35 @@ export default defineAppConfig({
 
 ### app
 
-- `rootId` 根节点 id，类型 `string`，默认值 `ice-container`
-- `strict` 是否开启 `React.StrictMode`，类型 `boolean`，默认值 `false`
-- `errorBoundary` 启用内置的错误边界捕获能力，默认值 `false`
+#### `rootId`
+根节点 id
+
+- 类型：`string`
+- 默认值 `ice-container`
+
+#### `strict`
+是否开启 React 的严格模式 (React.StrictMode)
+
+- 类型 `boolean`
+- 默认值 `false`
+
+#### `errorBoundary`
+是否启用内置的错误边界捕获能力
+- 类型 `boolean`
+- 默认值 `false`
 
 ### router
 
-- `type` 路由类型，可选值为 `"hash" | "browser"`，默认为 `"browser"`
-- `basename` 路由 basename，默认值 `"/"`
+#### `type` 
+路由类型
+
+- 类型 `string`，可选值为 `hash` 或 `browser`
+- 默认为 `browser`
+
+#### `basename`
+路由 basename
+- 类型 `string`
+- 默认值 `/`
 
 ## 运行时拓展
 
@@ -60,4 +81,4 @@ export default defineAppConfig({
 });
 ```
 
-更多运行时插件能力，请参考[官方插件](/plugin/list/auth)。
+[//]: # (更多运行时插件能力，请参考[官方插件]&#40;/plugin/list/auth&#41;。)
