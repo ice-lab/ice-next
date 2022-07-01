@@ -80,6 +80,8 @@ function startBrowserProcess(browser, url, args) {
     const supportedChromiumBrowsers = [
       'Google Chrome Canary',
       'Google Chrome',
+      'Google Chrome Dev',
+      'Google Chrome Beta',
       'Microsoft Edge',
       'Brave Browser',
       'Vivaldi',

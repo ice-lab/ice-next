@@ -19,8 +19,9 @@
     "npm": ">=3.0.0"
   },
   "scripts": {
-    "watch": "tsc -w",
-    "build": "tsc"
+    "watch": "npm run copy:script && tsc -w",
+    "build": "npm run copy:script && tsc",
+    "copy:script": "node scripts/copyFile.js ./src/utils/openChrome.applescript ./esm/utils/openChrome.applescript"
   },
   "author": "ice-admin",
   "license": "MIT",
