@@ -8,14 +8,13 @@ order: 1
 飞冰 (ICE) 是一套基于 React 的前端解决方案，核心应用研发框架提供了基础的构建、路由、调试等基础能力以及微前端、一体化等领域能力，同时结合可视化操作、物料复用等方案降低研发门槛。
 
 ## 特性 🎉
-- 🦧 使用 Webpack5 + swc + esbuild 的构建底层，兼顾兼容性和构建性能
-- 🐒 开箱即用：TypeScript/Webpack5/CSS Modules/Mock/SSR...
+- 🐒 开箱即用：TypeScript/Webpack5/CSS Modules/Mock/SSR，各种方案 All in One
 - 🦊 贴合业务的最佳实践：目录规范、代码规范、路由方案、状态管理、数据请求等
 - 🐯 多种应用模式：支持服务端渲染 SSR 以及静态构建 SSG
 - 🐦 强大的插件能力：官方所有能力都通过插件实现，业务可以通过插件扩展各种能力
-- 🐘 丰富的领域方案：微前端 icestark、一体化方案等
+- 🐘 丰富的领域方案：微前端 ICESTARK、一体化方案等
 
-在应用框架之上，我们还提供了 NPM 包开发 ICE PKG：
+在应用框架之上，我们还提供了 NPM 包开发工具 [ICE PKG](https://pkg.ice.work)：
 
 - 提供 React 组件开发、Node 模块开发、前端通用库等[多场景需求](https://pkg.ice.work/scenarios/component)
 - 组件开发提供基础研发范式，提供组件文档、示例、预览等功能，[查看文档](https://pkg.ice.work/guide/preview)
@@ -30,18 +29,18 @@ order: 1
 
 ## 常见问题 📝
 
-### 与直接使用 Webpack 相比，使用 ICE3 有什么优势？
+### 与直接使用 Webpack 相比，使用 ICE 3 有什么优势？
 
-Webpack 只提供了基础的工程能力，ICE3 在此基础上扩展了很多能力：
+Webpack 只提供了基础的工程能力，ICE 3 在此基础上扩展了很多能力：
 
 - 默认集成好的框架能力，无需再引入繁冗的构建插件和配置
 - 不止是构建，更有面向业务领域的最佳实践，如路由、目录组织、状态管理等
 - 让很多业务接入成本高的能力可以开箱即用，如 SSR/SSG、微前端、一体化，基于原始的 Webpack 建设这些能力需要付出很高成本
 - 通过插件化让以上这些能力可以被扩展以及跨项目复用，尽可能保证不同项目的一致性
 
-### 我正在使用 icejs (ICE2)，需要升级到 ICE3 吗？
+### 我正在使用 icejs (ICE 2)，需要升级到 ICE 3 吗？
 
-ICE3 相比之前的版本，增加了更多对移动端能力的优化和适配，如果你使用 icejs 在中后台(PC)领域，而且已有能力已经满足诉求的情况下，是可以不用考虑升级到 ICE3 的。
+ICE 3 相比之前的版本，增加了更多对移动端能力的优化和适配。升级或不升级都是可行的，原先的 icejs 依然是可用的，而且我们会保证 Bugfix 的持续迭代。如果你的页面会同时运行在移动端和 PC 端，使用 ICE 3 可能会是更好的选择，亦或者是你对 ICE 3 提供的更新的构建工具链、更优更多的解决方案感兴趣，你都可以选择升级到 ICE 3。
 
 ### 使用飞冰(ICE)是否需要具备一定的前端基础？
 
@@ -52,9 +51,9 @@ ICE3 相比之前的版本，增加了更多对移动端能力的优化和适配
 
 ### 飞冰的浏览器兼容策略是怎样的？
 
-应用框架 ICE3 默认使用的是 React 18，你可以查看 React 18 官方说明[对 JavaScript 环境的要求](https://zh-hans.reactjs.org/docs/javascript-environment-requirements.html)。如果你支持旧的浏览器和设备，可能需要引入对应的 Polyfill。
+应用框架 ICE 3 默认使用的是 React 18，你可以查看 React 18 官方说明[对 JavaScript 环境的要求](https://zh-hans.reactjs.org/docs/javascript-environment-requirements.html)。如果你支持旧的浏览器和设备，可能需要引入对应的 Polyfill。
 
-此外，飞冰官方 React 物料默认使用 React 16+ 进行开发，.....xxx。
+此外，飞冰官方 React 物料默认使用 React 16+ 进行开发，所以通常情况下这些物料在 ICE 3 中是可以正常运行的，如果你遇到任何问题，也可以通过 [Issue](https://github.com/alibaba/ice/issues) 或其它方式反馈给我们。
 
 ### 飞冰可以使用哪些 UI 组件？
 

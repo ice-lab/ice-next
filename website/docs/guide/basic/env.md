@@ -3,7 +3,7 @@ title: 环境变量
 order: 13
 ---
 
-ICE3 内置通过环境变量实现给构建或运行时传递参数的功能。
+ICE 3 内置通过环境变量实现给构建或运行时传递参数的功能。
 
 - 使用 `.env` 文件来配置环境变量
 - 配置 `ICE_CORE_` 开头的环境变量则会同时暴露到运行时环境中
@@ -22,7 +22,7 @@ $ cross-env PORT=9999 npm start
 
 ### 使用 `.env` 文件
 
-ICE3 内置了加载 `.env` 文件的支持，在该文件中设置的环境变量会被自动加载到 `process.env` 上。
+ICE 3 内置了加载 `.env` 文件的支持，在该文件中设置的环境变量会被自动加载到 `process.env` 上。
 
 `.env` 文件的示例：
 
@@ -50,7 +50,7 @@ PORT=9999
 
 ## 使用环境变量
 
-在 ICE3 中，环境变量的使用场景分构建时与运行时两种类型。
+在 ICE 3 中，环境变量的使用场景分构建时与运行时两种类型。
 
 ### 构建时
 
@@ -82,11 +82,11 @@ export default function AppID() {
 
 ## 内置的环境变量
 
-ICE3 会内置一些环境变量方便使用，通常由 `ICE_CORE_` 开头，如下：
+ICE 3 会内置一些环境变量方便使用，通常由 `ICE_CORE_` 开头，如下：
 
 ### ICE_CORE_MODE
 
-用于 ICE3 的运行模式，可能是 `"development"` 或 `"production"`。
+用于 ICE 3 的运行模式，可能是 `"development"` 或 `"production"`。
 
 ### ICE_CORE_ROUTER
 
