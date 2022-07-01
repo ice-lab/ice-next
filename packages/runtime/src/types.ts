@@ -190,3 +190,5 @@ export interface RouteMatch {
    */
   route: RouteItem;
 }
+
+export type RenderMode = 'SSR' | 'SSG';

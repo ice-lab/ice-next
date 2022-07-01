@@ -2,7 +2,7 @@ import * as path from 'path';
 import type { Request } from 'webpack-dev-server';
 import fse from 'fs-extra';
 import consola from 'consola';
-import type { ServerContext } from '@ice/runtime';
+import type { ServerContext, RenderMode } from '@ice/runtime';
 import type { RouteObject } from 'react-router';
 import { ROUTER_MANIFEST } from '../constant.js';
 
@@ -12,7 +12,7 @@ interface Options {
   outputDir: string;
   documentOnly: boolean;
   basename?: string;
-  staticGeneration?: boolean;
+  renderMode?: RenderMode;
 }
 
 export default async function generateHTML(options: Options) {
@@ -21,7 +21,7 @@ export default async function generateHTML(options: Options) {
     entry,
     outputDir,
     documentOnly,
-    staticGeneration,
+    renderMode,
   } = options;
 
   let serverEntry;
@@ -48,7 +48,7 @@ export default async function generateHTML(options: Options) {
       req: req as Request,
     };
     const { value: html } = await serverEntry.renderToHTML(serverContext, {
-      staticGeneration,
+      renderMode,
       documentOnly,
     });
 

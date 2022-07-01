@@ -11,10 +11,24 @@ const getRouterBasename = () => {
   return '<%- basename %>' || appConfig?.router?.basename;
 }
 
+const setRuntimeEnv = (renderMode) => {
+  if (renderMode === 'SSR') {
+    process.env.ICE_CORE_SSR = 'false';
+    process.env.ICE_CORE_SSG = 'true';
+  } else {
+    process.env.ICE_CORE_SSR = 'true';
+    process.env.ICE_CORE_SSG = 'false';
+  }
+}
+
 export async function renderToHTML(requestContext, options = {}) {
+  const { documentOnly, renderMode = 'SSR' } = options;
+  setRuntimeEnv(renderMode);
+
   const basename = getRouterBasename();
   // add basename for req.url so we don't need to add basename for mocked url
   requestContext.req.url = `${basename}${requestContext.req.url.replace(/^\//, '')}`;
+
   return await runtime.renderToHTML(requestContext, {
     app,
     assetsManifest,
@@ -22,12 +36,15 @@ export async function renderToHTML(requestContext, options = {}) {
     runtimeModules,
     Document,
     basename,
-    ...options,
+    documentOnly,
+    renderMode,
   });
 }
 
 export async function renderToResponse(requestContext, options = {}) {
-  const appConfig = runtime.getAppConfig(app);
+  const { documentOnly, renderMode = 'SSR' } = options;
+  setRuntimeEnv(options);
+
   runtime.renderToResponse(requestContext, {
     app,
     assetsManifest,
@@ -35,6 +52,7 @@ export async function renderToResponse(requestContext, options = {}) {
     runtimeModules,
     Document,
     basename: getRouterBasename(),
-    ...options,
+    documentOnly,
+    renderMode,
   });
 }

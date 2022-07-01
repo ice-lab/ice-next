@@ -34,10 +34,18 @@ const start = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
       const { ssg, ssr, server } = userConfig;
 
       const serverCompileMiddleware = createCompileMiddleware({ rootDir, outputDir, serverCompiler, server });
+
+      let renderMode;
       // If ssr is set to true, use ssr for preview.
+      if (ssr) {
+        renderMode = 'SSR';
+      } else if (ssg) {
+        renderMode = 'SSG';
+      }
+
       const serverRenderMiddleware = createRenderMiddleware({
         documentOnly: !ssr && !ssg,
-        staticGeneration: ssg && !ssr,
+        renderMode,
       });
       const insertIndex = middlewares.findIndex(({ name }) => name === 'serve-index');
       middlewares.splice(

@@ -73,13 +73,19 @@ const build = async (
           platform: esm ? 'browser' : 'node',
           outExtension: { '.js': outJSExtension },
         });
+
+        let renderMode;
+        if (ssg) {
+          renderMode = 'SSG';
+        }
+
         // generate html
         await generateHTML({
           rootDir,
           outputDir,
           entry: serverEntry,
           documentOnly: !ssg && !ssr,
-          staticGeneration: ssg,
+          renderMode,
         });
         resolve({
           stats,

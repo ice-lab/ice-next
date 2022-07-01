@@ -20,6 +20,7 @@ import type {
   RequestContext,
   AppConfig,
   RouteModules,
+  RenderMode,
 } from './types.js';
 import getRequestContext from './requestContext.js';
 
@@ -30,7 +31,7 @@ interface RenderOptions {
   runtimeModules: (RuntimePlugin | CommonJsRuntime)[];
   Document: ComponentWithChildren<{}>;
   documentOnly?: boolean;
-  staticGeneration?: boolean;
+  renderMode?: RenderMode;
   basename?: string;
 }
 
@@ -120,15 +121,7 @@ function pipeToResponse(res: ServerResponse, pipe: NodeWritablePiper) {
 
 async function doRender(serverContext: ServerContext, renderOptions: RenderOptions): Promise<RenderResult> {
   const { req } = serverContext;
-  const { routes, documentOnly, app, staticGeneration, basename } = renderOptions;
-
-  if (staticGeneration) {
-    process.env.ICE_CORE_SSR = 'false';
-    process.env.ICE_CORE_SSG = 'true';
-  } else {
-    process.env.ICE_CORE_SSR = 'true';
-    process.env.ICE_CORE_SSG = 'false';
-  }
+  const { routes, documentOnly, app, basename } = renderOptions;
 
   const location = getLocation(req.url);
 
@@ -203,10 +196,11 @@ async function renderServerEntry(
     assetsManifest,
     runtimeModules,
     routes,
+    renderMode,
     Document,
   } = renderOptions;
 
-  const routesData = await loadRoutesData(matches, requestContext, routeModules);
+  const routesData = await loadRoutesData(matches, requestContext, routeModules, renderMode);
   const routesConfig = getRoutesConfig(matches, routesData, routeModules);
 
   const appContext: AppContext = {

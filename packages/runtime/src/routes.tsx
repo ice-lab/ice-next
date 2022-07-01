@@ -4,7 +4,7 @@ import type { RouteObject } from 'react-router-dom';
 import { matchRoutes as originMatchRoutes } from 'react-router-dom';
 import { matchRoutesSingle } from './utils/history-single.js';
 import RouteWrapper from './RouteWrapper.js';
-import type { RouteItem, RouteModules, RouteWrapperConfig, RouteMatch, RequestContext, RoutesConfig, RoutesData } from './types.js';
+import type { RouteItem, RouteModules, RouteWrapperConfig, RouteMatch, RequestContext, RoutesConfig, RoutesData, RenderMode } from './types.js';
 import { useAppContext } from './AppContext.js';
 
 type RouteModule = Pick<RouteItem, 'id' | 'load'>;
@@ -43,6 +43,7 @@ export async function loadRoutesData(
   matches: RouteMatch[],
   requestContext: RequestContext,
   routeModules: RouteModules,
+  renderMode?: RenderMode,
 ): Promise<RoutesData> {
   const routesData: RoutesData = {};
 
@@ -72,9 +73,9 @@ export async function loadRoutesData(
       // SSG -> getStaticData
       // SSR -> getServerData || getData
       // CSR -> getData
-      if (process.env.ICE_CORE_SSG === 'true') {
+      if (renderMode === 'SSG') {
         dataLoader = getStaticData;
-      } else if (process.env.ICE_CORE_SSR === 'true') {
+      } else if (renderMode === 'SSR') {
         dataLoader = getServerData || getData;
       } else {
         dataLoader = getData;

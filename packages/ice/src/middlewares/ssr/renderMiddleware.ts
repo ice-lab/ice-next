@@ -1,17 +1,17 @@
 import { createRequire } from 'module';
 import type { ExpressRequestHandler, Middleware } from 'webpack-dev-server';
-import type { ServerContext } from '@ice/runtime';
+import type { ServerContext, RenderMode } from '@ice/runtime';
 import consola from 'consola';
 
 const require = createRequire(import.meta.url);
 
 interface Options {
   documentOnly?: boolean;
-  staticGeneration?: boolean;
+  renderMode?: RenderMode;
 }
 
 export default function createRenderMiddleware(options: Options): Middleware {
-  const { documentOnly, staticGeneration } = options;
+  const { documentOnly, renderMode } = options;
   const middleware: ExpressRequestHandler = async function (req, res) {
     // @ts-ignore
     const { serverEntry } = req;
@@ -35,7 +35,7 @@ export default function createRenderMiddleware(options: Options): Middleware {
       res,
     };
     serverModule.renderToResponse(requestContext, {
-      staticGeneration,
+      renderMode,
       documentOnly,
     });
   };
