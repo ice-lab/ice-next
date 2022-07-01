@@ -7,11 +7,11 @@ const require = createRequire(import.meta.url);
 
 interface Options {
   documentOnly?: boolean;
-  ssg?: boolean;
+  staticGeneration?: boolean;
 }
 
 export default function createRenderMiddleware(options: Options): Middleware {
-  const { documentOnly, ssg } = options;
+  const { documentOnly, staticGeneration } = options;
   const middleware: ExpressRequestHandler = async function (req, res) {
     // @ts-ignore
     const { serverEntry } = req;
@@ -35,7 +35,7 @@ export default function createRenderMiddleware(options: Options): Middleware {
       res,
     };
     serverModule.renderToResponse(requestContext, {
-      ssg,
+      staticGeneration,
       documentOnly,
     });
   };

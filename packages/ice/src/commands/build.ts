@@ -79,7 +79,7 @@ const build = async (
           outputDir,
           entry: serverEntry,
           documentOnly: !ssg && !ssr,
-          ssg,
+          staticGeneration: ssg,
         });
         resolve({
           stats,

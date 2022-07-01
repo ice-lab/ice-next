@@ -30,7 +30,7 @@ interface RenderOptions {
   runtimeModules: (RuntimePlugin | CommonJsRuntime)[];
   Document: ComponentWithChildren<{}>;
   documentOnly?: boolean;
-  ssg?: boolean;
+  staticGeneration?: boolean;
   basename?: string;
 }
 
@@ -120,9 +120,9 @@ function pipeToResponse(res: ServerResponse, pipe: NodeWritablePiper) {
 
 async function doRender(serverContext: ServerContext, renderOptions: RenderOptions): Promise<RenderResult> {
   const { req } = serverContext;
-  const { routes, documentOnly, app, ssg, basename } = renderOptions;
+  const { routes, documentOnly, app, staticGeneration, basename } = renderOptions;
 
-  if (ssg) {
+  if (staticGeneration) {
     process.env.ICE_CORE_SSR = 'false';
     process.env.ICE_CORE_SSG = 'true';
   } else {

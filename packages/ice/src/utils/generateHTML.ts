@@ -12,7 +12,7 @@ interface Options {
   outputDir: string;
   documentOnly: boolean;
   basename?: string;
-  ssg?: boolean;
+  staticGeneration?: boolean;
 }
 
 export default async function generateHTML(options: Options) {
@@ -21,7 +21,7 @@ export default async function generateHTML(options: Options) {
     entry,
     outputDir,
     documentOnly,
-    ssg,
+    staticGeneration,
   } = options;
 
   let serverEntry;
@@ -48,7 +48,7 @@ export default async function generateHTML(options: Options) {
       req: req as Request,
     };
     const { value: html } = await serverEntry.renderToHTML(serverContext, {
-      ssg,
+      staticGeneration,
       documentOnly,
     });
 
