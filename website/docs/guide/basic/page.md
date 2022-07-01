@@ -13,8 +13,7 @@ order: 4.1
 
 对应路由组件或布局组件在页面中需要渲染的内容。
 
-```tsx
-// src/pages/index.tsx
+```tsx title="src/pages/index.tsx"
 import { useData } from 'ice';
 
 export default function Home() {

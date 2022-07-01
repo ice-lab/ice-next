@@ -56,7 +56,7 @@ DEV_PORT=9999
 
 ```js
 // ICE_DISABLE_FOO=false
-if (process.env.ICE_DISABLE_FOO === "false") {
+if (process.env.ICE_DISABLE_FOO === 'false') {
   // ...
 }
 ```
