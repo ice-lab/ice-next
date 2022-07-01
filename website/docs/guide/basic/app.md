@@ -9,7 +9,7 @@ ICE 通过应用配置的方式渲染整个应用，开发者可以根据提供�
 
 框架以 `src/app.ts` 作为应用配置文件：
 
-```js
+```tsx
 import { defineAppConfig } from 'ice';
 
 export default defineAppConfig({

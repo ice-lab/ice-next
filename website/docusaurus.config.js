@@ -15,11 +15,14 @@ const config = {
   themeConfig: {
     announcementBar: {
       id: 'announcementBar-2',
-      content: 'ICE 3 已开始 Beta，不仅是 PC，更适配移动端能力，<a href="/docs/guide/upgrade">快速升级</a>',
+      content: 'ICE 3 Beta，不仅是 PC，更适配移动端能力，<a href="/docs/guide/upgrade">快速升级</a>',
       isCloseable: true,
     },
     navbar,
     footer,
+    prism: {
+      theme: require('prism-react-renderer/themes/oceanicNext'),
+    },
     // algolia: {
     //   apiKey: '01f284e7e1c13eac3dc14beb6d8b153d',
     //   indexName: 'ice',
