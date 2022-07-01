@@ -21,7 +21,6 @@ export default async function generateHTML(options: Options) {
     entry,
     outputDir,
     documentOnly,
-    basename,
     ssg,
   } = options;
 
@@ -42,7 +41,7 @@ export default async function generateHTML(options: Options) {
     const routePath = paths[i];
 
     const req = {
-      url: path.join(basename || '', routePath),
+      url: routePath,
     };
 
     const serverContext: ServerContext = {

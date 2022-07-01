@@ -134,7 +134,7 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
 
   const requestContext = getRequestContext(location, serverContext);
   const appConfig = getAppConfig(app);
-  const matches = matchRoutes(routes, location, basename || appConfig?.router?.basename);
+  const matches = matchRoutes(routes, location, basename);
 
   if (!matches.length) {
     return render404();

@@ -6,30 +6,35 @@ import Document from '@/document';
 import assetsManifest from './assets-manifest.json';
 import routes from './routes';
 
+const getRouterBasename = () => {
+  const appConfig = runtime.getAppConfig(app);
+  return '<%- basename %>' || appConfig?.router?.basename;
+}
+
 export async function renderToHTML(requestContext, options = {}) {
+  const basename = getRouterBasename();
+  // add basename for req.url so we don't need to add basename for mocked url
+  requestContext.req.url = `${basename}${requestContext.req.url.replace(/^\//, '')}`;
   return await runtime.renderToHTML(requestContext, {
     app,
     assetsManifest,
     routes,
     runtimeModules,
     Document,
+    basename,
     ...options,
-<% if (basename) { %>
-    basename: '<%- basename %>'
-<% } %>
   });
 }
 
 export async function renderToResponse(requestContext, options = {}) {
+  const appConfig = runtime.getAppConfig(app);
   runtime.renderToResponse(requestContext, {
     app,
     assetsManifest,
     routes,
     runtimeModules,
     Document,
+    basename: getRouterBasename(),
     ...options,
-<% if (basename) { %>
-    basename: '<%- basename %>'
-<% } %>
   });
 }
