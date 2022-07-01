@@ -32,7 +32,6 @@ const config = {
     defaultLocale: 'zh-CN',
     locales: [
       'zh-CN',
-      'en',
     ],
   },
   presets: [
