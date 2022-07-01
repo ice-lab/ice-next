@@ -3,7 +3,6 @@ import * as fs from 'fs';
 import * as dotenv from 'dotenv';
 import { expand as dotenvExpand } from 'dotenv-expand';
 import type { CommandArgs, CommandName } from 'build-scripts';
-import type { UserConfig } from '@ice/types';
 
 export type AppConfig = Record<string, any>;
 export interface Envs {
