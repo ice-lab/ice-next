@@ -108,7 +108,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
 
   const routesInfo = await generateRoutesInfo(rootDir, routesConfig);
 
-  const isCSR = !userConfig.ssr && !userConfig.ssg;
+  const csr = !userConfig.ssr && !userConfig.ssg;
 
   // add render data
   generator.setRenderData({
@@ -116,7 +116,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     runtimeModules,
     coreEnvKeys,
     basename: webTaskConfig.config.basename || '/',
-    hydrate: !isCSR,
+    hydrate: !csr,
   });
   dataCache.set('routes', JSON.stringify(routesInfo.routeManifest));
 
@@ -135,7 +135,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     command,
     serverBundle: server.bundle,
     swcOptions: {
-      removeExportExprs: isCSR ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
+      removeExportExprs: csr ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
     },
   });
 
