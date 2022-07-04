@@ -21,11 +21,6 @@ const getWebTask = ({ rootDir, command }): Config => {
     },
     assetsManifest: true,
     fastRefresh: command === 'start',
-    // When build CSR  Bundle, set ssr and ssg env to false, for remove dead code.
-    define: {
-      'process.env.ICE_CORE_SSG': false,
-      'process.env.ICE_CORE_SSR': false,
-    },
   };
 };
 

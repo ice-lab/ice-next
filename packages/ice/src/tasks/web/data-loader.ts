@@ -29,10 +29,6 @@ const getTask = ({ rootDir, command }): Config => {
       client: false,
     },
     fastRefresh: command === 'start',
-    define: {
-      'process.env.ICE_CORE_SSG': false,
-      'process.env.ICE_CORE_SSR': false,
-    },
   };
 };
 

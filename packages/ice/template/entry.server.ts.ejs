@@ -12,12 +12,10 @@ const getRouterBasename = () => {
 }
 
 const setRuntimeEnv = (renderMode) => {
-  if (renderMode === 'SSR') {
-    process.env.ICE_CORE_SSR = 'false';
+  if (renderMode === 'SSG') {
     process.env.ICE_CORE_SSG = 'true';
   } else {
     process.env.ICE_CORE_SSR = 'true';
-    process.env.ICE_CORE_SSG = 'false';
   }
 }
 

@@ -47,12 +47,6 @@ export function createServerCompiler(options: Options) {
   const defineVars = {};
   // auto stringify define value
   Object.keys(define).forEach((key) => {
-    // ssr runtime env should not be replaced in build time.
-    // server bundle may be used both in ssg or ssr, this is defined during runtime.
-    if (key === 'process.env.ICE_CORE_SSG' || key === 'process.env.ICE_CORE_SSR') {
-      return;
-    }
-
     defineVars[key] = JSON.stringify(define[key]);
   });
 

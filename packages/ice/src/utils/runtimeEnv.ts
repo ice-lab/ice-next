@@ -54,6 +54,10 @@ export async function initProcessEnv(
   process.env.ICE_CORE_ROUTER = 'true';
   process.env.ICE_CORE_ERROR_BOUNDARY = 'true';
   process.env.ICE_CORE_INITIAL_DATA = 'true';
+
+  // set ssr and ssg env to false, for remove dead code in CSR.
+  process.env.ICE_CORE_SSG = 'false';
+  process.env.ICE_CORE_SSR = 'false';
 }
 
 export const updateRuntimeEnv = (appConfig: AppConfig, options: EnvOptions) => {
