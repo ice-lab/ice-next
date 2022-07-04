@@ -3,6 +3,7 @@ import * as runtime from '@ice/runtime/server';
 import * as app from '@/app';
 import runtimeModules from './runtimeModules';
 import Document from '@/document';
+import type { RenderMode } from '@ice/runtime';
 import assetsManifest from './assets-manifest.json';
 import routes from './routes';
 
@@ -19,7 +20,12 @@ const setRuntimeEnv = (renderMode) => {
   }
 }
 
-export async function renderToHTML(requestContext, options = {}) {
+interface RenderOptions {
+  documentOnly?: boolean;
+  renderMode?: RenderMode;
+}
+
+export async function renderToHTML(requestContext, options: RenderOptions = {}) {
   const { documentOnly, renderMode = 'SSR' } = options;
   setRuntimeEnv(renderMode);
 
@@ -39,7 +45,7 @@ export async function renderToHTML(requestContext, options = {}) {
   });
 }
 
-export async function renderToResponse(requestContext, options = {}) {
+export async function renderToResponse(requestContext, options: RenderOptions = {}) {
   const { documentOnly, renderMode = 'SSR' } = options;
   setRuntimeEnv(options);
 
