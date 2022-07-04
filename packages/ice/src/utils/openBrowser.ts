@@ -100,7 +100,7 @@ function startBrowserProcess(browser, url, args) {
             chromiumBrowser
             }"`,
           {
-            cwd: __dirname,
+            cwd: path.join(__dirname, '../../'),
             stdio: 'ignore',
           },
         );

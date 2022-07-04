@@ -11,17 +11,17 @@
   "files": [
     "bin",
     "esm",
+    "!esm/**/*.map",
     "template",
-    "!esm/**/*.map"
+    "openChrome.applescript"
   ],
   "engines": {
     "node": ">=12.22.0",
     "npm": ">=3.0.0"
   },
   "scripts": {
-    "watch": "npm run copy:script && tsc -w",
-    "build": "npm run copy:script && tsc",
-    "copy:script": "node scripts/copyFile.js ./src/utils/openChrome.applescript ./esm/utils/openChrome.applescript"
+    "watch": "tsc -w",
+    "build": "tsc"
   },
   "author": "ice-admin",
   "license": "MIT",
