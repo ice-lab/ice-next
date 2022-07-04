@@ -5,6 +5,8 @@ on:
       - 'website/**'
     branches:
       - master
+      - release-next
+  workflow_dispatch:
 
 # 任务
 jobs:
@@ -20,10 +22,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Use Node.js 14.x
+      - name: Use Node.js 16.x
         uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: 16.x
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -43,7 +45,7 @@ jobs:
       # 部署到 GitHub Pages
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.0
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/release-next'
         with:
           BRANCH: gh-pages
           FOLDER: website/build
