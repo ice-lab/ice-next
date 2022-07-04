@@ -14,11 +14,11 @@ module.exports = {
       position: 'right',
       label: '指南',
     },
-    {
-      position: 'right',
-      label: '示例',
-      to: '/docs/examples/tailwind',
-    },
+    // {
+    //   position: 'right',
+    //   label: '示例',
+    //   to: '/docs/examples/tailwind',
+    // },
     {
       position: 'right',
       label: '博客',
@@ -29,11 +29,11 @@ module.exports = {
       position: 'right',
       items: [
         {
-          label: '微前端 icestark',
+          label: '微前端 ICESTARK',
           to: 'http://micro-frontends.ice.work/',
         },
         {
-          label: '包开发 icepkg',
+          label: '包开发 ICE PKG',
           to: 'https://pkg.ice.work/',
         },
         {
@@ -52,11 +52,11 @@ module.exports = {
       items: [
         {
           to: 'https://fusion.design/pc/doc/component/102',
-          label: 'fusion 组件',
+          label: 'Fusion 组件',
         },
         {
           to: 'https://ant.design',
-          label: 'antd 组件',
+          label: 'Antd 组件',
         },
         {
           to: 'https://iceteam.gitee.io',
@@ -66,14 +66,10 @@ module.exports = {
           label: '社区钉钉群',
           to: 'https://iceworks.oss-cn-hangzhou.aliyuncs.com/assets/images/ice-group.png',
         },
-        {
-          label: '阿里内部钉钉群',
-          to: 'https://iceworks.oss-cn-hangzhou.aliyuncs.com/assets/images/ice-group-inside.JPG',
-        },
       ],
     },
     {
-      href: 'https://github.com/alibaba/ice',
+      href: 'https://github.com/ice-lab/ice-next',
       label: 'GitHub',
       position: 'right',
     },

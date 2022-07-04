@@ -87,7 +87,7 @@ import Worker from './worker.js?worker&inline'
 
 # public 目录
 
-`public/` 目录作为框架默认的静态资源目录，不被工程构建工具进行编译的资源都可以放在该目录下。
+`public/` 目录作为框架默认的静态资源目录，不被构建工具进行编译的资源都可以放在该目录下。
 
 比如 `favicon.svg` 文件，我们并不希望该文件名编译（默认静态资源文件名在编译后会生成独立 hash，`favicon.svg` 希望保持原有文件名），在使用时直接在 html 模版中进行引用：
 
