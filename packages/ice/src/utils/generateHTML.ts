@@ -40,7 +40,7 @@ export default async function generateHTML(options: Options) {
 
   for (let i = 0, n = paths.length; i < n; i++) {
     const routePath = paths[i];
-    const mockedPath = `${basename}/${routePath.replace(/^\//, '')}`;
+    const mockedPath = basename ? `${basename}/${routePath.replace(/^\//, '')}` : routePath;
 
     const req = {
       url: mockedPath,
