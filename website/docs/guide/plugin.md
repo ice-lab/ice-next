@@ -145,7 +145,7 @@ export default () => ({
     registerUserConfig({
       name: 'custom-key',
       validation: 'boolean' // 可选，支持类型有 string, number, array, object, boolean
-      config: () => {
+      setConfig: () => {
         // 该字段对于配置的影响，通过 onGetConfig 设置
       },
     });
@@ -164,7 +164,7 @@ export default () => ({
     registerCliOption({
       name: 'custom-option',
       commands: ['start'], // 支持的扩展的命令
-      config: () => {
+      setConfig: () => {
         // 该字段对于配置的影响，通过 onGetConfig 设置
       },
     });
