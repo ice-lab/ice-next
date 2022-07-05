@@ -11,11 +11,13 @@ import formatWebpackMessages from '../utils/formatWebpackMessages.js';
 import { SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
 import generateHTML from '../utils/generateHTML.js';
 import emptyDir from '../utils/emptyDir.js';
+import type { AppConfig } from '../utils/runtimeEnv.js';
 
 const build = async (
   context: Context<Config>,
   taskConfigs: TaskConfig<Config>[],
   serverCompiler: ServerCompiler,
+  appConfig: AppConfig,
 ) => {
   const { applyHook, commandArgs, command, rootDir, userConfig } = context;
   const webpackConfigs = taskConfigs.map(({ config }) => getWebpackConfig({
@@ -57,7 +59,7 @@ const build = async (
       } else {
         compiler?.close?.(() => {});
         const isSuccessful = !messages.errors.length;
-        const { outputDir } = taskConfigs.find(({ name }) => name === 'web').config;
+        const { outputDir, basename } = taskConfigs.find(({ name }) => name === 'web').config;
         const { ssg, ssr, server } = userConfig;
         // compile server bundle
         const entryPoint = path.join(rootDir, SERVER_ENTRY);
@@ -86,6 +88,7 @@ const build = async (
           entry: serverEntry,
           documentOnly: !ssg && !ssr,
           renderMode,
+          basename: appConfig?.router?.basename || basename,
         });
         resolve({
           stats,

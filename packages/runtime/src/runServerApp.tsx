@@ -266,6 +266,7 @@ function renderDocument(matches: RouteMatch[], options: RenderOptions, routeModu
     assetsManifest,
     app,
     Document,
+    basename,
   } = options;
 
   const routesData = null;
@@ -281,6 +282,7 @@ function renderDocument(matches: RouteMatch[], options: RenderOptions, routeModu
     routes,
     documentOnly: true,
     routeModules,
+    basename,
   };
 
   const documentContext = {

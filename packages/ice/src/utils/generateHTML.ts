@@ -22,6 +22,7 @@ export default async function generateHTML(options: Options) {
     outputDir,
     documentOnly,
     renderMode,
+    basename,
   } = options;
 
   let serverEntry;
@@ -39,9 +40,10 @@ export default async function generateHTML(options: Options) {
 
   for (let i = 0, n = paths.length; i < n; i++) {
     const routePath = paths[i];
+    const mockedPath = `${basename}/${routePath.replace(/^\//, '')}`;
 
     const req = {
-      url: routePath,
+      url: mockedPath,
     };
 
     const serverContext: ServerContext = {
