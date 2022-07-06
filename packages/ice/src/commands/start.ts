@@ -12,7 +12,7 @@ import webpackCompiler from '../service/webpackCompiler.js';
 import prepareURLs from '../utils/prepareURLs.js';
 import createRenderMiddleware from '../middlewares/ssr/renderMiddleware.js';
 import createMockMiddleware from '../middlewares/mock/createMiddleware.js';
-import { RUNTIME_TMP_DIR, SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
+import { ROUTER_MANIFEST, RUNTIME_TMP_DIR, SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
 import ServerCompilerPlugin from '../webpack/ServerCompilerPlugin.js';
 import ServerCompilerTask from '../utils/ServerCompilerTask.js';
 import { getAppConfig } from '../analyzeRuntime.js';
@@ -68,7 +68,7 @@ const start = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
         renderMode = 'SSG';
       }
       const appConfig = getAppConfig();
-      const routeManifestPath = path.join(rootDir, '.ice/route-manifest.json');
+      const routeManifestPath = path.join(rootDir, ROUTER_MANIFEST);
       const serverRenderMiddleware = createRenderMiddleware({
         serverCompilerTask,
         routeManifestPath,

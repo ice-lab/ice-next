@@ -36,7 +36,7 @@ interface GetWebpackConfigOptions {
 export type WebpackConfig = Configuration & { devServer?: DevServerConfiguration };
 type GetWebpackConfig = (options: GetWebpackConfigOptions) => WebpackConfig;
 
-function getEntry(rootDir: string) {
+function getEntry(rootDir: string, runtimeTmpDir: string) {
   // check entry.client.ts
   let entryFile = fg.sync('entry.client.{tsx,ts,jsx.js}', {
     cwd: path.join(rootDir, 'src'),
@@ -44,7 +44,7 @@ function getEntry(rootDir: string) {
   })[0];
   if (!entryFile) {
     // use generated file in template directory
-    entryFile = path.join(rootDir, '.ice/entry.client.ts');
+    entryFile = path.join(rootDir, runtimeTmpDir, 'entry.client.ts');
   }
 
   // const dataLoaderFile = path.join(rootDir, '.ice/data-loader.ts');
@@ -143,7 +143,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
       topLevelAwait: true,
       ...(experimental || {}),
     },
-    entry: entry || (() => getEntry(rootDir)),
+    entry: entry || (() => getEntry(rootDir, runtimeTmpDir)),
     externals,
     output: {
       publicPath,

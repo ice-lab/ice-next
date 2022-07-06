@@ -1,12 +1,12 @@
 import * as path from 'path';
 import type { Config } from '@ice/types';
-import { CACHE_DIR, RUNTIME_TMP_DIR } from '../../constant.js';
+import { CACHE_DIR, DATA_LOADER_ENTRY, RUNTIME_TMP_DIR } from '../../constant.js';
 
 const getTask = ({ rootDir, command }): Config => {
   // basic task config of data-loader
   return {
     entry: {
-      'data-loader': path.join(rootDir, '.ice/data-loader'),
+      'data-loader': path.join(rootDir, DATA_LOADER_ENTRY),
     },
     mode: command === 'start' ? 'development' : 'production',
     sourceMap: command === 'start' ? 'cheap-module-source-map' : false,
