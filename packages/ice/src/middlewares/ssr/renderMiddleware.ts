@@ -2,23 +2,22 @@ import { createRequire } from 'module';
 import type { ExpressRequestHandler, Middleware } from 'webpack-dev-server';
 import type { ServerContext, RenderMode } from '@ice/runtime';
 import consola from 'consola';
+import type ServerCompilerTask from '../../utils/ServerCompilerTask.js';
 
 const require = createRequire(import.meta.url);
 
 interface Options {
+  serverCompilerTask: ServerCompilerTask;
   documentOnly?: boolean;
   renderMode?: RenderMode;
 }
 
 export default function createRenderMiddleware(options: Options): Middleware {
-  const { documentOnly, renderMode } = options;
+  const { documentOnly, renderMode, serverCompilerTask } = options;
   const middleware: ExpressRequestHandler = async function (req, res) {
-    // @ts-ignore
-    const { serverEntry } = req;
-    if (!serverEntry) {
-      consola.error('The server entry is not defined.');
-      return;
-    }
+    // Wait for the server compilation to finish
+    const { serverEntry } = await serverCompilerTask.get();
+
     let serverModule;
     try {
       delete require.cache[serverEntry];

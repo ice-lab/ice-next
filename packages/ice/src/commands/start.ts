@@ -1,3 +1,4 @@
+import * as path from 'path';
 import WebpackDevServer from 'webpack-dev-server';
 import type { Configuration } from 'webpack-dev-server';
 import type { Context, TaskConfig } from 'build-scripts';
@@ -6,11 +7,14 @@ import type { Config } from '@ice/types';
 import type { ServerCompiler } from '@ice/types/esm/plugin.js';
 import { getWebpackConfig } from '@ice/webpack-config';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
+import type { RenderMode } from '@ice/runtime';
 import webpackCompiler from '../service/webpackCompiler.js';
 import prepareURLs from '../utils/prepareURLs.js';
-import createCompileMiddleware from '../middlewares/ssr/compileMiddleware.js';
 import createRenderMiddleware from '../middlewares/ssr/renderMiddleware.js';
 import createMockMiddleware from '../middlewares/mock/createMiddleware.js';
+import { SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
+import ServerCompilerPlugin from '../webpack/ServerCompilerPlugin.js';
+import ServerCompilerTask from '../utils/ServerCompilerTask.js';
 
 const { merge } = lodash;
 
@@ -24,18 +28,37 @@ const start = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
     // @ts-expect-error fix type error of compiled webpack
     webpack,
   }));
+
+  const serverCompilerTask = new ServerCompilerTask();
+
+  const { outputDir } = taskConfigs.find(({ name }) => name === 'web').config;
+  const { ssg, ssr, server } = userConfig;
+  const entryPoint = path.join(rootDir, SERVER_ENTRY);
+  const { format } = server;
+  const esm = format === 'esm';
+  const outJSExtension = esm ? '.mjs' : '.cjs';
+  webpackConfigs[0].plugins.push(
+    new ServerCompilerPlugin(
+      serverCompiler,
+      {
+        entryPoints: { index: entryPoint },
+        outdir: path.join(outputDir, SERVER_OUTPUT_DIR),
+        splitting: esm,
+        format,
+        platform: esm ? 'browser' : 'node',
+        outExtension: { '.js': outJSExtension },
+      },
+      serverCompilerTask,
+    ),
+  );
+
   const customMiddlewares = webpackConfigs[0].devServer?.setupMiddlewares;
   let devServerConfig: Configuration = {
     port,
     host,
     https,
     setupMiddlewares: (middlewares, devServer) => {
-      const { outputDir } = taskConfigs.find(({ name }) => name === 'web').config;
-      const { ssg, ssr, server } = userConfig;
-
-      const serverCompileMiddleware = createCompileMiddleware({ rootDir, outputDir, serverCompiler, server });
-
-      let renderMode;
+      let renderMode: RenderMode;
       // If ssr is set to true, use ssr for preview.
       if (ssr) {
         renderMode = 'SSR';
@@ -44,15 +67,16 @@ const start = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
       }
 
       const serverRenderMiddleware = createRenderMiddleware({
+        serverCompilerTask,
         documentOnly: !ssr && !ssg,
         renderMode,
       });
       const insertIndex = middlewares.findIndex(({ name }) => name === 'serve-index');
       middlewares.splice(
         insertIndex, 0,
-        serverCompileMiddleware,
         serverRenderMiddleware,
       );
+
       if (commandArgs.mock) {
         const mockMiddleware = createMockMiddleware({ rootDir, exclude: userConfig?.mock?.exclude });
         middlewares.splice(insertIndex, 0, mockMiddleware);

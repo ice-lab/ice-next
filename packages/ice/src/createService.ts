@@ -133,7 +133,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     rootDir,
     task: webTaskConfig,
     command,
-    serverBundle: server.bundle,
+    server,
     swcOptions: {
       removeExportExprs: csr ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
     },

@@ -63,9 +63,8 @@ const build = async (
         const entryPoint = path.join(rootDir, SERVER_ENTRY);
         const esm = server?.format === 'esm';
         const outJSExtension = esm ? '.mjs' : '.cjs';
-        const serverEntry = path.join(outputDir, SERVER_OUTPUT_DIR, `index${outJSExtension}`);
 
-        await serverCompiler({
+        const { serverEntry } = await serverCompiler({
           entryPoints: { index: entryPoint },
           outdir: path.join(outputDir, SERVER_OUTPUT_DIR),
           splitting: esm,
