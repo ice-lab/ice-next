@@ -38,9 +38,21 @@ const start = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
       setupMiddlewares: (middlewares, devServer) => {
         const { outputDir } = taskConfigs.find(({ name }) => name === 'web').config;
         const { ssg, ssr, server } = userConfig;
-  
+
         const serverCompileMiddleware = createCompileMiddleware({ rootDir, outputDir, serverCompiler, server });
-        const serverRenderMiddleware = createRenderMiddleware({ documentOnly: !ssr && !ssg });
+
+        let renderMode;
+        // If ssr is set to true, use ssr for preview.
+        if (ssr) {
+          renderMode = 'SSR';
+        } else if (ssg) {
+          renderMode = 'SSG';
+        }
+
+        const serverRenderMiddleware = createRenderMiddleware({
+          documentOnly: !ssr && !ssg,
+          renderMode,
+        });
         const insertIndex = middlewares.findIndex(({ name }) => name === 'serve-index');
         middlewares.splice(
           insertIndex, 0,
@@ -111,7 +123,7 @@ const start = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
         consola.error('webpack compile error');
         throw new Error(messages.errors.join('\n\n'));
       }
-    })
+    });
     return { compiler };
   }
 };
