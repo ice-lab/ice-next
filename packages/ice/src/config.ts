@@ -279,7 +279,7 @@ const userConfig = [
 const cliOption = [
   {
     name: 'platform',
-    commands: ['start', 'build']
+    commands: ['start', 'build'],
   },
   {
     name: 'open',

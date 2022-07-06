@@ -90,14 +90,14 @@ async function webpackCompiler(options: {
      - Network:  ${chalk.underline.white(urls.lanUrlForTerminal)}`;
           }
           consola.log(`${logoutMessage}\n`);
-  
+
           if (commandArgs.open) {
             openBrowser(urls.localUrlForBrowser);
           }
         } else if (MINIAPP_PLATFORMS.includes(platform)) {
           let logoutMessage = '\n';
           logoutMessage += chalk.green('Use miniapp developer tools to open the following folder:');
-          logoutMessage += `\n${chalk.underline.white(rootDir)}`
+          logoutMessage += `\n${chalk.underline.white(rootDir)}`;
           consola.log(`${logoutMessage}\n`);
         }
       }
