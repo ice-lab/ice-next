@@ -3,9 +3,6 @@ on:
   push:
     paths:
       - 'website/**'
-    branches:
-      - master
-      - release-next
   workflow_dispatch:
 
 # 任务
