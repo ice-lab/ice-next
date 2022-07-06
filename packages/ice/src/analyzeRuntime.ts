@@ -23,6 +23,6 @@ export async function compileAppConfig({ rootDir, serverCompiler }: Options) {
     format: 'esm',
   });
   appConfig = (await import(outfile)).default;
-  consola.log('Compile app config by esbuild: ', appConfig, res);
+  consola.debug('Compile app config by esbuild: ', appConfig, res);
   return appConfig;
 }
