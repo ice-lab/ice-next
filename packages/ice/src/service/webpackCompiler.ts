@@ -8,6 +8,7 @@ import type { Urls, ServerCompiler } from '@ice/types/esm/plugin.js';
 import type { Config } from '@ice/types';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
 import openBrowser from '../utils/openBrowser.js';
+import { WEB, MINIAPP_PLATFORMS } from '../constant.js';
 
 type WebpackConfig = Configuration & { devServer?: DevServerConfiguration };
 async function webpackCompiler(options: {
@@ -20,7 +21,8 @@ async function webpackCompiler(options: {
   urls?: Urls;
   serverCompiler: ServerCompiler;
 }) {
-  const { taskConfigs, urls, applyHook, command, commandArgs, serverCompiler, webpackConfigs } = options;
+  const { rootDir, taskConfigs, urls, applyHook, command, commandArgs, serverCompiler, webpackConfigs } = options;
+  const { platform } = commandArgs;
   await applyHook(`before.${command}.run`, {
     commandArgs,
     taskConfigs,
@@ -77,19 +79,26 @@ async function webpackCompiler(options: {
     }
     if (command === 'start') {
       if (isSuccessful && isFirstCompile) {
-        let logoutMessage = '\n';
-        logoutMessage += chalk.green(' Starting the development server at:');
-        if (process.env.CLOUDIDE_ENV) {
-          logoutMessage += `\n   - IDE server: https://${process.env.WORKSPACE_UUID}-${commandArgs.port}.${process.env.WORKSPACE_HOST}`;
-        } else {
-          logoutMessage += `\n
-   - Local  : ${chalk.underline.white(urls.localUrlForBrowser)}
-   - Network:  ${chalk.underline.white(urls.lanUrlForTerminal)}`;
-        }
-        consola.log(`${logoutMessage}\n`);
-
-        if (commandArgs.open) {
-          openBrowser(urls.localUrlForBrowser);
+        if (platform === WEB) {
+          let logoutMessage = '\n';
+          logoutMessage += chalk.green(' Starting the development server at:');
+          if (process.env.CLOUDIDE_ENV) {
+            logoutMessage += `\n   - IDE server: https://${process.env.WORKSPACE_UUID}-${commandArgs.port}.${process.env.WORKSPACE_HOST}`;
+          } else {
+            logoutMessage += `\n
+     - Local  : ${chalk.underline.white(urls.localUrlForBrowser)}
+     - Network:  ${chalk.underline.white(urls.lanUrlForTerminal)}`;
+          }
+          consola.log(`${logoutMessage}\n`);
+  
+          if (commandArgs.open) {
+            openBrowser(urls.localUrlForBrowser);
+          }
+        } else if (MINIAPP_PLATFORMS.includes(platform)) {
+          let logoutMessage = '\n';
+          logoutMessage += chalk.green('Use miniapp developer tools to open the following folder:');
+          logoutMessage += `\n${chalk.underline.white(rootDir)}`
+          consola.log(`${logoutMessage}\n`);
         }
       }
       // compiler.hooks.done is AsyncSeriesHook which does not support async function

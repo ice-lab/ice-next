@@ -19,8 +19,11 @@ import { initProcessEnv, updateRuntimeEnv, getCoreEnvKeys } from './utils/runtim
 import getRuntimeModules from './utils/getRuntimeModules.js';
 import { generateRoutesInfo } from './routes.js';
 import getWebTask from './tasks/web/index.js';
+import getMiniappTask from './tasks/miniapp/index.js';
 import getDataLoaderTask from './tasks/web/data-loader.js';
 import * as config from './config.js';
+import { WEB, MINIAPP_PLATFORMS, ALL_PLATFORMS } from './constant.js';
+
 import type { AppConfig } from './utils/runtimeEnv.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -84,11 +87,16 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const plugins = await ctx.resolvePlugins();
   const runtimeModules = getRuntimeModules(plugins);
 
-  // register web
-  ctx.registerTask('web', getWebTask({ rootDir, command }));
+  const { platform } = commandArgs;
+  if (platform === WEB) {
+    // register web
+    ctx.registerTask(WEB, getWebTask({ rootDir, command }));
 
-  // register data-loader
-  ctx.registerTask('data-loader', getDataLoaderTask({ rootDir, command }));
+    // register data-loader
+    ctx.registerTask('data-loader', getDataLoaderTask({ rootDir, command }));
+  } else if (MINIAPP_PLATFORMS.includes(platform)){
+    ctx.registerTask(platform, getMiniappTask({ rootDir, command }));
+  }
 
   // register config
   ['userConfig', 'cliOption'].forEach((configType) => ctx.registerConfig(configType, config[configType]));
@@ -120,11 +128,10 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   taskConfigs = mergeTaskConfig(taskConfigs, { port: commandArgs.port });
 
   const isCSR = process.env.ICE_CORE_SSG == 'false' && process.env.ICE_CORE_SSR == 'false';
-
   // create serverCompiler with task config
   const serverCompiler = createServerCompiler({
     rootDir,
-    task: taskConfigs.find(({ name }) => name === 'web'),
+    task: taskConfigs.find(({ name }) => ALL_PLATFORMS.includes(name)),
     command,
     serverBundle: server.bundle,
     swcOptions: {
