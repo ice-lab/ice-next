@@ -31,6 +31,7 @@ interface GetWebpackConfigOptions {
   rootDir: string;
   config: Config;
   webpack: typeof webpack;
+  runtimeTmpDir: string;
 }
 export type WebpackConfig = Configuration & { devServer?: DevServerConfiguration };
 type GetWebpackConfig = (options: GetWebpackConfigOptions) => WebpackConfig;
@@ -54,7 +55,7 @@ function getEntry(rootDir: string) {
   };
 }
 
-const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
+const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeTmpDir }) => {
   const {
     mode,
     define = {},
@@ -228,7 +229,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       }),
       assetsManifest && new AssetsManifestPlugin({
         fileName: 'assets-manifest.json',
-        outputDir: path.join(rootDir, '.ice'),
+        outputDir: path.join(rootDir, runtimeTmpDir),
       }),
       analyzer && new BundleAnalyzerPlugin(),
       tsCheckerOptions && new ForkTsCheckerPlugin(tsCheckerOptions),

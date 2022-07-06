@@ -11,3 +11,4 @@ export const BUILDIN_CJS_DEPS = [
   'react',
   'react-dom',
 ];
+export const RUNTIME_TMP_DIR = '.ice';

@@ -1,10 +1,11 @@
 import * as path from 'path';
 import consola from 'consola';
-import type { WatchEvent } from '@ice/types/esm/plugin.js';
+import type { ServerCompiler, WatchEvent } from '@ice/types/esm/plugin.js';
 import type { Context } from 'build-scripts';
 import type { Config } from '@ice/types';
 import { generateRoutesInfo } from './routes.js';
 import type Generator from './service/runtimeGenerator';
+import { compileAppConfig } from './analyzeRuntime.js';
 
 interface Options {
   targetDir: string;
@@ -12,10 +13,11 @@ interface Options {
   generator: Generator;
   cache: Map<string, string>;
   ctx: Context<Config>;
+  serverCompiler: ServerCompiler;
 }
 
 const getWatchEvents = (options: Options): WatchEvent[] => {
-  const { generator, targetDir, templateDir, cache, ctx } = options;
+  const { serverCompiler, generator, targetDir, templateDir, cache, ctx } = options;
   const { userConfig: { routes: routesConfig }, configFile, rootDir } = ctx;
   const watchRoutes: WatchEvent = [
     /src\/pages\/?[\w*-:.$]+$/,
@@ -65,7 +67,17 @@ const getWatchEvents = (options: Options): WatchEvent[] => {
     },
   ];
 
-  return [watchConfigFile, watchRoutes, watchGlobalStyle];
+  const watchAppConfigFile: WatchEvent = [
+    /src\/app.(js|jsx|ts|tsx)/,
+    async (event: string) => {
+      if (event === 'change') {
+        consola.debug('[event]', 'Compile app config.');
+        await compileAppConfig({ rootDir, serverCompiler });
+      }
+    },
+  ];
+
+  return [watchConfigFile, watchRoutes, watchGlobalStyle, watchAppConfigFile];
 };
 
 export default getWatchEvents;

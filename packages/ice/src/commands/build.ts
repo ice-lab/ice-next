@@ -8,7 +8,7 @@ import type { ServerCompiler } from '@ice/types/esm/plugin.js';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
 import webpackCompiler from '../service/webpackCompiler.js';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
-import { SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
+import { RUNTIME_TMP_DIR, SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
 import generateHTML from '../utils/generateHTML.js';
 import emptyDir from '../utils/emptyDir.js';
 
@@ -23,6 +23,7 @@ const build = async (
     rootDir,
     // @ts-expect-error fix type error of compiled webpack
     webpack,
+    runtimeTmpDir: RUNTIME_TMP_DIR,
   }));
   await emptyDir(taskConfigs.find(({ name }) => name === 'web').config.outputDir);
   const compiler = await webpackCompiler({

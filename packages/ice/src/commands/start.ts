@@ -12,9 +12,10 @@ import webpackCompiler from '../service/webpackCompiler.js';
 import prepareURLs from '../utils/prepareURLs.js';
 import createRenderMiddleware from '../middlewares/ssr/renderMiddleware.js';
 import createMockMiddleware from '../middlewares/mock/createMiddleware.js';
-import { SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
+import { RUNTIME_TMP_DIR, SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
 import ServerCompilerPlugin from '../webpack/ServerCompilerPlugin.js';
 import ServerCompilerTask from '../utils/ServerCompilerTask.js';
+import { getAppConfig } from '../analyzeRuntime.js';
 
 const { merge } = lodash;
 
@@ -27,6 +28,7 @@ const start = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
     rootDir,
     // @ts-expect-error fix type error of compiled webpack
     webpack,
+    runtimeTmpDir: RUNTIME_TMP_DIR,
   }));
 
   const serverCompilerTask = new ServerCompilerTask();
@@ -65,11 +67,14 @@ const start = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
       } else if (ssg) {
         renderMode = 'SSG';
       }
-
+      const appConfig = getAppConfig();
+      const routeManifestPath = path.join(rootDir, '.ice/route-manifest.json');
       const serverRenderMiddleware = createRenderMiddleware({
         serverCompilerTask,
+        routeManifestPath,
         documentOnly: !ssr && !ssg,
         renderMode,
+        basename: appConfig?.router?.basename,
       });
       const insertIndex = middlewares.findIndex(({ name }) => name === 'serve-index');
       middlewares.splice(
