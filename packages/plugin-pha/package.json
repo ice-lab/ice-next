@@ -1,7 +1,7 @@
 {
   "name": "@ice/plugin-pha",
   "version": "1.0.0",
-  "description": "plugin for PHA",
+  "description": "ICE plugin for PHA.",
   "license": "MIT",
   "type": "module",
   "main": "./esm/index.js",
