@@ -1,4 +1,4 @@
-// appConfig keys need transform to manifest
+// Keys of appConfig  need transform to manifest.
 export const decamelizeKeys = [
   'name',
   'startUrl',
@@ -44,7 +44,7 @@ export const decamelizeKeys = [
   'customDataSource',
 ];
 
-// do not decamelize list
+// Do not decamelize list.
 export const camelizeKeys = [
   'appKey',
   'dataType',

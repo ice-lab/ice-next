@@ -3,7 +3,8 @@ import * as t from '@babel/types';
 
 const removeUnreferencedCode = (nodePath: NodePath<t.Program>) => {
   let hasRemoved = false;
-  // update bindings removed in enter hooks
+
+  // Update bindings removed in enter hooks.
   nodePath.scope.crawl();
   for (const [, binding] of Object.entries(nodePath.scope.bindings)) {
     if (!binding.referenced && binding.path.node) {
@@ -41,7 +42,7 @@ const removeUnreferencedCode = (nodePath: NodePath<t.Program>) => {
     }
   }
   if (hasRemoved) {
-    // remove code until there is no more to removed
+    // Remove code until there is no more to removed.
     removeUnreferencedCode(nodePath);
   }
 };
@@ -66,20 +67,20 @@ const removeTopLevelCode = () => {
           });
           node.specifiers = node.specifiers.filter(specifier => t.isIdentifier(specifier.exported, { name: 'getConfig' }));
         } else if (!isFunctionExport && !isVariableExport) {
-          // remove named export expect 'getConfig'
+          // Remove named export expect 'getConfig'.
           nodePath.remove();
         }
       },
     },
     ExportDefaultDeclaration: {
       enter(nodePath: NodePath<t.ExportDefaultDeclaration>) {
-        // remove default export declaration
+        // Remove default export declaration.
         nodePath.remove();
       },
     },
     ExpressionStatement: {
       enter(nodePath: NodePath<t.ExpressionStatement>) {
-        // remove top level call expression
+        // Remove top level call expression.
         if (nodePath.parentPath.isProgram() && t.isCallExpression(nodePath.node.expression)) {
           nodePath.remove();
         }
@@ -87,14 +88,14 @@ const removeTopLevelCode = () => {
     },
     ImportDeclaration: {
       enter(nodePath: NodePath<t.ImportDeclaration>) {
-        // remove import statement without specifiers
+        // Remove import statement without specifiers.
         if (nodePath.node.specifiers.length === 0) {
           nodePath.remove();
         }
       },
     },
     'IfStatement|TryStatement|WhileStatement|DoWhileStatement': {
-      // remove statement even if it's may cause variable changed
+      // Remove statement even if it's may cause variable changed.
       enter(nodePath: NodePath<t.IfStatement | t.TryStatement | t.WhileStatement>) {
         // TODO: check expression statement if it is changed top level variable referenced by getConfig
         nodePath.remove();

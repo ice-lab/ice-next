@@ -31,20 +31,24 @@ function getDevPath(url: string): string {
 const plugin: Plugin<PluginOptions> = ({ onGetConfig, onHook, context, generator }, options) => {
   const { template } = options || {};
   const { command, rootDir } = context;
-  // get variable blows from task config
+
+  // Get variable blows from task config.
   let compiler: Compiler;
   let publicPath: string;
   let outputDir: string;
   let urlPrefix: string;
 
   generator.addRenderFile(path.join(__dirname, '../template/manifest.ts'), path.join(rootDir, templateFile));
-  // get server compiler by hooks
+
+  // Get server compiler by hooks
   onHook(`before.${command as 'start' | 'build'}.run`, async ({ serverCompiler, taskConfigs, urls }) => {
     const taskConfig = taskConfigs.find(({ name }) => name === 'web').config;
     outputDir = taskConfig.outputDir;
-    // need absolute path for pha dev
+
+    // Need absolute path for pha dev.
     publicPath = command === 'start' ? getDevPath(urls.lanUrlForTerminal) : (taskConfig.publicPath || '/');
-    // process.env.DEPLOY_PATH is defined by cloud environment such as DEF plugin
+
+    // process.env.DEPLOY_PATH is defined by cloud environment such as DEF plugin.
     urlPrefix = command === 'start' ? urls.lanUrlForTerminal : process.env.DEPLOY_PATH;
 
     compiler = async (options) => {
@@ -76,7 +80,7 @@ const plugin: Plugin<PluginOptions> = ({ onGetConfig, onHook, context, generator
   });
 
   onHook('after.start.compile', async ({ urls }) => {
-    // log out pha dev urls
+    // Log out pha dev urls.
     const lanUrl = urls.lanUrlForTerminal;
     const phaManifestPath = path.join(rootDir, templateFile);
     const manifestOutfile = path.join(outputDir, 'pha-manifest.mjs');
@@ -120,7 +124,8 @@ const plugin: Plugin<PluginOptions> = ({ onGetConfig, onHook, context, generator
           template,
         },
       });
-      // add pha middleware after server-compile
+
+      // Add pha middleware after server-compile.
       middlewares.splice(insertIndex + 1, 0, {
         name: 'pha-manifest',
         middleware: phaMiddleware,

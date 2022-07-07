@@ -29,7 +29,7 @@ export async function getAppWorkerContent(
   return fs.readFileSync(appWorkerFile, 'utf-8');
 }
 
-// compile task before parse pha manifest
+// Compile task before parse pha manifest.
 export async function compileEntires(
   compiler: Compiler,
   { rootDir, outputDir }: { rootDir: string; outputDir: string }) {

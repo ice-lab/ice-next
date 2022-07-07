@@ -24,7 +24,7 @@ const createPHAMiddleware = ({
 
     const requestAppWorker = req.url === '/app-worker.js';
     if (requestManifest || requestAppWorker) {
-      // get serverEntry from middleware of server-compile
+      // Get serverEntry from middleware of server-compile.
       const { serverEntry } = req as any;
       const [manifestEntry, routesConfigEntry] = await compileEntires(compiler, { rootDir, outputDir });
       let manifest: Manifest = (await import(manifestEntry)).default;

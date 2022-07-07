@@ -37,13 +37,13 @@ export function transformManifestKeys(manifest: Manifest, options?: TransformOpt
   const data = {};
 
   for (let key in manifest) {
-    // filter not need transform key
+    // Filter not need transform key.
     if (isRoot && !decamelizeKeys.includes(key)) {
       continue;
     }
     const value = manifest[key];
 
-    // compatible tabHeader
+    // Compatible with pageHeader.
     if (key === 'pageHeader') {
       key = 'tabHeader';
     }
@@ -63,11 +63,11 @@ export function transformManifestKeys(manifest: Manifest, options?: TransformOpt
         }
         if (typeof item === 'object') {
           if (key === 'dataPrefetch') {
-            // hack: No header will crash in Android
+            // Hack: No header will crash in Android
             if (!item.header) {
               item.header = {};
             }
-            // no prefetchKey will crash in Android TaoBao 9.26.0
+            // No prefetchKey will crash in Android TaoBao 9.26.0.
             if (!item.prefetchKey) {
               item.prefetchKey = 'mtop';
             }
@@ -77,7 +77,7 @@ export function transformManifestKeys(manifest: Manifest, options?: TransformOpt
         return item;
       });
     } else if (key === 'requestHeaders') {
-      // keys of requestHeaders should not be transformed
+      // Keys of requestHeaders should not be transformed.
       data[transformKey] = value;
     } else if (typeof value === 'object' && !(parentKey === 'dataPrefetch' && (key === 'header' || key === 'data'))) {
       data[transformKey] = transformManifestKeys(value, { isRoot: false, parentKey: key });
@@ -119,9 +119,9 @@ async function renderPageDocument(routeId: string, serverEntry: string): Promise
 
 async function getPageManifest(page: string | Page, options: ParseOptions): Promise<MixedPage> {
   const { template, serverEntry, configEntry } = options;
-  // source frame
+  // Page will be type string when it is a source frame.
   if (typeof page === 'string') {
-    // get html content by render document
+    // Get html content by render document.
     const pageConfig = await getPageConfig(page, configEntry);
     const { queryParams = '', ...rest } = pageConfig;
     const pageManifest = {
@@ -131,18 +131,19 @@ async function getPageManifest(page: string | Page, options: ParseOptions): Prom
     if (template && !Array.isArray(pageConfig.frames)) {
       pageManifest.document = await renderPageDocument(page, serverEntry);
     }
-    // always need path for page item
+
+    // Always need path for page item.
     pageManifest.path = `${getPageUrl(page, options)}${queryParams ? `?${queryParams}` : ''}`;
     return pageManifest;
   } else if (page.url) {
-    // url has the highest priority to overwrite config path
+    // Url has the highest priority to overwrite config path.
     const { url, ...rest } = page;
     return {
       ...rest,
       path: url,
     };
   }
-  // return page config while it may config as pha manifest standard
+  // Return page config while it may config as pha manifest standard.
   return page;
 }
 
@@ -242,10 +243,10 @@ export async function parseManifest(manifest: Manifest, options: ParseOptions): 
         ...(await getTabConfig(tabBar, false, options)),
       };
     }
-    // remove tab_bar.source because pha manifest do not recognize it
+    // Remove tab_bar.source because pha manifest do not recognize it.
     delete manifest.tabBar.source;
   }
-  // items is `undefined` will crash in PHA and it is not supported to config list
+  // items is `undefined` will crash in PHA and it is not supported to config list.
   if (tabBar && !tabBar.items) {
     tabBar.items = [];
   }
@@ -253,7 +254,6 @@ export async function parseManifest(manifest: Manifest, options: ParseOptions): 
   if (routes && routes.length > 0) {
     manifest.pages = await Promise.all(routes.map(async (page) => {
       const pageManifest = await getPageManifest(page, options);
-      // deal with frames
       if (pageManifest.frames && pageManifest.frames.length > 0) {
         pageManifest.frames = await Promise.all(pageManifest.frames.map((frame) => getPageManifest(frame, options)));
       }
@@ -261,7 +261,7 @@ export async function parseManifest(manifest: Manifest, options: ParseOptions): 
         if (!pageManifest.pageHeader.url) {
           pageManifest.pageHeader = {
             ...pageManifest.pageHeader,
-            // generate document logic is different from tabBar
+            // Generate document logic is different from tabBar.
             ...(await getTabConfig(pageManifest.pageHeader, true, options)),
           };
         }
@@ -269,7 +269,7 @@ export async function parseManifest(manifest: Manifest, options: ParseOptions): 
       }
       return pageManifest;
     }));
-    // delete manifest routes after transform
+    // Delete manifest routes after transform.
     delete manifest.routes;
   }
   return transformManifestKeys(manifest, { isRoot: true });
@@ -279,9 +279,9 @@ export function getMultipleManifest(manifest: PHAManifest): Record<string, PHAMa
   const multipleManifest = {};
   manifest.pages.forEach((page) => {
     let pageKey = page.key;
-    // generate manifest for each route
+    // Generate manifest for each route.
     const copiedManifest = cloneDeep(manifest);
-    // reduce routes config by matched source
+    // Reduce routes config by matched source.
     copiedManifest.pages = copiedManifest.pages.filter((copiedPage) => {
       if (page.frames && !pageKey) {
         // TODO: frames key may conflict with other page keys
