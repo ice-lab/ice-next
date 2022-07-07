@@ -1,5 +1,6 @@
 import type { DefineRouteFunction } from '@ice/route-manifest';
 import type { PluginList } from 'build-scripts';
+import type { UnpluginOptions } from 'unplugin';
 import type { Config, ModifyWebpackConfig } from './config';
 
 export interface UserConfig {
@@ -32,4 +33,5 @@ export interface UserConfig {
   };
   removeHistoryDeadCode?: boolean;
   mock?: { exclude?: string[] };
+  transform?: UnpluginOptions['transform'];
 }

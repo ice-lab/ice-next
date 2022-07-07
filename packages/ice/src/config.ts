@@ -274,6 +274,12 @@ const userConfig = [
     name: 'mock',
     validation: 'object',
   },
+  {
+    name: 'transform',
+    validation: 'function',
+    setConfig: (config: Config, transform: UserConfig['transform']) => {
+    },
+  },
 ];
 
 const cliOption = [
