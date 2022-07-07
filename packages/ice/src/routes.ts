@@ -46,8 +46,8 @@ export async function generateRoutesInfo(rootDir: string, routesConfig: UserConf
       return `${str}
   const loaders = {
     ${
-      imports.map((loader) => {
-        return `'${loader[0]}': ${loader[1]},`;
+      imports.map(([routeId, importKey]) => {
+        return `'${routeId}': ${importKey},`;
       }).join('\n')
     }
   };`;

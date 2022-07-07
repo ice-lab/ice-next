@@ -74,7 +74,7 @@ const build = async (
           platform: esm ? 'browser' : 'node',
           outExtension: { '.js': outJSExtension },
         }, {
-          // remove components and getData when document only
+          // Remove components and getData when document only.
           removeExportExprs: documentOnly ? ['default', 'getData'] : [],
           jsxTransform: true,
         });
