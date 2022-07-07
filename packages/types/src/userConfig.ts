@@ -32,4 +32,5 @@ export interface UserConfig {
   };
   removeHistoryDeadCode?: boolean;
   mock?: { exclude?: string[] };
+  experimental?: Config['experimental'];
 }

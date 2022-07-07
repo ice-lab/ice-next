@@ -24,12 +24,11 @@ interface ConfigurationCtx extends Config {
   webpack: typeof webpack;
 }
 
+type Experimental = Configuration['experiments'];
 interface SwcOptions {
   jsxTransform?: boolean;
   removeExportExprs?: string[];
 }
-
-type Experimental = Pick<Configuration, 'experiments'>;
 
 export type ModifyWebpackConfig = (config: Configuration, ctx: ConfigurationCtx) => Configuration;
 export interface Config {
