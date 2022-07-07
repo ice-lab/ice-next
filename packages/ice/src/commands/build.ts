@@ -75,7 +75,7 @@ const build = async (
           outExtension: { '.js': outJSExtension },
         }, {
           // Remove components and getData when document only.
-          removeExportExprs: documentOnly ? ['default', 'getData'] : [],
+          removeExportExprs: documentOnly ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
           jsxTransform: true,
         });
 
