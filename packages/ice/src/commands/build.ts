@@ -78,12 +78,19 @@ const build = async (
           removeExportExprs: documentOnly ? ['default', 'getData'] : [],
           jsxTransform: true,
         });
+
+        let renderMode;
+        if (ssg) {
+          renderMode = 'SSG';
+        }
+
         // generate html
         await generateHTML({
           rootDir,
           outputDir,
           entry: serverEntry,
           documentOnly,
+          renderMode,
         });
         resolve({
           stats,

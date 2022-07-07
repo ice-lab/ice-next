@@ -46,7 +46,19 @@ const start = async (
         server,
         documentOnly,
       });
-      const serverRenderMiddleware = createRenderMiddleware({ documentOnly });
+
+      let renderMode;
+      // If ssr is set to true, use ssr for preview.
+      if (ssr) {
+        renderMode = 'SSR';
+      } else if (ssg) {
+        renderMode = 'SSG';
+      }
+
+      const serverRenderMiddleware = createRenderMiddleware({
+        documentOnly,
+        renderMode,
+      });
       const insertIndex = middlewares.findIndex(({ name }) => name === 'serve-index');
       middlewares.splice(
         insertIndex, 0,

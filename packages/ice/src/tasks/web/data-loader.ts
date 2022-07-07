@@ -20,7 +20,7 @@ const getTask = ({ rootDir, command }): Config => {
     },
     swcOptions: {
       jsxTransform: true,
-      removeExportExprs: ['default', 'getConfig'],
+      removeExportExprs: ['default', 'getConfig', 'getServerData', 'getStaticData'],
     },
     splitChunks: false,
     // enable concatenateModules will tree shaking unused `react/react-dom` in dev mod.
@@ -29,7 +29,8 @@ const getTask = ({ rootDir, command }): Config => {
       hot: false,
       client: false,
     },
-    fastRefresh: command === 'start',
+    // always need reload when data loader is changed
+    fastRefresh: false,
   };
 };
 
