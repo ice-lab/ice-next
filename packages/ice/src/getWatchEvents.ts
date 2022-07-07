@@ -5,6 +5,7 @@ import type { Context } from 'build-scripts';
 import type { Config } from '@ice/types';
 import { generateRoutesInfo } from './routes.js';
 import type Generator from './service/runtimeGenerator';
+import getGlobalStyleGlobPattern from './utils/getGlobalStyleGlobPattern.js';
 
 interface Options {
   targetDir: string;
@@ -47,7 +48,7 @@ const getWatchEvents = (options: Options): WatchEvent[] => {
   ];
 
   const watchGlobalStyle: WatchEvent = [
-    /src\/global.(scss|less|css)$/,
+    getGlobalStyleGlobPattern(),
     (event: string, filePath: string) => {
       if (event === 'unlink') {
         consola.log('[event]', `style '${filePath}': ${event}`);

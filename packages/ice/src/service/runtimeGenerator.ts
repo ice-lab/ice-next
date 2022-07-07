@@ -23,6 +23,7 @@ import type {
   Registration,
   TemplateOptions,
 } from '@ice/types/esm/generator.js';
+import getGlobalStyleGlobPattern from '../utils/getGlobalStyleGlobPattern.js';
 
 const { debounce } = lodash;
 
@@ -174,7 +175,7 @@ export default class Generator {
 
   public parseRenderData: ParseRenderData = () => {
     const staticConfig = fg.sync(['src/manifest.json'], { cwd: this.rootDir });
-    const globalStyles = fg.sync(['global.@(scss|less|css)'], { cwd: path.join(this.rootDir, 'src') });
+    const globalStyles = fg.sync([getGlobalStyleGlobPattern()], { cwd: this.rootDir });
     let exportsData = {};
     this.contentTypes.forEach(item => {
       const data = this.getExportStr(item, ['imports', 'exports']);
@@ -187,7 +188,7 @@ export default class Generator {
       ...this.renderData,
       ...exportsData,
       staticConfig: staticConfig.length && staticConfig[0],
-      globalStyle: globalStyles.length && `@/${globalStyles[0]}`,
+      globalStyle: globalStyles.length && `@/${path.basename(globalStyles[0])}`,
     };
   };
 
