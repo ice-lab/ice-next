@@ -144,15 +144,14 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   );
 
   let appConfig: AppConfig;
-  if (command === 'build') {
-    try {
-      // should after generator, otherwise it will compile error
-      appConfig = await compileAppConfig({ serverCompiler, rootDir });
-    } catch (err) {
-      consola.warn('Failed to get app config:', err.message);
-      consola.debug(err);
-    }
+  try {
+    // should after generator, otherwise it will compile error
+    appConfig = await compileAppConfig({ serverCompiler, rootDir });
+  } catch (err) {
+    consola.warn('Failed to get app config:', err.message);
+    consola.debug(err);
   }
+
 
   const disableRouter = userConfig.removeHistoryDeadCode && routesInfo.routesCount <= 1;
   if (disableRouter) {

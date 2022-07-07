@@ -55,7 +55,7 @@ export function createServerCompiler(options: Options) {
   });
 
   const serverCompiler: ServerCompiler = async (buildOptions: Parameters<ServerCompiler>[0], swcOptions) => {
-    const metadata = await createDepsMetadata({ buildOptions, task, rootDir });
+    const depsMetadata = await createDepsMetadata({ buildOptions, task, rootDir });
 
     const transformPlugins = getCompilerPlugins({
       ...config,
@@ -86,7 +86,7 @@ export function createServerCompiler(options: Options) {
       plugins: [
         ...(buildOptions.plugins || []),
         emptyCSSPlugin(),
-        dev && buildOptions?.format === 'esm' && createDepRedirectPlugin(metadata),
+        dev && buildOptions?.format === 'esm' && createDepRedirectPlugin(depsMetadata),
         aliasPlugin({
           alias,
           serverBundle: server.bundle,
