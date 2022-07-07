@@ -16,13 +16,14 @@ export const getAppConfig = (): AppConfig => {
 
 export async function compileAppConfig({ rootDir, serverCompiler }: Options) {
   const outfile = path.join(rootDir, 'node_modules', 'entry.mjs');
-  const res = await serverCompiler({
-    // TODO: detect src/app if it is exists
+  // TODO: remove top level calls to ensure that appConfig is always returned successfully in build time
+  await serverCompiler({
     entryPoints: [path.join(rootDir, 'src/app')],
     outfile,
     format: 'esm',
+    inject: [],
   });
   appConfig = (await import(outfile)).default;
-  consola.debug('Compile app config by esbuild: ', appConfig, res);
+  consola.debug('Compile app config by esbuild: ', appConfig);
   return appConfig;
 }

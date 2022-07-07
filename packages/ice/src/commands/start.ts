@@ -5,9 +5,9 @@ import type { Context, TaskConfig } from 'build-scripts';
 import lodash from '@ice/bundles/compiled/lodash/index.js';
 import type { Config } from '@ice/types';
 import type { ServerCompiler } from '@ice/types/esm/plugin.js';
+import type { AppConfig, RenderMode } from '@ice/runtime';
 import { getWebpackConfig } from '@ice/webpack-config';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
-import type { RenderMode } from '@ice/runtime';
 import webpackCompiler from '../service/webpackCompiler.js';
 import prepareURLs from '../utils/prepareURLs.js';
 import createRenderMiddleware from '../middlewares/ssr/renderMiddleware.js';
@@ -19,7 +19,12 @@ import { getAppConfig } from '../analyzeRuntime.js';
 
 const { merge } = lodash;
 
-const start = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[], serverCompiler: ServerCompiler) => {
+const start = async (
+  context: Context<Config>,
+  taskConfigs: TaskConfig<Config>[],
+  serverCompiler: ServerCompiler,
+  appConfig: AppConfig,
+) => {
   const { applyHook, commandArgs, command, rootDir, userConfig } = context;
   const { port, host, https = false } = commandArgs;
 
@@ -69,10 +74,12 @@ const start = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
       }
       const appConfig = getAppConfig();
       const routeManifestPath = path.join(rootDir, ROUTER_MANIFEST);
+      const documentOnly = !ssr && !ssg;
+
       const serverRenderMiddleware = createRenderMiddleware({
         serverCompilerTask,
         routeManifestPath,
-        documentOnly: !ssr && !ssg,
+        documentOnly,
         renderMode,
         basename: appConfig?.router?.basename,
       });
@@ -92,10 +99,13 @@ const start = async (context: Context<Config>, taskConfigs: TaskConfig<Config>[]
   // merge devServerConfig with webpackConfig.devServer
   devServerConfig = merge(webpackConfigs[0].devServer, devServerConfig);
   const protocol = devServerConfig.https ? 'https' : 'http';
+  let urlPathname = appConfig?.router?.basename || '/';
+
   const urls = prepareURLs(
     protocol,
     devServerConfig.host,
     devServerConfig.port as number,
+    urlPathname.endsWith('/') ? urlPathname : `${urlPathname}/`,
   );
   const compiler = await webpackCompiler({
     rootDir,

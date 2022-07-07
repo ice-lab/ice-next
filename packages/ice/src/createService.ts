@@ -114,7 +114,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     ...routesInfo,
     runtimeModules,
     coreEnvKeys,
-    basename: webTaskConfig.config.basename || '/',
+    basename: webTaskConfig.config.basename,
     hydrate: !csr,
   });
   dataCache.set('routes', JSON.stringify(routesInfo.routeManifest));
@@ -130,9 +130,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     task: webTaskConfig,
     command,
     server,
-    swcOptions: {
-      removeExportExprs: csr ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
-    },
   });
 
   addWatchEvent(
@@ -161,13 +158,12 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   if (disableRouter) {
     consola.info('[ice] removeHistoryDeadCode is enabled and only have one route, ice build will remove history and react-router dead code.');
   }
-
   updateRuntimeEnv(appConfig, { disableRouter });
 
   return {
     run: async () => {
       if (command === 'start') {
-        return await start(ctx, taskConfigs, serverCompiler);
+        return await start(ctx, taskConfigs, serverCompiler, appConfig);
       } else if (command === 'build') {
         return await build(ctx, taskConfigs, serverCompiler);
       }

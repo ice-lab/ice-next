@@ -26,18 +26,11 @@ interface Options {
   task: TaskConfig<Config>;
   command: string;
   server: UserConfig['server'];
-  swcOptions: Config['swcOptions'];
 }
 
 export function createServerCompiler(options: Options) {
-  const { task, rootDir, command, server, swcOptions } = options;
+  const { task, rootDir, command, server } = options;
   const { config } = task;
-
-  const transformPlugins = getCompilerPlugins({
-    ...config,
-    fastRefresh: false,
-    swcOptions,
-  }, 'esbuild');
 
   const alias = (task.config?.alias || {}) as Record<string, string | false>;
   const assetsManifest = path.join(rootDir, ASSETS_MANIFEST);
@@ -61,8 +54,14 @@ export function createServerCompiler(options: Options) {
     }
   });
 
-  const serverCompiler: ServerCompiler = async (buildOptions: Parameters<ServerCompiler>[0]) => {
+  const serverCompiler: ServerCompiler = async (buildOptions: Parameters<ServerCompiler>[0], swcOptions) => {
     const metadata = await createDepsMetadata({ buildOptions, task, rootDir });
+
+    const transformPlugins = getCompilerPlugins({
+      ...config,
+      fastRefresh: false,
+      swcOptions,
+    }, 'esbuild');
 
     const startTime = new Date().getTime();
     consola.debug('[esbuild]', `start compile for: ${buildOptions.entryPoints}`);
@@ -81,10 +80,11 @@ export function createServerCompiler(options: Options) {
       // enable JSX syntax in .js files by default for compatible with migrate project
       // while it is not recommended
       loader: { '.js': 'jsx' },
+      inject: [path.resolve(__dirname, '../polyfills/react.js')],
       ...buildOptions,
       define,
-      inject: [path.resolve(__dirname, '../polyfills/react.js')],
       plugins: [
+        ...(buildOptions.plugins || []),
         emptyCSSPlugin(),
         dev && buildOptions?.format === 'esm' && createDepRedirectPlugin(metadata),
         aliasPlugin({
@@ -102,7 +102,6 @@ export function createServerCompiler(options: Options) {
         }),
         fs.existsSync(assetsManifest) && createAssetsPlugin(assetsManifest, rootDir),
         ...transformPlugins,
-        ...(buildOptions.plugins || []),
       ].filter(Boolean),
     });
     consola.debug('[esbuild]', `time cost: ${new Date().getTime() - startTime}ms`);
