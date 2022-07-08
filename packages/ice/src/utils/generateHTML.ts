@@ -9,7 +9,7 @@ import { ROUTER_MANIFEST } from '../constant.js';
 interface Options {
   rootDir: string;
   entry: string;
-  absoluteOutputDir: string;
+  outputDir: string;
   documentOnly: boolean;
   basename?: string;
   renderMode?: RenderMode;
@@ -19,7 +19,7 @@ export default async function generateHTML(options: Options) {
   const {
     rootDir,
     entry,
-    absoluteOutputDir,
+    outputDir,
     documentOnly,
     renderMode,
   } = options;
@@ -56,7 +56,7 @@ export default async function generateHTML(options: Options) {
     if (fse.existsSync(path.join(rootDir, 'public', fileName))) {
       consola.warn(`${fileName} is overwrite by framework, rename file name if it is necessary`);
     }
-    const contentPath = path.join(absoluteOutputDir, fileName);
+    const contentPath = path.join(outputDir, fileName);
     await fse.ensureFile(contentPath);
     await fse.writeFile(contentPath, html);
   }

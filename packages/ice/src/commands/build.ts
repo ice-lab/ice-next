@@ -24,7 +24,10 @@ const build = async (
     // @ts-expect-error fix type error of compiled webpack
     webpack,
   }));
-  await emptyDir(taskConfigs.find(({ name }) => name === 'web').config.outputDir);
+  const outputDir = webpackConfigs[0].output.path;
+
+  await emptyDir(outputDir);
+
   const compiler = await webpackCompiler({
     rootDir,
     webpackConfigs,
@@ -35,13 +38,11 @@ const build = async (
     serverCompiler,
   });
   const { ssg, ssr, server } = userConfig;
-  const { outputDir } = taskConfigs.find(({ name }) => name === 'web').config;
   // compile server bundle
   const entryPoint = path.join(rootDir, SERVER_ENTRY);
   const esm = server?.format === 'esm';
   const outJSExtension = esm ? '.mjs' : '.cjs';
-  const absoluteOutputDir = path.join(rootDir, outputDir);
-  const serverOutputDir = path.join(absoluteOutputDir, SERVER_OUTPUT_DIR);
+  const serverOutputDir = path.join(outputDir, SERVER_OUTPUT_DIR);
   const serverEntry = path.join(serverOutputDir, `index${outJSExtension}`);
   const documentOnly = !ssg && !ssr;
 
@@ -89,7 +90,7 @@ const build = async (
         // generate html
         await generateHTML({
           rootDir,
-          absoluteOutputDir,
+          outputDir,
           entry: serverEntry,
           documentOnly,
           renderMode,
