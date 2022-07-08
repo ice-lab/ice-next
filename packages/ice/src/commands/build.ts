@@ -79,9 +79,12 @@ const build = async (
             outExtension: { '.js': outJSExtension },
           },
           {
-          // Remove components and getData when document only.
-            removeExportExprs: documentOnly ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
-            jsxTransform: true,
+            preBundle: true,
+            swc: {
+              // Remove components and getData when document only.
+              removeExportExprs: documentOnly ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
+              jsxTransform: true,
+            },
           },
         );
         serverEntry = serverCompilerResult.serverEntry;

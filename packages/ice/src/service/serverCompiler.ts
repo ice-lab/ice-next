@@ -53,9 +53,9 @@ export function createServerCompiler(options: Options) {
     }
   });
 
-  const serverCompiler: ServerCompiler = async (buildOptions, swcOptions) => {
+  const serverCompiler: ServerCompiler = async (buildOptions, { preBundle, swc: swcOptions }) => {
     let depsMetadata;
-    if (buildOptions?.format === 'esm') {
+    if (preBundle) {
       depsMetadata = await createDepsMetadata({ task, rootDir });
     }
 
@@ -88,7 +88,7 @@ export function createServerCompiler(options: Options) {
       plugins: [
         ...(buildOptions.plugins || []),
         emptyCSSPlugin(),
-        dev && buildOptions?.format === 'esm' && createDepRedirectPlugin(depsMetadata),
+        dev && preBundle && createDepRedirectPlugin(depsMetadata),
         aliasPlugin({
           alias,
           serverBundle: server.bundle,

@@ -24,7 +24,7 @@ export default class ServerCompilerPlugin {
 
   public apply(compiler: Compiler) {
     compiler.hooks.emit.tap(pluginName, () => {
-      this.serverCompileTask.set(this.serverCompiler(this.serverCompilerOptions));
+      this.serverCompileTask.set(this.serverCompiler(this.serverCompilerOptions, { preBundle: true }));
     });
   }
 }

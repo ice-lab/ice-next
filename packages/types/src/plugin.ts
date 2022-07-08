@@ -13,7 +13,10 @@ type EventName = 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir';
 type ServerCompilerBuildOptions = Pick<BuildOptions, 'minify' | 'inject' | 'format' | 'entryPoints' | 'outfile' | 'bundle' | 'outdir' | 'splitting' | 'platform' | 'outExtension' | 'plugins'>;
 export type ServerCompiler = (
   buildOptions: ServerCompilerBuildOptions,
-  swcOptions?: Config['swcOptions']
+  options?: {
+    swc?: Config['swcOptions'];
+    preBundle?: boolean;
+  }
 ) => Promise<BuildResult & { serverEntry: string }>;
 export type WatchEvent = [
   pattern: RegExp | string,
