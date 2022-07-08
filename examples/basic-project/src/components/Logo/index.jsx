@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { createElement } from 'rax';
 import Image from 'rax-image';
 

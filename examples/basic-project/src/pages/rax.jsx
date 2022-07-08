@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { createElement, useEffect, useRef } from 'rax';
 import View from 'rax-view';
 import Text from 'rax-text';
