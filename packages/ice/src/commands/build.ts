@@ -68,7 +68,6 @@ const build = async (
       } else {
         compiler?.close?.(() => {});
         const isSuccessful = !messages.errors.length;
-        // compile server bundle
         await serverCompiler({
           entryPoints: { index: entryPoint },
           outdir: serverOutputDir,
