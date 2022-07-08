@@ -42,7 +42,7 @@ const build = async (
   const outJSExtension = esm ? '.mjs' : '.cjs';
   const absoluteOutputDir = path.join(rootDir, outputDir);
   const serverOutputDir = path.join(absoluteOutputDir, SERVER_OUTPUT_DIR);
-  const serverEntry = path.join(outputDir, SERVER_OUTPUT_DIR, `index${outJSExtension}`);
+  const serverEntry = path.join(serverOutputDir, `index${outJSExtension}`);
   const documentOnly = !ssg && !ssr;
 
   const { stats, isSuccessful, messages } = await new Promise((resolve, reject): void => {
