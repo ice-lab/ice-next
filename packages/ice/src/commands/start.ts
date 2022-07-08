@@ -35,13 +35,11 @@ const start = async (
     webpack,
     runtimeTmpDir: RUNTIME_TMP_DIR,
   }));
-
+  // Compile server entry after the webpack compilation.
   const serverCompilerTask = new ServerCompilerTask();
-
   const { outputDir } = taskConfigs.find(({ name }) => name === 'web').config;
-  const { ssg, ssr, server } = userConfig;
+  const { ssg, ssr, server: { format } } = userConfig;
   const entryPoint = path.join(rootDir, SERVER_ENTRY);
-  const { format } = server;
   const esm = format === 'esm';
   const outJSExtension = esm ? '.mjs' : '.cjs';
   webpackConfigs[0].plugins.push(

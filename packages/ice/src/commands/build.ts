@@ -35,11 +35,11 @@ const build = async (
     applyHook,
     serverCompiler,
   });
-  const { ssg, ssr, server } = userConfig;
+  const { ssg, ssr, server: { format } } = userConfig;
   const { outputDir } = taskConfigs.find(({ name }) => name === 'web').config;
   // compile server bundle
   const entryPoint = path.join(rootDir, SERVER_ENTRY);
-  const esm = server?.format === 'esm';
+  const esm = format === 'esm';
   const outJSExtension = esm ? '.mjs' : '.cjs';
   const serverEntry = path.join(outputDir, SERVER_OUTPUT_DIR, `index${outJSExtension}`);
   const documentOnly = !ssg && !ssr;
