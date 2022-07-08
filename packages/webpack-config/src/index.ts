@@ -61,7 +61,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     define = {},
     externals = {},
     publicPath = '/',
-    outputDir = path.join(rootDir, 'build'),
+    outputDir,
     loaders = [],
     plugins = [],
     alias = {},
@@ -85,7 +85,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     devServer,
     fastRefresh,
   } = config;
-
+  const absoluteOutputDir = path.isAbsolute(outputDir) ? outputDir : path.join(rootDir, outputDir);
   const dev = mode !== 'production';
   const supportedBrowsers = getSupportedBrowsers(rootDir, dev);
   const hashKey = hash === true ? 'hash:8' : (hash || '');
@@ -147,7 +147,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     externals,
     output: {
       publicPath,
-      path: path.isAbsolute(outputDir) ? outputDir : path.join(rootDir, outputDir),
+      path: absoluteOutputDir,
       filename: `js/${hashKey ? `[name]-[${hashKey}].js` : '[name].js'}`,
       assetModuleFilename: 'assets/[name].[hash:8][ext]',
     },
@@ -239,7 +239,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
       !dev && new CopyPlugin({
         patterns: [{
           from: path.join(rootDir, 'public'),
-          to: outputDir,
+          to: absoluteOutputDir,
           // ignore assets already in compilation.assets such as js and css files
           force: false,
           noErrorOnMissing: true,

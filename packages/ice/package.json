@@ -11,8 +11,9 @@
   "files": [
     "bin",
     "esm",
-    "template",
-    "!esm/**/*.map"
+    "!esm/**/*.map",
+    "templates",
+    "openChrome.applescript"
   ],
   "engines": {
     "node": ">=12.22.0",

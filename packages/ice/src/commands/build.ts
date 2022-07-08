@@ -25,7 +25,10 @@ const build = async (
     webpack,
     runtimeTmpDir: RUNTIME_TMP_DIR,
   }));
-  await emptyDir(taskConfigs.find(({ name }) => name === 'web').config.outputDir);
+  const outputDir = webpackConfigs[0].output.path;
+
+  await emptyDir(outputDir);
+
   const compiler = await webpackCompiler({
     rootDir,
     webpackConfigs,
@@ -36,12 +39,12 @@ const build = async (
     serverCompiler,
   });
   const { ssg, ssr, server: { format } } = userConfig;
-  const { outputDir } = taskConfigs.find(({ name }) => name === 'web').config;
   // compile server bundle
   const entryPoint = path.join(rootDir, SERVER_ENTRY);
   const esm = format === 'esm';
   const outJSExtension = esm ? '.mjs' : '.cjs';
-  const serverEntry = path.join(outputDir, SERVER_OUTPUT_DIR, `index${outJSExtension}`);
+  const serverOutputDir = path.join(outputDir, SERVER_OUTPUT_DIR);
+  const serverEntry = path.join(serverOutputDir, `index${outJSExtension}`);
   const documentOnly = !ssg && !ssr;
 
   const { stats, isSuccessful, messages } = await new Promise((resolve, reject): void => {
@@ -72,7 +75,7 @@ const build = async (
             entryPoints: { index: entryPoint },
             outdir: path.join(outputDir, SERVER_OUTPUT_DIR),
             splitting: esm,
-            format: server?.format,
+            format,
             platform: esm ? 'browser' : 'node',
             outExtension: { '.js': outJSExtension },
           },
