@@ -94,18 +94,30 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   ['userConfig', 'cliOption'].forEach((configType) => ctx.registerConfig(configType, config[configType]));
 
   let taskConfigs = await ctx.setup();
+  // merge task config with built-in config
+  taskConfigs = mergeTaskConfig(taskConfigs, { port: commandArgs.port });
+  const webTaskConfig = taskConfigs.find(({ name }) => name === 'web');
 
   // get userConfig after setup because of userConfig maybe modified by plugins
   const { userConfig } = ctx;
   const { routes: routesConfig, server } = userConfig;
 
   // load dotenv, set to process.env
-  await initProcessEnv(rootDir, command, commandArgs, userConfig);
+  await initProcessEnv(rootDir, command, commandArgs);
   const coreEnvKeys = getCoreEnvKeys();
 
   const routesInfo = await generateRoutesInfo(rootDir, routesConfig);
+
+  const csr = !userConfig.ssr && !userConfig.ssg;
+
   // add render data
-  generator.setRenderData({ ...routesInfo, runtimeModules, coreEnvKeys });
+  generator.setRenderData({
+    ...routesInfo,
+    runtimeModules,
+    coreEnvKeys,
+    basename: webTaskConfig.config.basename,
+    hydrate: !csr,
+  });
   dataCache.set('routes', JSON.stringify(routesInfo.routeManifest));
 
   // render template before webpack compile
@@ -116,46 +128,34 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   );
   consola.debug('template render cost:', new Date().getTime() - renderStart);
 
-  // merge task config with built-in config
-  taskConfigs = mergeTaskConfig(taskConfigs, { port: commandArgs.port });
-
-  const isCSR = process.env.ICE_CORE_SSG == 'false' && process.env.ICE_CORE_SSR == 'false';
-
   // create serverCompiler with task config
   const serverCompiler = createServerCompiler({
     rootDir,
-    task: taskConfigs.find(({ name }) => name === 'web'),
+    task: webTaskConfig,
     command,
     serverBundle: server.bundle,
-    swcOptions: {
-      removeExportExprs: isCSR ? ['default', 'getData'] : [],
-    },
   });
-
   let appConfig: AppConfig;
-  if (command === 'build') {
-    try {
-      // should after generator, otherwise it will compile error
-      appConfig = await getAppConfig({ serverCompiler, rootDir });
-    } catch (err) {
-      consola.warn('Failed to get app config:', err.message);
-      consola.debug(err);
-    }
+  try {
+    // should after generator, otherwise it will compile error
+    appConfig = await getAppConfig({ serverCompiler, rootDir });
+  } catch (err) {
+    consola.warn('Failed to get app config:', err.message);
+    consola.debug(err);
   }
 
   const disableRouter = userConfig.removeHistoryDeadCode && routesInfo.routesCount <= 1;
   if (disableRouter) {
     consola.info('[ice] removeHistoryDeadCode is enabled and only have one route, ice build will remove history and react-router dead code.');
   }
-
   updateRuntimeEnv(appConfig, { disableRouter });
 
   return {
     run: async () => {
       if (command === 'start') {
-        return await start(ctx, taskConfigs, serverCompiler);
+        return await start(ctx, taskConfigs, serverCompiler, appConfig);
       } else if (command === 'build') {
-        return await build(ctx, taskConfigs, serverCompiler, appConfig);
+        return await build(ctx, taskConfigs, serverCompiler);
       }
     },
   };
