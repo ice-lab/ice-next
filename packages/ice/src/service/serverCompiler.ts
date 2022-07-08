@@ -30,7 +30,6 @@ interface Options {
 
 export function createServerCompiler(options: Options) {
   const { task, rootDir, command, server } = options;
-  const { config } = task;
 
   const alias = (task.config?.alias || {}) as Record<string, string | false>;
   const assetsManifest = path.join(rootDir, ASSETS_MANIFEST);
@@ -58,7 +57,7 @@ export function createServerCompiler(options: Options) {
     const depsMetadata = await createDepsMetadata({ buildOptions, task, rootDir });
 
     const transformPlugins = getCompilerPlugins({
-      ...config,
+      ...task.config,
       fastRefresh: false,
       swcOptions,
     }, 'esbuild');
@@ -107,7 +106,7 @@ export function createServerCompiler(options: Options) {
     consola.debug('[esbuild]', `time cost: ${new Date().getTime() - startTime}ms`);
     const esm = server?.format === 'esm';
     const outJSExtension = esm ? '.mjs' : '.cjs';
-    const serverEntry = path.join(config.outputDir, SERVER_OUTPUT_DIR, `index${outJSExtension}`);
+    const serverEntry = path.join(rootDir, task.config.outputDir, SERVER_OUTPUT_DIR, `index${outJSExtension}`);
 
     return {
       ...esbuildResult,

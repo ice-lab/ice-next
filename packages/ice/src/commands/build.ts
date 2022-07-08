@@ -44,9 +44,8 @@ const build = async (
   const esm = format === 'esm';
   const outJSExtension = esm ? '.mjs' : '.cjs';
   const serverOutputDir = path.join(outputDir, SERVER_OUTPUT_DIR);
-  const serverEntry = path.join(serverOutputDir, `index${outJSExtension}`);
   const documentOnly = !ssg && !ssr;
-
+  let serverEntry;
   const { stats, isSuccessful, messages } = await new Promise((resolve, reject): void => {
     let messages: { errors: string[]; warnings: string[] };
     compiler.run(async (err, stats) => {
@@ -70,10 +69,10 @@ const build = async (
       } else {
         compiler?.close?.(() => {});
         const isSuccessful = !messages.errors.length;
-        const { serverEntry } = await serverCompiler(
+        const serverCompilerResult = await serverCompiler(
           {
             entryPoints: { index: entryPoint },
-            outdir: path.join(outputDir, SERVER_OUTPUT_DIR),
+            outdir: serverOutputDir,
             splitting: esm,
             format,
             platform: esm ? 'browser' : 'node',
@@ -85,6 +84,7 @@ const build = async (
             jsxTransform: true,
           },
         );
+        serverEntry = serverCompilerResult.serverEntry;
 
         let renderMode;
         if (ssg) {
@@ -107,6 +107,7 @@ const build = async (
       }
     });
   });
+
   await applyHook('after.build.compile', {
     stats,
     isSuccessful,
@@ -115,6 +116,7 @@ const build = async (
     serverCompiler,
     serverEntry,
   });
+
   return { compiler };
 };
 

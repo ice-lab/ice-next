@@ -37,7 +37,7 @@ const start = async (
   }));
   // Compile server entry after the webpack compilation.
   const serverCompilerTask = new ServerCompilerTask();
-  const { outputDir } = taskConfigs.find(({ name }) => name === 'web').config;
+  const outputDir = webpackConfigs[0].output.path;
   const { ssg, ssr, server: { format } } = userConfig;
   const entryPoint = path.join(rootDir, SERVER_ENTRY);
   const esm = format === 'esm';
