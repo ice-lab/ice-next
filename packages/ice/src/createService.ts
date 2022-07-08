@@ -33,7 +33,7 @@ interface CreateServiceOptions {
 
 async function createService({ rootDir, command, commandArgs }: CreateServiceOptions) {
   const targetDir = '.ice';
-  const templateDir = path.join(__dirname, '../template/');
+  const templateDir = path.join(__dirname, '../templates/');
   const configFile = 'ice.config.(mts|mjs|ts|js|cjs|json)';
   const dataCache = new Map<string, string>();
   const generator = new Generator({
@@ -103,17 +103,20 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const { routes: routesConfig, server } = userConfig;
 
   // load dotenv, set to process.env
-  await initProcessEnv(rootDir, command, commandArgs, userConfig);
+  await initProcessEnv(rootDir, command, commandArgs);
   const coreEnvKeys = getCoreEnvKeys();
 
   const routesInfo = await generateRoutesInfo(rootDir, routesConfig);
+
+  const csr = !userConfig.ssr && !userConfig.ssg;
 
   // add render data
   generator.setRenderData({
     ...routesInfo,
     runtimeModules,
     coreEnvKeys,
-    basename: webTaskConfig.config.basename || '/',
+    basename: webTaskConfig.config.basename,
+    hydrate: !csr,
   });
   dataCache.set('routes', JSON.stringify(routesInfo.routeManifest));
 
@@ -125,42 +128,32 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   );
   consola.debug('template render cost:', new Date().getTime() - renderStart);
 
-
-  const isCSR = process.env.ICE_CORE_SSG == 'false' && process.env.ICE_CORE_SSR == 'false';
-
   // create serverCompiler with task config
   const serverCompiler = createServerCompiler({
     rootDir,
     task: webTaskConfig,
     command,
     serverBundle: server.bundle,
-    swcOptions: {
-      removeExportExprs: isCSR ? ['default', 'getData'] : [],
-    },
   });
-
   let appConfig: AppConfig;
-  if (command === 'build') {
-    try {
-      // should after generator, otherwise it will compile error
-      appConfig = await getAppConfig({ serverCompiler, rootDir });
-    } catch (err) {
-      consola.warn('Failed to get app config:', err.message);
-      consola.debug(err);
-    }
+  try {
+    // should after generator, otherwise it will compile error
+    appConfig = await getAppConfig({ serverCompiler, rootDir });
+  } catch (err) {
+    consola.warn('Failed to get app config:', err.message);
+    consola.debug(err);
   }
 
   const disableRouter = userConfig.removeHistoryDeadCode && routesInfo.routesCount <= 1;
   if (disableRouter) {
     consola.info('[ice] removeHistoryDeadCode is enabled and only have one route, ice build will remove history and react-router dead code.');
   }
-
   updateRuntimeEnv(appConfig, { disableRouter });
 
   return {
     run: async () => {
       if (command === 'start') {
-        return await start(ctx, taskConfigs, serverCompiler);
+        return await start(ctx, taskConfigs, serverCompiler, appConfig);
       } else if (command === 'build') {
         return await build(ctx, taskConfigs, serverCompiler);
       }

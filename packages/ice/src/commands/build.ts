@@ -34,6 +34,15 @@ const build = async (
     applyHook,
     serverCompiler,
   });
+  const { ssg, ssr, server } = userConfig;
+  const { outputDir } = taskConfigs.find(({ name }) => name === 'web').config;
+  // compile server bundle
+  const entryPoint = path.join(rootDir, SERVER_ENTRY);
+  const esm = server?.format === 'esm';
+  const outJSExtension = esm ? '.mjs' : '.cjs';
+  const serverEntry = path.join(outputDir, SERVER_OUTPUT_DIR, `index${outJSExtension}`);
+  const documentOnly = !ssg && !ssr;
+
   const { stats, isSuccessful, messages } = await new Promise((resolve, reject): void => {
     let messages: { errors: string[]; warnings: string[] };
     compiler.run(async (err, stats) => {
@@ -57,13 +66,6 @@ const build = async (
       } else {
         compiler?.close?.(() => {});
         const isSuccessful = !messages.errors.length;
-        const { outputDir } = taskConfigs.find(({ name }) => name === 'web').config;
-        const { ssg, ssr, server } = userConfig;
-        // compile server bundle
-        const entryPoint = path.join(rootDir, SERVER_ENTRY);
-        const esm = server?.format === 'esm';
-        const outJSExtension = esm ? '.mjs' : '.cjs';
-        const serverEntry = path.join(outputDir, SERVER_OUTPUT_DIR, `index${outJSExtension}`);
         await serverCompiler({
           entryPoints: { index: entryPoint },
           outdir: path.join(outputDir, SERVER_OUTPUT_DIR),
@@ -71,13 +73,24 @@ const build = async (
           format: server?.format,
           platform: esm ? 'browser' : 'node',
           outExtension: { '.js': outJSExtension },
+        }, {
+          // Remove components and getData when document only.
+          removeExportExprs: documentOnly ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
+          jsxTransform: true,
         });
+
+        let renderMode;
+        if (ssg) {
+          renderMode = 'SSG';
+        }
+
         // generate html
         await generateHTML({
           rootDir,
           outputDir,
           entry: serverEntry,
-          documentOnly: !ssg && !ssr,
+          documentOnly,
+          renderMode,
         });
         resolve({
           stats,
@@ -93,6 +106,7 @@ const build = async (
     messages,
     taskConfigs,
     serverCompiler,
+    serverEntry,
   });
   return { compiler };
 };
