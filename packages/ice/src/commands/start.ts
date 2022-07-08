@@ -14,7 +14,7 @@ import createRenderMiddleware from '../middlewares/ssr/renderMiddleware.js';
 import createMockMiddleware from '../middlewares/mock/createMiddleware.js';
 import { ROUTER_MANIFEST, RUNTIME_TMP_DIR, SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
 import ServerCompilerPlugin from '../webpack/ServerCompilerPlugin.js';
-import ServerCompilerTask from '../utils/ServerCompilerTask.js';
+import ServerCompileTask from '../utils/ServerCompileTask.js';
 import { getAppConfig } from '../analyzeRuntime.js';
 
 const { merge } = lodash;
@@ -36,7 +36,7 @@ const start = async (
     runtimeTmpDir: RUNTIME_TMP_DIR,
   }));
   // Compile server entry after the webpack compilation.
-  const serverCompilerTask = new ServerCompilerTask();
+  const serverCompileTask = new ServerCompileTask();
   const outputDir = webpackConfigs[0].output.path;
   const { ssg, ssr, server: { format } } = userConfig;
   const entryPoint = path.join(rootDir, SERVER_ENTRY);
@@ -53,7 +53,7 @@ const start = async (
         platform: esm ? 'browser' : 'node',
         outExtension: { '.js': outJSExtension },
       },
-      serverCompilerTask,
+      serverCompileTask,
     ),
   );
 
@@ -75,7 +75,7 @@ const start = async (
       const documentOnly = !ssr && !ssg;
 
       const serverRenderMiddleware = createRenderMiddleware({
-        serverCompilerTask,
+        serverCompileTask,
         routeManifestPath,
         documentOnly,
         renderMode,

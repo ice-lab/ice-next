@@ -3,13 +3,14 @@ import fse from 'fs-extra';
 import type { ExpressRequestHandler, Middleware } from 'webpack-dev-server';
 import type { ServerContext, RenderMode } from '@ice/runtime';
 import consola from 'consola';
-import { matchRoutes } from '@ice/runtime';
-import type ServerCompilerTask from '../../utils/ServerCompilerTask.js';
+// @ts-expect-error FIXME: esm type error
+import matchRoutes from '@ice/runtime/matchRoutes';
+import type ServerCompileTask from '../../utils/ServerCompileTask.js';
 
 const require = createRequire(import.meta.url);
 
 interface Options {
-  serverCompilerTask: ServerCompilerTask;
+  serverCompileTask: ServerCompileTask;
   routeManifestPath: string;
   documentOnly?: boolean;
   renderMode?: RenderMode;
@@ -17,13 +18,13 @@ interface Options {
 }
 
 export default function createRenderMiddleware(options: Options): Middleware {
-  const { documentOnly, renderMode, serverCompilerTask, routeManifestPath, basename } = options;
+  const { documentOnly, renderMode, serverCompileTask, routeManifestPath, basename } = options;
   const middleware: ExpressRequestHandler = async function (req, res, next) {
     const routes = JSON.parse(fse.readFileSync(routeManifestPath, 'utf-8'));
     const matches = matchRoutes(routes, req.path, basename);
     if (matches.length) {
       // Wait for the server compilation to finish
-      const { serverEntry } = await serverCompilerTask.get();
+      const { serverEntry } = await serverCompileTask.get();
 
       let serverModule;
       try {

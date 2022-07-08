@@ -1,6 +1,6 @@
 import type { ServerCompiler } from '@ice/types/esm/plugin.js';
 import type { Compiler } from 'webpack';
-import type ServerCompilerTask from '../utils/ServerCompilerTask.js';
+import type ServerCompileTask from '../utils/ServerCompileTask.js';
 
 const pluginName = 'ServerCompilerPlugin';
 
@@ -10,21 +10,21 @@ const pluginName = 'ServerCompilerPlugin';
 export default class ServerCompilerPlugin {
   private serverCompiler: ServerCompiler;
   private serverCompilerOptions: Parameters<ServerCompiler>[0];
-  private serverCompilerTask: ServerCompilerTask;
+  private serverCompileTask: ServerCompileTask;
 
   public constructor(
     serverCompiler: ServerCompiler,
     serverCompilerOptions: Parameters<ServerCompiler>[0],
-    serverCompilerTask: ServerCompilerTask,
+    serverCompileTask: ServerCompileTask,
   ) {
     this.serverCompiler = serverCompiler;
     this.serverCompilerOptions = serverCompilerOptions;
-    this.serverCompilerTask = serverCompilerTask;
+    this.serverCompileTask = serverCompileTask;
   }
 
   public apply(compiler: Compiler) {
     compiler.hooks.emit.tap(pluginName, () => {
-      this.serverCompilerTask.set(this.serverCompiler(this.serverCompilerOptions));
+      this.serverCompileTask.set(this.serverCompiler(this.serverCompilerOptions));
     });
   }
 }

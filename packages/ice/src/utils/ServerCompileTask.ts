@@ -1,6 +1,9 @@
 import type { ServerCompiler } from '@ice/types/esm/plugin.js';
 
-class ServerCompilerTask {
+/**
+ * Get server compile promise task in middlewares or plugins.
+ */
+class ServerCompileTask {
   private task: ReturnType<ServerCompiler>;
 
   set(task: ReturnType<ServerCompiler>) {
@@ -12,4 +15,4 @@ class ServerCompilerTask {
   }
 }
 
-export default ServerCompilerTask;
+export default ServerCompileTask;

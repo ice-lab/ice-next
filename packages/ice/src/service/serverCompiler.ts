@@ -53,8 +53,11 @@ export function createServerCompiler(options: Options) {
     }
   });
 
-  const serverCompiler: ServerCompiler = async (buildOptions: Parameters<ServerCompiler>[0], swcOptions) => {
-    const depsMetadata = await createDepsMetadata({ buildOptions, task, rootDir });
+  const serverCompiler: ServerCompiler = async (buildOptions, swcOptions) => {
+    let depsMetadata;
+    if (buildOptions?.format === 'esm') {
+      depsMetadata = await createDepsMetadata({ task, rootDir });
+    }
 
     const transformPlugins = getCompilerPlugins({
       ...task.config,
@@ -116,45 +119,40 @@ export function createServerCompiler(options: Options) {
   return serverCompiler;
 }
 
-async function createDepsMetadata({
-  buildOptions,
-  rootDir,
-  task,
-}: {
-  buildOptions: Parameters<ServerCompiler>[0];
+interface CreateDepsMetadataOptions {
   rootDir: string;
   task: TaskConfig<Config>;
-}) {
-  let metadata;
+}
+/**
+ *  Create dependencies metadata only when server entry is bundled to esm.
+ */
+async function createDepsMetadata({ rootDir, task }: CreateDepsMetadataOptions) {
   const serverEntry = path.join(rootDir, SERVER_ENTRY);
 
-  if (buildOptions?.format === 'esm') {
-    const deps = await scanImports([serverEntry], {
-      rootDir,
-      alias: (task.config?.alias || {}) as Record<string, string | false>,
-    });
+  const deps = await scanImports([serverEntry], {
+    rootDir,
+    alias: (task.config?.alias || {}) as Record<string, string | false>,
+  });
 
-    function filterPreBundleDeps(deps: Record<string, string>) {
-      const preBundleDepsInfo = {};
-      for (const dep in deps) {
-        if (!isExternalBuiltinDep(dep, buildOptions?.format)) {
-          preBundleDepsInfo[dep] = deps[dep];
-        }
+  function filterPreBundleDeps(deps: Record<string, string>) {
+    const preBundleDepsInfo = {};
+    for (const dep in deps) {
+      if (!isExternalBuiltinDep(dep)) {
+        preBundleDepsInfo[dep] = deps[dep];
       }
-      return preBundleDepsInfo;
     }
-    // don't pre bundle the deps because they can run in node env.
-    // For examples: react, react-dom, @ice/runtime
-    const preBundleDepsInfo = filterPreBundleDeps(deps);
-    const cacheDir = path.join(rootDir, CACHE_DIR);
-    const ret = await preBundleCJSDeps({
-      depsInfo: preBundleDepsInfo,
-      rootDir,
-      cacheDir,
-      taskConfig: task.config,
-    });
-    metadata = ret.metadata;
+    return preBundleDepsInfo;
   }
+  // don't pre bundle the deps because they can run in node env.
+  // For examples: react, react-dom, @ice/runtime
+  const preBundleDepsInfo = filterPreBundleDeps(deps);
+  const cacheDir = path.join(rootDir, CACHE_DIR);
+  const ret = await preBundleCJSDeps({
+    depsInfo: preBundleDepsInfo,
+    rootDir,
+    cacheDir,
+    taskConfig: task.config,
+  });
 
-  return metadata;
+  return ret.metadata;
 }

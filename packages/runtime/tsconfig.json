@@ -4,8 +4,7 @@
     "baseUrl": "./",
     "rootDir": "src",
     "outDir": "esm",
-    "module": "ES2020",
-    "moduleResolution": "NodeNext",
+    "module": "ES2020"
   },
   "include": ["src"]
 }
