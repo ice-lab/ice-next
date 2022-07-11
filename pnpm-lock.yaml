@@ -337,7 +337,7 @@ importers:
       acorn: ^8.7.1
       address: ^1.1.2
       body-parser: ^1.20.0
-      build-scripts: ^2.0.0-22
+      build-scripts: ^2.0.0-23
       chalk: ^4.0.0
       chokidar: ^3.5.3
       commander: ^9.0.0
@@ -607,7 +607,7 @@ importers:
     specifiers:
       '@ice/route-manifest': ^1.0.0
       '@ice/runtime': ^1.0.0
-      build-scripts: ^2.0.0-22
+      build-scripts: ^2.0.0-23
       esbuild: ^0.14.23
       eslint: ^8.14.0
       eslint-webpack-plugin: 3.1.1
@@ -641,7 +641,7 @@ importers:
       '@pmmmwh/react-refresh-webpack-plugin': ^0.5.7
       '@rollup/pluginutils': ^4.2.0
       browserslist: ^4.19.3
-      build-scripts: ^2.0.0-22
+      build-scripts: ^2.0.0-23
       consola: ^2.15.3
       esbuild: ^0.14.23
       fast-glob: ^3.2.11
@@ -21832,7 +21832,7 @@ packages:
     name: wide-align
     version: 1.1.5
     dependencies:
-      string-width: registry.npmjs.org/string-width/1.0.2
+      string-width: registry.npmjs.org/string-width/4.2.3
 
   registry.npmjs.org/widest-line/3.1.0:
     resolution: {integrity: sha512-NsmoXalsWVDMGupxZ5R08ka9flZjjiLvHVAWYOKtiKM8ujtZWr9cRffak+uSE48+Ob8ObalXpwyeUiyDD6QFgg==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/widest-line/-/widest-line-3.1.0.tgz}
