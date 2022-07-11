@@ -53,7 +53,7 @@ export function createServerCompiler(options: Options) {
     }
   });
 
-  const serverCompiler: ServerCompiler = async (buildOptions, { preBundle, swc: swcOptions }) => {
+  const serverCompiler: ServerCompiler = async (buildOptions, { preBundle, swc: swcOptions } = {}) => {
     let depsMetadata;
     if (preBundle) {
       depsMetadata = await createDepsMetadata({ task, rootDir });

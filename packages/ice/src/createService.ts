@@ -22,6 +22,7 @@ import getWebTask from './tasks/web/index.js';
 import getDataLoaderTask from './tasks/web/data-loader.js';
 import * as config from './config.js';
 import { RUNTIME_TMP_DIR } from './constant.js';
+import ServerCompileTask from './utils/ServerCompileTask.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -58,6 +59,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     addRenderTemplate: generator.addTemplateFiles,
   };
 
+  const serverCompileTask = new ServerCompileTask();
   const ctx = new Context<Config, ExtendsPluginAPI>({
     rootDir,
     command,
@@ -73,6 +75,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
         // @ts-expect-error repack type can not match with original type
         webpack,
       },
+      serverCompileTask,
     },
   });
 
@@ -162,7 +165,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   return {
     run: async () => {
       if (command === 'start') {
-        return await start(ctx, taskConfigs, serverCompiler, appConfig);
+        return await start(ctx, taskConfigs, serverCompiler, appConfig, serverCompileTask);
       } else if (command === 'build') {
         return await build(ctx, taskConfigs, serverCompiler);
       }

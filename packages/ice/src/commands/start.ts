@@ -14,8 +14,8 @@ import createRenderMiddleware from '../middlewares/ssr/renderMiddleware.js';
 import createMockMiddleware from '../middlewares/mock/createMiddleware.js';
 import { ROUTER_MANIFEST, RUNTIME_TMP_DIR, SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
 import ServerCompilerPlugin from '../webpack/ServerCompilerPlugin.js';
-import ServerCompileTask from '../utils/ServerCompileTask.js';
 import { getAppConfig } from '../analyzeRuntime.js';
+import type ServerCompileTask from '../utils/ServerCompileTask.js';
 
 const { merge } = lodash;
 
@@ -24,6 +24,7 @@ const start = async (
   taskConfigs: TaskConfig<Config>[],
   serverCompiler: ServerCompiler,
   appConfig: AppConfig,
+  serverCompileTask: ServerCompileTask,
 ) => {
   const { applyHook, commandArgs, command, rootDir, userConfig } = context;
   const { port, host, https = false } = commandArgs;
@@ -36,7 +37,6 @@ const start = async (
     runtimeTmpDir: RUNTIME_TMP_DIR,
   }));
   // Compile server entry after the webpack compilation.
-  const serverCompileTask = new ServerCompileTask();
   const outputDir = webpackConfigs[0].output.path;
   const { ssg, ssr, server: { format } } = userConfig;
   const entryPoint = path.join(rootDir, SERVER_ENTRY);
@@ -45,14 +45,19 @@ const start = async (
   webpackConfigs[0].plugins.push(
     new ServerCompilerPlugin(
       serverCompiler,
-      {
-        entryPoints: { index: entryPoint },
-        outdir: path.join(outputDir, SERVER_OUTPUT_DIR),
-        splitting: esm,
-        format,
-        platform: esm ? 'browser' : 'node',
-        outExtension: { '.js': outJSExtension },
-      },
+      [
+        {
+          entryPoints: { index: entryPoint },
+          outdir: path.join(outputDir, SERVER_OUTPUT_DIR),
+          splitting: esm,
+          format,
+          platform: esm ? 'browser' : 'node',
+          outExtension: { '.js': outJSExtension },
+        },
+        {
+          preBundle: format === 'esm',
+        },
+      ],
       serverCompileTask,
     ),
   );

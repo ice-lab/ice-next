@@ -9,12 +9,12 @@ const pluginName = 'ServerCompilerPlugin';
  */
 export default class ServerCompilerPlugin {
   private serverCompiler: ServerCompiler;
-  private serverCompilerOptions: Parameters<ServerCompiler>[0];
+  private serverCompilerOptions: Parameters<ServerCompiler>;
   private serverCompileTask: ServerCompileTask;
 
   public constructor(
     serverCompiler: ServerCompiler,
-    serverCompilerOptions: Parameters<ServerCompiler>[0],
+    serverCompilerOptions: Parameters<ServerCompiler>,
     serverCompileTask: ServerCompileTask,
   ) {
     this.serverCompiler = serverCompiler;
@@ -24,7 +24,7 @@ export default class ServerCompilerPlugin {
 
   public apply(compiler: Compiler) {
     compiler.hooks.emit.tap(pluginName, () => {
-      this.serverCompileTask.set(this.serverCompiler(this.serverCompilerOptions, { preBundle: true }));
+      this.serverCompileTask.set(this.serverCompiler(...this.serverCompilerOptions));
     });
   }
 }

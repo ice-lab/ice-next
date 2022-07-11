@@ -79,7 +79,7 @@ const build = async (
             outExtension: { '.js': outJSExtension },
           },
           {
-            preBundle: true,
+            preBundle: format === 'esm',
             swc: {
               // Remove components and getData when document only.
               removeExportExprs: documentOnly ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],

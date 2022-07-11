@@ -79,6 +79,10 @@ export interface ExtendsPluginAPI {
     addEvent?: (watchEvent: WatchEvent) => void;
     removeEvent?: (name: string) => void;
   };
+  serverCompileTask: {
+    set: (task: ReturnType<ServerCompiler>) => void;
+    get: () => ReturnType<ServerCompiler>;
+  };
 }
 
 export interface OverwritePluginAPI extends ExtendsPluginAPI {
