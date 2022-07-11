@@ -2,7 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/@ice/scrollview.svg?style=flat&logo=npm)](https://www.npmjs.com/package/@ice/scrollview)
 
-Scrolldiv 是一个包装了滚动操作的容器型组件。一般情况下需要一个确定的高度来保证 Scrolldiv 的正常展现。
+ScrollView 是一个包装了滚动操作的容器型组件。一般情况下需要一个确定的高度来保证 ScrollView 的正常展现。
 
 ## 安装
 
@@ -13,7 +13,7 @@ $ npm i @ice/scrollview --save
 ## 使用
 
 ```jsx
-import Scrolldiv from '@ice/scrollview';
+import ScrollView from '@ice/scrollview';
 ```
 
 ## 支持
