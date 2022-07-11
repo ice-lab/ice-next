@@ -22,6 +22,8 @@ import getWebTask from './tasks/web/index.js';
 import getDataLoaderTask from './tasks/web/data-loader.js';
 import * as config from './config.js';
 import type { AppConfig } from './utils/runtimeEnv.js';
+import createSpinner from './utils/createSpinner.js';
+import { getPaths } from './utils/generateHTML.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -32,6 +34,7 @@ interface CreateServiceOptions {
 }
 
 async function createService({ rootDir, command, commandArgs }: CreateServiceOptions) {
+  const buildSpinner = createSpinner('resolving plugins...');
   const targetDir = '.ice';
   const templateDir = path.join(__dirname, '../templates/');
   const configFile = 'ice.config.(mts|mjs|ts|js|cjs|json)';
@@ -152,10 +155,30 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
 
   return {
     run: async () => {
-      if (command === 'start') {
-        return await start(ctx, taskConfigs, serverCompiler, appConfig);
-      } else if (command === 'build') {
-        return await build(ctx, taskConfigs, serverCompiler);
+      try {
+        if (command === 'start') {
+          const routePaths = getPaths(routesInfo.routes)
+            .sort((a, b) =>
+              // Sort by length, shortest path first.
+              a.split('/').filter(Boolean).length - b.split('/').filter(Boolean).length);
+          console.log(routePaths);
+          return await start(ctx, {
+            taskConfigs,
+            serverCompiler,
+            appConfig,
+            devPath: (routePaths[0] || '').replace(/^\//, ''),
+            spinner: buildSpinner,
+          });
+        } else if (command === 'build') {
+          return await build(ctx, {
+            taskConfigs,
+            serverCompiler,
+            spinner: buildSpinner,
+          });
+        }
+      } catch (err) {
+        buildSpinner.stop();
+        throw err;
       }
     },
   };

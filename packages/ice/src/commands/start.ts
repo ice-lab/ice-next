@@ -7,6 +7,7 @@ import type { ServerCompiler } from '@ice/types/esm/plugin.js';
 import type { AppConfig } from '@ice/runtime';
 import { getWebpackConfig } from '@ice/webpack-config';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
+import type ora from '@ice/bundles/compiled/ora/index.js';
 import webpackCompiler from '../service/webpackCompiler.js';
 import prepareURLs from '../utils/prepareURLs.js';
 import createCompileMiddleware from '../middlewares/ssr/compileMiddleware.js';
@@ -17,10 +18,15 @@ const { merge } = lodash;
 
 const start = async (
   context: Context<Config>,
-  taskConfigs: TaskConfig<Config>[],
-  serverCompiler: ServerCompiler,
-  appConfig: AppConfig,
+  options: {
+    taskConfigs: TaskConfig<Config>[];
+    serverCompiler: ServerCompiler;
+    appConfig: AppConfig;
+    devPath: string;
+    spinner: ora.Ora;
+  },
 ) => {
+  const { taskConfigs, serverCompiler, appConfig, devPath, spinner } = options;
   const { applyHook, commandArgs, command, rootDir, userConfig } = context;
   const { port, host, https = false } = commandArgs;
 
@@ -92,6 +98,8 @@ const start = async (
     command,
     applyHook,
     serverCompiler,
+    spinner,
+    devPath,
   });
   const devServer = new WebpackDevServer(devServerConfig, compiler);
   devServer.startCallback(() => {

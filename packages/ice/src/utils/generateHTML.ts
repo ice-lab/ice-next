@@ -67,7 +67,7 @@ export default async function generateHTML(options: Options) {
  * @param routes
  * @returns
  */
-function getPaths(routes: RouteObject[], parentPath = ''): string[] {
+export function getPaths(routes: RouteObject[], parentPath = ''): string[] {
   let pathList = [];
 
   routes.forEach(route => {
