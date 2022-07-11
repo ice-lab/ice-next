@@ -572,9 +572,9 @@ importers:
 
   packages/scrollview:
     specifiers:
-      '@ice/pkg': ^1.0.0-rc.7
-      '@ice/pkg-plugin-docusaurus': ^1.0.0-rc.8
-      '@ice/runtime': ^1.0.0-alpha.40
+      '@ice/pkg': ^1.0.0
+      '@ice/pkg-plugin-docusaurus': ^1.0.0
+      '@ice/runtime': ^1.0.0-beta.9
       '@iceworks/spec': ^1.0.0
       '@swc/helpers': ^0.4.2
       '@types/react': ^18.0.0
@@ -593,7 +593,7 @@ importers:
       universal-env: registry.npmjs.org/universal-env/3.3.3
     devDependencies:
       '@ice/pkg': registry.npmjs.org/@ice/pkg/1.0.0
-      '@ice/pkg-plugin-docusaurus': registry.npmjs.org/@ice/pkg-plugin-docusaurus/1.0.0-rc.5s_lrfrwsjjbkh4xa2cil34ctkt74
+      '@ice/pkg-plugin-docusaurus': registry.npmjs.org/@ice/pkg-plugin-docusaurus/1.0.0_lrfrwsjjbkh4xa2cil34ctkt74
       '@ice/runtime': link:../runtime
       '@iceworks/spec': registry.npmjs.org/@iceworks/spec/1.6.0_4v3jurpbcga7euorjuu2q7wmki
       '@types/react': registry.npmjs.org/@types/react/18.0.8
@@ -20445,22 +20445,25 @@ packages:
       fs-extra: registry.npmjs.org/fs-extra/10.1.0
     dev: true
 
-  registry.npmjs.org/@ice/pkg-plugin-docusaurus/1.0.0-rc.5s_lrfrwsjjbkh4xa2cil34ctkt74:
-    resolution: {integrity: sha512-/7uandjxHoNH/RBO44WOARdUtp7bSTd3ADCggGR5wV5vqc7mxjV5ag5t+SNpnZOnrzwJNPqjZyYH3tuzN1J0cg==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@ice/pkg-plugin-docusaurus/-/pkg-plugin-docusaurus-1.0.0-rc.5s.tgz}
-    id: registry.npmjs.org/@ice/pkg-plugin-docusaurus/1.0.0-rc.5s
+  registry.npmjs.org/@ice/pkg-plugin-docusaurus/1.0.0_lrfrwsjjbkh4xa2cil34ctkt74:
+    resolution: {integrity: sha512-aF5i8EAN9Xi0tic6YJomtpxK5JxsnY2VKb6hs4FiUz0owlkqsGO2rYg6QTcu8s/bFv8eR+HSGK012iR0VphRbw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@ice/pkg-plugin-docusaurus/-/pkg-plugin-docusaurus-1.0.0.tgz}
+    id: registry.npmjs.org/@ice/pkg-plugin-docusaurus/1.0.0
     name: '@ice/pkg-plugin-docusaurus'
-    version: 1.0.0-rc.5s
+    version: 1.0.0
     dependencies:
       '@docusaurus/core': registry.npmjs.org/@docusaurus/core/2.0.0-beta.20_nc4e36j55nxsmdmqqj5dtindr4
       '@docusaurus/preset-classic': registry.npmjs.org/@docusaurus/preset-classic/2.0.0-beta.20_lrfrwsjjbkh4xa2cil34ctkt74
       '@mdx-js/react': registry.npmjs.org/@mdx-js/react/1.6.22_react@18.2.0
+      babel-plugin-module-resolver: registry.npmjs.org/babel-plugin-module-resolver/4.1.0
       consola: registry.npmjs.org/consola/2.15.3
       copy-text-to-clipboard: registry.npmjs.org/copy-text-to-clipboard/3.0.1
+      detect-port: registry.npmjs.org/detect-port/1.3.0
       docusaurus-plugin-sass: registry.npmjs.org/docusaurus-plugin-sass/0.2.2_di5tyvqviis6nt7sxynwtzvlke
       es-module-lexer: registry.npmjs.org/es-module-lexer/0.10.5
       fs-extra: registry.npmjs.org/fs-extra/10.1.0
       handlebars: registry.npmjs.org/handlebars/4.7.7
       hast-util-find-and-replace: registry.npmjs.org/hast-util-find-and-replace/3.2.1
+      postcss-plugin-rpx2vw: registry.npmjs.org/postcss-plugin-rpx2vw/0.0.3
       prism-react-renderer: registry.npmjs.org/prism-react-renderer/1.3.5_react@18.2.0
       react-tooltip: registry.npmjs.org/react-tooltip/4.2.21_biqbaboplfbrettd7655fr4n2y
       sass-loader: registry.npmjs.org/sass-loader/12.6.0
@@ -22482,6 +22485,19 @@ packages:
     version: 1.6.22
     dependencies:
       '@babel/helper-plugin-utils': registry.npmjs.org/@babel/helper-plugin-utils/7.10.4
+    dev: true
+
+  registry.npmjs.org/babel-plugin-module-resolver/4.1.0:
+    resolution: {integrity: sha512-MlX10UDheRr3lb3P0WcaIdtCSRlxdQsB1sBqL7W0raF070bGl1HQQq5K3T2vf2XAYie+ww+5AKC/WrkjRO2knA==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/babel-plugin-module-resolver/-/babel-plugin-module-resolver-4.1.0.tgz}
+    name: babel-plugin-module-resolver
+    version: 4.1.0
+    engines: {node: '>= 8.0.0'}
+    dependencies:
+      find-babel-config: registry.npmjs.org/find-babel-config/1.2.0
+      glob: registry.npmjs.org/glob/7.2.0
+      pkg-up: registry.npmjs.org/pkg-up/3.1.0
+      reselect: registry.npmjs.org/reselect/4.1.6
+      resolve: registry.npmjs.org/resolve/1.22.0
     dev: true
 
   registry.npmjs.org/babel-plugin-polyfill-corejs2/0.3.1_@babel+core@7.18.2:
@@ -25049,6 +25065,16 @@ packages:
       - supports-color
     dev: true
 
+  registry.npmjs.org/find-babel-config/1.2.0:
+    resolution: {integrity: sha512-jB2CHJeqy6a820ssiqwrKMeyC6nNdmrcgkKWJWmpoxpE8RKciYJXCcXRq1h2AzCo5I5BJeN2tkGEO3hLTuePRA==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/find-babel-config/-/find-babel-config-1.2.0.tgz}
+    name: find-babel-config
+    version: 1.2.0
+    engines: {node: '>=4.0.0'}
+    dependencies:
+      json5: registry.npmjs.org/json5/0.5.1
+      path-exists: registry.npmjs.org/path-exists/3.0.0
+    dev: true
+
   registry.npmjs.org/find-cache-dir/3.3.2:
     resolution: {integrity: sha512-wXZV5emFEjrridIgED11OoUKLxiYjAcqot/NJdAkOhlJ+vGzwhOAfcG5OX1jP+S0PcjEn8bdMJv+g2jwQ3Onig==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/find-cache-dir/-/find-cache-dir-3.3.2.tgz}
     name: find-cache-dir
@@ -26702,6 +26728,13 @@ packages:
     resolution: {integrity: sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz}
     name: json-stable-stringify-without-jsonify
     version: 1.0.1
+    dev: true
+
+  registry.npmjs.org/json5/0.5.1:
+    resolution: {integrity: sha512-4xrs1aW+6N5DalkqSVA8fxh458CXvR99WU8WLKmq4v8eWAL86Xo3BVqyd3SkA9wEVjCMqyvvRRkshAdOnBp5rw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/json5/-/json5-0.5.1.tgz}
+    name: json5
+    version: 0.5.1
+    hasBin: true
     dev: true
 
   registry.npmjs.org/json5/1.0.1:
@@ -29580,6 +29613,12 @@ packages:
     resolution: {integrity: sha512-KigOCHcocU3XODJxsu8i/j8T9tzT4adHiecwORRQ0ZZFcp7ahwXuRU1m+yuO90C5ZUyGeGfocHDI14M3L3yDAQ==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/requires-port/-/requires-port-1.0.0.tgz}
     name: requires-port
     version: 1.0.0
+    dev: true
+
+  registry.npmjs.org/reselect/4.1.6:
+    resolution: {integrity: sha512-ZovIuXqto7elwnxyXbBtCPo9YFEr3uJqj2rRbcOOog1bmu2Ag85M4hixSwFWyaBMKXNgvPaJ9OSu9SkBPIeJHQ==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/reselect/-/reselect-4.1.6.tgz}
+    name: reselect
+    version: 4.1.6
     dev: true
 
   registry.npmjs.org/resolve-from/4.0.0:

@@ -1,6 +1,6 @@
 {
   "name": "@ice/scrollview",
-  "version": "3.7.1-0",
+  "version": "3.7.1-1",
   "description": "Scroll view component for ice.",
   "files": [
     "esm",
@@ -42,9 +42,9 @@
     "universal-env": "^3.0.0"
   },
   "devDependencies": {
-    "@ice/pkg": "^1.0.0-rc.7",
-    "@ice/pkg-plugin-docusaurus": "^1.0.0-rc.8",
-    "@ice/runtime": "^1.0.0-alpha.40",
+    "@ice/pkg": "^1.0.0",
+    "@ice/pkg-plugin-docusaurus": "^1.0.0",
+    "@ice/runtime": "^1.0.0-beta.9",
     "@iceworks/spec": "^1.0.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
