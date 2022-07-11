@@ -1,6 +1,5 @@
-import { createRequire } from 'module';
-import type { ReactConfig } from '@builder/swc';
-import { transform, type Config as SwcConfig } from '@builder/swc';
+import swc from '@swc/core';
+import type { Options as SwcConfig, ReactConfig } from '@swc/core';
 import type { UnpluginOptions } from 'unplugin';
 import lodash from '@ice/bundles/compiled/lodash/index.js';
 import type { Config } from '@ice/types';
@@ -17,13 +16,6 @@ interface Options {
   compileExcludes?: RegExp[];
   swcOptions?: Config['swcOptions'];
 }
-
-interface TransformOptions extends SwcConfig {
-  filename: string;
-}
-
-const require = createRequire(import.meta.url);
-const regeneratorRuntimePath = require.resolve('regenerator-runtime');
 
 const compilationPlugin = (options: Options): UnpluginOptions => {
   const { sourceMap, mode, fastRefresh, compileIncludes = [], compileExcludes, swcOptions = {} } = options;
@@ -45,43 +37,42 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
 
       const suffix = (['jsx', 'tsx'] as JSXSuffix[]).find(suffix => new RegExp(`\\.${suffix}?$`).test(id));
 
-      const programmaticOptions: TransformOptions = {
+      const programmaticOptions: SwcConfig = {
         filename: id,
       };
 
-      const { jsxTransform = true, removeExportExprs } = swcOptions;
+      const commonOptions = getJsxTransformOptions({ suffix, fastRefresh });
 
-      let needTransform = false;
-
-      // common transform only works for webpack, esbuild has it's own compilation
-      if (jsxTransform) {
-        const commonOptions = getJsxTransformOptions({ suffix, fastRefresh });
-
-        // auto detect development mode
-        if (
-          mode &&
-          commonOptions?.jsc?.transform?.react &&
-          !Object.prototype.hasOwnProperty.call(commonOptions.jsc.transform.react, 'development')
-        ) {
-          commonOptions.jsc.transform.react.development = mode === 'development';
-        }
-
-        Object.assign(programmaticOptions, { sourceMaps: !!sourceMap }, commonOptions);
-        needTransform = true;
+      // auto detect development mode
+      if (
+        mode &&
+        commonOptions?.jsc?.transform?.react &&
+        !Object.prototype.hasOwnProperty.call(commonOptions.jsc.transform.react, 'development')
+      ) {
+        commonOptions.jsc.transform.react.development = mode === 'development';
       }
 
+      Object.assign(programmaticOptions, { sourceMaps: !!sourceMap }, commonOptions);
+
+      const { removeExportExprs } = swcOptions;
       if (removeExportExprs && /(.*)pages(.*)\.(jsx?|tsx?|mjs)$/.test(id)) {
-        Object.assign(programmaticOptions, { removeExportExprs });
-        needTransform = true;
-      }
-
-      // Files other than page entries do not need to be transform in esbuild.
-      if (!needTransform) {
-        return false;
+        merge(programmaticOptions, {
+          jsc: {
+            experimental: {
+              plugins: [
+                [
+                  '/Users/shuilan/Documents/work/swc-plugins/packages/remove-export-plugin/target/wasm32-wasi/release/remove_export_plugin.wasm',
+                  removeExportExprs,
+                ],
+              ],
+            },
+          },
+        });
       }
 
       try {
-        const output = await transform(source, programmaticOptions);
+        const output = await swc.transform(source, programmaticOptions);
+
         const { code } = output;
         let { map } = output;
         // FIXME: swc transform should return the sourcemap which the type is object
@@ -92,6 +83,7 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
         return { code, map };
       } catch (e) {
         // catch error for Unhandled promise rejection
+        console.error(e);
       }
     },
   };
@@ -117,18 +109,12 @@ function getJsxTransformOptions({
       transform: {
         react: reactTransformConfig,
         legacyDecorator: true,
-        // @ts-expect-error fix me when @builder/swc fix type error
-        regenerator: {
-          importPath: regeneratorRuntimePath,
-        },
       },
       externalHelpers: false,
     },
     module: {
       type: 'es6',
       noInterop: false,
-      // webpack will evaluate dynamic import, so there need preserve it
-      ignoreDynamic: true,
     },
     env: {
       loose: true,
