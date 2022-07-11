@@ -10,7 +10,6 @@ const getTask = ({ rootDir, command }): Config => {
     },
     mode: command === 'start' ? 'development' : 'production',
     sourceMap: command === 'start' ? 'cheap-module-source-map' : false,
-    outputDir: path.join(rootDir, 'build'),
     cacheDir: path.join(rootDir, CACHE_DIR),
     alias: {
       ice: path.join(rootDir, '.ice', 'index.ts'),
@@ -19,7 +18,8 @@ const getTask = ({ rootDir, command }): Config => {
       'webpack/hot': '@ice/bundles/compiled/webpack/hot',
     },
     swcOptions: {
-      removeExportExprs: ['default', 'getConfig'],
+      jsxTransform: true,
+      removeExportExprs: ['default', 'getConfig', 'getServerData', 'getStaticData'],
     },
     splitChunks: false,
     // enable concatenateModules will tree shaking unused `react/react-dom` in dev mod.
@@ -28,7 +28,8 @@ const getTask = ({ rootDir, command }): Config => {
       hot: false,
       client: false,
     },
-    fastRefresh: command === 'start',
+    // always need reload when data loader is changed
+    fastRefresh: false,
   };
 };
 

@@ -8,7 +8,6 @@ const getWebTask = ({ rootDir, command }): Config => {
     mode: command === 'start' ? 'development' : 'production',
     sourceMap: command === 'start' ? 'cheap-module-source-map' : false,
     cacheDir: path.join(rootDir, CACHE_DIR),
-    outputDir: path.join(rootDir, 'build'),
     alias: {
       ice: path.join(rootDir, '.ice', 'index.ts'),
       '@': path.join(rootDir, 'src'),
@@ -16,8 +15,9 @@ const getWebTask = ({ rootDir, command }): Config => {
       'webpack/hot': '@ice/bundles/compiled/webpack/hot',
     },
     swcOptions: {
+      jsxTransform: true,
       // getData is built by data-loader
-      removeExportExprs: ['getData'],
+      removeExportExprs: ['getData', 'getServerData', 'getStaticData'],
     },
     assetsManifest: true,
     fastRefresh: command === 'start',

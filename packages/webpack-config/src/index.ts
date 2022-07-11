@@ -60,7 +60,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     define = {},
     externals = {},
     publicPath = '/',
-    outputDir = path.join(rootDir, 'build'),
+    outputDir,
     loaders = [],
     plugins = [],
     alias = {},
@@ -82,15 +82,16 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     assetsManifest,
     concatenateModules,
     devServer,
+    fastRefresh,
   } = config;
-
+  const absoluteOutputDir = path.isAbsolute(outputDir) ? outputDir : path.join(rootDir, outputDir);
   const dev = mode !== 'production';
   const supportedBrowsers = getSupportedBrowsers(rootDir, dev);
   const hashKey = hash === true ? 'hash:8' : (hash || '');
   // formate alias
   const aliasWithRoot = {};
   Object.keys(alias).forEach((key) => {
-    aliasWithRoot[key] = alias[key].startsWith('.') ? path.join(rootDir, alias[key]) : alias[key];
+    aliasWithRoot[key] = alias[key] && alias[key].startsWith('.') ? path.join(rootDir, alias[key]) : alias[key];
   });
 
   // auto stringify define value
@@ -145,7 +146,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     externals,
     output: {
       publicPath,
-      path: path.isAbsolute(outputDir) ? outputDir : path.join(rootDir, outputDir),
+      path: absoluteOutputDir,
       filename: `js/${hashKey ? `[name]-[${hashKey}].js` : '[name].js'}`,
       assetModuleFilename: 'assets/[name].[hash:8][ext]',
     },
@@ -216,7 +217,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     plugins: [
       ...plugins,
       ...compilerWebpackPlugins,
-      dev && new ReactRefreshWebpackPlugin({
+      dev && fastRefresh && new ReactRefreshWebpackPlugin({
         exclude: [/node_modules/, /bundles\/compiled/],
         // use webpack-dev-server overlay instead
         overlay: false,
@@ -237,7 +238,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       !dev && new CopyPlugin({
         patterns: [{
           from: path.join(rootDir, 'public'),
-          to: outputDir,
+          to: absoluteOutputDir,
           // ignore assets already in compilation.assets such as js and css files
           force: false,
           noErrorOnMissing: true,
