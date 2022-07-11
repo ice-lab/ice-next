@@ -1,8 +1,9 @@
 ---
-sidebar_label: Usage
+title: 基础用法
+sidebar_label: 基础
 ---
 
-本 Demo 演示一行文字的用法。
+本 DEMO 演示基础的用法。
 
 ```jsx preview
 import * as React from 'react';
