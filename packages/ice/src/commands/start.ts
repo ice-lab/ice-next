@@ -4,7 +4,7 @@ import type { Configuration } from 'webpack-dev-server';
 import type { Context, TaskConfig } from 'build-scripts';
 import lodash from '@ice/bundles/compiled/lodash/index.js';
 import type { Config } from '@ice/types';
-import type { ServerCompiler } from '@ice/types/esm/plugin.js';
+import type { ExtendsPluginAPI, ServerCompiler } from '@ice/types/esm/plugin.js';
 import type { AppConfig, RenderMode } from '@ice/runtime';
 import { getWebpackConfig } from '@ice/webpack-config';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
@@ -15,18 +15,16 @@ import createMockMiddleware from '../middlewares/mock/createMiddleware.js';
 import { ROUTER_MANIFEST, RUNTIME_TMP_DIR, SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
 import ServerCompilerPlugin from '../webpack/ServerCompilerPlugin.js';
 import { getAppConfig } from '../analyzeRuntime.js';
-import type ServerCompileTask from '../utils/ServerCompileTask.js';
 
 const { merge } = lodash;
 
 const start = async (
-  context: Context<Config>,
+  context: Context<Config, ExtendsPluginAPI>,
   taskConfigs: TaskConfig<Config>[],
   serverCompiler: ServerCompiler,
   appConfig: AppConfig,
-  serverCompileTask: ServerCompileTask,
 ) => {
-  const { applyHook, commandArgs, command, rootDir, userConfig } = context;
+  const { applyHook, commandArgs, command, rootDir, userConfig, extendsPluginAPI: { serverCompileTask } } = context;
   const { port, host, https = false } = commandArgs;
 
   const webpackConfigs = taskConfigs.map(({ config }) => getWebpackConfig({

@@ -165,7 +165,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   return {
     run: async () => {
       if (command === 'start') {
-        return await start(ctx, taskConfigs, serverCompiler, appConfig, serverCompileTask);
+        return await start(ctx, taskConfigs, serverCompiler, appConfig);
       } else if (command === 'build') {
         return await build(ctx, taskConfigs, serverCompiler);
       }

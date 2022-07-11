@@ -1,6 +1,5 @@
-import type { ServerCompiler } from '@ice/types/esm/plugin.js';
+import type { ExtendsPluginAPI, ServerCompiler } from '@ice/types/esm/plugin.js';
 import type { Compiler } from 'webpack';
-import type ServerCompileTask from '../utils/ServerCompileTask.js';
 
 const pluginName = 'ServerCompilerPlugin';
 
@@ -10,12 +9,12 @@ const pluginName = 'ServerCompilerPlugin';
 export default class ServerCompilerPlugin {
   private serverCompiler: ServerCompiler;
   private serverCompilerOptions: Parameters<ServerCompiler>;
-  private serverCompileTask: ServerCompileTask;
+  private serverCompileTask: ExtendsPluginAPI['serverCompileTask'];
 
   public constructor(
     serverCompiler: ServerCompiler,
     serverCompilerOptions: Parameters<ServerCompiler>,
-    serverCompileTask: ServerCompileTask,
+    serverCompileTask: ExtendsPluginAPI['serverCompileTask'],
   ) {
     this.serverCompiler = serverCompiler;
     this.serverCompilerOptions = serverCompilerOptions;

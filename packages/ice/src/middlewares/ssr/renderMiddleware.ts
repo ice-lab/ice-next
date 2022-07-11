@@ -5,12 +5,12 @@ import type { ServerContext, RenderMode } from '@ice/runtime';
 import consola from 'consola';
 // @ts-expect-error FIXME: esm type error
 import matchRoutes from '@ice/runtime/matchRoutes';
-import type ServerCompileTask from '../../utils/ServerCompileTask.js';
+import type { ExtendsPluginAPI } from '@ice/types/esm/plugin.js';
 
 const require = createRequire(import.meta.url);
 
 interface Options {
-  serverCompileTask: ServerCompileTask;
+  serverCompileTask: ExtendsPluginAPI['serverCompileTask'];
   routeManifestPath: string;
   documentOnly?: boolean;
   renderMode?: RenderMode;
