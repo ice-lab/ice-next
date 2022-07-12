@@ -1,3 +1,4 @@
+import { createRequire } from 'module';
 import swc from '@swc/core';
 import type { Options as SwcConfig, ReactConfig } from '@swc/core';
 import type { UnpluginOptions } from 'unplugin';
@@ -5,6 +6,7 @@ import lodash from '@ice/bundles/compiled/lodash/index.js';
 import type { Config } from '@ice/types';
 
 const { merge } = lodash;
+const require = createRequire(import.meta.url);
 
 type JSXSuffix = 'jsx' | 'tsx';
 
@@ -61,7 +63,7 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
             experimental: {
               plugins: [
                 [
-                  '@ice/swc-plugin-remove-export',
+                  require.resolve('@ice/swc-plugin-remove-export'),
                   removeExportExprs,
                 ],
               ],
