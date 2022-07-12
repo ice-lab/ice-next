@@ -61,7 +61,7 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
             experimental: {
               plugins: [
                 [
-                  '/Users/shuilan/Documents/work/swc-plugins/packages/remove-export-plugin/target/wasm32-wasi/release/remove_export_plugin.wasm',
+                  '@ice/swc-plugin-remove-export',
                   removeExportExprs,
                 ],
               ],
