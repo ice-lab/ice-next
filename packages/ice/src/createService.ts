@@ -21,7 +21,6 @@ import { generateRoutesInfo } from './routes.js';
 import getWebTask from './tasks/web/index.js';
 import getDataLoaderTask from './tasks/web/data-loader.js';
 import * as config from './config.js';
-import type { AppConfig } from './utils/runtimeEnv.js';
 import createSpinner from './utils/createSpinner.js';
 import { getPaths } from './utils/generateHTML.js';
 import { RUNTIME_TMP_DIR } from './constant.js';
