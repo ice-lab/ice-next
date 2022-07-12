@@ -35,7 +35,7 @@ interface CreateServiceOptions {
 }
 
 async function createService({ rootDir, command, commandArgs }: CreateServiceOptions) {
-  const buildSpinner = createSpinner('resolving plugins...');
+  const buildSpinner = createSpinner('loading config...');
   const templateDir = path.join(__dirname, '../templates/');
   const configFile = 'ice.config.(mts|mjs|ts|js|cjs|json)';
   const dataCache = new Map<string, string>();
