@@ -173,7 +173,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
             .sort((a, b) =>
               // Sort by length, shortest path first.
               a.split('/').filter(Boolean).length - b.split('/').filter(Boolean).length);
-          console.log(routePaths);
           return await start(ctx, {
             taskConfigs,
             serverCompiler,
