@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url';
 import { Context } from 'build-scripts';
 import consola from 'consola';
 import type { CommandArgs, CommandName } from 'build-scripts';
-import type { Config } from '@ice/types';
+import type { AppConfig, Config } from '@ice/types';
 import type { ExportData } from '@ice/types/esm/generator.js';
 import type { ExtendsPluginAPI } from '@ice/types/esm/plugin.js';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
@@ -14,7 +14,7 @@ import start from './commands/start.js';
 import build from './commands/build.js';
 import mergeTaskConfig from './utils/mergeTaskConfig.js';
 import getWatchEvents from './getWatchEvents.js';
-import { getAppConfig } from './analyzeRuntime.js';
+import { compileAppConfig } from './analyzeRuntime.js';
 import { initProcessEnv, updateRuntimeEnv, getCoreEnvKeys } from './utils/runtimeEnv.js';
 import getRuntimeModules from './utils/getRuntimeModules.js';
 import { generateRoutesInfo } from './routes.js';
@@ -24,6 +24,8 @@ import * as config from './config.js';
 import type { AppConfig } from './utils/runtimeEnv.js';
 import createSpinner from './utils/createSpinner.js';
 import { getPaths } from './utils/generateHTML.js';
+import { RUNTIME_TMP_DIR } from './constant.js';
+import ServerCompileTask from './utils/ServerCompileTask.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -35,13 +37,12 @@ interface CreateServiceOptions {
 
 async function createService({ rootDir, command, commandArgs }: CreateServiceOptions) {
   const buildSpinner = createSpinner('resolving plugins...');
-  const targetDir = '.ice';
   const templateDir = path.join(__dirname, '../templates/');
   const configFile = 'ice.config.(mts|mjs|ts|js|cjs|json)';
   const dataCache = new Map<string, string>();
   const generator = new Generator({
     rootDir,
-    targetDir,
+    targetDir: RUNTIME_TMP_DIR,
     // add default template of ice
     templates: [templateDir],
   });
@@ -62,6 +63,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     addRenderTemplate: generator.addTemplateFiles,
   };
 
+  const serverCompileTask = new ServerCompileTask();
   const ctx = new Context<Config, ExtendsPluginAPI>({
     rootDir,
     command,
@@ -77,6 +79,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
         // @ts-expect-error repack type can not match with original type
         webpack,
       },
+      serverCompileTask,
     },
   });
 
@@ -126,9 +129,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   // render template before webpack compile
   const renderStart = new Date().getTime();
   generator.render();
-  addWatchEvent(
-    ...getWatchEvents({ generator, targetDir, templateDir, cache: dataCache, ctx }),
-  );
   consola.debug('template render cost:', new Date().getTime() - renderStart);
 
   // create serverCompiler with task config
@@ -136,16 +136,29 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     rootDir,
     task: webTaskConfig,
     command,
-    serverBundle: server.bundle,
+    server,
   });
+
+  addWatchEvent(
+    ...getWatchEvents({
+      generator,
+      targetDir: RUNTIME_TMP_DIR,
+      templateDir,
+      cache: dataCache,
+      ctx,
+      serverCompiler,
+    }),
+  );
+
   let appConfig: AppConfig;
   try {
     // should after generator, otherwise it will compile error
-    appConfig = await getAppConfig({ serverCompiler, rootDir });
+    appConfig = await compileAppConfig({ serverCompiler, rootDir });
   } catch (err) {
     consola.warn('Failed to get app config:', err.message);
     consola.debug(err);
   }
+
 
   const disableRouter = userConfig.removeHistoryDeadCode && routesInfo.routesCount <= 1;
   if (disableRouter) {
