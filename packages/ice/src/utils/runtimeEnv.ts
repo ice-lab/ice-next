@@ -3,8 +3,8 @@ import * as fs from 'fs';
 import * as dotenv from 'dotenv';
 import { expand as dotenvExpand } from 'dotenv-expand';
 import type { CommandArgs, CommandName } from 'build-scripts';
+import type { AppConfig } from '@ice/types';
 
-export type AppConfig = Record<string, any>;
 export interface Envs {
   [key: string]: string;
 }
@@ -41,10 +41,10 @@ export async function initProcessEnv(
   process.env.ICE_CORE_MODE = mode;
   process.env.ICE_CORE_DEV_PORT = commandArgs.port;
 
-  if (command === 'start') {
-    process.env.NODE_ENV = 'development';
-  } else if (command === 'test') {
+  if (process.env.TEST || command === 'test') {
     process.env.NODE_ENV = 'test';
+  } else if (command === 'start') {
+    process.env.NODE_ENV = 'development';
   } else {
     // build
     process.env.NODE_ENV = 'production';
@@ -62,9 +62,6 @@ export async function initProcessEnv(
 
 export const updateRuntimeEnv = (appConfig: AppConfig, options: EnvOptions) => {
   const { disableRouter } = options;
-  if (!appConfig?.app?.getInitialData) {
-    process.env['ICE_CORE_INITIAL_DATA'] = 'false';
-  }
   if (!appConfig?.app?.errorBoundary) {
     process.env['ICE_CORE_ERROR_BOUNDARY'] = 'false';
   }

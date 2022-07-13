@@ -9,9 +9,15 @@ import type { ExportData, AddRenderFile, AddTemplateFiles } from './generator.js
 
 type AddExport = (exportData: ExportData) => void;
 type EventName = 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir';
+
+type ServerCompilerBuildOptions = Pick<BuildOptions, 'minify' | 'inject' | 'format' | 'entryPoints' | 'outfile' | 'bundle' | 'outdir' | 'splitting' | 'platform' | 'outExtension' | 'plugins'>;
 export type ServerCompiler = (
-  buildOptions: Pick<BuildOptions, 'format' | 'entryPoints' | 'outfile' | 'bundle' | 'outdir' | 'splitting' | 'platform' | 'outExtension' | 'plugins'>
-) => Promise<BuildResult>;
+  buildOptions: ServerCompilerBuildOptions,
+  options?: {
+    swc?: Config['swcOptions'];
+    preBundle?: boolean;
+  }
+) => Promise<BuildResult & { serverEntry: string }>;
 export type WatchEvent = [
   pattern: RegExp | string,
   event: (eventName: EventName, filePath: string) => void,
@@ -29,6 +35,7 @@ interface BeforeCommandRunOptions {
   commandArgs: CommandArgs;
   webpackConfigs: Configuration | Configuration[];
   taskConfigs: TaskConfig<Config>[];
+  urls?: Urls;
   serverCompiler: ServerCompiler;
 }
 
@@ -46,7 +53,7 @@ export interface HookLifecycle {
   'before.start.run': BeforeCommandRunOptions;
   'before.build.run': BeforeCommandRunOptions;
   'after.start.compile': AfterCommandCompileOptions;
-  'after.build.compile': AfterCommandCompileOptions;
+  'after.build.compile': AfterCommandCompileOptions & { serverEntry: string };
   'after.start.devServer': {
     urls: Urls;
     devServer: WebpackDevServer;
@@ -72,9 +79,13 @@ export interface ExtendsPluginAPI {
     addEvent?: (watchEvent: WatchEvent) => void;
     removeEvent?: (name: string) => void;
   };
+  serverCompileTask: {
+    set: (task: ReturnType<ServerCompiler>) => void;
+    get: () => ReturnType<ServerCompiler>;
+  };
 }
 
-interface OverwritePluginAPI extends ExtendsPluginAPI {
+export interface OverwritePluginAPI extends ExtendsPluginAPI {
   onHook: OnHook;
 }
 
