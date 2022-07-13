@@ -544,6 +544,7 @@ importers:
       '@ice/pkg': ^1.0.0-rc.0
       '@ice/pkg-plugin-docusaurus': ^1.0.0-rc.0
       '@iceworks/spec': ^1.0.0
+      '@swc/helpers': ^0.4.3
       '@types/rax': ^1.0.8
       '@types/react': ^18.0.0
       '@types/react-dom': ^18.0.0
@@ -554,6 +555,7 @@ importers:
       style-unit: ^3.0.4
       stylelint: ^13.7.2
     dependencies:
+      '@swc/helpers': registry.npmjs.org/@swc/helpers/0.4.3
       create-react-class: 15.7.0
       style-unit: 3.0.4
     devDependencies:
@@ -18083,6 +18085,14 @@ packages:
     requiresBuild: true
     optional: true
 
+  registry.npmjs.org/@swc/helpers/0.4.3:
+    resolution: {integrity: sha512-6JrF+fdUK2zbGpJIlN7G3v966PQjyx/dPt1T9km2wj+EUBqgrxCk3uX4Kct16MIm9gGxfKRcfax2hVf5jvlTzA==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@swc/helpers/-/helpers-0.4.3.tgz}
+    name: '@swc/helpers'
+    version: 0.4.3
+    dependencies:
+      tslib: registry.npmjs.org/tslib/2.4.0
+    dev: false
+
   registry.npmjs.org/@types/prop-types/15.7.5:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@types/prop-types/-/prop-types-15.7.5.tgz}
     name: '@types/prop-types'
@@ -18425,6 +18435,12 @@ packages:
     name: source-map
     version: 0.6.1
     engines: {node: '>=0.10.0'}
+
+  registry.npmjs.org/tslib/2.4.0:
+    resolution: {integrity: sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/tslib/-/tslib-2.4.0.tgz}
+    name: tslib
+    version: 2.4.0
+    dev: false
 
   registry.npmjs.org/uglify-js/3.15.5:
     resolution: {integrity: sha512-hNM5q5GbBRB5xB+PMqVRcgYe4c8jbyZ1pzZhS6jbq54/4F2gFK869ZheiE5A8/t+W5jtTNpWef/5Q9zk639FNQ==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/uglify-js/-/uglify-js-3.15.5.tgz}
