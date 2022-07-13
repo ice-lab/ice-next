@@ -96,8 +96,6 @@ const build = async (
           renderMode = 'SSG';
         }
 
-        const { basename } = taskConfigs.find(({ name }) => name === 'web').config;
-
         // generate html
         await generateHTML({
           rootDir,
@@ -105,7 +103,6 @@ const build = async (
           entry: serverEntry,
           documentOnly,
           renderMode,
-          basename: appConfig?.router?.basename || basename,
         });
         resolve({
           stats,

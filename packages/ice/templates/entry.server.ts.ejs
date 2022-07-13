@@ -27,7 +27,7 @@ interface RenderOptions {
 }
 
 export async function renderToHTML(requestContext, options: RenderOptions = {}) {
-  const { documentOnly, renderMode = 'SSR', basename } = options;
+  const { documentOnly, renderMode = 'SSR', basename, serverOnlyBasename } = options;
   setRuntimeEnv(renderMode);
 
   return await runtime.renderToHTML(requestContext, {
@@ -36,6 +36,7 @@ export async function renderToHTML(requestContext, options: RenderOptions = {}) 
     routes,
     runtimeModules,
     Document,
+    serverOnlyBasename,
     basename: basename || getRouterBasename(),
     documentOnly,
     renderMode,
@@ -43,7 +44,7 @@ export async function renderToHTML(requestContext, options: RenderOptions = {}) 
 }
 
 export async function renderToResponse(requestContext, options: RenderOptions = {}) {
-  const { documentOnly, renderMode = 'SSR', basename } = options;
+  const { documentOnly, renderMode = 'SSR', basename, serverOnlyBasename } = options;
   setRuntimeEnv(options);
 
   runtime.renderToResponse(requestContext, {
@@ -52,6 +53,7 @@ export async function renderToResponse(requestContext, options: RenderOptions = 
     routes,
     runtimeModules,
     Document,
+    serverOnlyBasename,
     basename: basename || getRouterBasename(),
     documentOnly,
     renderMode,
