@@ -22,7 +22,7 @@ import getWebTask from './tasks/web/index.js';
 import getDataLoaderTask from './tasks/web/data-loader.js';
 import * as config from './config.js';
 import createSpinner from './utils/createSpinner.js';
-import { getPaths } from './utils/generateHTML.js';
+import getRoutePaths from './utils/getRoutePaths.js';
 import { RUNTIME_TMP_DIR } from './constant.js';
 import ServerCompileTask from './utils/ServerCompileTask.js';
 
@@ -169,7 +169,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     run: async () => {
       try {
         if (command === 'start') {
-          const routePaths = getPaths(routesInfo.routes)
+          const routePaths = getRoutePaths(routesInfo.routes)
             .sort((a, b) =>
               // Sort by length, shortest path first.
               a.split('/').filter(Boolean).length - b.split('/').filter(Boolean).length);
