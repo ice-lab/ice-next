@@ -31,11 +31,12 @@ interface GetWebpackConfigOptions {
   rootDir: string;
   config: Config;
   webpack: typeof webpack;
+  runtimeTmpDir: string;
 }
 export type WebpackConfig = Configuration & { devServer?: DevServerConfiguration };
 type GetWebpackConfig = (options: GetWebpackConfigOptions) => WebpackConfig;
 
-function getEntry(rootDir: string) {
+function getEntry(rootDir: string, runtimeTmpDir: string) {
   // check entry.client.ts
   let entryFile = fg.sync('entry.client.{tsx,ts,jsx.js}', {
     cwd: path.join(rootDir, 'src'),
@@ -43,7 +44,7 @@ function getEntry(rootDir: string) {
   })[0];
   if (!entryFile) {
     // use generated file in template directory
-    entryFile = path.join(rootDir, '.ice/entry.client.ts');
+    entryFile = path.join(rootDir, runtimeTmpDir, 'entry.client.ts');
   }
 
   // const dataLoaderFile = path.join(rootDir, '.ice/data-loader.ts');
@@ -54,13 +55,13 @@ function getEntry(rootDir: string) {
   };
 }
 
-const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
+const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeTmpDir }) => {
   const {
     mode,
     define = {},
     externals = {},
     publicPath = '/',
-    outputDir = path.join(rootDir, 'build'),
+    outputDir,
     loaders = [],
     plugins = [],
     alias = {},
@@ -82,15 +83,16 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     assetsManifest,
     concatenateModules,
     devServer,
+    fastRefresh,
   } = config;
-
+  const absoluteOutputDir = path.isAbsolute(outputDir) ? outputDir : path.join(rootDir, outputDir);
   const dev = mode !== 'production';
   const supportedBrowsers = getSupportedBrowsers(rootDir, dev);
   const hashKey = hash === true ? 'hash:8' : (hash || '');
   // formate alias
   const aliasWithRoot = {};
   Object.keys(alias).forEach((key) => {
-    aliasWithRoot[key] = alias[key].startsWith('.') ? path.join(rootDir, alias[key]) : alias[key];
+    aliasWithRoot[key] = alias[key] && alias[key].startsWith('.') ? path.join(rootDir, alias[key]) : alias[key];
   });
 
   // auto stringify define value
@@ -141,11 +143,11 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       topLevelAwait: true,
       ...(experimental || {}),
     },
-    entry: entry || (() => getEntry(rootDir)),
+    entry: entry || (() => getEntry(rootDir, runtimeTmpDir)),
     externals,
     output: {
       publicPath,
-      path: path.isAbsolute(outputDir) ? outputDir : path.join(rootDir, outputDir),
+      path: absoluteOutputDir,
       filename: `js/${hashKey ? `[name]-[${hashKey}].js` : '[name].js'}`,
       assetModuleFilename: 'assets/[name].[hash:8][ext]',
     },
@@ -216,7 +218,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     plugins: [
       ...plugins,
       ...compilerWebpackPlugins,
-      dev && new ReactRefreshWebpackPlugin({
+      dev && fastRefresh && new ReactRefreshWebpackPlugin({
         exclude: [/node_modules/, /bundles\/compiled/],
         // use webpack-dev-server overlay instead
         overlay: false,
@@ -227,7 +229,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       }),
       assetsManifest && new AssetsManifestPlugin({
         fileName: 'assets-manifest.json',
-        outputDir: path.join(rootDir, '.ice'),
+        outputDir: path.join(rootDir, runtimeTmpDir),
       }),
       analyzer && new BundleAnalyzerPlugin(),
       tsCheckerOptions && new ForkTsCheckerPlugin(tsCheckerOptions),
@@ -237,7 +239,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       !dev && new CopyPlugin({
         patterns: [{
           from: path.join(rootDir, 'public'),
-          to: outputDir,
+          to: absoluteOutputDir,
           // ignore assets already in compilation.assets such as js and css files
           force: false,
           noErrorOnMissing: true,
