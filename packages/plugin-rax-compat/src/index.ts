@@ -33,6 +33,21 @@ let warnOnce = false;
 function getPlugin(options: CompatRaxOptions): Plugin {
   return ({ onGetConfig }) => {
     onGetConfig((config) => {
+      // Reset jsc.transform.react.runtime to classic.
+      config.swcOptions = {
+        ...config.swcOptions,
+        compilationConfig: {
+          jsc: {
+            transform: {
+              react: {
+                runtime: 'classic',
+                pragma: 'createElement',
+                pragmaFrag: 'Fragment',
+              },
+            },
+          },
+        },
+      };
       Object.assign(config.alias, alias);
       if (options.inlineStyle) {
         if (!warnOnce) {

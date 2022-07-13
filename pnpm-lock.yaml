@@ -88,11 +88,6 @@ importers:
       '@types/react-dom': ^18.0.2
       ahooks: ^3.3.8
       browserslist: ^4.19.3
-      rax: ^1.2.2
-      rax-image: ^2.4.1
-      rax-is-valid-element: ^1.0.0
-      rax-text: ^2.2.0
-      rax-view: ^2.3.0
       react: ^18.0.0
       react-dom: ^18.0.0
       regenerator-runtime: ^0.13.9
@@ -104,11 +99,6 @@ importers:
       '@ice/plugin-rax-compat': link:../../packages/plugin-rax-compat
       '@ice/runtime': link:../../packages/runtime
       ahooks: 3.4.0_react@18.0.0
-      rax: 1.2.2
-      rax-image: 2.4.1_rax@1.2.2
-      rax-is-valid-element: 1.0.0
-      rax-text: 2.2.0_rax@1.2.2
-      rax-view: 2.3.0_rax@1.2.2
       react: 18.0.0
       react-dom: 18.0.0_react@18.0.0
     devDependencies:
@@ -146,6 +136,41 @@ importers:
       browserslist: 4.20.3
       regenerator-runtime: 0.13.9
       speed-measure-webpack-plugin: 1.5.0_webpack@5.73.0
+      webpack: 5.73.0
+
+  examples/rax-project:
+    specifiers:
+      '@ice/app': workspace:*
+      '@ice/plugin-rax-compat': workspace:*
+      '@ice/runtime': workspace:*
+      '@types/react': ^18.0.0
+      '@types/react-dom': ^18.0.2
+      browserslist: ^4.19.3
+      rax: ^1.2.2
+      rax-image: ^2.4.1
+      rax-is-valid-element: ^1.0.0
+      rax-text: ^2.2.0
+      rax-view: ^2.3.0
+      react: ^18.0.0
+      react-dom: ^18.0.0
+      regenerator-runtime: ^0.13.9
+      webpack: ^5.73.0
+    dependencies:
+      '@ice/app': link:../../packages/ice
+      '@ice/plugin-rax-compat': link:../../packages/plugin-rax-compat
+      '@ice/runtime': link:../../packages/runtime
+      rax: 1.2.2
+      rax-image: 2.4.1_rax@1.2.2
+      rax-is-valid-element: 1.0.0
+      rax-text: 2.2.0_rax@1.2.2
+      rax-view: 2.3.0_rax@1.2.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    devDependencies:
+      '@types/react': 18.0.8
+      '@types/react-dom': 18.0.3
+      browserslist: 4.20.3
+      regenerator-runtime: 0.13.9
       webpack: 5.73.0
 
   examples/routes-generate:
@@ -572,6 +597,7 @@ importers:
 
   packages/types:
     specifiers:
+      '@builder/swc': ^0.2.0
       '@ice/route-manifest': ^1.0.0
       '@ice/runtime': ^1.0.0
       build-scripts: ^2.0.0-23
@@ -586,6 +612,7 @@ importers:
       webpack: ^5.73.0
       webpack-dev-server: ^4.7.4
     devDependencies:
+      '@builder/swc': 0.2.0
       '@ice/route-manifest': link:../route-manifest
       '@ice/runtime': link:../runtime
       build-scripts: 2.0.0-23
@@ -2530,7 +2557,6 @@ packages:
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@builder/swc-darwin-x64/0.2.0:
@@ -2539,7 +2565,6 @@ packages:
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@builder/swc-linux-arm64-gnu/0.2.0:
@@ -2548,7 +2573,6 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@builder/swc-linux-arm64-musl/0.2.0:
@@ -2557,7 +2581,6 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@builder/swc-linux-x64-gnu/0.2.0:
@@ -2566,7 +2589,6 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@builder/swc-linux-x64-musl/0.2.0:
@@ -2575,7 +2597,6 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@builder/swc-win32-arm64-msvc/0.2.0:
@@ -2584,7 +2605,6 @@ packages:
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@builder/swc-win32-ia32-msvc/0.2.0:
@@ -2593,7 +2613,6 @@ packages:
     cpu: [ia32]
     os: [win32]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@builder/swc-win32-x64-msvc/0.2.0:
@@ -2602,7 +2621,6 @@ packages:
     cpu: [x64]
     os: [win32]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@builder/swc/0.2.0:
@@ -2620,7 +2638,6 @@ packages:
       '@builder/swc-win32-arm64-msvc': 0.2.0
       '@builder/swc-win32-ia32-msvc': 0.2.0
       '@builder/swc-win32-x64-msvc': 0.2.0
-    dev: false
 
   /@colors/colors/1.5.0:
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
@@ -4705,7 +4722,6 @@ packages:
 
   /@napi-rs/triples/1.1.0:
     resolution: {integrity: sha512-XQr74QaLeMiqhStEhLn1im9EOMnkypp7MZOwQhGzqp2Weu5eQJbpPxWxixxlYRKWPOmJjsk6qYfYH9kq43yc2w==}
-    dev: false
 
   /@node-rs/jieba-android-arm-eabi/1.6.1:
     resolution: {integrity: sha512-R1YQfsPr7sK3Tq1sM0//6lNAGJK9RnMT0ShITT+7EJYr5OufUBb38lf/mRhrLxR0NF1pycEsMjdCAwrWrHd8rA==}
