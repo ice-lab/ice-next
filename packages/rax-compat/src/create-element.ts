@@ -5,7 +5,7 @@ import type {
   ReactNode,
   RefObject,
 } from 'react';
-import { createElement as _createElement, useEffect, useRef, forwardRef } from 'react';
+import { createElement as _createElement, useEffect, useCallback, useRef } from 'react';
 import { cached, convertUnit } from 'style-unit';
 import { observerElement } from './visibility';
 import { isFunction, isObject, isNumber } from './type';
@@ -44,8 +44,11 @@ export function createElement<P extends {
   type: FunctionComponent<P> | string,
   props?: Attributes & P | null,
   ...children: ReactNode[]): ReactElement {
+  // Get a shallow copy of props, to avoid mutating the original object.
   const rest = Object.assign({}, props);
   const { onAppear, onDisappear } = rest;
+
+  // Delete props that are not allowed in react.
   delete rest.onAppear;
   delete rest.onDisappear;
 
@@ -55,16 +58,17 @@ export function createElement<P extends {
     rest.style = compatStyleProps;
   }
 
-  // const el = _createElement(type, rest, ...children);
+  // Compat for visibility events.
   if (isFunction(onAppear) || isFunction(onDisappear)) {
-    type UpdateRef = (props: Attributes | P) => any;
     return _createElement(
-      forwardRef(VisibilityChange),
+      VisibilityChange,
       {
         onAppear,
         onDisappear,
-        ref: rest.ref,
-        children: (updateRef: UpdateRef) => _createElement(type, updateRef(rest), ...children),
+        // Passing child ref to `VisibilityChange` to avoid creating a new ref.
+        childRef: rest.ref,
+        // Using forwardedRef as a prop to the backend react element.
+        forwardRef: (ref: RefObject<any>) => _createElement(type, Object.assign({ ref }, rest), ...children),
       },
     );
   } else {
@@ -75,49 +79,32 @@ export function createElement<P extends {
 function VisibilityChange({
   onAppear,
   onDisappear,
-  children,
-}: any, forwardedRef: RefObject<any>) {
-  const fallbackRef = useRef(null); // `fallbackRef` used if `ref` is not provided.
-  const ref = forwardedRef || fallbackRef;
+  childRef,
+  forwardRef,
+}: any) {
+  const fallbackRef = useRef(null); // `fallbackRef` used if `childRef` is not provided.
+  const ref = childRef || fallbackRef;
 
-  useEffect(() => {
+  const listen = useCallback((eventName: string, handler: Function) => {
     const { current } = ref;
     if (current != null) {
-      if (isFunction(onAppear)) {
+      if (isFunction(handler)) {
         observerElement(current as HTMLElement);
-        current.addEventListener('appear', onAppear);
-      }
-    }
-
-    return () => {
-      const { current } = ref;
-      if (current) {
-        current.removeEventListener('appear', onAppear);
-      }
-    };
-  }, [ref, onAppear]);
-
-  useEffect(() => {
-    const { current } = ref;
-    if (current != null) {
-      if (isFunction(onDisappear)) {
-        observerElement(current as HTMLElement);
-        current.addEventListener('disappear', onDisappear);
+        current.addEventListener(eventName, handler);
       }
     }
     return () => {
       const { current } = ref;
       if (current) {
-        current.removeEventListener('disappear', onDisappear);
+        current.removeEventListener(eventName, handler);
       }
     };
-  }, [ref, onDisappear]);
+  }, [ref]);
 
-  function updateRef(props: Attributes | any) {
-    props.ref = ref;
-    return props;
-  }
-  return children(updateRef);
+  useEffect(() => listen('appear', onAppear), [ref, onAppear, listen]);
+  useEffect(() => listen('disappear', onDisappear), [ref, onDisappear, listen]);
+
+  return forwardRef(ref);
 }
 
 const isDimensionalProp = cached((prop: string) => !NON_DIMENSIONAL_REG.test(prop));
