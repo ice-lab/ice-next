@@ -16,7 +16,7 @@ describe(`build ${example}`, () => {
 
     page = res.page;
     browser = res.browser;
-    expect((await page.$$text('span')[0])).toStrictEqual(['Welcome to Your Rax App']);
+    expect((await page.$$text('span'))[0]).toStrictEqual('Welcome to Your Rax App');
   }, 120000);
 
   afterAll(async () => {
@@ -33,7 +33,7 @@ describe(`start ${example}`, () => {
     const res = await setupStartBrowser({ server: devServer, port });
     page = res.page;
     browser = res.browser;
-    expect((await page.$$text('span')[0])).toStrictEqual(['Welcome to Your Rax App']);
+    expect((await page.$$text('span'))[0]).toStrictEqual('Welcome to Your Rax App');
   }, 120000);
 
   afterAll(async () => {
