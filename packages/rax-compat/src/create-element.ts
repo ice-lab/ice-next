@@ -5,18 +5,10 @@ import type {
   ReactNode,
   RefObject,
 } from 'react';
-import { createElement as _createElement, useEffect, forwardRef, useRef } from 'react';
-import { setupAppear } from 'appear-polyfill';
+import { createElement as _createElement, useEffect, useRef } from 'react';
 import { cached, convertUnit } from 'style-unit';
+import { observerElement } from './visibility';
 import { isFunction, isObject, isNumber } from './type';
-
-let appearSetup = false;
-function setupAppearOnce() {
-  if (!appearSetup) {
-    setupAppear();
-    appearSetup = true;
-  }
-}
 
 // https://github.com/alibaba/rax/blob/master/packages/driver-dom/src/index.js
 // opacity -> opa
@@ -65,23 +57,27 @@ export function createElement<P extends {
 
   // Create backend element.
   const args = [type, rest];
-  let element: any;
 
   // Polyfill for appear and disappear event.
-  if (isFunction(onAppear) || isFunction(onDisappear)) {
-    // eslint-disable-next-line no-multi-assign
-    const ref = rest.ref = rest.ref || useRef();
-    setupAppearOnce();
-    element = _createElement(forwardRef(AppearOrDisappear), {
-      onAppear: onAppear,
-      onDisappear: onDisappear,
-      ref: ref,
-    }, _createElement.apply(null, args.concat(children as any)));
-  } else {
-    element = _createElement.apply(null, args.concat(children as any));
+  if (isFunction(onAppear)) listen('appear', onAppear, rest.ref = rest.ref || useRef());
+  if (isFunction(onDisappear)) listen('disappear', onDisappear, rest.ref = rest.ref || useRef());
+
+  function listen(eventName: string, handler: Function, ref: RefObject<any>) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => {
+      const { current } = ref;
+      if (current != null) {
+        observerElement(current as HTMLElement);
+        current.addEventListener(eventName, handler);
+      }
+      return () => {
+        const { current } = ref;
+        if (current) current.removeEventListener(eventName, handler);
+      };
+    }, [ref, handler]);
   }
 
-  return element;
+  return _createElement.apply(null, args.concat(children as any));
 }
 
 const isDimensionalProp = cached((prop: string) => !NON_DIMENSIONAL_REG.test(prop));
@@ -104,32 +100,4 @@ function compatStyle<S = object>(style?: S): S | void {
     return result;
   }
   return style;
-}
-
-// Appear HOC Component.
-function AppearOrDisappear(props: any, ref: RefObject<EventTarget>) {
-  const { onAppear, onDisappear } = props;
-
-  listen('appear', onAppear);
-  listen('disappear', onDisappear);
-
-  function listen(eventName: string, handler: EventListenerOrEventListenerObject) {
-    if (isFunction(handler) && ref) {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      useEffect(() => {
-        const { current } = ref;
-        if (current != null) {
-          current.addEventListener(eventName, handler);
-        }
-        return () => {
-          const { current } = ref;
-          if (current) {
-            current.removeEventListener(eventName, handler);
-          }
-        };
-      }, [ref, handler]);
-    }
-  }
-
-  return props.children;
 }
