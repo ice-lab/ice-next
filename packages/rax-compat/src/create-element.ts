@@ -5,7 +5,7 @@ import type {
   ReactNode,
   RefObject,
 } from 'react';
-import { createElement as _createElement, useEffect, useRef } from 'react';
+import { createElement as _createElement, useEffect, useRef, forwardRef } from 'react';
 import { cached, convertUnit } from 'style-unit';
 import { observerElement } from './visibility';
 import { isFunction, isObject, isNumber } from './type';
@@ -55,29 +55,69 @@ export function createElement<P extends {
     rest.style = compatStyleProps;
   }
 
-  // Create backend element.
-  const args = [type, rest];
-
-  // Polyfill for appear and disappear event.
-  if (isFunction(onAppear)) listen('appear', onAppear, rest.ref = rest.ref || useRef());
-  if (isFunction(onDisappear)) listen('disappear', onDisappear, rest.ref = rest.ref || useRef());
-
-  function listen(eventName: string, handler: Function, ref: RefObject<any>) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useEffect(() => {
-      const { current } = ref;
-      if (current != null) {
-        observerElement(current as HTMLElement);
-        current.addEventListener(eventName, handler);
-      }
-      return () => {
-        const { current } = ref;
-        if (current) current.removeEventListener(eventName, handler);
-      };
-    }, [ref, handler]);
+  // const el = _createElement(type, rest, ...children);
+  if (isFunction(onAppear) || isFunction(onDisappear)) {
+    type UpdateRef = (props: Attributes | P) => any;
+    return _createElement(
+      forwardRef(VisibilityChange),
+      {
+        onAppear,
+        onDisappear,
+        ref: rest.ref,
+        children: (updateRef: UpdateRef) => _createElement(type, updateRef(rest), ...children),
+      },
+    );
+  } else {
+    return _createElement(type, rest, ...children);
   }
+}
 
-  return _createElement.apply(null, args.concat(children as any));
+function VisibilityChange({
+  onAppear,
+  onDisappear,
+  children,
+}: any, forwardedRef: RefObject<any>) {
+  const fallbackRef = useRef(null); // `fallbackRef` used if `ref` is not provided.
+  const ref = forwardedRef || fallbackRef;
+
+  useEffect(() => {
+    const { current } = ref;
+    if (current != null) {
+      if (isFunction(onAppear)) {
+        observerElement(current as HTMLElement);
+        current.addEventListener('appear', onAppear);
+      }
+    }
+
+    return () => {
+      const { current } = ref;
+      if (current) {
+        current.removeEventListener('appear', onAppear);
+      }
+    };
+  }, [ref, onAppear]);
+
+  useEffect(() => {
+    const { current } = ref;
+    if (current != null) {
+      if (isFunction(onDisappear)) {
+        observerElement(current as HTMLElement);
+        current.addEventListener('disappear', onDisappear);
+      }
+    }
+    return () => {
+      const { current } = ref;
+      if (current) {
+        current.removeEventListener('disappear', onDisappear);
+      }
+    };
+  }, [ref, onDisappear]);
+
+  function updateRef(props: Attributes | any) {
+    props.ref = ref;
+    return props;
+  }
+  return children(updateRef);
 }
 
 const isDimensionalProp = cached((prop: string) => !NON_DIMENSIONAL_REG.test(prop));
