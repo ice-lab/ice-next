@@ -32,21 +32,22 @@ export default async function runClientApp(options: RunClientAppOptions) {
     routes,
     runtimeModules,
     Document,
-    basename,
+    basename: defaultBasename,
     hydrate,
     enableReadPagePathFromAppContext,
   } = options;
   const appContextFromServer: AppContext = (window as any).__ICE_APP_CONTEXT__ || {};
-  let { routesData, routesConfig, assetsManifest, pagePath } = appContextFromServer;
+  let { routesData, routesConfig, assetsManifest, basename: basenameFromServer, routePath } = appContextFromServer;
 
   const requestContext = getRequestContext(window.location);
 
   const appConfig = getAppConfig(app);
 
+  const basename = basenameFromServer || defaultBasename;
   const matches = matchRoutes(
     routes,
     // The param `enableReadPagePathFromAppContext` is enable in memory router type.
-    enableReadPagePathFromAppContext ? pagePath : window.location,
+    enableReadPagePathFromAppContext ? routePath : window.location,
     basename,
   );
   const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
@@ -68,7 +69,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
     matches,
     routeModules,
     basename,
-    pagePath,
+    routePath,
   };
 
   const runtime = new Runtime(appContext);
@@ -81,11 +82,11 @@ export default async function runClientApp(options: RunClientAppOptions) {
 
   await Promise.all(runtimeModules.map(m => runtime.loadModule(m)).filter(Boolean));
 
-  render(runtime, Document, { enableReadPagePathFromAppContext, pagePath });
+  render(runtime, Document, { enableReadPagePathFromAppContext, routePath });
 }
 
 interface RenderOptions {
-  pagePath: string;
+  routePath: string;
   enableReadPagePathFromAppContext?: boolean;
 }
 
@@ -94,7 +95,7 @@ async function render(
   Document: DocumentComponent,
   options: RenderOptions,
 ) {
-  const { pagePath, enableReadPagePathFromAppContext } = options;
+  const { routePath, enableReadPagePathFromAppContext } = options;
   const appContext = runtime.getAppContext();
   const render = runtime.getRender();
   const AppProvider = runtime.composeAppProvider() || React.Fragment;
@@ -109,7 +110,7 @@ async function render(
   };
   if (appContext.appConfig?.router?.type === 'memory') {
     (createHistoryOptions as Parameters<typeof createMemoryHistory>[0]).initialEntries = [
-      enableReadPagePathFromAppContext ? pagePath : window.location.pathname,
+      enableReadPagePathFromAppContext ? routePath : window.location.pathname,
     ];
   }
   const history = createHistory(createHistoryOptions);
