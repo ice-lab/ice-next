@@ -10,10 +10,11 @@ import type {
   AppContext, AppExport, RouteItem, AppRouterProps, RoutesData, RoutesConfig,
   RouteWrapperConfig, RuntimeModules, RouteMatch, ComponentWithChildren, RouteModules,
 } from './types.js';
-import { loadRouteModules, loadRoutesData, getRoutesConfig, matchRoutes, filterMatchesToLoad } from './routes.js';
+import { loadRouteModules, loadRoutesData, getRoutesConfig, filterMatchesToLoad } from './routes.js';
 import { updateRoutesConfig } from './routesConfig.js';
 import getRequestContext from './requestContext.js';
 import getAppConfig from './appConfig.js';
+import matchRoutes from './matchRoutes.js';
 
 interface RunClientAppOptions {
   app: AppExport;
@@ -21,6 +22,7 @@ interface RunClientAppOptions {
   runtimeModules: RuntimeModules;
   Document: ComponentWithChildren<{}>;
   basename?: string;
+  hydrate: boolean;
 }
 
 export default async function runClientApp(options: RunClientAppOptions) {
@@ -29,16 +31,19 @@ export default async function runClientApp(options: RunClientAppOptions) {
     routes,
     runtimeModules,
     Document,
-    basename,
+    basename: defaultBasename,
+    hydrate,
   } = options;
   const appContextFromServer: AppContext = (window as any).__ICE_APP_CONTEXT__ || {};
-  let { routesData, routesConfig, assetsManifest } = appContextFromServer;
+  let { routesData, routesConfig, assetsManifest, basename: basenameFromServer } = appContextFromServer;
 
   const requestContext = getRequestContext(window.location);
 
   const appConfig = getAppConfig(app);
 
-  const matches = matchRoutes(routes, window.location, basename || appConfig?.router?.basename);
+  const basename = basenameFromServer || defaultBasename;
+
+  const matches = matchRoutes(routes, window.location, basename);
   const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   if (!routesData) {
@@ -61,7 +66,8 @@ export default async function runClientApp(options: RunClientAppOptions) {
   };
 
   const runtime = new Runtime(appContext);
-  if (process.env.ICE_CORE_SSR === 'true' || process.env.ICE_CORE_SSG === 'true') {
+
+  if (hydrate) {
     runtime.setRender((container, element) => {
       ReactDOM.hydrateRoot(container, element);
     });
@@ -129,7 +135,6 @@ function BrowserEntry({
     matches: originMatches,
     routesData: initialRoutesData,
     routesConfig: initialRoutesConfig,
-    appConfig,
     routeModules: initialRouteModules,
     basename,
   } = appContext;
@@ -152,7 +157,7 @@ function BrowserEntry({
   useLayoutEffect(() => {
     if (history) {
       history.listen(({ action, location }) => {
-        const currentMatches = matchRoutes(routes, location, basename || appConfig?.router?.basename);
+        const currentMatches = matchRoutes(routes, location, basename);
         if (!currentMatches.length) {
           throw new Error(`Routes not found in location ${location.pathname}.`);
         }

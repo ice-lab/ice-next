@@ -4,7 +4,7 @@ import { createHash } from 'crypto';
 import * as fs from 'fs';
 import consola from 'consola';
 import esbuild from 'esbuild';
-import type { Config } from '@ice/types';
+import type { Config, UserConfig } from '@ice/types';
 import type { ServerCompiler } from '@ice/types/esm/plugin.js';
 import type { TaskConfig } from 'build-scripts';
 import { getCompilerPlugins } from '@ice/webpack-config';
@@ -12,7 +12,7 @@ import escapeLocalIdent from '../utils/escapeLocalIdent.js';
 import cssModulesPlugin from '../esbuild/cssModules.js';
 import aliasPlugin from '../esbuild/alias.js';
 import createAssetsPlugin from '../esbuild/assets.js';
-import { ASSETS_MANIFEST, CACHE_DIR, SERVER_ENTRY } from '../constant.js';
+import { ASSETS_MANIFEST, CACHE_DIR, SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
 import emptyCSSPlugin from '../esbuild/emptyCSS.js';
 import createDepRedirectPlugin from '../esbuild/depRedirect.js';
 import isExternalBuiltinDep from '../utils/isExternalBuiltinDep.js';
@@ -25,28 +25,21 @@ interface Options {
   rootDir: string;
   task: TaskConfig<Config>;
   command: string;
-  serverBundle: boolean;
-  swcOptions: Config['swcOptions'];
+  server: UserConfig['server'];
 }
 
 export function createServerCompiler(options: Options) {
-  const { task, rootDir, command, serverBundle, swcOptions } = options;
-  const { config } = task;
-
-  const transformPlugins = getCompilerPlugins({
-    ...config,
-    fastRefresh: false,
-    swcOptions,
-  }, 'esbuild');
+  const { task, rootDir, command, server } = options;
 
   const alias = (task.config?.alias || {}) as Record<string, string | false>;
   const assetsManifest = path.join(rootDir, ASSETS_MANIFEST);
-  const defineVars = task.config?.define || {};
+  const define = task.config?.define || {};
   const dev = command === 'start';
 
+  const defineVars = {};
   // auto stringify define value
-  Object.keys(defineVars).forEach((key) => {
-    defineVars[key] = JSON.stringify(defineVars[key]);
+  Object.keys(define).forEach((key) => {
+    defineVars[key] = JSON.stringify(define[key]);
   });
 
   // get runtime variable for server build
@@ -60,36 +53,17 @@ export function createServerCompiler(options: Options) {
     }
   });
 
-  const serverCompiler: ServerCompiler = async (buildOptions: Parameters<ServerCompiler>[0]) => {
-    const serverEntry = path.join(rootDir, SERVER_ENTRY);
-    let metadata;
-    if (buildOptions?.format === 'esm') {
-      const deps = await scanImports([serverEntry], {
-        rootDir,
-        alias: (task.config?.alias || {}) as Record<string, string | false>,
-      });
-
-      function filterPreBundleDeps(deps: Record<string, string>) {
-        const preBundleDepsInfo = {};
-        for (const dep in deps) {
-          if (!isExternalBuiltinDep(dep, buildOptions?.format)) {
-            preBundleDepsInfo[dep] = deps[dep];
-          }
-        }
-        return preBundleDepsInfo;
-      }
-      // don't pre bundle the deps because they can run in node env.
-      // For examples: react, react-dom, @ice/runtime
-      const preBundleDepsInfo = filterPreBundleDeps(deps);
-      const cacheDir = path.join(rootDir, CACHE_DIR);
-      const ret = await preBundleCJSDeps({
-        depsInfo: preBundleDepsInfo,
-        rootDir,
-        cacheDir,
-        taskConfig: task.config,
-      });
-      metadata = ret.metadata;
+  const serverCompiler: ServerCompiler = async (buildOptions, { preBundle, swc: swcOptions } = {}) => {
+    let depsMetadata;
+    if (preBundle) {
+      depsMetadata = await createDepsMetadata({ task, rootDir });
     }
+
+    const transformPlugins = getCompilerPlugins({
+      ...task.config,
+      fastRefresh: false,
+      swcOptions,
+    }, 'esbuild');
 
     const startTime = new Date().getTime();
     consola.debug('[esbuild]', `start compile for: ${buildOptions.entryPoints}`);
@@ -101,22 +75,23 @@ export function createServerCompiler(options: Options) {
       ...runtimeDefineVars,
     };
 
-    const buildResult = await esbuild.build({
+    const esbuildResult = await esbuild.build({
       bundle: true,
       format: 'esm',
       target: 'node12.20.0',
       // enable JSX syntax in .js files by default for compatible with migrate project
       // while it is not recommended
       loader: { '.js': 'jsx' },
+      inject: [path.resolve(__dirname, '../polyfills/react.js')],
       ...buildOptions,
       define,
-      inject: [path.resolve(__dirname, '../polyfills/react.js')],
       plugins: [
+        ...(buildOptions.plugins || []),
         emptyCSSPlugin(),
-        dev && buildOptions?.format === 'esm' && createDepRedirectPlugin(metadata),
+        dev && preBundle && createDepRedirectPlugin(depsMetadata),
         aliasPlugin({
           alias,
-          serverBundle,
+          serverBundle: server.bundle,
           format: buildOptions?.format || 'esm',
         }),
         cssModulesPlugin({
@@ -129,13 +104,55 @@ export function createServerCompiler(options: Options) {
         }),
         fs.existsSync(assetsManifest) && createAssetsPlugin(assetsManifest, rootDir),
         ...transformPlugins,
-        ...(buildOptions.plugins || []),
       ].filter(Boolean),
     });
     consola.debug('[esbuild]', `time cost: ${new Date().getTime() - startTime}ms`);
-    return buildResult;
+    const esm = server?.format === 'esm';
+    const outJSExtension = esm ? '.mjs' : '.cjs';
+    const serverEntry = path.join(rootDir, task.config.outputDir, SERVER_OUTPUT_DIR, `index${outJSExtension}`);
+
+    return {
+      ...esbuildResult,
+      serverEntry,
+    };
   };
   return serverCompiler;
 }
 
+interface CreateDepsMetadataOptions {
+  rootDir: string;
+  task: TaskConfig<Config>;
+}
+/**
+ *  Create dependencies metadata only when server entry is bundled to esm.
+ */
+async function createDepsMetadata({ rootDir, task }: CreateDepsMetadataOptions) {
+  const serverEntry = path.join(rootDir, SERVER_ENTRY);
 
+  const deps = await scanImports([serverEntry], {
+    rootDir,
+    alias: (task.config?.alias || {}) as Record<string, string | false>,
+  });
+
+  function filterPreBundleDeps(deps: Record<string, string>) {
+    const preBundleDepsInfo = {};
+    for (const dep in deps) {
+      if (!isExternalBuiltinDep(dep)) {
+        preBundleDepsInfo[dep] = deps[dep];
+      }
+    }
+    return preBundleDepsInfo;
+  }
+  // don't pre bundle the deps because they can run in node env.
+  // For examples: react, react-dom, @ice/runtime
+  const preBundleDepsInfo = filterPreBundleDeps(deps);
+  const cacheDir = path.join(rootDir, CACHE_DIR);
+  const ret = await preBundleCJSDeps({
+    depsInfo: preBundleDepsInfo,
+    rootDir,
+    cacheDir,
+    taskConfig: task.config,
+  });
+
+  return ret.metadata;
+}

@@ -11,8 +11,9 @@
   "files": [
     "bin",
     "esm",
-    "template",
-    "!esm/**/*.map"
+    "!esm/**/*.map",
+    "templates",
+    "openChrome.applescript"
   ],
   "engines": {
     "node": ">=12.22.0",
@@ -35,7 +36,7 @@
     "@ice/webpack-config": "^1.0.0",
     "acorn": "^8.7.1",
     "address": "^1.1.2",
-    "build-scripts": "^2.0.0-22",
+    "build-scripts": "^2.0.0-23",
     "body-parser": "^1.20.0",
     "chalk": "^4.0.0",
     "commander": "^9.0.0",
@@ -78,7 +79,7 @@
     "chokidar": "^3.5.3",
     "react": "^18.0.0",
     "unplugin": "^0.3.2",
-    "webpack": "^5.72.0"
+    "webpack": "^5.73.0"
   },
   "peerDependencies": {
     "react": ">=18.0.0",
