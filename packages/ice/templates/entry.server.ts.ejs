@@ -24,6 +24,7 @@ interface RenderOptions {
   documentOnly?: boolean;
   renderMode?: RenderMode;
   basename?: string;
+  serverOnlyBasename?: string;
 }
 
 export async function renderToHTML(requestContext, options: RenderOptions = {}) {
