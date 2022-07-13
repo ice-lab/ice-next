@@ -5,6 +5,24 @@ import { Page } from '../utils/browser';
 
 const example = 'rax-project';
 
+describe(`build ${example}`, () => {
+  let page: Page = null;
+  let browser = null;
+
+  test('open /', async () => {
+    await buildFixture(example);
+    const res = await setupBrowser({ example });
+
+    page = res.page;
+    browser = res.browser;
+    expect(await page.$$text('div')).toStrictEqual(['']);
+  }, 120000);
+
+  afterAll(async () => {
+    await browser.close();
+  });
+});
+
 describe(`start ${example}`, () => {
   let page: Page = null;
   let browser = null;

@@ -13,6 +13,4 @@ export const BUILDIN_ESM_DEPS = [
 export const BUILDIN_CJS_DEPS = [
   'react',
   'react-dom',
-  // TODO: support config optimizeDeps
-  'rax',
 ];
