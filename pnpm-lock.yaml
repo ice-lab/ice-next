@@ -527,10 +527,12 @@ importers:
       '@ice/types': ^1.0.0
       '@types/webpack': ^5.28.0
       consola: ^2.15.3
+      lodash.merge: ^4.6.2
       rax-compat: ^0.1.0
       stylesheet-loader: ^0.9.1
     dependencies:
       consola: 2.15.3
+      lodash.merge: 4.6.2
       rax-compat: link:../rax-compat
       stylesheet-loader: 0.9.1
     devDependencies:
@@ -11889,7 +11891,6 @@ packages:
 
   /lodash.merge/4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
-    dev: true
 
   /lodash.truncate/4.4.2:
     resolution: {integrity: sha512-jttmRe7bRse52OsWIMDLaXxWqRAmtIUccAQ3garviCqJjafXOfNMO0yMfNpdD6zbGaTU0P5Nz7e7gAT6cKmJRw==}
