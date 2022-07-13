@@ -8,7 +8,7 @@ import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
 import type {
   AppContext, AppExport, RouteItem, AppRouterProps, RoutesData, RoutesConfig,
-  RouteWrapperConfig, RuntimeModules, RouteMatch, ComponentWithChildren, RouteModules, AppConfig,
+  RouteWrapperConfig, RuntimeModules, RouteMatch, RouteModules, AppConfig, DocumentComponent,
 } from './types.js';
 import { loadRouteModules, loadRoutesData, getRoutesConfig, filterMatchesToLoad } from './routes.js';
 import { updateRoutesConfig } from './routesConfig.js';
@@ -20,9 +20,10 @@ interface RunClientAppOptions {
   app: AppExport;
   routes: RouteItem[];
   runtimeModules: RuntimeModules;
-  Document: ComponentWithChildren<{}>;
-  basename?: string;
+  Document: DocumentComponent;
   hydrate: boolean;
+  basename?: string;
+  enableReadPagePathFromAppContext?: boolean;
 }
 
 export default async function runClientApp(options: RunClientAppOptions) {
@@ -33,15 +34,21 @@ export default async function runClientApp(options: RunClientAppOptions) {
     Document,
     basename,
     hydrate,
+    enableReadPagePathFromAppContext,
   } = options;
   const appContextFromServer: AppContext = (window as any).__ICE_APP_CONTEXT__ || {};
-  let { routesData, routesConfig, assetsManifest } = appContextFromServer;
+  let { routesData, routesConfig, assetsManifest, pagePath } = appContextFromServer;
 
   const requestContext = getRequestContext(window.location);
 
   const appConfig = getAppConfig(app);
 
-  const matches = matchRoutes(routes, window.location, basename);
+  const matches = matchRoutes(
+    routes,
+    // The param `enableReadPagePathFromAppContext` is enable in memory router type.
+    enableReadPagePathFromAppContext ? pagePath : window.location,
+    basename,
+  );
   const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   if (!routesData) {
@@ -61,6 +68,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
     matches,
     routeModules,
     basename,
+    pagePath,
   };
 
   const runtime = new Runtime(appContext);
@@ -73,10 +81,20 @@ export default async function runClientApp(options: RunClientAppOptions) {
 
   await Promise.all(runtimeModules.map(m => runtime.loadModule(m)).filter(Boolean));
 
-  render(runtime, Document);
+  render(runtime, Document, { enableReadPagePathFromAppContext, pagePath });
 }
 
-async function render(runtime: Runtime, Document: ComponentWithChildren<{}>) {
+interface RenderOptions {
+  pagePath: string;
+  enableReadPagePathFromAppContext?: boolean;
+}
+
+async function render(
+  runtime: Runtime,
+  Document: DocumentComponent,
+  options: RenderOptions,
+) {
+  const { pagePath, enableReadPagePathFromAppContext } = options;
   const appContext = runtime.getAppContext();
   const render = runtime.getRender();
   const AppProvider = runtime.composeAppProvider() || React.Fragment;
@@ -90,7 +108,9 @@ async function render(runtime: Runtime, Document: ComponentWithChildren<{}>) {
     window,
   };
   if (appContext.appConfig?.router?.type === 'memory') {
-    (createHistoryOptions as Parameters<typeof createMemoryHistory>[0]).initialEntries = [window.location.pathname];
+    (createHistoryOptions as Parameters<typeof createMemoryHistory>[0]).initialEntries = [
+      enableReadPagePathFromAppContext ? pagePath : window.location.pathname,
+    ];
   }
   const history = createHistory(createHistoryOptions);
 
@@ -125,7 +145,7 @@ interface BrowserEntryProps {
   AppProvider: React.ComponentType<any>;
   RouteWrappers: RouteWrapperConfig[];
   AppRouter: React.ComponentType<AppRouterProps>;
-  Document: ComponentWithChildren<{}>;
+  Document: DocumentComponent;
 }
 
 interface HistoryState {

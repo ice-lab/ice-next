@@ -63,6 +63,7 @@ export interface AppContext {
   routesData: RoutesData;
   routesConfig: RoutesConfig;
   routeModules: RouteModules;
+  pagePath: string;
   matches?: RouteMatch[];
   routes?: RouteItem[];
   documentOnly?: boolean;
@@ -109,6 +110,10 @@ export interface RouteItem {
 }
 
 export type ComponentWithChildren<P = {}> = ComponentType<PropsWithChildren<P>>;
+
+export type DocumentComponent = ComponentWithChildren<{
+  pagePath: string;
+}>;
 
 export interface RouteWrapperConfig {
   Wrapper: RouteWrapper;

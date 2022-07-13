@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { useAppContext } from './AppContext.js';
 import { getMeta, getTitle, getLinks, getScripts } from './routesConfig.js';
 import type { AppContext, RouteMatch, AssetsManifest } from './types.js';
+import getCurrentPagePath from './utils/getCurrentPagePath.js';
 
 interface DocumentContext {
   main: ReactNode | null;
@@ -71,6 +72,7 @@ export function Scripts() {
   const scripts = entryAssets.concat(pageAssets).filter(path => path.indexOf('.js') > -1);
 
   const matchedIds = matches.map(match => match.route.id);
+  const pagePath = getCurrentPagePath(matches);
 
   const appContext: AppContext = {
     routesData,
@@ -79,6 +81,7 @@ export function Scripts() {
     appConfig: {},
     matchedIds,
     routeModules,
+    pagePath,
   };
 
   return (

@@ -21,12 +21,6 @@ export async function generateRoutesInfo(rootDir: string, routesConfig: UserConf
   });
   await Promise.all(analyzeTasks);
 
-  if (!routeManifest['$']) {
-    // create default 404 page
-    const defaultNotFoundRoute = createDefaultNotFoundRoute(routeManifest);
-    routeManifest['$'] = defaultNotFoundRoute;
-  }
-
   const routes = formatNestedRouteManifest(routeManifest);
   const str = generateNestRoutesStr(routes);
   let routesCount = 0;
@@ -87,19 +81,6 @@ function generateNestRoutesStr(nestRouteManifest: NestedRouteManifest[]) {
     prev += str;
     return prev;
   }, '');
-}
-
-function createDefaultNotFoundRoute(routeManifest: RouteManifest): ConfigRoute {
-  return {
-    path: '*',
-    // TODO: git warning if the id startsWith __
-    id: '__404',
-    parentId: routeManifest['layout'] ? 'layout' : null,
-    file: './404.tsx',
-    componentName: '__404',
-    layout: false,
-    exports: ['default'],
-  };
 }
 
 /**

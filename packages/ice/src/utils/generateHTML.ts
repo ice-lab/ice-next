@@ -50,6 +50,7 @@ export default async function generateHTML(options: Options) {
     const { value: html } = await serverEntry.renderToHTML(serverContext, {
       renderMode,
       documentOnly,
+      routePath,
     });
 
     const fileName = routePath === '/' ? 'index.html' : `${routePath}.html`;
