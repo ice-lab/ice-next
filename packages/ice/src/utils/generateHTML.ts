@@ -11,7 +11,6 @@ interface Options {
   entry: string;
   outputDir: string;
   documentOnly: boolean;
-  basename?: string;
   renderMode?: RenderMode;
 }
 
@@ -22,7 +21,6 @@ export default async function generateHTML(options: Options) {
     outputDir,
     documentOnly,
     renderMode,
-    basename,
   } = options;
 
   let serverEntry;

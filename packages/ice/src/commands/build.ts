@@ -6,7 +6,6 @@ import type { StatsError } from 'webpack';
 import type { Config } from '@ice/types';
 import type { ServerCompiler } from '@ice/types/esm/plugin.js';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
-import type { AppConfig } from '@ice/runtime';
 import webpackCompiler from '../service/webpackCompiler.js';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
 import { RUNTIME_TMP_DIR, SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
@@ -17,7 +16,6 @@ const build = async (
   context: Context<Config>,
   taskConfigs: TaskConfig<Config>[],
   serverCompiler: ServerCompiler,
-  appConfig: AppConfig,
 ) => {
   const { applyHook, commandArgs, command, rootDir, userConfig } = context;
   const webpackConfigs = taskConfigs.map(({ config }) => getWebpackConfig({
