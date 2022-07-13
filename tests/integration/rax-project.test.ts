@@ -1,28 +1,9 @@
 import { expect, test, describe, afterAll } from 'vitest';
-import * as path from 'path';
 import { buildFixture, setupBrowser } from '../utils/build';
 import { startFixture, setupStartBrowser } from '../utils/start';
 import { Page } from '../utils/browser';
 
 const example = 'rax-project';
-
-describe(`build ${example}`, () => {
-  let page: Page = null;
-  let browser = null;
-
-  test('open /', async () => {
-    await buildFixture(example);
-    const res = await setupBrowser({ example });
-
-    page = res.page;
-    browser = res.browser;
-    expect((await page.$$text('span'))[0]).toStrictEqual('Welcome to Your Rax App');
-  }, 120000);
-
-  afterAll(async () => {
-    await browser.close();
-  });
-});
 
 describe(`start ${example}`, () => {
   let page: Page = null;
