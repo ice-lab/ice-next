@@ -5,7 +5,7 @@ import type {
   ReactNode,
   RefObject,
 } from 'react';
-import { createElement as _createElement, useEffect, forwardRef } from 'react';
+import { createElement as _createElement, useEffect, forwardRef, useRef } from 'react';
 import { setupAppear } from 'appear-polyfill';
 import { cached, convertUnit } from 'style-unit';
 import { isFunction, isObject, isNumber } from './type';
@@ -33,7 +33,6 @@ function setupAppearOnce() {
 // animationIterationCount -> onit
 // borderImageOutset|borderImageSlice|borderImageWidth -> erim
 const NON_DIMENSIONAL_REG = /opa|ntw|ne[ch]|ex(?:s|g|n|p|$)|^ord|zoo|grid|orp|ows|mnc|^columns$|bs|erim|onit/i;
-
 
 /**
  * Compat createElement for rax export.
@@ -66,16 +65,20 @@ export function createElement<P extends {
 
   // Create backend element.
   const args = [type, rest];
-  let element: any = _createElement.apply(null, args.concat(children as any));
+  let element: any;
 
   // Polyfill for appear and disappear event.
   if (isFunction(onAppear) || isFunction(onDisappear)) {
+    // eslint-disable-next-line no-multi-assign
+    const ref = rest.ref = rest.ref || useRef();
     setupAppearOnce();
     element = _createElement(forwardRef(AppearOrDisappear), {
       onAppear: onAppear,
       onDisappear: onDisappear,
-      ref: rest.ref,
-    }, element);
+      ref: ref,
+    }, _createElement.apply(null, args.concat(children as any)));
+  } else {
+    element = _createElement.apply(null, args.concat(children as any));
   }
 
   return element;
