@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useState } from 'react';
 import * as ReactDOM from 'react-dom/client';
-import { createHashHistory, createBrowserHistory } from 'history';
+import { createHashHistory, createBrowserHistory, createMemoryHistory } from 'history';
 import type { HashHistory, BrowserHistory, Action, Location } from 'history';
 import { createHistorySingle } from './utils/history-single.js';
 import Runtime from './runtime.js';
@@ -8,7 +8,7 @@ import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
 import type {
   AppContext, AppExport, RouteItem, AppRouterProps, RoutesData, RoutesConfig,
-  RouteWrapperConfig, RuntimeModules, RouteMatch, ComponentWithChildren, RouteModules,
+  RouteWrapperConfig, RuntimeModules, RouteMatch, ComponentWithChildren, RouteModules, AppConfig,
 } from './types.js';
 import { loadRouteModules, loadRoutesData, getRoutesConfig, filterMatchesToLoad } from './routes.js';
 import { updateRoutesConfig } from './routesConfig.js';
@@ -84,10 +84,28 @@ async function render(runtime: Runtime, Document: ComponentWithChildren<{}>) {
   const AppRouter = runtime.getAppRouter();
 
   const createHistory = process.env.ICE_CORE_ROUTER === 'true'
-    ? (appContext.appConfig?.router?.type === 'hash' ? createHashHistory : createBrowserHistory)
+    ? getCreateHistoryFuncByRouteType(appContext.appConfig?.router?.type)
     : createHistorySingle;
-  const history = createHistory({ window });
+  const createHistoryOptions: Parameters<typeof createHistory>[0] = {
+    window,
+  };
+  if (appContext.appConfig?.router?.type === 'memory') {
+    (createHistoryOptions as Parameters<typeof createMemoryHistory>[0]).initialEntries = [window.location.pathname];
+  }
+  const history = createHistory(createHistoryOptions);
 
+  function getCreateHistoryFuncByRouteType(type: AppConfig['router']['type']) {
+    switch (type) {
+      case 'hash':
+        return createHashHistory;
+      case 'browser':
+        return createBrowserHistory;
+      case 'memory':
+        return createMemoryHistory;
+      default:
+        throw new Error(`Route type: ${type} is not supported.`);
+    }
+  }
   render(
     document.getElementById(appContext.appConfig.app.rootId),
     <BrowserEntry

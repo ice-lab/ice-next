@@ -43,7 +43,7 @@ export type GetConfig = (args: { data: RouteData }) => RouteConfig;
 export interface AppConfig extends Record<string, any> {
   app?: App;
   router?: {
-    type?: 'hash' | 'browser';
+    type?: 'hash' | 'browser' | 'memory';
     basename?: string;
   };
 }
