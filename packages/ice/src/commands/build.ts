@@ -38,13 +38,13 @@ const build = async (
     applyHook,
     serverCompiler,
   });
-  const { ssg, ssr, server: { format } } = userConfig;
+  const { ssg, server: { format } } = userConfig;
   // compile server bundle
   const entryPoint = path.join(rootDir, SERVER_ENTRY);
   const esm = format === 'esm';
   const outJSExtension = esm ? '.mjs' : '.cjs';
   const serverOutputDir = path.join(outputDir, SERVER_OUTPUT_DIR);
-  const documentOnly = !ssg && !ssr;
+  const documentOnly = !ssg;
   let serverEntry;
   const { stats, isSuccessful, messages } = await new Promise((resolve, reject): void => {
     let messages: { errors: string[]; warnings: string[] };
