@@ -12,9 +12,19 @@ interface EnvOptions {
   disableRouter: boolean;
 }
 
+export async function initNodeEnv(command: CommandName) {
+  if (process.env.TEST || command === 'test') {
+    process.env.NODE_ENV = 'test';
+  } else if (command === 'start') {
+    process.env.NODE_ENV = 'development';
+  } else {
+    // build
+    process.env.NODE_ENV = 'production';
+  }
+}
+
 export async function initProcessEnv(
   rootDir: string,
-  command: CommandName,
   commandArgs: CommandArgs,
 ): Promise<void> {
   const { mode } = commandArgs;
@@ -40,15 +50,6 @@ export async function initProcessEnv(
 
   process.env.ICE_CORE_MODE = mode;
   process.env.ICE_CORE_DEV_PORT = commandArgs.port;
-
-  if (process.env.TEST || command === 'test') {
-    process.env.NODE_ENV = 'test';
-  } else if (command === 'start') {
-    process.env.NODE_ENV = 'development';
-  } else {
-    // build
-    process.env.NODE_ENV = 'production';
-  }
 
   // set runtime initial env
   process.env.ICE_CORE_ROUTER = 'true';

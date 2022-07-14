@@ -15,7 +15,7 @@ import build from './commands/build.js';
 import mergeTaskConfig from './utils/mergeTaskConfig.js';
 import getWatchEvents from './getWatchEvents.js';
 import { compileAppConfig } from './analyzeRuntime.js';
-import { initProcessEnv, updateRuntimeEnv, getCoreEnvKeys } from './utils/runtimeEnv.js';
+import { initProcessEnv, updateRuntimeEnv, getCoreEnvKeys, initNodeEnv } from './utils/runtimeEnv.js';
 import getRuntimeModules from './utils/getRuntimeModules.js';
 import { generateRoutesInfo } from './routes.js';
 import getWebTask from './tasks/web/index.js';
@@ -35,6 +35,9 @@ interface CreateServiceOptions {
 }
 
 async function createService({ rootDir, command, commandArgs }: CreateServiceOptions) {
+  // init process.env.NODE_ENV for plugins
+  initNodeEnv(command);
+
   const buildSpinner = createSpinner('loading config...');
   const templateDir = path.join(__dirname, '../templates/');
   const configFile = 'ice.config.(mts|mjs|ts|js|cjs|json)';
@@ -108,7 +111,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const { routes: routesConfig, server } = userConfig;
 
   // load dotenv, set to process.env
-  await initProcessEnv(rootDir, command, commandArgs);
+  await initProcessEnv(rootDir, commandArgs);
   const coreEnvKeys = getCoreEnvKeys();
 
   const routesInfo = await generateRoutesInfo(rootDir, routesConfig);
