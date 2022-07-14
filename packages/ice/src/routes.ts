@@ -59,16 +59,16 @@ export default {
 
 function generateRoutesStr(nestRouteManifest: NestedRouteManifest[]) {
   return `[
-  ${recurseRouteObjectsStr(nestRouteManifest)}
+  ${recurseRoutesStr(nestRouteManifest)}
 ]`;
 }
 
-function recurseRouteObjectsStr(nestRouteManifest: NestedRouteManifest[], deep = 0) {
+function recurseRoutesStr(nestRouteManifest: NestedRouteManifest[], deep = 0) {
   return nestRouteManifest.reduce((prev, route) => {
     const { children, path: routePath, index, componentName, file, id, layout, exports } = route;
 
     const componentPath = id.startsWith('__') ? file : `@/pages/${file}`.replace(new RegExp(`${path.extname(file)}$`), '');
-    const routePropertyStrs = [
+    const routeProperties: string[] = [
       `path: '${routePath || ''}',`,
       `load: () => import(/* webpackChunkName: "${componentName}" */ '${componentPath}'),`,
       `componentName: '${componentName}',`,
@@ -78,13 +78,13 @@ function recurseRouteObjectsStr(nestRouteManifest: NestedRouteManifest[], deep =
       `exports: ${JSON.stringify(exports)},`,
     ];
     if (layout) {
-      routePropertyStrs.push('layout: true,');
+      routeProperties.push('layout: true,');
     }
     if (children) {
-      routePropertyStrs.push(`children: [${recurseRouteObjectsStr(children, deep + 1)}]`);
+      routeProperties.push(`children: [${recurseRoutesStr(children, deep + 1)}]`);
     }
 
-    prev += formatRoutesStr(deep, routePropertyStrs);
+    prev += formatRoutesStr(deep, routeProperties);
     return prev;
   }, '');
 }
