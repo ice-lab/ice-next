@@ -63,7 +63,7 @@ function generateRoutesStr(nestRouteManifest: NestedRouteManifest[]) {
 ]`;
 }
 
-function recurseRoutesStr(nestRouteManifest: NestedRouteManifest[], deep = 0) {
+function recurseRoutesStr(nestRouteManifest: NestedRouteManifest[], depth = 0) {
   return nestRouteManifest.reduce((prev, route) => {
     const { children, path: routePath, index, componentName, file, id, layout, exports } = route;
 
@@ -81,10 +81,10 @@ function recurseRoutesStr(nestRouteManifest: NestedRouteManifest[], deep = 0) {
       routeProperties.push('layout: true,');
     }
     if (children) {
-      routeProperties.push(`children: [${recurseRoutesStr(children, deep + 1)}]`);
+      routeProperties.push(`children: [${recurseRoutesStr(children, depth + 1)}]`);
     }
 
-    prev += formatRoutesStr(deep, routeProperties);
+    prev += formatRoutesStr(depth, routeProperties);
     return prev;
   }, '');
 }
