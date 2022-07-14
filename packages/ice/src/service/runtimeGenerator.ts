@@ -255,7 +255,7 @@ export default class Generator {
     const renderExt = '.ejs';
     const realTargetPath = path.isAbsolute(targetPath) ? targetPath : path.join(this.rootDir, targetPath);
     // example: templatePath = 'routes.ts.ejs'
-    const { name, ext } = path.parse(templatePath);
+    const { ext } = path.parse(templatePath);
     if (ext === renderExt) {
       const templateContent = fse.readFileSync(templatePath, 'utf-8');
       let renderData = { ...this.renderData };
