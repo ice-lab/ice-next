@@ -8,6 +8,7 @@ import type { Config, UserConfig } from '@ice/types';
 import type { ServerCompiler } from '@ice/types/esm/plugin.js';
 import type { TaskConfig } from 'build-scripts';
 import { getCompilerPlugins } from '@ice/webpack-config';
+import lodash from '@ice/bundles/compiled/lodash/index.js';
 import escapeLocalIdent from '../utils/escapeLocalIdent.js';
 import cssModulesPlugin from '../esbuild/cssModules.js';
 import aliasPlugin from '../esbuild/alias.js';
@@ -19,6 +20,7 @@ import isExternalBuiltinDep from '../utils/isExternalBuiltinDep.js';
 import { scanImports } from './analyze.js';
 import preBundleCJSDeps from './preBundleCJSDeps.js';
 
+const { merge } = lodash;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 interface Options {
@@ -30,7 +32,6 @@ interface Options {
 
 export function createServerCompiler(options: Options) {
   const { task, rootDir, command, server } = options;
-
   const alias = (task.config?.alias || {}) as Record<string, string | false>;
   const assetsManifest = path.join(rootDir, ASSETS_MANIFEST);
   const define = task.config?.define || {};
@@ -53,7 +54,8 @@ export function createServerCompiler(options: Options) {
     }
   });
 
-  const serverCompiler: ServerCompiler = async (buildOptions, { preBundle, swc: swcOptions } = {}) => {
+  const serverCompiler: ServerCompiler = async (originBuildOptions, { preBundle, swc: swcOptions } = {}) => {
+    const buildOptions = merge(task.config?.server?.buildOptions || {}, originBuildOptions);
     let depsMetadata;
     if (preBundle) {
       depsMetadata = await createDepsMetadata({ task, rootDir });
@@ -81,8 +83,14 @@ export function createServerCompiler(options: Options) {
       target: 'node12.20.0',
       // enable JSX syntax in .js files by default for compatible with migrate project
       // while it is not recommended
-      loader: { '.js': 'jsx' },
-      inject: [path.resolve(__dirname, '../polyfills/react.js')],
+      loader: {
+        '.js': 'jsx',
+        ...(buildOptions?.loader || {}),
+      },
+      inject: [
+        path.resolve(__dirname, '../polyfills/react.js'),
+        ...(buildOptions?.inject || []),
+      ],
       ...buildOptions,
       define,
       plugins: [
