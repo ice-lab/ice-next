@@ -108,7 +108,7 @@ async function webpackCompiler(options: {
           }
         } else if (MINIAPP_PLATFORMS.includes(platform)) {
           let logoutMessage = '\n';
-          logoutMessage += chalk.green('Use miniapp developer tools to open the following folder:');
+          logoutMessage += chalk.green(`Use ${platform} developer tools to open the following folder:`);
           logoutMessage += `\n${chalk.underline.white(rootDir)}`;
           consola.log(`${logoutMessage}\n`);
         }

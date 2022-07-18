@@ -140,7 +140,7 @@ const start = async (
         devServer,
       });
     });
-    return { compiler };
+    return { devServer, compiler };
   } else if (MINIAPP_PLATFORMS.includes(platform)) {
     compiler = await webpackCompiler({
       rootDir,
@@ -174,6 +174,7 @@ const start = async (
         throw new Error(messages.errors.join('\n\n'));
       }
     });
+    return { compiler };
   }
 };
 
