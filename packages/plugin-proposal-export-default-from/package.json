@@ -1,0 +1,39 @@
+{
+  "name": "@ice/plugin-proposal-export-default-from",
+  "version": "0.1.0",
+  "description": "ice plugin for enhance proposal-export-default-from",
+  "files": [
+    "esm"
+  ],
+  "main": "esm/index.js",
+  "module": "esm/index.js",
+  "exports": {
+    ".": "./esm/index.js",
+    "./transform": "./esm/transform.js"
+  },
+  "scripts": {
+    "watch": "tsc -w",
+    "build": "tsc"
+  },
+  "keywords": [
+    "ice",
+    "proposal-export-default-from"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ice-lab/ice-next.git"
+  },
+  "author": "ice-admin@alibaba-inc.com",
+  "license": "MIT",
+  "homepage": "https://github.com/ice-lab/ice-next#readme",
+  "devDependencies": {
+    "@ice/types": "^1.0.0"
+  },
+  "dependencies": {
+    "@babel/core": "^7.18.6",
+    "@babel/plugin-proposal-export-default-from": "^7.18.6"
+  }
+}
