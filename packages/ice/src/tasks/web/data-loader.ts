@@ -18,7 +18,6 @@ const getTask = ({ rootDir, command }): Config => {
       'webpack/hot': '@ice/bundles/compiled/webpack/hot',
     },
     swcOptions: {
-      jsxTransform: true,
       removeExportExprs: ['default', 'getConfig', 'getServerData', 'getStaticData'],
     },
     splitChunks: false,
