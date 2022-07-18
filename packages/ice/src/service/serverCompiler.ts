@@ -8,6 +8,7 @@ import type { Config, UserConfig } from '@ice/types';
 import type { ServerCompiler } from '@ice/types/esm/plugin.js';
 import type { TaskConfig } from 'build-scripts';
 import { getCompilerPlugins } from '@ice/webpack-config';
+import lodash from '@ice/bundles/compiled/lodash/index.js';
 import escapeLocalIdent from '../utils/escapeLocalIdent.js';
 import cssModulesPlugin from '../esbuild/cssModules.js';
 import aliasPlugin from '../esbuild/alias.js';
@@ -19,6 +20,7 @@ import isExternalBuiltinDep from '../utils/isExternalBuiltinDep.js';
 import { scanImports } from './analyze.js';
 import preBundleCJSDeps from './preBundleCJSDeps.js';
 
+const { merge } = lodash;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 interface Options {
@@ -30,9 +32,7 @@ interface Options {
 
 export function createServerCompiler(options: Options) {
   const { task, rootDir, command, server } = options;
-
   const alias = (task.config?.alias || {}) as Record<string, string | false>;
-  const format = task.config?.server?.buildOptions?.format || 'esm';
   const assetsManifest = path.join(rootDir, ASSETS_MANIFEST);
   const define = task.config?.define || {};
   const dev = command === 'start';
@@ -54,7 +54,8 @@ export function createServerCompiler(options: Options) {
     }
   });
 
-  const serverCompiler: ServerCompiler = async (buildOptions, { preBundle, swc: swcOptions } = {}) => {
+  const serverCompiler: ServerCompiler = async (originBuildOptions, { preBundle, swc: swcOptions } = {}) => {
+    const buildOptions = merge(task.config?.server?.buildOptions || {}, originBuildOptions);
     let depsMetadata;
     if (preBundle) {
       depsMetadata = await createDepsMetadata({ task, rootDir });
@@ -77,30 +78,29 @@ export function createServerCompiler(options: Options) {
     };
 
     const esbuildResult = await esbuild.build({
-      bundle: task.config?.server?.buildOptions?.bundle || true,
-      format,
-      target: task.config?.server?.buildOptions?.target || 'node12.20.0',
+      bundle: true,
+      format: 'esm',
+      target: 'node12.20.0',
       // enable JSX syntax in .js files by default for compatible with migrate project
       // while it is not recommended
       loader: {
         '.js': 'jsx',
-        ...(task.config?.server?.buildOptions?.loader || {}),
+        ...(buildOptions?.loader || {}),
       },
       inject: [
         path.resolve(__dirname, '../polyfills/react.js'),
-        ...(task.config?.server?.buildOptions?.inject || []),
+        ...(buildOptions?.inject || []),
       ],
       ...buildOptions,
       define,
       plugins: [
-        ...(task.config?.server?.buildOptions?.plugins || []),
         ...(buildOptions.plugins || []),
         emptyCSSPlugin(),
         dev && preBundle && createDepRedirectPlugin(depsMetadata),
         aliasPlugin({
           alias,
           serverBundle: server.bundle,
-          format: buildOptions?.format || format,
+          format: buildOptions?.format || 'esm',
         }),
         cssModulesPlugin({
           extract: false,
