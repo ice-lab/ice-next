@@ -7,6 +7,7 @@ import type { UnpluginOptions } from 'unplugin';
 import type Server from 'webpack-dev-server';
 import type { ECMA } from 'terser';
 import type { Config as CompilationConfig } from '@builder/swc';
+import type { BuildOptions } from 'esbuild';
 
 // get type definitions from terser-webpack-plugin
 interface CustomOptions {
@@ -115,4 +116,8 @@ export interface Config {
   logging?: string;
 
   enableReadPagePathFromAppContext?: boolean;
+
+  server?: {
+    buildOptions?: BuildOptions;
+  };
 }

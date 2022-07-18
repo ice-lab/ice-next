@@ -32,6 +32,7 @@ export function createServerCompiler(options: Options) {
   const { task, rootDir, command, server } = options;
 
   const alias = (task.config?.alias || {}) as Record<string, string | false>;
+  const inject = task.config?.server?.buildOptions?.inject || [];
   const assetsManifest = path.join(rootDir, ASSETS_MANIFEST);
   const define = task.config?.define || {};
   const dev = command === 'start';
@@ -82,7 +83,7 @@ export function createServerCompiler(options: Options) {
       // enable JSX syntax in .js files by default for compatible with migrate project
       // while it is not recommended
       loader: { '.js': 'jsx' },
-      inject: [path.resolve(__dirname, '../polyfills/react.js')],
+      inject: [path.resolve(__dirname, '../polyfills/react.js'), ...inject],
       ...buildOptions,
       define,
       plugins: [
