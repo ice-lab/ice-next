@@ -50,6 +50,7 @@ const build = async (
   const esm = format === 'esm';
   const outJSExtension = esm ? '.mjs' : '.cjs';
   const serverOutputDir = path.join(outputDir, SERVER_OUTPUT_DIR);
+  // only ssg need to generate the whole page html when build time.
   const documentOnly = !ssg;
   let serverEntry;
   const { stats, isSuccessful, messages } = await new Promise((resolve, reject): void => {
