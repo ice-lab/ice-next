@@ -24,21 +24,20 @@ interface RenderOptions {
   documentOnly?: boolean;
   renderMode?: RenderMode;
   basename?: string;
+  serverOnlyBasename?: string;
 }
 
 export async function renderToHTML(requestContext, options: RenderOptions = {}) {
-  const { documentOnly, renderMode = 'SSR', basename } = options;
+  const { documentOnly, renderMode = 'SSR', basename, serverOnlyBasename } = options;
   setRuntimeEnv(renderMode);
 
-  const basename = getRouterBasename();
-  // add basename for req.url so we don't need to add basename for mocked url
-  requestContext.req.url = `${basename}/${requestContext.req.url}`.replace(/\/+/g, '/');
   return await runtime.renderToHTML(requestContext, {
     app,
     assetsManifest,
     routes,
     runtimeModules,
     Document,
+    serverOnlyBasename,
     basename: basename || getRouterBasename(),
     documentOnly,
     renderMode,
@@ -46,7 +45,7 @@ export async function renderToHTML(requestContext, options: RenderOptions = {}) 
 }
 
 export async function renderToResponse(requestContext, options: RenderOptions = {}) {
-  const { documentOnly, renderMode = 'SSR', basename } = options;
+  const { documentOnly, renderMode = 'SSR', basename, serverOnlyBasename } = options;
   setRuntimeEnv(options);
 
   runtime.renderToResponse(requestContext, {
@@ -55,6 +54,7 @@ export async function renderToResponse(requestContext, options: RenderOptions = 
     routes,
     runtimeModules,
     Document,
+    serverOnlyBasename,
     basename: basename || getRouterBasename(),
     documentOnly,
     renderMode,
