@@ -1,5 +1,5 @@
-import consola from 'consola';
 import * as path from 'path';
+import consola from 'consola';
 import WebpackDevServer from 'webpack-dev-server';
 import type { Configuration } from 'webpack-dev-server';
 import type { Context, TaskConfig } from 'build-scripts';
@@ -72,7 +72,7 @@ const start = async (
         serverCompileTask,
       ),
     );
-  
+
     const customMiddlewares = webpackConfigs[0].devServer?.setupMiddlewares;
     let devServerConfig: Configuration = {
       port,
@@ -89,7 +89,7 @@ const start = async (
         const appConfig = getAppConfig();
         const routeManifestPath = path.join(rootDir, ROUTER_MANIFEST);
         const documentOnly = !ssr && !ssg;
-  
+
         const serverRenderMiddleware = createRenderMiddleware({
           serverCompileTask,
           routeManifestPath,
@@ -102,7 +102,7 @@ const start = async (
           insertIndex, 0,
           serverRenderMiddleware,
         );
-  
+
         if (commandArgs.mock) {
           const mockMiddleware = createMockMiddleware({ rootDir, exclude: userConfig?.mock?.exclude });
           middlewares.splice(insertIndex, 0, mockMiddleware);
@@ -114,7 +114,7 @@ const start = async (
     devServerConfig = merge(webpackConfigs[0].devServer, devServerConfig);
     const protocol = devServerConfig.https ? 'https' : 'http';
     let urlPathname = appConfig?.router?.basename || '/';
-  
+
     const urls = prepareURLs(
       protocol,
       devServerConfig.host,
@@ -168,12 +168,12 @@ const start = async (
       } else {
         messages = formatWebpackMessages(stats.toJson({ all: false, warnings: true, errors: true }));
       }
-  
+
       if (messages.errors.length) {
         consola.error('webpack compile error');
         throw new Error(messages.errors.join('\n\n'));
       }
-    })
+    });
   }
 };
 

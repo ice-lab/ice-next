@@ -32,6 +32,9 @@ interface SwcOptions {
 }
 
 type Experimental = Pick<Configuration, 'experiments'>;
+type Output = Configuration['output'];
+type Optimization = Configuration['optimization'];
+type Performance = Configuration['performance'];
 
 export type ModifyWebpackConfig = (config: Configuration, ctx: ConfigurationCtx) => Configuration;
 export interface Config {
@@ -45,7 +48,7 @@ export interface Config {
 
   configureWebpack?: ModifyWebpackConfig[];
 
-  output? : any;
+  output?: Output;
 
   outputDir?: string;
 
@@ -103,6 +106,10 @@ export interface Config {
   };
 
   splitChunks?: boolean;
+
+  optimization?: Optimization;
+
+  performance?: Performance;
 
   assetsManifest?: boolean;
 

@@ -1,7 +1,6 @@
 // import './index.css';
 
-export default function Home(props) {
-  console.log('render Home', props);
+export default function Home() {
   return (
     <>
       <h2 className="title">Home Page</h2>

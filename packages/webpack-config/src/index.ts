@@ -61,8 +61,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     define = {},
     externals = {},
     publicPath = '/',
-    output,
-    outputDir = path.join(rootDir, 'build'),
+    outputDir,
     loaders = [],
     plugins = [],
     alias = {},
@@ -80,39 +79,17 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     tsCheckerOptions,
     eslintOptions,
     entry,
+    output,
     splitChunks,
     assetsManifest,
     concatenateModules,
     devServer,
     fastRefresh,
     logging,
+    optimization,
+    performance,
   } = config;
   const absoluteOutputDir = path.isAbsolute(outputDir) ? outputDir : path.join(rootDir, outputDir);
-
-  // @ts-ignore
-  if (config.__type === 'miniapp') {
-    console.log(11111111)
-    console.log("🚀 ~ file: index.ts ~ line 93 ~ config", config)
-    delete config.port;
-    // @ts-ignore
-    delete config.__type;
-    delete config.compileIncludes;
-    delete config.eslintOptions;
-    delete config.minimizerOptions;
-    delete config.configureWebpack;
-    delete config.define;
-    delete config.fastRefresh;
-    delete config.assetsManifest;
-    delete config.alias;
-    delete config.outputDir;
-    delete config.cacheDir;
-    // @ts-ignore
-    delete config.cacheDirectory;
-    delete config.sourceMap;
-
-    return config;
-  }
-
   const dev = mode !== 'production';
   const supportedBrowsers = getSupportedBrowsers(rootDir, dev);
   const hashKey = hash === true ? 'hash:8' : (hash || '');
@@ -187,19 +164,24 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
         },
       },
       rules: [
-        // @ts-ignore
-        ...(config.module? config.module.rules : []),
         ...loaders,
       ],
     },
     resolve: {
       alias: aliasWithRoot,
+      symlinks: true,
       extensions: ['.ts', '.tsx', '.jsx', '...'],
+      mainFields: ['browser', 'module', 'jsnext:main', 'main'],
       fallback: {
         // TODO: add more fallback module
         events: require.resolve('events'),
         stream: false,
+        fs: false,
+        path: false,
       },
+    },
+    resolveLoader: {
+      modules: ['node_modules'],
     },
     watchOptions: {
       // add a delay before rebuilding once routes changed
@@ -207,7 +189,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
       aggregateTimeout: 200,
       ignored: watchIgnoredRegexp,
     },
-    optimization: {
+    optimization: optimization || {
       splitChunks: splitChunks == false ? undefined : getSplitChunksConfig(rootDir),
       minimize: minify,
       minimizer: [
@@ -233,7 +215,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     },
     cache: {
       type: 'filesystem',
-      version: `${process.env.__ICE_VERSION__}|`,
+      version: `${process.env.__ICE_VERSION__}|${JSON.stringify(config)}`,
       buildDependencies: { config: [path.join(rootDir, 'package.json')] },
       cacheDirectory: path.join(cacheDir, 'webpack'),
     },
@@ -242,16 +224,16 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     infrastructureLogging: {
       level: 'warn',
     },
-    performance: false,
+    performance: performance || false,
     devtool: getDevtoolValue(sourceMap),
     plugins: [
       ...plugins,
       ...compilerWebpackPlugins,
-      // dev && new ReactRefreshWebpackPlugin({
-      //   exclude: [/node_modules/, /bundles\/compiled/],
-      //   // use webpack-dev-server overlay instead
-      //   overlay: false,
-      // }),
+      dev && fastRefresh && new ReactRefreshWebpackPlugin({
+        exclude: [/node_modules/, /bundles\/compiled/],
+        // use webpack-dev-server overlay instead
+        overlay: false,
+      }),
       new webpack.DefinePlugin({
         ...defineVars,
         ...runtimeDefineVars,
