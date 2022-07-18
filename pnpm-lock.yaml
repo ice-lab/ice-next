@@ -86,6 +86,7 @@ importers:
       '@ice/runtime': workspace:*
       '@types/react': ^18.0.0
       '@types/react-dom': ^18.0.2
+      '@uni/env': ^1.1.0
       ahooks: ^3.3.8
       browserslist: ^4.19.3
       react: ^18.0.0
@@ -98,6 +99,7 @@ importers:
       '@ice/plugin-auth': link:../../packages/plugin-auth
       '@ice/plugin-rax-compat': link:../../packages/plugin-rax-compat
       '@ice/runtime': link:../../packages/runtime
+      '@uni/env': registry.npmjs.org/@uni/env/1.1.0
       ahooks: 3.4.0_react@18.0.0
       react: 18.0.0
       react-dom: 18.0.0_react@18.0.0
@@ -18418,6 +18420,12 @@ packages:
       '@types/node': 17.0.27
     dev: true
     optional: true
+
+  registry.npmjs.org/@uni/env/1.1.0:
+    resolution: {integrity: sha512-2GVgUzxIaO2vGElXEuc45+I7L6Jbw8inLDDFuC0K4htjKtPmYywKSE6oDhvmdAXb4GCOH8hmxECYtAh1rjsgoQ==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@uni/env/-/env-1.1.0.tgz}
+    name: '@uni/env'
+    version: 1.1.0
+    dev: false
 
   registry.npmjs.org/csstype/3.0.11:
     resolution: {integrity: sha512-sa6P2wJ+CAbgyy4KFssIb/JNMLxFvKF1pCYCSXS8ZMuqZnMsrxqI2E5sPyoTpxoPU/gVZMzr2zjOfg8GIZOMsw==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/csstype/-/csstype-3.0.11.tgz}
