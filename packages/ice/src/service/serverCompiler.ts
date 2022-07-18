@@ -55,7 +55,8 @@ export function createServerCompiler(options: Options) {
   });
 
   const serverCompiler: ServerCompiler = async (originBuildOptions, { preBundle, swc: swcOptions } = {}) => {
-    const buildOptions = merge(task.config?.server?.buildOptions || {}, originBuildOptions);
+    const buildOptions = {} as esbuild.BuildOptions;
+    merge(buildOptions, task.config?.server?.buildOptions || {}, originBuildOptions);
     let depsMetadata;
     if (preBundle) {
       depsMetadata = await createDepsMetadata({ task, rootDir });
@@ -81,6 +82,8 @@ export function createServerCompiler(options: Options) {
       bundle: true,
       format: 'esm',
       target: 'node12.20.0',
+      define,
+      ...buildOptions,
       // enable JSX syntax in .js files by default for compatible with migrate project
       // while it is not recommended
       loader: {
@@ -91,8 +94,6 @@ export function createServerCompiler(options: Options) {
         path.resolve(__dirname, '../polyfills/react.js'),
         ...(buildOptions?.inject || []),
       ],
-      ...buildOptions,
-      define,
       plugins: [
         ...(buildOptions.plugins || []),
         emptyCSSPlugin(),
