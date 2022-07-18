@@ -60,6 +60,10 @@ const start = async (
         },
         {
           preBundle: format === 'esm',
+          swc: {
+            // Remove components and getData when document only.
+            removeExportExprs: false ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
+          },
         },
       ],
       serverCompileTask,

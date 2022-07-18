@@ -111,6 +111,13 @@ function getJsxTransformOptions({
       transform: {
         react: reactTransformConfig,
         legacyDecorator: true,
+        constModules: {
+          globals: {
+            '@uni/env': {
+              isWeb: 'true',
+            },
+          },
+        },
       },
       externalHelpers: false,
     },
