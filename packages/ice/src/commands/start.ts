@@ -8,6 +8,7 @@ import type { ExtendsPluginAPI, ServerCompiler } from '@ice/types/esm/plugin.js'
 import type { AppConfig, RenderMode } from '@ice/runtime';
 import { getWebpackConfig } from '@ice/webpack-config';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
+import type ora from '@ice/bundles/compiled/ora/index.js';
 import webpackCompiler from '../service/webpackCompiler.js';
 import prepareURLs from '../utils/prepareURLs.js';
 import createRenderMiddleware from '../middlewares/ssr/renderMiddleware.js';
@@ -20,10 +21,15 @@ const { merge } = lodash;
 
 const start = async (
   context: Context<Config, ExtendsPluginAPI>,
-  taskConfigs: TaskConfig<Config>[],
-  serverCompiler: ServerCompiler,
-  appConfig: AppConfig,
+  options: {
+    taskConfigs: TaskConfig<Config>[];
+    serverCompiler: ServerCompiler;
+    appConfig: AppConfig;
+    devPath: string;
+    spinner: ora.Ora;
+  },
 ) => {
+  const { taskConfigs, serverCompiler, appConfig, devPath, spinner } = options;
   const { applyHook, commandArgs, command, rootDir, userConfig, extendsPluginAPI: { serverCompileTask } } = context;
   const { port, host, https = false } = commandArgs;
 
@@ -75,6 +81,7 @@ const start = async (
       }
       const appConfig = getAppConfig();
       const routeManifestPath = path.join(rootDir, ROUTER_MANIFEST);
+      // both ssr and ssg, should render the whole page in dev mode.
       const documentOnly = !ssr && !ssg;
 
       const serverRenderMiddleware = createRenderMiddleware({
@@ -117,6 +124,8 @@ const start = async (
     command,
     applyHook,
     serverCompiler,
+    spinner,
+    devPath,
   });
   const devServer = new WebpackDevServer(devServerConfig, compiler);
   devServer.startCallback(() => {

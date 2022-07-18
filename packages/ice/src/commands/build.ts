@@ -6,6 +6,7 @@ import type { StatsError } from 'webpack';
 import type { Config } from '@ice/types';
 import type { ServerCompiler } from '@ice/types/esm/plugin.js';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
+import type ora from '@ice/bundles/compiled/ora/index.js';
 import webpackCompiler from '../service/webpackCompiler.js';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
 import { RUNTIME_TMP_DIR, SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
@@ -14,9 +15,13 @@ import emptyDir from '../utils/emptyDir.js';
 
 const build = async (
   context: Context<Config>,
-  taskConfigs: TaskConfig<Config>[],
-  serverCompiler: ServerCompiler,
+  options: {
+    taskConfigs: TaskConfig<Config>[];
+    serverCompiler: ServerCompiler;
+    spinner: ora.Ora;
+  },
 ) => {
+  const { taskConfigs, serverCompiler, spinner } = options;
   const { applyHook, commandArgs, command, rootDir, userConfig } = context;
   const webpackConfigs = taskConfigs.map(({ config }) => getWebpackConfig({
     config,
@@ -37,14 +42,16 @@ const build = async (
     command,
     applyHook,
     serverCompiler,
+    spinner,
   });
-  const { ssg, ssr, server: { format } } = userConfig;
+  const { ssg, server: { format } } = userConfig;
   // compile server bundle
   const entryPoint = path.join(rootDir, SERVER_ENTRY);
   const esm = format === 'esm';
   const outJSExtension = esm ? '.mjs' : '.cjs';
   const serverOutputDir = path.join(outputDir, SERVER_OUTPUT_DIR);
-  const documentOnly = !ssg && !ssr;
+  // only ssg need to generate the whole page html when build time.
+  const documentOnly = !ssg;
   let serverEntry;
   const { stats, isSuccessful, messages } = await new Promise((resolve, reject): void => {
     let messages: { errors: string[]; warnings: string[] };
