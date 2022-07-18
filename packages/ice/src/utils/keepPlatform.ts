@@ -10,7 +10,7 @@ export default function keepPlatform(target: string) {
     isKuaiShouMiniProgram: 'false',
   };
 
-  const platform = `is${target.replace(target[0], target[0].toUpperCase)}`;
+  const platform = `is${target[0].toUpperCase()}${target.slice(1)}`;
 
   env[platform] = 'true';
 
