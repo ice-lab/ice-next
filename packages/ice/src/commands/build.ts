@@ -12,7 +12,6 @@ import formatWebpackMessages from '../utils/formatWebpackMessages.js';
 import { RUNTIME_TMP_DIR, SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
 import generateHTML from '../utils/generateHTML.js';
 import emptyDir from '../utils/emptyDir.js';
-import type { AppConfig } from '../utils/runtimeEnv.js';
 
 const build = async (
   context: Context<Config>,
@@ -107,7 +106,6 @@ const build = async (
           entry: serverEntry,
           documentOnly,
           renderMode,
-          basename: appConfig?.router?.basename || basename,
         });
         resolve({
           stats,
