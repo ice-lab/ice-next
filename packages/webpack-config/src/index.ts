@@ -11,7 +11,7 @@ import TerserPlugin from '@ice/bundles/compiled/terser-webpack-plugin/index.js';
 import ForkTsCheckerPlugin from '@ice/bundles/compiled/fork-ts-checker-webpack-plugin/index.js';
 import ESlintPlugin from '@ice/bundles/compiled/eslint-webpack-plugin/index.js';
 import CopyPlugin from '@ice/bundles/compiled/copy-webpack-plugin/index.js';
-import type { Configuration, WebpackPluginInstance } from 'webpack';
+import type { Configuration, WebpackPluginInstance, Compiler } from 'webpack';
 import type webpack from 'webpack';
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
 import type { Config } from '@ice/types';
@@ -31,11 +31,12 @@ interface GetWebpackConfigOptions {
   rootDir: string;
   config: Config;
   webpack: typeof webpack;
+  runtimeTmpDir: string;
 }
 export type WebpackConfig = Configuration & { devServer?: DevServerConfiguration };
 type GetWebpackConfig = (options: GetWebpackConfigOptions) => WebpackConfig;
 
-function getEntry(rootDir: string) {
+function getEntry(rootDir: string, runtimeTmpDir: string) {
   // check entry.client.ts
   let entryFile = fg.sync('entry.client.{tsx,ts,jsx.js}', {
     cwd: path.join(rootDir, 'src'),
@@ -43,7 +44,7 @@ function getEntry(rootDir: string) {
   })[0];
   if (!entryFile) {
     // use generated file in template directory
-    entryFile = path.join(rootDir, '.ice/entry.client.ts');
+    entryFile = path.join(rootDir, runtimeTmpDir, 'entry.client.ts');
   }
 
   // const dataLoaderFile = path.join(rootDir, '.ice/data-loader.ts');
@@ -54,12 +55,13 @@ function getEntry(rootDir: string) {
   };
 }
 
-const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
+const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeTmpDir }) => {
   const {
     mode,
     define = {},
     externals = {},
     publicPath = '/',
+    output,
     outputDir = path.join(rootDir, 'build'),
     loaders = [],
     plugins = [],
@@ -83,7 +85,33 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     concatenateModules,
     devServer,
     fastRefresh,
+    logging,
   } = config;
+  const absoluteOutputDir = path.isAbsolute(outputDir) ? outputDir : path.join(rootDir, outputDir);
+
+  // @ts-ignore
+  if (config.__type === 'miniapp') {
+    console.log(11111111)
+    console.log("🚀 ~ file: index.ts ~ line 93 ~ config", config)
+    delete config.port;
+    // @ts-ignore
+    delete config.__type;
+    delete config.compileIncludes;
+    delete config.eslintOptions;
+    delete config.minimizerOptions;
+    delete config.configureWebpack;
+    delete config.define;
+    delete config.fastRefresh;
+    delete config.assetsManifest;
+    delete config.alias;
+    delete config.outputDir;
+    delete config.cacheDir;
+    // @ts-ignore
+    delete config.cacheDirectory;
+    delete config.sourceMap;
+
+    return config;
+  }
 
   const dev = mode !== 'production';
   const supportedBrowsers = getSupportedBrowsers(rootDir, dev);
@@ -142,11 +170,11 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       topLevelAwait: true,
       ...(experimental || {}),
     },
-    entry: entry || (() => getEntry(rootDir)),
+    entry: entry || (() => getEntry(rootDir, runtimeTmpDir)),
     externals,
-    output: {
+    output: output || {
       publicPath,
-      path: path.isAbsolute(outputDir) ? outputDir : path.join(rootDir, outputDir),
+      path: absoluteOutputDir,
       filename: `js/${hashKey ? `[name]-[${hashKey}].js` : '[name].js'}`,
       assetModuleFilename: 'assets/[name].[hash:8][ext]',
     },
@@ -159,6 +187,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
         },
       },
       rules: [
+        // @ts-ignore
+        ...(config.module? config.module.rules : []),
         ...loaders,
       ],
     },
@@ -203,7 +233,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     },
     cache: {
       type: 'filesystem',
-      version: `${process.env.__ICE_VERSION__}|${JSON.stringify(config)}`,
+      version: `${process.env.__ICE_VERSION__}|`,
       buildDependencies: { config: [path.join(rootDir, 'package.json')] },
       cacheDirectory: path.join(cacheDir, 'webpack'),
     },
@@ -217,18 +247,18 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     plugins: [
       ...plugins,
       ...compilerWebpackPlugins,
-      dev && fastRefresh && new ReactRefreshWebpackPlugin({
-        exclude: [/node_modules/, /bundles\/compiled/],
-        // use webpack-dev-server overlay instead
-        overlay: false,
-      }),
+      // dev && new ReactRefreshWebpackPlugin({
+      //   exclude: [/node_modules/, /bundles\/compiled/],
+      //   // use webpack-dev-server overlay instead
+      //   overlay: false,
+      // }),
       new webpack.DefinePlugin({
         ...defineVars,
         ...runtimeDefineVars,
       }),
       assetsManifest && new AssetsManifestPlugin({
         fileName: 'assets-manifest.json',
-        outputDir: path.join(rootDir, '.ice'),
+        outputDir: path.join(rootDir, runtimeTmpDir),
       }),
       analyzer && new BundleAnalyzerPlugin(),
       tsCheckerOptions && new ForkTsCheckerPlugin(tsCheckerOptions),
@@ -238,7 +268,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
       !dev && new CopyPlugin({
         patterns: [{
           from: path.join(rootDir, 'public'),
-          to: outputDir,
+          to: absoluteOutputDir,
           // ignore assets already in compilation.assets such as js and css files
           force: false,
           noErrorOnMissing: true,
@@ -297,12 +327,47 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack }) => {
     webpackConfig.optimization.usedExports = false;
   }
 
-  if (process.env.WEBPACK_LOGGING) {
-    webpackConfig.infrastructureLogging = {
-      level: 'verbose',
-      debug: /FileSystemInfo/,
-    };
-    webpackConfig.stats = 'verbose';
+  if (logging) {
+    const infra = logging.includes('infrastructure');
+    const profile = logging.includes('profile');
+    const summary = logging.includes('summary');
+    const assets = logging.includes('assets');
+
+    if (infra) {
+      webpackConfig.infrastructureLogging = {
+        level: 'verbose',
+        debug: /FileSystemInfo/,
+      };
+      webpackConfig.stats = 'verbose';
+    }
+
+    if (profile || summary) {
+      webpackConfig.plugins!.push((compiler: Compiler) => {
+        compiler.hooks.done.tap('webpack-logging', (stats) => {
+          console.log(
+            stats.toString(profile ? {
+              colors: true,
+              logging: 'verbose',
+            } : {
+              preset: 'summary',
+              assets,
+              colors: true,
+              timings: true,
+            }),
+          );
+        });
+      });
+    }
+
+    if (profile) {
+      const ProgressPlugin = webpack.ProgressPlugin as typeof webpack.ProgressPlugin;
+      webpackConfig.plugins!.push(
+        new ProgressPlugin({
+          profile: true,
+        }),
+      );
+      webpackConfig.profile = true;
+    }
   }
 
   // pipe webpack by built-in functions and custom functions
