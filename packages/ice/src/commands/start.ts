@@ -15,7 +15,7 @@ import createRenderMiddleware from '../middlewares/ssr/renderMiddleware.js';
 import createMockMiddleware from '../middlewares/mock/createMiddleware.js';
 import { ROUTER_MANIFEST, RUNTIME_TMP_DIR, SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
 import ServerCompilerPlugin from '../webpack/ServerCompilerPlugin.js';
-import { getAppConfig } from '../analyzeRuntime.js';
+import getRouterBasename from '../utils/getRouterBasename.js';
 
 const { merge } = lodash;
 
@@ -32,7 +32,7 @@ const start = async (
   const { taskConfigs, serverCompiler, appConfig, devPath, spinner } = options;
   const { applyHook, commandArgs, command, rootDir, userConfig, extendsPluginAPI: { serverCompileTask } } = context;
   const { port, host, https = false } = commandArgs;
-
+  const webTaskConfig = taskConfigs.find(({ name }) => name === 'web');
   const webpackConfigs = taskConfigs.map(({ config }) => getWebpackConfig({
     config,
     rootDir,
@@ -79,7 +79,6 @@ const start = async (
       } else if (ssg) {
         renderMode = 'SSG';
       }
-      const appConfig = getAppConfig();
       const routeManifestPath = path.join(rootDir, ROUTER_MANIFEST);
       const documentOnly = !ssr && !ssg;
 
@@ -88,7 +87,6 @@ const start = async (
         routeManifestPath,
         documentOnly,
         renderMode,
-        basename: appConfig?.router?.basename,
       });
       const insertIndex = middlewares.findIndex(({ name }) => name === 'serve-index');
       middlewares.splice(
@@ -106,7 +104,7 @@ const start = async (
   // merge devServerConfig with webpackConfig.devServer
   devServerConfig = merge(webpackConfigs[0].devServer, devServerConfig);
   const protocol = devServerConfig.https ? 'https' : 'http';
-  let urlPathname = appConfig?.router?.basename || '/';
+  let urlPathname = getRouterBasename(webTaskConfig, appConfig) || '/';
 
   const urls = prepareURLs(
     protocol,
