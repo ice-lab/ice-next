@@ -41,6 +41,7 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
 
       const programmaticOptions: SwcConfig = {
         filename: id,
+        sourceMaps: !!sourceMap,
       };
 
       const commonOptions = getJsxTransformOptions({ suffix, fastRefresh });
@@ -54,9 +55,14 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
         commonOptions.jsc.transform.react.development = mode === 'development';
       }
 
-      Object.assign(programmaticOptions, { sourceMaps: !!sourceMap }, commonOptions);
+      merge(programmaticOptions, commonOptions);
 
-      const { removeExportExprs } = swcOptions;
+      const { removeExportExprs, compilationConfig } = swcOptions;
+
+      if (compilationConfig) {
+        merge(programmaticOptions, compilationConfig);
+      }
+
       if (removeExportExprs && /(.*)pages(.*)\.(jsx?|tsx?|mjs)$/.test(id)) {
         merge(programmaticOptions, {
           jsc: {
@@ -111,13 +117,6 @@ function getJsxTransformOptions({
       transform: {
         react: reactTransformConfig,
         legacyDecorator: true,
-        constModules: {
-          globals: {
-            '@uni/env': {
-              isWeb: 'true',
-            },
-          },
-        },
       },
       externalHelpers: false,
     },
