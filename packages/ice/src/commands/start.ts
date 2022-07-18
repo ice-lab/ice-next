@@ -87,6 +87,7 @@ const start = async (
         routeManifestPath,
         documentOnly,
         renderMode,
+        taskConfig: webTaskConfig,
       });
       const insertIndex = middlewares.findIndex(({ name }) => name === 'serve-index');
       middlewares.splice(
