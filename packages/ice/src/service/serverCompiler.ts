@@ -88,7 +88,7 @@ export function createServerCompiler(options: Options) {
       plugins: [
         ...(buildOptions.plugins || []),
         emptyCSSPlugin(),
-        // dev && preBundle && createDepRedirectPlugin(depsMetadata),
+        dev && preBundle && createDepRedirectPlugin(depsMetadata),
         aliasPlugin({
           alias,
           serverBundle: server.bundle,
