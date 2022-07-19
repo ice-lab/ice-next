@@ -634,7 +634,7 @@ importers:
   packages/webpack-config:
     specifiers:
       '@ice/bundles': ^0.1.0
-      '@ice/swc-plugin-remove-export': 0.1.0-beta.1
+      '@ice/swc-plugin-remove-export': ^0.1.0
       '@ice/types': ^1.0.0
       '@pmmmwh/react-refresh-webpack-plugin': ^0.5.7
       '@rollup/pluginutils': ^4.2.0
@@ -653,7 +653,7 @@ importers:
       webpack-dev-server: ^4.7.4
     dependencies:
       '@ice/bundles': link:../bundles
-      '@ice/swc-plugin-remove-export': registry.npmjs.org/@ice/swc-plugin-remove-export/0.1.0-beta.1
+      '@ice/swc-plugin-remove-export': registry.npmjs.org/@ice/swc-plugin-remove-export/0.1.0
       '@pmmmwh/react-refresh-webpack-plugin': 0.5.7_co3pwf5d42rd2rqpmthdozfyry
       '@rollup/pluginutils': 4.2.1
       '@swc/core': registry.npmjs.org/@swc/core/1.2.210
@@ -17927,10 +17927,10 @@ packages:
       react: 18.2.0
     dev: false
 
-  registry.npmjs.org/@ice/swc-plugin-remove-export/0.1.0-beta.1:
-    resolution: {integrity: sha512-unNvxJNgzNXmM00e63We5Fn/Jlu6WC3vQA7akxSeFOYxh36SlASS0YDXNIY3MSVP+b2dZDsYZB3Py39Ow6kWwA==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@ice/swc-plugin-remove-export/-/swc-plugin-remove-export-0.1.0-beta.1.tgz}
+  registry.npmjs.org/@ice/swc-plugin-remove-export/0.1.0:
+    resolution: {integrity: sha512-L3dSLxJ2b+u8tEF5ISYzpqYMRTfKHwtTlfdKHUWHqK+z8gIUwsqB28SfkGbHlRFPhjlvE+5zP727lsbC3uED5g==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@ice/swc-plugin-remove-export/-/swc-plugin-remove-export-0.1.0.tgz}
     name: '@ice/swc-plugin-remove-export'
-    version: 0.1.0-beta.1
+    version: 0.1.0
     dev: false
 
   registry.npmjs.org/@node-rs/jieba-android-arm-eabi/1.6.1:
