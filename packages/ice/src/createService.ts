@@ -19,12 +19,12 @@ import { initProcessEnv, updateRuntimeEnv, getCoreEnvKeys } from './utils/runtim
 import getRuntimeModules from './utils/getRuntimeModules.js';
 import { generateRoutesInfo } from './routes.js';
 import getWebTask from './tasks/web/index.js';
-import getDataLoaderTask from './tasks/web/data-loader.js';
 import * as config from './config.js';
 import createSpinner from './utils/createSpinner.js';
 import getRoutePaths from './utils/getRoutePaths.js';
 import { RUNTIME_TMP_DIR } from './constant.js';
 import ServerCompileTask from './utils/ServerCompileTask.js';
+import renderExportsTemplate from './utils/renderExportsTemplate.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -36,7 +36,7 @@ interface CreateServiceOptions {
 
 async function createService({ rootDir, command, commandArgs }: CreateServiceOptions) {
   const buildSpinner = createSpinner('loading config...');
-  const templateDir = path.join(__dirname, '../templates/');
+  const templateDir = path.join(__dirname, '../templates/core/');
   const configFile = 'ice.config.(mts|mjs|ts|js|cjs|json)';
   const dataCache = new Map<string, string>();
   const generator = new Generator({
@@ -92,9 +92,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   // register web
   ctx.registerTask('web', getWebTask({ rootDir, command }));
 
-  // register data-loader
-  ctx.registerTask('data-loader', getDataLoaderTask({ rootDir, command }));
-
   // register config
   ['userConfig', 'cliOption'].forEach((configType) => ctx.registerConfig(configType, config[configType]));
 
@@ -124,6 +121,12 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     hydrate: !csr,
   });
   dataCache.set('routes', JSON.stringify(routesInfo.routeManifest));
+  // Render exports files if route component export getData / getConfig.
+  renderExportsTemplate(routesInfo, generator.addRenderFile, {
+    rootDir,
+    runtimeDir: RUNTIME_TMP_DIR,
+    templateDir: path.join(templateDir, '../exports'),
+  });
 
   // render template before webpack compile
   const renderStart = new Date().getTime();

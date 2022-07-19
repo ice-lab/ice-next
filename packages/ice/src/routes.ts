@@ -43,16 +43,16 @@ export async function generateRoutesInfo(rootDir: string, routesConfig: UserConf
     routesStr,
     routes,
     loaders: generateRouteConfig(routes, 'getData', (str, imports) => {
-      return `${str}
+      return imports.length > 0 ? `${str}
 const loaders = {
   ${imports.map(([routeId, importKey]) => `'${routeId}': ${importKey},`).join('\n  ')}
-};`;
+};` : '';
     }),
     routesConfig: generateRouteConfig(routes, 'getConfig', (str, imports) => {
-      return `${str}
+      return imports.length > 0 ? `${str}
 export default {
   ${imports.map(([, importKey, routePath]) => `'${routePath}': ${importKey},`).join('\n  ')}
-};`;
+};` : '';
     }),
   };
 }
