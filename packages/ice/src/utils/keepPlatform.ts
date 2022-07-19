@@ -1,4 +1,6 @@
 export default function keepPlatform(target: string) {
+  // config for swc transform
+  // https://swc.rs/docs/configuration/compilation#jsctransformconstmodules
   const env = {
     isWeex: 'false',
     isWeb: 'false',
