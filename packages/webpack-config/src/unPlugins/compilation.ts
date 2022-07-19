@@ -7,6 +7,7 @@ import type { Config } from '@ice/types';
 
 const { merge } = lodash;
 const require = createRequire(import.meta.url);
+const regeneratorRuntimePath = require.resolve('regenerator-runtime');
 
 type JSXSuffix = 'jsx' | 'tsx';
 
@@ -117,6 +118,10 @@ function getJsxTransformOptions({
       transform: {
         react: reactTransformConfig,
         legacyDecorator: true,
+        // @ts-expect-error fix me when @builder/swc fix type error
+        regenerator: {
+          importPath: regeneratorRuntimePath,
+        },
       },
       externalHelpers: false,
     },
