@@ -12,6 +12,7 @@ import formatWebpackMessages from '../utils/formatWebpackMessages.js';
 import { RUNTIME_TMP_DIR, SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
 import generateHTML from '../utils/generateHTML.js';
 import emptyDir from '../utils/emptyDir.js';
+import keepPlatform from '../utils/keepPlatform.js';
 
 const build = async (
   context: Context<Config>,
@@ -44,13 +45,14 @@ const build = async (
     serverCompiler,
     spinner,
   });
-  const { ssg, ssr, server: { format } } = userConfig;
+  const { ssg, server: { format } } = userConfig;
   // compile server bundle
   const entryPoint = path.join(rootDir, SERVER_ENTRY);
   const esm = format === 'esm';
   const outJSExtension = esm ? '.mjs' : '.cjs';
   const serverOutputDir = path.join(outputDir, SERVER_OUTPUT_DIR);
-  const documentOnly = !ssg && !ssr;
+  // only ssg need to generate the whole page html when build time.
+  const documentOnly = !ssg;
   let serverEntry;
   const { stats, isSuccessful, messages } = await new Promise((resolve, reject): void => {
     let messages: { errors: string[]; warnings: string[] };
@@ -89,7 +91,18 @@ const build = async (
             swc: {
               // Remove components and getData when document only.
               removeExportExprs: documentOnly ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
-              jsxTransform: true,
+              compilationConfig: {
+                jsc: {
+                  transform: {
+                    constModules: {
+                      globals: {
+                        '@uni/env': keepPlatform('node'),
+                        'universal-env': keepPlatform('node'),
+                      },
+                    },
+                  },
+                },
+              },
             },
           },
         );
