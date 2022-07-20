@@ -185,7 +185,8 @@ export async function scanImports(entries: string[], options?: ScanOptions) {
             alias,
             exclude,
           }),
-          ...(plugins || [])],
+          ...(plugins || []),
+        ],
       }),
     ));
   consola.debug(`Scan completed in ${(performance.now() - start).toFixed(2)}ms:`, deps);

@@ -95,7 +95,6 @@ export default async function preBundleCJSDeps(options: PreBundleDepsOptions): P
     entryPoints: flatIdDeps,
     bundle: true,
     logLevel: 'error',
-    sourcemap: true,
     outdir: depsCacheDir,
     format: 'cjs',
     platform: 'node',
