@@ -1,12 +1,9 @@
 import * as path from 'path';
 import consola from 'consola';
 import { getWebpackConfig } from '@ice/webpack-config';
-import type { Context, TaskConfig } from 'build-scripts';
 import type { StatsError } from 'webpack';
-import type { Config } from '@ice/types';
-import type { ServerCompiler } from '@ice/types/esm/plugin.js';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
-import type ora from '@ice/bundles/compiled/ora/index.js';
+import type AppService from '../Service.js';
 import webpackCompiler from '../service/webpackCompiler.js';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
 import { RUNTIME_TMP_DIR, SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
@@ -14,15 +11,8 @@ import generateHTML from '../utils/generateHTML.js';
 import emptyDir from '../utils/emptyDir.js';
 import keepPlatform from '../utils/keepPlatform.js';
 
-const build = async (
-  context: Context<Config>,
-  options: {
-    taskConfigs: TaskConfig<Config>[];
-    serverCompiler: ServerCompiler;
-    spinner: ora.Ora;
-  },
-) => {
-  const { taskConfigs, serverCompiler, spinner } = options;
+export default async function build(appService: AppService) {
+  const { context, taskConfigs, serverCompiler, spinner } = appService;
   const { applyHook, commandArgs, command, rootDir, userConfig } = context;
   const webpackConfigs = taskConfigs.map(({ config }) => getWebpackConfig({
     config,
@@ -140,6 +130,4 @@ const build = async (
   });
 
   return { compiler };
-};
-
-export default build;
+}

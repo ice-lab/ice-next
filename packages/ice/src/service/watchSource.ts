@@ -1,10 +1,17 @@
-import * as chokidar from 'chokidar';
-import micromatch from 'micromatch';
+import type { FSWatcher } from 'fs';
 import type { WatchOptions } from 'chokidar';
 import type { WatchEvent } from '@ice/types/esm/plugin.js';
+import * as chokidar from 'chokidar';
+import micromatch from 'micromatch';
 import formatPath from '../utils/formatPath.js';
 
-function createWatch(options: {
+export interface WatchHandle {
+  watcher: FSWatcher;
+  addWatchEvent: (...args: WatchEvent[]) => void;
+  removeWatchEvent: (name: string) => void;
+}
+
+export default function createWatch(options: {
   watchDir: string;
   command?: string;
   watchOptions?: WatchOptions;
@@ -37,7 +44,5 @@ function createWatch(options: {
       const eventIndex = watchEvents.findIndex(([,,watchName]) => watchName === name);
       watchEvents.splice(eventIndex, 1);
     },
-  };
+  } as WatchHandle;
 }
-
-export default createWatch;

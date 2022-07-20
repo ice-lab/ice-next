@@ -1,14 +1,11 @@
 import * as path from 'path';
 import WebpackDevServer from 'webpack-dev-server';
 import type { Configuration } from 'webpack-dev-server';
-import type { Context, TaskConfig } from 'build-scripts';
 import lodash from '@ice/bundles/compiled/lodash/index.js';
-import type { Config } from '@ice/types';
-import type { ExtendsPluginAPI, ServerCompiler } from '@ice/types/esm/plugin.js';
-import type { AppConfig, RenderMode } from '@ice/runtime';
+import type { RenderMode } from '@ice/runtime';
 import { getWebpackConfig } from '@ice/webpack-config';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
-import type ora from '@ice/bundles/compiled/ora/index.js';
+import type AppService from '../Service.js';
 import webpackCompiler from '../service/webpackCompiler.js';
 import prepareURLs from '../utils/prepareURLs.js';
 import createRenderMiddleware from '../middlewares/ssr/renderMiddleware.js';
@@ -20,17 +17,8 @@ import keepPlatform from '../utils/keepPlatform.js';
 
 const { merge } = lodash;
 
-const start = async (
-  context: Context<Config, ExtendsPluginAPI>,
-  options: {
-    taskConfigs: TaskConfig<Config>[];
-    serverCompiler: ServerCompiler;
-    appConfig: AppConfig;
-    devPath: string;
-    spinner: ora.Ora;
-  },
-) => {
-  const { taskConfigs, serverCompiler, appConfig, devPath, spinner } = options;
+export default async function serve(appService: AppService, { devPath }: { devPath: string }) {
+  const { context, taskConfigs, serverCompiler, appConfig, spinner } = appService;
   const { applyHook, commandArgs, command, rootDir, userConfig, extendsPluginAPI: { serverCompileTask } } = context;
   const { port, host, https = false } = commandArgs;
 
@@ -152,6 +140,4 @@ const start = async (
     });
   });
   return { compiler, devServer };
-};
-
-export default start;
+}
