@@ -291,17 +291,16 @@ const userConfig = [
       if (syntaxFeatures) {
         const { exportDefaultFrom, functionBind } = syntaxFeatures;
         if (exportDefaultFrom || functionBind) {
-          config.swcOptions = {
+          mergeDefaultValue(config, 'swcOptions', {
             compilationConfig: {
               jsc: {
-                // @ts-expect-error Field syntax is not supported to be modified.
                 parser: {
                   exportDefaultFrom: !!exportDefaultFrom,
                   functionBind: !!functionBind,
                 },
               },
             },
-          };
+          });
         }
       }
     },

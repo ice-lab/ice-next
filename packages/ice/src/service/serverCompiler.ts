@@ -27,11 +27,12 @@ interface Options {
   task: TaskConfig<Config>;
   command: string;
   server: UserConfig['server'];
+  syntaxFeatures: UserConfig['syntaxFeatures'];
 }
 
 const { merge } = lodash;
 export function createServerCompiler(options: Options) {
-  const { task, rootDir, command, server } = options;
+  const { task, rootDir, command, server, syntaxFeatures } = options;
 
   const alias = (task.config?.alias || {}) as Record<string, string | false>;
   const assetsManifest = path.join(rootDir, ASSETS_MANIFEST);
@@ -58,18 +59,30 @@ export function createServerCompiler(options: Options) {
   const serverCompiler: ServerCompiler = async (buildOptions, { preBundle, swc } = {}) => {
     let depsMetadata;
     let swcOptions = swc;
-    if (task.config?.swcOptions) {
-      swcOptions = merge(swcOptions, task.config.swcOptions);
+    const enableSyntaxFeatures = syntaxFeatures && Object.keys(syntaxFeatures).some(key => syntaxFeatures[key]);
+    if (enableSyntaxFeatures) {
+      swcOptions = merge(swc, {
+        jsc: {
+          parser: {
+            ...syntaxFeatures,
+          },
+        },
+      });
     }
     const transformPlugins = getCompilerPlugins({
       ...task.config,
       fastRefresh: false,
       swcOptions,
     }, 'esbuild');
-    if (preBundle) {
-      depsMetadata = await createDepsMetadata({ task, rootDir });
-    }
 
+    if (preBundle) {
+      depsMetadata = await createDepsMetadata({
+        task,
+        rootDir,
+        // Pass transformPlugins on syntaxFeatures is enabled
+        plugins: enableSyntaxFeatures ? transformPlugins : [],
+      });
+    }
     const startTime = new Date().getTime();
     consola.debug('[esbuild]', `start compile for: ${buildOptions.entryPoints}`);
     const define = {
@@ -128,22 +141,18 @@ export function createServerCompiler(options: Options) {
 interface CreateDepsMetadataOptions {
   rootDir: string;
   task: TaskConfig<Config>;
+  plugins: esbuild.Plugin[];
 }
 /**
  *  Create dependencies metadata only when server entry is bundled to esm.
  */
-async function createDepsMetadata({ rootDir, task }: CreateDepsMetadataOptions) {
+async function createDepsMetadata({ rootDir, task, plugins }: CreateDepsMetadataOptions) {
   const serverEntry = path.join(rootDir, SERVER_ENTRY);
-  const transformPlugins = getCompilerPlugins({
-    ...task.config,
-    fastRefresh: false,
-    swcOptions: task.config?.swcOptions,
-  }, 'esbuild');
 
   const deps = await scanImports([serverEntry], {
     rootDir,
     alias: (task.config?.alias || {}) as Record<string, string | false>,
-    plugins: transformPlugins,
+    plugins,
   });
 
   function filterPreBundleDeps(deps: Record<string, string>) {
@@ -164,7 +173,7 @@ async function createDepsMetadata({ rootDir, task }: CreateDepsMetadataOptions) 
     rootDir,
     cacheDir,
     taskConfig: task.config,
-    plugins: transformPlugins,
+    plugins,
   });
 
   return ret.metadata;
