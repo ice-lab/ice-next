@@ -6,6 +6,7 @@ import consola from 'consola';
 import esbuild from 'esbuild';
 import type { Config, UserConfig } from '@ice/types';
 import type { ServerCompiler } from '@ice/types/esm/plugin.js';
+import lodash from '@ice/bundles/compiled/lodash/index.js';
 import type { TaskConfig } from 'build-scripts';
 import { getCompilerPlugins } from '@ice/webpack-config';
 import escapeLocalIdent from '../utils/escapeLocalIdent.js';
@@ -28,6 +29,7 @@ interface Options {
   server: UserConfig['server'];
 }
 
+const { merge } = lodash;
 export function createServerCompiler(options: Options) {
   const { task, rootDir, command, server } = options;
 
@@ -53,17 +55,20 @@ export function createServerCompiler(options: Options) {
     }
   });
 
-  const serverCompiler: ServerCompiler = async (buildOptions, { preBundle, swc: swcOptions } = {}) => {
+  const serverCompiler: ServerCompiler = async (buildOptions, { preBundle, swc } = {}) => {
     let depsMetadata;
-    if (preBundle) {
-      depsMetadata = await createDepsMetadata({ task, rootDir });
+    let swcOptions = swc;
+    if (task.config?.swcOptions) {
+      swcOptions = merge(swcOptions, task.config.swcOptions);
     }
-
     const transformPlugins = getCompilerPlugins({
       ...task.config,
       fastRefresh: false,
       swcOptions,
     }, 'esbuild');
+    if (preBundle) {
+      depsMetadata = await createDepsMetadata({ task, rootDir });
+    }
 
     const startTime = new Date().getTime();
     consola.debug('[esbuild]', `start compile for: ${buildOptions.entryPoints}`);
@@ -88,7 +93,6 @@ export function createServerCompiler(options: Options) {
       plugins: [
         ...(buildOptions.plugins || []),
         emptyCSSPlugin(),
-        dev && preBundle && createDepRedirectPlugin(depsMetadata),
         aliasPlugin({
           alias,
           serverBundle: server.bundle,
@@ -104,6 +108,8 @@ export function createServerCompiler(options: Options) {
         }),
         fs.existsSync(assetsManifest) && createAssetsPlugin(assetsManifest, rootDir),
         ...transformPlugins,
+        // Plugin createDepRedirectPlugin need after transformPlugins in case of it has onLoad lifecycle.
+        dev && preBundle && createDepRedirectPlugin(depsMetadata),
       ].filter(Boolean),
     });
     consola.debug('[esbuild]', `time cost: ${new Date().getTime() - startTime}ms`);
@@ -128,10 +134,16 @@ interface CreateDepsMetadataOptions {
  */
 async function createDepsMetadata({ rootDir, task }: CreateDepsMetadataOptions) {
   const serverEntry = path.join(rootDir, SERVER_ENTRY);
+  const transformPlugins = getCompilerPlugins({
+    ...task.config,
+    fastRefresh: false,
+    swcOptions: task.config?.swcOptions,
+  }, 'esbuild');
 
   const deps = await scanImports([serverEntry], {
     rootDir,
     alias: (task.config?.alias || {}) as Record<string, string | false>,
+    plugins: transformPlugins,
   });
 
   function filterPreBundleDeps(deps: Record<string, string>) {
@@ -152,6 +164,7 @@ async function createDepsMetadata({ rootDir, task }: CreateDepsMetadataOptions) 
     rootDir,
     cacheDir,
     taskConfig: task.config,
+    plugins: transformPlugins,
   });
 
   return ret.metadata;

@@ -284,6 +284,28 @@ const userConfig = [
     name: 'mock',
     validation: 'object',
   },
+  {
+    name: 'syntaxFeatures',
+    validation: 'object',
+    setConfig: (config: Config, syntaxFeatures: UserConfig['syntaxFeatures']) => {
+      if (syntaxFeatures) {
+        const { exportDefaultFrom, functionBind } = syntaxFeatures;
+        if (exportDefaultFrom || functionBind) {
+          config.swcOptions = {
+            compilationConfig: {
+              jsc: {
+                // @ts-expect-error Field syntax is not supported to be modified.
+                parser: {
+                  exportDefaultFrom: !!exportDefaultFrom,
+                  functionBind: !!functionBind,
+                },
+              },
+            },
+          };
+        }
+      }
+    },
+  },
 ];
 
 const cliOption = [
