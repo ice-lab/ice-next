@@ -31,8 +31,8 @@ interface Options {
 export function createServerCompiler(options: Options) {
   const { task, rootDir, command, server } = options;
 
-  const alias = (task.config?.alias || {}) as TaskConfig<Config>['config']['alias'];
-  const externals = (task.config?.externals || {}) as TaskConfig<Config>['config']['externals'];
+  const alias = task.config?.alias || {};
+  const externals = task.config?.externals || {};
   const assetsManifest = path.join(rootDir, ASSETS_MANIFEST);
   const define = task.config?.define || {};
   const dev = command === 'start';
