@@ -4,8 +4,12 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-(function () {
-  const projectRootDir = process.env.INIT_CWD; // the original working directory that npm was executed from
+/**
+ * Create `ice.d.ts` into `.ice` folder to provide type hints.
+ */
+export function createRuntimeDefinition() {
+  // The original working directory that npm was executed from.
+  const projectRootDir = process.env.INIT_CWD;
   if (!projectRootDir) {
     // process.env.INIT_CWD may be undefined in low version npm or cnpm
     return;
@@ -25,4 +29,4 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
       iceTempDtsBundlePath,
     );
   }
-})();
+}

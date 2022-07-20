@@ -1,21 +1,36 @@
 #!/usr/bin/env node
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fse from 'fs-extra';
+import chalk from 'chalk';
 import { program } from 'commander';
+import path from 'path';
+import fse from 'fs-extra';
+import { fileURLToPath } from 'url';
+import semver from 'semver';
 import detectPort from 'detect-port';
 // hijack webpack before import other modules
 import '../esm/requireHook.js';
-import createService from '../esm/createService.js';
-import checkNodeVersion from './checkNodeVersion.mjs';
+import Service from '../esm/Service.js';
+import getRoutePaths from "../esm/utils/getRoutePaths.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const cwd = process.cwd();
 
+// App program entry.
 (async function () {
   const icePackageInfo = await fse.readJSON(path.join(__dirname, '../package.json'));
-  checkNodeVersion(icePackageInfo.engines.node, icePackageInfo.name);
+  const frameworkName = icePackageInfo.name;
+  const requiredNodeVersion = icePackageInfo.engines.node;
+  const satisfied = checkNodeVersion(requiredNodeVersion, frameworkName);
+  if (!satisfied) {
+    console.log();
+    console.log(chalk.red(`  You are using Node.js ${process.version}`));
+    console.log(chalk.red(`  ${frameworkName} requires Node.js ${requiredNodeVersion}, please update the version of Node.js.`));
+    console.log();
+    console.log();
+    process.exit(1);
+  }
+
+  // Describe the version of package `@ice/app`.
   process.env.__ICE_VERSION__ = icePackageInfo.version;
-  const cwd = process.cwd();
 
   program
     .version(icePackageInfo.version)
@@ -30,13 +45,17 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     .option('--config <config>', 'use custom config')
     .option('--rootDir <rootDir>', 'project root directory', cwd)
     .action(async ({ rootDir, ...commandArgs }) => {
-      const service = await createService({ rootDir, command: 'build', commandArgs });
-      service.run();
+      const service = new Service({ rootDir, command: 'build', commandArgs });
+      await service.start();
+      const build = await import('../esm/commands/build.js');
+      await build.default(service);
     });
 
   program
     .command('start')
-    .description('start server')
+    .alias('dev')
+    .alias('serve')
+    .description('start dev server')
     .allowUnknownOption()
     .option('--mode <mode>', 'set mode', 'development')
     .option('--config <config>', 'custom config path')
@@ -50,8 +69,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     .option('--force', 'force remove cache directory', false)
     .action(async ({ rootDir, ...commandArgs }) => {
       commandArgs.port = await detectPort(commandArgs.port);
-      const service = await createService({ rootDir, command: 'start', commandArgs });
-      service.run();
+      const service = new Service({ rootDir, command: 'start', commandArgs });
+      await service.start();
+      const serve = await import('../esm/commands/serve.js');
+      const routePaths = getRoutePaths(service.routesInfo.routes)
+        .sort((a, b) =>
+          // Sort by length, the shortest path first.
+          a.split('/').filter(Boolean).length - b.split('/').filter(Boolean).length);
+      const devPath = (routePaths[0] || '').replace(/^\//, '');
+      await serve.default(service, { devPath });
     });
 
   program
@@ -62,7 +88,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     .option('--config <config>', 'use custom config')
     .option('--rootDir <rootDir>', 'project root directory', cwd)
     .action(async ({ rootDir, ...commandArgs }) => {
-      await createService({ rootDir, command: 'test', commandArgs });
+      // @TODO: command test is not support yet.
+      console.warn(chalk.yellow('Command "test" is not support yet.'));
     });
 
   program.parse(process.argv);
@@ -81,3 +108,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     program.help();
   }
 })();
+
+/**
+ * Check if the current Node version is compatible with this application.
+ * @param requiredNodeVersion
+ * @param frameworkName default to 'ice'
+ * @returns {boolean} true if compatible.
+ */
+function checkNodeVersion(requiredNodeVersion, frameworkName = 'ice') {
+  return semver.satisfies(process.version, requiredNodeVersion, {});
+}
