@@ -1,16 +1,18 @@
 #!/usr/bin/env node
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fse from 'fs-extra';
+import chalk from 'chalk';
 import { program } from 'commander';
+import path from 'path';
+import fse from 'fs-extra';
+import { fileURLToPath } from 'url';
+import semver from 'semver';
 import detectPort from 'detect-port';
 // hijack webpack before import other modules
 import '../esm/requireHook.js';
 import createService from '../esm/createService.js';
-import checkNodeVersion from './checkNodeVersion.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+// App program entry.
 (async function () {
   const icePackageInfo = await fse.readJSON(path.join(__dirname, '../package.json'));
   checkNodeVersion(icePackageInfo.engines.node, icePackageInfo.name);
@@ -61,8 +63,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     .option('--mode <mode>', 'set mode', 'test')
     .option('--config <config>', 'use custom config')
     .option('--rootDir <rootDir>', 'project root directory', cwd)
-    .action(async ({ rootDir, ...commandArgs }) => {
-      await createService({ rootDir, command: 'test', commandArgs });
+    .action(async ({
+                     rootDir,
+                     ...commandArgs
+                   }) => {
+      await createService({
+        rootDir,
+        command: 'test',
+        commandArgs
+      });
     });
 
   program.parse(process.argv);
@@ -81,3 +90,19 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     program.help();
   }
 })();
+
+/**
+ * Check if the current Node version is compatible with this application.
+ * @param requiredNodeVersion
+ * @param frameworkName default to 'ice'
+ */
+function checkNodeVersion(requiredNodeVersion, frameworkName = 'ice') {
+  if (!semver.satisfies(process.version, requiredNodeVersion, {})) {
+    console.log();
+    console.log(chalk.red(`  You are using Node ${process.version}`));
+    console.log(chalk.red(`  ${frameworkName} requires Node ${requiredNodeVersion}, please update Node.`));
+    console.log();
+    console.log();
+    process.exit(1);
+  }
+}
