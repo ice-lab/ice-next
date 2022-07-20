@@ -62,9 +62,11 @@ export function createServerCompiler(options: Options) {
     const enableSyntaxFeatures = syntaxFeatures && Object.keys(syntaxFeatures).some(key => syntaxFeatures[key]);
     if (enableSyntaxFeatures) {
       swcOptions = merge(swc, {
-        jsc: {
-          parser: {
-            ...syntaxFeatures,
+        compilationConfig: {
+          jsc: {
+            parser: {
+              ...syntaxFeatures,
+            },
           },
         },
       });

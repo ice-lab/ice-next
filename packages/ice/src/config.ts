@@ -4,8 +4,10 @@ import fse from 'fs-extra';
 import consola from 'consola';
 import type { UserConfig, Config } from '@ice/types';
 import type { UserConfigContext } from 'build-scripts';
+import lodash from '@ice/bundles/compiled/lodash/index.js';
 
 const require = createRequire(import.meta.url);
+const { merge } = lodash;
 
 const mergeDefaultValue = <T>(config: Config, key: string, value: T): Config => {
   if (value) {
@@ -291,7 +293,7 @@ const userConfig = [
       if (syntaxFeatures) {
         const { exportDefaultFrom, functionBind } = syntaxFeatures;
         if (exportDefaultFrom || functionBind) {
-          mergeDefaultValue(config, 'swcOptions', {
+          config.swcOptions = merge(config.swcOptions, {
             compilationConfig: {
               jsc: {
                 parser: {
