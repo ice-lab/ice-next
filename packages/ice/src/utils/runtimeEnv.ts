@@ -12,7 +12,7 @@ interface EnvOptions {
   disableRouter: boolean;
 }
 
-export async function initNodeEnv(command: CommandName) {
+export async function injectNodeEnv(command: CommandName) {
   if (process.env.TEST || command === 'test') {
     process.env.NODE_ENV = 'test';
   } else if (command === 'start') {
@@ -23,7 +23,10 @@ export async function initNodeEnv(command: CommandName) {
   }
 }
 
-export async function initProcessEnv(
+/**
+ * Inject the env params in .env file and built-in env params to process.env.
+ */
+export async function injectEnv(
   rootDir: string,
   commandArgs: CommandArgs,
 ): Promise<void> {
