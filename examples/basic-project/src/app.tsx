@@ -36,7 +36,6 @@ export default defineAppConfig({
 });
 
 export const getAppData: GetAppData = () => {
-  debugger;
   return new Promise((resolve) => {
     resolve({
       title: 'gogogogo',
