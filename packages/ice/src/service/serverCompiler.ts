@@ -53,7 +53,11 @@ export function createServerCompiler(options: Options) {
     }
   });
 
-  const serverCompiler: ServerCompiler = async (buildOptions, { preBundle, swc: swcOptions } = {}) => {
+  const serverCompiler: ServerCompiler = async (buildOptions, {
+    preBundle,
+    externalDependencies,
+    swc: swcOptions,
+  } = {}) => {
     let depsMetadata;
     if (preBundle) {
       depsMetadata = await createDepsMetadata({ task, rootDir });
@@ -91,7 +95,7 @@ export function createServerCompiler(options: Options) {
         dev && preBundle && createDepRedirectPlugin(depsMetadata),
         aliasPlugin({
           alias,
-          serverBundle: server.bundle,
+          externalDependencies: externalDependencies ?? !server.bundle,
           format: buildOptions?.format || 'esm',
         }),
         cssModulesPlugin({

@@ -35,6 +35,8 @@ export default class DataLoaderPlugin {
             target: 'esnext',
             entryPoints: [filePath],
             write: false,
+            inject: [],
+            minify: process.env.NODE_ENV === 'production',
           }, {
             swc: {
               removeExportExprs: ['default', 'getConfig', 'getServerData', 'getStaticData'],
@@ -52,8 +54,9 @@ export default class DataLoaderPlugin {
               },
             },
             preBundle: false,
+            externalDependencies: false,
           });
-          compilation.emitAsset('js/data-loader.js', new RawSource(outputFiles[0].contents.toString()));
+          compilation.emitAsset('js/data-loader.js', new RawSource(new TextDecoder('utf-8').decode(outputFiles[0].contents)));
         } else {
           compilation.deleteAsset('js/data-loader.js');
         }
