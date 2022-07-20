@@ -35,7 +35,7 @@ interface CreateServiceOptions {
 }
 
 async function createService({ rootDir, command, commandArgs }: CreateServiceOptions) {
-  // init process.env.NODE_ENV for plugins
+  // Init process.env.NODE_ENV for plugins.
   injectNodeEnv(command);
 
   const buildSpinner = createSpinner('loading config...');
