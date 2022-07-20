@@ -10,7 +10,7 @@ import type { ExportData, AddRenderFile, AddTemplateFiles } from './generator.js
 type AddExport = (exportData: ExportData) => void;
 type EventName = 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir';
 
-type ServerCompilerBuildOptions = Pick<BuildOptions, 'minify' | 'inject' | 'format' | 'entryPoints' | 'outfile' | 'bundle' | 'outdir' | 'splitting' | 'platform' | 'outExtension' | 'plugins'>;
+type ServerCompilerBuildOptions = Pick<BuildOptions, 'target' | 'minify' | 'inject' | 'format' | 'entryPoints' | 'outfile' | 'bundle' | 'outdir' | 'splitting' | 'platform' | 'outExtension' | 'plugins'>;
 export type ServerCompiler = (
   buildOptions: ServerCompilerBuildOptions,
   options?: {
