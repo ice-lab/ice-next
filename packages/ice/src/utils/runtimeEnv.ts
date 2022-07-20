@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as dotenv from 'dotenv';
 import { expand as dotenvExpand } from 'dotenv-expand';
-import type { CommandArgs, CommandName } from 'build-scripts';
+import type { CommandArgs } from 'build-scripts';
 import type { AppConfig } from '@ice/types';
 
 export interface Envs {
@@ -10,17 +10,6 @@ export interface Envs {
 }
 interface EnvOptions {
   disableRouter: boolean;
-}
-
-export async function injectNodeEnv(command: CommandName) {
-  if (process.env.TEST || command === 'test') {
-    process.env.NODE_ENV = 'test';
-  } else if (command === 'start') {
-    process.env.NODE_ENV = 'development';
-  } else {
-    // build
-    process.env.NODE_ENV = 'production';
-  }
 }
 
 /**

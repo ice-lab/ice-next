@@ -15,7 +15,7 @@ import build from './commands/build.js';
 import mergeTaskConfig from './utils/mergeTaskConfig.js';
 import getWatchEvents from './getWatchEvents.js';
 import { compileAppConfig } from './analyzeRuntime.js';
-import { injectEnv, updateRuntimeEnv, getCoreEnvKeys, injectNodeEnv } from './utils/runtimeEnv.js';
+import { injectEnv, updateRuntimeEnv, getCoreEnvKeys } from './utils/runtimeEnv.js';
 import getRuntimeModules from './utils/getRuntimeModules.js';
 import { generateRoutesInfo } from './routes.js';
 import getWebTask from './tasks/web/index.js';
@@ -35,9 +35,6 @@ interface CreateServiceOptions {
 }
 
 async function createService({ rootDir, command, commandArgs }: CreateServiceOptions) {
-  // Init process.env.NODE_ENV for plugins.
-  injectNodeEnv(command);
-
   const buildSpinner = createSpinner('loading config...');
   const templateDir = path.join(__dirname, '../templates/');
   const configFile = 'ice.config.(mts|mjs|ts|js|cjs|json)';
