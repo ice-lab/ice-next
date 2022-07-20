@@ -1,14 +1,18 @@
 import { Suspense, lazy } from 'react';
-import { Link, useData, useConfig } from 'ice';
+import { Link, useData, useAppData, useConfig } from 'ice';
 // not recommended but works
 import { useAppContext } from '@ice/runtime';
 import { useRequest } from 'ahooks';
+import type { AppData } from 'ice';
 import styles from './index.module.css';
 
 const Bar = lazy(() => import('../components/bar'));
 
 export default function Home(props) {
   console.log('render Home', props);
+
+  const appData = useAppData<AppData>();
+  console.log('get AppData', appData);
 
   const appContext = useAppContext();
   console.log('get AppContext', appContext);

@@ -6,6 +6,7 @@ import { createHistorySingle } from './utils/history-single.js';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
+import { AppDataProvider, getAppData } from './AppData.js';
 import type {
   AppContext, AppExport, RouteItem, AppRouterProps, RoutesData, RoutesConfig,
   RouteWrapperConfig, RuntimeModules, RouteMatch, ComponentWithChildren, RouteModules,
@@ -35,9 +36,13 @@ export default async function runClientApp(options: RunClientAppOptions) {
     hydrate,
   } = options;
   const appContextFromServer: AppContext = (window as any).__ICE_APP_CONTEXT__ || {};
-  let { routesData, routesConfig, assetsManifest, basename: basenameFromServer } = appContextFromServer;
+  let { appData, routesData, routesConfig, assetsManifest, basename: basenameFromServer } = appContextFromServer;
 
   const requestContext = getRequestContext(window.location);
+
+  if (!appData) {
+    appData = await getAppData(app, requestContext);
+  }
 
   const appConfig = getAppConfig(app);
 
@@ -57,6 +62,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
     appExport: app,
     routes,
     appConfig,
+    appData,
     routesData,
     routesConfig,
     assetsManifest,
@@ -137,6 +143,7 @@ function BrowserEntry({
     routesConfig: initialRoutesConfig,
     routeModules: initialRouteModules,
     basename,
+    appData,
   } = appContext;
 
   const [historyState, setHistoryState] = useState<HistoryState>({
@@ -190,12 +197,14 @@ function BrowserEntry({
 
   return (
     <AppContextProvider value={appContext}>
-      <App
-        action={action}
-        location={location}
-        navigator={history}
-        {...rest}
-      />
+      <AppDataProvider value={appData}>
+        <App
+          action={action}
+          location={location}
+          navigator={history}
+          {...rest}
+        />
+      </AppDataProvider>
     </AppContextProvider>
   );
 }
