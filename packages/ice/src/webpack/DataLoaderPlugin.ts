@@ -65,17 +65,3 @@ export default class DataLoaderPlugin {
     });
   }
 }
-
-// compilation.emitAsset(filename, source);
-/* compiler.hooks.thisCompilation.tap(pluginName, function (compilation) {
-  compilation.hooks.processAssets.tapAsync({
-      name: pluginName,
-      stage: Compilation.PROCESS_ASSETS_STAGE_REPORT,
-  }, function (assets, hookCallback) {
-      callback({
-          compilation: compilation,
-          assets: assets,
-          callback: hookCallback,
-      });
-  });
-}); */
