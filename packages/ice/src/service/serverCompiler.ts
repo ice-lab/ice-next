@@ -54,9 +54,9 @@ export function createServerCompiler(options: Options) {
     }
   });
 
-  const serverCompiler: ServerCompiler = async (originBuildOptions, { preBundle, swc: swcOptions } = {}) => {
+  const serverCompiler: ServerCompiler = async (customBuildOptions, { preBundle, swc: swcOptions } = {}) => {
     const buildOptions = {} as esbuild.BuildOptions;
-    merge(buildOptions, task.config?.server?.buildOptions || {}, originBuildOptions);
+    merge(buildOptions, task.config?.server?.buildOptions || {}, customBuildOptions);
     let depsMetadata;
     if (preBundle) {
       depsMetadata = await createDepsMetadata({ task, rootDir });

@@ -107,8 +107,9 @@ async function render(
   const AppProvider = runtime.composeAppProvider() || React.Fragment;
   const RouteWrappers = runtime.getWrappers();
   const AppRouter = runtime.getAppRouter();
+
   const createHistory = process.env.ICE_CORE_ROUTER === 'true'
-    ? getCreateHistoryFunc(appConfig?.router?.type, memoryRouter)
+    ? createRouterHistory(appConfig?.router?.type, memoryRouter)
     : createHistorySingle;
   const createHistoryOptions: Parameters<typeof createHistory>[0] = {
     window,
@@ -275,7 +276,7 @@ async function loadNextPage(
   };
 }
 
-function getCreateHistoryFunc(type: AppConfig['router']['type'], memoryRouter: boolean) {
+function createRouterHistory(type: AppConfig['router']['type'], memoryRouter: boolean) {
   if (memoryRouter || type === 'memory') {
     return createMemoryHistory;
   }
