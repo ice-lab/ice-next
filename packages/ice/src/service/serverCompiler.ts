@@ -6,6 +6,7 @@ import consola from 'consola';
 import esbuild from 'esbuild';
 import type { Config, UserConfig } from '@ice/types';
 import type { ServerCompiler } from '@ice/types/esm/plugin.js';
+import lodash from '@ice/bundles/compiled/lodash/index.js';
 import type { TaskConfig } from 'build-scripts';
 import { getCompilerPlugins } from '@ice/webpack-config';
 import escapeLocalIdent from '../utils/escapeLocalIdent.js';
@@ -17,6 +18,7 @@ import emptyCSSPlugin from '../esbuild/emptyCSS.js';
 import createDepRedirectPlugin from '../esbuild/depRedirect.js';
 import isExternalBuiltinDep from '../utils/isExternalBuiltinDep.js';
 import { scanImports } from './analyze.js';
+import type { DepsMetaData } from './preBundleCJSDeps.js';
 import preBundleCJSDeps from './preBundleCJSDeps.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -26,12 +28,15 @@ interface Options {
   task: TaskConfig<Config>;
   command: string;
   server: UserConfig['server'];
+  syntaxFeatures: UserConfig['syntaxFeatures'];
 }
 
+const { merge } = lodash;
 export function createServerCompiler(options: Options) {
-  const { task, rootDir, command, server } = options;
+  const { task, rootDir, command, server, syntaxFeatures } = options;
 
-  const alias = (task.config?.alias || {}) as Record<string, string | false>;
+  const alias = task.config?.alias || {};
+  const externals = task.config?.externals || {};
   const assetsManifest = path.join(rootDir, ASSETS_MANIFEST);
   const define = task.config?.define || {};
   const dev = command === 'start';
@@ -53,20 +58,35 @@ export function createServerCompiler(options: Options) {
     }
   });
 
-  const serverCompiler: ServerCompiler = async (buildOptions, { preBundle, swc: swcOptions } = {}) => {
-    let depsMetadata;
-    if (preBundle) {
-      depsMetadata = await createDepsMetadata({ task, rootDir });
+  const serverCompiler: ServerCompiler = async (customBuildOptions, { preBundle, swc } = {}) => {
+    let depsMetadata: DepsMetaData;
+    let swcOptions = swc;
+    const enableSyntaxFeatures = syntaxFeatures && Object.keys(syntaxFeatures).some(key => syntaxFeatures[key]);
+    if (enableSyntaxFeatures) {
+      swcOptions = merge(swc, {
+        compilationConfig: {
+          jsc: {
+            parser: {
+              ...syntaxFeatures,
+            },
+          },
+        },
+      });
     }
-
     const transformPlugins = getCompilerPlugins({
       ...task.config,
       fastRefresh: false,
       swcOptions,
     }, 'esbuild');
 
-    const startTime = new Date().getTime();
-    consola.debug('[esbuild]', `start compile for: ${buildOptions.entryPoints}`);
+    if (preBundle) {
+      depsMetadata = await createDepsMetadata({
+        task,
+        rootDir,
+        // Pass transformPlugins on syntaxFeatures is enabled
+        plugins: enableSyntaxFeatures ? transformPlugins : [],
+      });
+    }
     const define = {
       // ref: https://github.com/evanw/esbuild/blob/master/CHANGELOG.md#01117
       // in esm, this in the global should be undefined. Set the following config to avoid warning
@@ -74,25 +94,26 @@ export function createServerCompiler(options: Options) {
       ...defineVars,
       ...runtimeDefineVars,
     };
+    const format = customBuildOptions?.format || 'esm';
 
-    const esbuildResult = await esbuild.build({
+    let buildOptions: esbuild.BuildOptions = {
       bundle: true,
-      format: 'esm',
+      format,
       target: 'node12.20.0',
       // enable JSX syntax in .js files by default for compatible with migrate project
       // while it is not recommended
       loader: { '.js': 'jsx' },
       inject: [path.resolve(__dirname, '../polyfills/react.js')],
-      ...buildOptions,
+      ...customBuildOptions,
       define,
+      external: Object.keys(externals),
       plugins: [
-        ...(buildOptions.plugins || []),
+        ...(customBuildOptions.plugins || []),
         emptyCSSPlugin(),
-        dev && preBundle && createDepRedirectPlugin(depsMetadata),
         aliasPlugin({
           alias,
           serverBundle: server.bundle,
-          format: buildOptions?.format || 'esm',
+          format,
         }),
         cssModulesPlugin({
           extract: false,
@@ -104,9 +125,22 @@ export function createServerCompiler(options: Options) {
         }),
         fs.existsSync(assetsManifest) && createAssetsPlugin(assetsManifest, rootDir),
         ...transformPlugins,
+        // Plugin createDepRedirectPlugin need after transformPlugins in case of it has onLoad lifecycle.
+        dev && preBundle && createDepRedirectPlugin(depsMetadata),
       ].filter(Boolean),
-    });
+
+    };
+    if (typeof task.config?.server?.buildOptions === 'function') {
+      buildOptions = task.config.server.buildOptions(buildOptions);
+    }
+
+    const startTime = new Date().getTime();
+    consola.debug('[esbuild]', `start compile for: ${buildOptions.entryPoints}`);
+
+    const esbuildResult = await esbuild.build(buildOptions);
+
     consola.debug('[esbuild]', `time cost: ${new Date().getTime() - startTime}ms`);
+
     const esm = server?.format === 'esm';
     const outJSExtension = esm ? '.mjs' : '.cjs';
     const serverEntry = path.join(rootDir, task.config.outputDir, SERVER_OUTPUT_DIR, `index${outJSExtension}`);
@@ -122,16 +156,18 @@ export function createServerCompiler(options: Options) {
 interface CreateDepsMetadataOptions {
   rootDir: string;
   task: TaskConfig<Config>;
+  plugins: esbuild.Plugin[];
 }
 /**
  *  Create dependencies metadata only when server entry is bundled to esm.
  */
-async function createDepsMetadata({ rootDir, task }: CreateDepsMetadataOptions) {
+async function createDepsMetadata({ rootDir, task, plugins }: CreateDepsMetadataOptions) {
   const serverEntry = path.join(rootDir, SERVER_ENTRY);
 
   const deps = await scanImports([serverEntry], {
     rootDir,
     alias: (task.config?.alias || {}) as Record<string, string | false>,
+    plugins,
   });
 
   function filterPreBundleDeps(deps: Record<string, string>) {
@@ -152,6 +188,7 @@ async function createDepsMetadata({ rootDir, task }: CreateDepsMetadataOptions) 
     rootDir,
     cacheDir,
     taskConfig: task.config,
+    plugins,
   });
 
   return ret.metadata;
