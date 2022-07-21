@@ -31,7 +31,9 @@ interface Options {
 
 export function createServerCompiler(options: Options) {
   const { task, rootDir, command, server } = options;
-  const alias = (task.config?.alias || {}) as Record<string, string | false>;
+
+  const alias = task.config?.alias || {};
+  const externals = task.config?.externals || {};
   const assetsManifest = path.join(rootDir, ASSETS_MANIFEST);
   const define = task.config?.define || {};
   const dev = command === 'start';
@@ -84,6 +86,7 @@ export function createServerCompiler(options: Options) {
       inject: [path.resolve(__dirname, '../polyfills/react.js')],
       ...customBuildOptions,
       define,
+      external: Object.keys(externals),
       plugins: [
         ...(customBuildOptions.plugins || []),
         emptyCSSPlugin(),
