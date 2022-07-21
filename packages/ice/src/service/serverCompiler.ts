@@ -60,7 +60,12 @@ export function createServerCompiler(options: Options) {
 
   const serverCompiler: ServerCompiler = async (customBuildOptions, { preBundle, swc } = {}) => {
     let depsMetadata: DepsMetaData;
-    let swcOptions = merge({}, task.config?.swcOptions || {}, swc);
+    let swcOptions = merge({}, {
+      // Only get the `compilationConfig` from task config.
+      compilationConfig: {
+        ...(task.config?.swcOptions?.compilationConfig || {}),
+      },
+    }, swc);
     const enableSyntaxFeatures = syntaxFeatures && Object.keys(syntaxFeatures).some(key => syntaxFeatures[key]);
     const transformPlugins = getCompilerPlugins({
       ...task.config,
