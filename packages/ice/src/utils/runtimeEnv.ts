@@ -13,9 +13,9 @@ interface EnvOptions {
 }
 
 /**
- * Inject the env params in .env file and built-in env params to process.env.
+ * Set env params in .env file and built-in env params to process.env.
  */
-export async function injectEnv(
+export async function setEnv(
   rootDir: string,
   commandArgs: CommandArgs,
 ): Promise<void> {
