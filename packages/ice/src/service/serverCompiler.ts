@@ -18,6 +18,7 @@ import emptyCSSPlugin from '../esbuild/emptyCSS.js';
 import createDepRedirectPlugin from '../esbuild/depRedirect.js';
 import isExternalBuiltinDep from '../utils/isExternalBuiltinDep.js';
 import { scanImports } from './analyze.js';
+import type { DepsMetaData } from './preBundleCJSDeps.js';
 import preBundleCJSDeps from './preBundleCJSDeps.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -34,7 +35,8 @@ const { merge } = lodash;
 export function createServerCompiler(options: Options) {
   const { task, rootDir, command, server, syntaxFeatures } = options;
 
-  const alias = (task.config?.alias || {}) as Record<string, string | false>;
+  const alias = task.config?.alias || {};
+  const externals = task.config?.externals || {};
   const assetsManifest = path.join(rootDir, ASSETS_MANIFEST);
   const define = task.config?.define || {};
   const dev = command === 'start';
@@ -56,8 +58,8 @@ export function createServerCompiler(options: Options) {
     }
   });
 
-  const serverCompiler: ServerCompiler = async (buildOptions, { preBundle, swc } = {}) => {
-    let depsMetadata;
+  const serverCompiler: ServerCompiler = async (customBuildOptions, { preBundle, swc } = {}) => {
+    let depsMetadata: DepsMetaData;
     let swcOptions = swc;
     const enableSyntaxFeatures = syntaxFeatures && Object.keys(syntaxFeatures).some(key => syntaxFeatures[key]);
     if (enableSyntaxFeatures) {
@@ -85,8 +87,6 @@ export function createServerCompiler(options: Options) {
         plugins: enableSyntaxFeatures ? transformPlugins : [],
       });
     }
-    const startTime = new Date().getTime();
-    consola.debug('[esbuild]', `start compile for: ${buildOptions.entryPoints}`);
     const define = {
       // ref: https://github.com/evanw/esbuild/blob/master/CHANGELOG.md#01117
       // in esm, this in the global should be undefined. Set the following config to avoid warning
@@ -94,24 +94,26 @@ export function createServerCompiler(options: Options) {
       ...defineVars,
       ...runtimeDefineVars,
     };
+    const format = customBuildOptions?.format || 'esm';
 
-    const esbuildResult = await esbuild.build({
+    let buildOptions: esbuild.BuildOptions = {
       bundle: true,
-      format: 'esm',
+      format,
       target: 'node12.20.0',
       // enable JSX syntax in .js files by default for compatible with migrate project
       // while it is not recommended
       loader: { '.js': 'jsx' },
       inject: [path.resolve(__dirname, '../polyfills/react.js')],
-      ...buildOptions,
+      ...customBuildOptions,
       define,
+      external: Object.keys(externals),
       plugins: [
-        ...(buildOptions.plugins || []),
+        ...(customBuildOptions.plugins || []),
         emptyCSSPlugin(),
         aliasPlugin({
           alias,
           serverBundle: server.bundle,
-          format: buildOptions?.format || 'esm',
+          format,
         }),
         cssModulesPlugin({
           extract: false,
@@ -126,8 +128,19 @@ export function createServerCompiler(options: Options) {
         // Plugin createDepRedirectPlugin need after transformPlugins in case of it has onLoad lifecycle.
         dev && preBundle && createDepRedirectPlugin(depsMetadata),
       ].filter(Boolean),
-    });
+
+    };
+    if (typeof task.config?.server?.buildOptions === 'function') {
+      buildOptions = task.config.server.buildOptions(buildOptions);
+    }
+
+    const startTime = new Date().getTime();
+    consola.debug('[esbuild]', `start compile for: ${buildOptions.entryPoints}`);
+
+    const esbuildResult = await esbuild.build(buildOptions);
+
     consola.debug('[esbuild]', `time cost: ${new Date().getTime() - startTime}ms`);
+
     const esm = server?.format === 'esm';
     const outJSExtension = esm ? '.mjs' : '.cjs';
     const serverEntry = path.join(rootDir, task.config.outputDir, SERVER_OUTPUT_DIR, `index${outJSExtension}`);
