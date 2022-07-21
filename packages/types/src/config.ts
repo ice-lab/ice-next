@@ -125,6 +125,6 @@ export interface Config {
   memoryRouter?: boolean;
 
   server?: {
-    buildOptions?: BuildOptions;
+    buildOptions?: (options: BuildOptions) => BuildOptions;
   };
 }
