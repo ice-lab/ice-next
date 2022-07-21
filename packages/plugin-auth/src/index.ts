@@ -5,7 +5,7 @@ import type { Plugin } from '@ice/types';
 const plugin: Plugin = () => ({
   name: '@ice/plugin-auth',
   setup: ({ generator }) => {
-  // 注册 API：import { useAuth, withAuth } from 'ice';
+  // Register API: `import { useAuth, withAuth } from 'ice';`
     generator.addExport({
       specifier: ['withAuth', 'useAuth'],
       source: '@ice/plugin-auth/runtime/Auth',
