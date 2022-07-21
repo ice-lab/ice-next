@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'http';
-import type { Action, Location } from 'history';
+import type { Action, InitialEntry, Location } from 'history';
 import type { ComponentType, ReactNode, PropsWithChildren } from 'react';
 import type { HydrationOptions } from 'react-dom/client';
 import type { Navigator, Params } from 'react-router-dom';
@@ -45,6 +45,7 @@ export interface AppConfig extends Record<string, any> {
   router?: {
     type?: 'hash' | 'browser' | 'memory';
     basename?: string;
+    initialEntries?: InitialEntry[];
   };
 }
 

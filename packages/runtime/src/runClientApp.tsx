@@ -1,7 +1,7 @@
 import React, { useLayoutEffect, useState } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { createHashHistory, createBrowserHistory, createMemoryHistory } from 'history';
-import type { HashHistory, BrowserHistory, Action, Location } from 'history';
+import type { HashHistory, BrowserHistory, Action, Location, InitialEntry } from 'history';
 import { createHistorySingle } from './utils/history-single.js';
 import Runtime from './runtime.js';
 import App from './App.js';
@@ -23,7 +23,7 @@ interface RunClientAppOptions {
   Document: DocumentComponent;
   hydrate: boolean;
   basename?: string;
-  enableReadPagePathFromAppContext?: boolean;
+  memoryRouter?: boolean;
 }
 
 export default async function runClientApp(options: RunClientAppOptions) {
@@ -34,10 +34,16 @@ export default async function runClientApp(options: RunClientAppOptions) {
     Document,
     basename: defaultBasename,
     hydrate,
-    enableReadPagePathFromAppContext,
+    memoryRouter,
   } = options;
   const appContextFromServer: AppContext = (window as any).__ICE_APP_CONTEXT__ || {};
-  let { routesData, routesConfig, assetsManifest, basename: basenameFromServer, routePath } = appContextFromServer;
+  let {
+    routesData,
+    routesConfig,
+    assetsManifest,
+    basename: basenameFromServer,
+    routePath,
+  } = appContextFromServer;
 
   const requestContext = getRequestContext(window.location);
 
@@ -46,8 +52,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
   const basename = basenameFromServer || defaultBasename;
   const matches = matchRoutes(
     routes,
-    // The param `enableReadPagePathFromAppContext` is enable in memory router type.
-    enableReadPagePathFromAppContext ? routePath : window.location,
+    memoryRouter ? routePath : window.location,
     basename,
   );
   const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
@@ -82,12 +87,12 @@ export default async function runClientApp(options: RunClientAppOptions) {
 
   await Promise.all(runtimeModules.map(m => runtime.loadModule(m)).filter(Boolean));
 
-  render(runtime, Document, { enableReadPagePathFromAppContext, routePath });
+  render(runtime, Document, { memoryRouter, routePath });
 }
 
 interface RenderOptions {
   routePath: string;
-  enableReadPagePathFromAppContext?: boolean;
+  memoryRouter?: boolean;
 }
 
 async function render(
@@ -95,40 +100,32 @@ async function render(
   Document: DocumentComponent,
   options: RenderOptions,
 ) {
-  const { routePath, enableReadPagePathFromAppContext } = options;
+  const { routePath, memoryRouter } = options;
   const appContext = runtime.getAppContext();
+  const { appConfig } = appContext;
   const render = runtime.getRender();
   const AppProvider = runtime.composeAppProvider() || React.Fragment;
   const RouteWrappers = runtime.getWrappers();
   const AppRouter = runtime.getAppRouter();
-
   const createHistory = process.env.ICE_CORE_ROUTER === 'true'
-    ? getCreateHistoryFuncByRouteType(appContext.appConfig?.router?.type)
+    ? getCreateHistoryFunc(appConfig?.router?.type, memoryRouter)
     : createHistorySingle;
   const createHistoryOptions: Parameters<typeof createHistory>[0] = {
     window,
   };
-  if (appContext.appConfig?.router?.type === 'memory') {
-    (createHistoryOptions as Parameters<typeof createMemoryHistory>[0]).initialEntries = [
-      enableReadPagePathFromAppContext ? routePath : window.location.pathname,
-    ];
+  if (memoryRouter || appConfig?.router?.type === 'memory') {
+    let initialEntries: InitialEntry[] = [];
+    if (memoryRouter) {
+      initialEntries = [routePath];
+    } else if (appConfig?.router?.type === 'memory') {
+      initialEntries = appConfig?.router?.initialEntries || [window.location.pathname];
+    }
+    (createHistoryOptions as Parameters<typeof createMemoryHistory>[0]).initialEntries = initialEntries;
   }
   const history = createHistory(createHistoryOptions);
 
-  function getCreateHistoryFuncByRouteType(type: AppConfig['router']['type']) {
-    switch (type) {
-      case 'hash':
-        return createHashHistory;
-      case 'browser':
-        return createBrowserHistory;
-      case 'memory':
-        return createMemoryHistory;
-      default:
-        throw new Error(`Route type: ${type} is not supported.`);
-    }
-  }
   render(
-    document.getElementById(appContext.appConfig.app.rootId),
+    document.getElementById(appConfig.app.rootId),
     <BrowserEntry
       history={history}
       appContext={appContext}
@@ -276,4 +273,16 @@ async function loadNextPage(
     routesConfig,
     routeModules,
   };
+}
+
+function getCreateHistoryFunc(type: AppConfig['router']['type'], memoryRouter: boolean) {
+  if (memoryRouter || type === 'memory') {
+    return createMemoryHistory;
+  }
+  if (type === 'browser') {
+    return createBrowserHistory;
+  }
+  if (type === 'hash') {
+    return createHashHistory;
+  }
 }

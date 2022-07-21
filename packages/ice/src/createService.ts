@@ -121,7 +121,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     runtimeModules,
     coreEnvKeys,
     basename: webTaskConfig.config.basename,
-    enableReadPagePathFromAppContext: webTaskConfig.config.enableReadPagePathFromAppContext,
+    memoryRouter: webTaskConfig.config.memoryRouter,
     hydrate: !csr,
   });
   dataCache.set('routes', JSON.stringify(routesInfo.routeManifest));
