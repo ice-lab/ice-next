@@ -7,6 +7,7 @@ import { generateRoutesInfo } from './routes.js';
 import type Generator from './service/runtimeGenerator';
 import { compileAppConfig } from './analyzeRuntime.js';
 import getGlobalStyleGlobPattern from './utils/getGlobalStyleGlobPattern.js';
+import renderExportsTemplate from './utils/renderExportsTemplate.js';
 
 interface Options {
   targetDir: string;
@@ -29,6 +30,7 @@ const getWatchEvents = (options: Options): WatchEvent[] => {
         if (cache.get('routes') !== stringifiedData) {
           cache.set('routes', stringifiedData);
           consola.debug('[event]', `routes data regenerated: ${stringifiedData}`);
+          // Specify the route files to re-render.
           generator.renderFile(
             path.join(templateDir, 'routes.ts.ejs'),
             path.join(rootDir, targetDir, 'routes.ts'),
@@ -39,11 +41,11 @@ const getWatchEvents = (options: Options): WatchEvent[] => {
             path.join(rootDir, targetDir, 'route-manifest.json'),
             routesRenderData,
           );
-          generator.renderFile(
-            path.join(templateDir, 'data-loader.ts.ejs'),
-            path.join(rootDir, targetDir, 'data-loader.ts'),
-            routesRenderData,
-          );
+          renderExportsTemplate(routesRenderData, generator.renderFile, {
+            rootDir,
+            runtimeDir: targetDir,
+            templateDir: path.join(templateDir, '../exports'),
+          });
         }
       }
     },
