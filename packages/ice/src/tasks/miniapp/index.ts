@@ -3,6 +3,7 @@ import fg from 'fast-glob';
 import type { Config } from '@ice/types';
 import { CACHE_DIR } from '../../constant.js';
 import { RUNTIME_TMP_DIR } from '../../constant.js';
+import keepPlatform from '../../utils/keepPlatform.js';
 import getMiniappPlatformConfig from './platforms/index.js';
 import getMiniappWebpackConfig from './webpack/index.js';
 
@@ -52,7 +53,18 @@ const getMiniappTask = ({ rootDir, command, platform }): Config => {
     performance: miniappWebpackConfig.performance,
     devServer: {}, // No need to use devServer in miniapp
     swcOptions: {
-      jsxTransform: true,
+      compilationConfig: {
+        jsc: {
+          transform: {
+            constModules: {
+              globals: {
+                '@uni/env': keepPlatform(platform),
+                'universal-env': keepPlatform(platform),
+              },
+            },
+          },
+        },
+      },
       // getData is built by data-loader
       removeExportExprs: ['getData', 'getServerData', 'getStaticData'],
     },

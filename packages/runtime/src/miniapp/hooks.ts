@@ -86,7 +86,7 @@ export const useTitleClick = createTaroHook('onTitleClick');
 
 /** Router */
 export const useReady = createTaroHook('onReady');
-export const useRouter = (dynamic = false) => {
+export const useRouter: any = (dynamic = false) => {
   const React = reactMeta.R;
   return dynamic ? Current.router : React.useMemo(() => Current.router, []);
 };
