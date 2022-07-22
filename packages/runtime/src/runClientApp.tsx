@@ -15,6 +15,7 @@ import { updateRoutesConfig } from './routesConfig.js';
 import getRequestContext from './requestContext.js';
 import getAppConfig from './appConfig.js';
 import matchRoutes from './matchRoutes.js';
+import { createReactApp } from './miniapp/index.js';
 
 interface RunClientAppOptions {
   app: AppExport;
@@ -25,57 +26,68 @@ interface RunClientAppOptions {
   hydrate: boolean;
 }
 
+declare const wx: any;
+
+
 export default async function runClientApp(options: RunClientAppOptions) {
-  const {
-    app,
-    routes,
-    runtimeModules,
-    Document,
-    basename: defaultBasename,
-    hydrate,
-  } = options;
-  const appContextFromServer: AppContext = (window as any).__ICE_APP_CONTEXT__ || {};
-  let { routesData, routesConfig, assetsManifest, basename: basenameFromServer } = appContextFromServer;
+  // TODO:TODO:TODO:
+  if (typeof wx === 'undefined') {
+    const {
+      app,
+      routes,
+      runtimeModules,
+      Document,
+      basename: defaultBasename,
+      hydrate,
+    } = options;
+    const appContextFromServer: AppContext = (window as any).__ICE_APP_CONTEXT__ || {};
+    let { routesData, routesConfig, assetsManifest, basename: basenameFromServer } = appContextFromServer;
 
-  const requestContext = getRequestContext(window.location);
+    const requestContext = getRequestContext(window.location);
 
-  const appConfig = getAppConfig(app);
+    const appConfig = getAppConfig(app);
 
-  const basename = basenameFromServer || defaultBasename;
+    const basename = basenameFromServer || defaultBasename;
 
-  const matches = matchRoutes(routes, window.location, basename);
-  const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
+    const matches = matchRoutes(routes, window.location, basename);
+    const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
-  if (!routesData) {
-    routesData = await loadRoutesData(matches, requestContext, routeModules);
-  }
-  if (!routesConfig) {
-    routesConfig = getRoutesConfig(matches, routesConfig, routeModules);
-  }
+    if (!routesData) {
+      routesData = await loadRoutesData(matches, requestContext, routeModules);
+    }
+    if (!routesConfig) {
+      routesConfig = getRoutesConfig(matches, routesConfig, routeModules);
+    }
 
-  const appContext: AppContext = {
-    appExport: app,
-    routes,
-    appConfig,
-    routesData,
-    routesConfig,
-    assetsManifest,
-    matches,
-    routeModules,
-    basename,
-  };
+    const appContext: AppContext = {
+      appExport: app,
+      routes,
+      appConfig,
+      routesData,
+      routesConfig,
+      assetsManifest,
+      matches,
+      routeModules,
+      basename,
+    };
 
-  const runtime = new Runtime(appContext);
+    const runtime = new Runtime(appContext);
 
-  if (hydrate) {
-    runtime.setRender((container, element) => {
-      ReactDOM.hydrateRoot(container, element);
+    if (hydrate) {
+      runtime.setRender((container, element) => {
+        ReactDOM.hydrateRoot(container, element);
+      });
+    }
+
+    await Promise.all(runtimeModules.map(m => runtime.loadModule(m)).filter(Boolean));
+
+    render(runtime, Document);
+  } else {
+    // TODO: 第三个参数 config 对接一下，暂时先写死
+    createReactApp(React, ReactDOM, {
+      pages: ['pages/index'],
     });
   }
-
-  await Promise.all(runtimeModules.map(m => runtime.loadModule(m)).filter(Boolean));
-
-  render(runtime, Document);
 }
 
 async function render(runtime: Runtime, Document: ComponentWithChildren<{}>) {

@@ -6,8 +6,6 @@ import { MiniWebpackPlugin } from './plugin.js';
 
 const require = createRequire(import.meta.url);
 
-// TODO: how to design
-
 export default function getMiniappWebpackConfig(rawConfig: any): any {
   const {
     rootDir,
@@ -47,8 +45,10 @@ export default function getMiniappWebpackConfig(rawConfig: any): any {
         // 小程序使用 regenerator-runtime@0.11
         'regenerator-runtime': require.resolve('regenerator-runtime'),
         // 开发组件库时 link 到本地调试，runtime 包需要指向本地 node_modules 顶层的 runtime，保证闭包值 Current 一致，shared 也一样
+        '@ice/miniapp-runtime': require.resolve('@ice/miniapp-runtime'),
         '@tarojs/runtime': require.resolve('@tarojs/runtime'),
         '@tarojs/shared': require.resolve('@tarojs/shared/dist/shared.esm.js'),
+        'react-dom$': require.resolve('@ice/miniapp-react-dom'),
       },
       fallback: {
         fs: false,
@@ -59,7 +59,6 @@ export default function getMiniappWebpackConfig(rawConfig: any): any {
       modules: ['node_modules'],
     },
     plugins: webpackPlugin.getPlugins(),
-    // TODO:merge with ice webpack config
     module: webpackModule.getModules(),
     watchOptions: {
       aggregateTimeout: 300,
@@ -91,7 +90,7 @@ export default function getMiniappWebpackConfig(rawConfig: any): any {
           ice: {
             name: 'ice',
             test: module => /@ice[\\/][a-z]+/.test(module.context),
-            priority: 100,
+            priority: 101,
           },
           taro: {
             name: 'taro',

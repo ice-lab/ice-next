@@ -36,7 +36,9 @@
   "sideEffects": false,
   "dependencies": {
     "@ice/jsx-runtime": "^0.1.0",
-    "@tarojs/runtime": "^3.4.12",
+    "@ice/miniapp-runtime": "^1.0.0",
+    "@tarojs/shared": "3.5.0-beta.7",
+    "@tarojs/taro": "3.5.0-beta.7",
     "history": "^5.3.0",
     "react-router-dom": "^6.2.2"
   },

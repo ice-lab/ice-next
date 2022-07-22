@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "ice start",
-    "start:ali": "ice start --platform ali-miniapp",
+    "start:wechat": "ice start --platform wechat-miniprogram",
     "build": "ice build"
   },
   "description": "",
@@ -14,12 +14,11 @@
     "@ice/plugin-auth": "workspace:*",
     "@ice/plugin-rax-compat": "workspace:*",
     "@ice/runtime": "workspace:*",
-    "@tarojs/plugin-framework-react": "^3.4.13",
-    "@tarojs/plugin-platform-weapp": "^3.4.13",
-    "@tarojs/react": "^3.4.13",
+    "@ice/miniapp-loader": "workspace:*",
+    "@tarojs/plugin-framework-react": "3.5.0-beta.7",
+    "@tarojs/plugin-platform-weapp": "3.5.0-beta.7",
     "@tarojs/runtime": "^3.4.12",
     "@tarojs/taro": "^3.4.12",
-    "@tarojs/taro-loader": "^3.4.12",
     "ahooks": "^3.3.8",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"

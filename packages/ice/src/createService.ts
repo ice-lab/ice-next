@@ -99,7 +99,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     // register data-loader
     ctx.registerTask('data-loader', getDataLoaderTask({ rootDir, command }));
   } else if (MINIAPP_PLATFORMS.includes(platform)) {
-    ctx.registerTask(platform, getMiniappTask({ rootDir, command }));
+    ctx.registerTask(platform, getMiniappTask({ rootDir, command, platform }));
   }
 
   // register config
@@ -119,7 +119,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
 
   const routesInfo = await generateRoutesInfo(rootDir, routesConfig);
 
-  const csr = !userConfig.ssr && !userConfig.ssg;
+  const csr = !userConfig.ssr && !userConfig.ssg || platform !== WEB;
 
   // add render data
   generator.setRenderData({

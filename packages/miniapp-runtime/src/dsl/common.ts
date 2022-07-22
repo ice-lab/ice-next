@@ -1,0 +1,326 @@
+/* eslint-disable dot-notation */
+import { EMPTY_OBJ, ensure, hooks, isArray, isFunction, isString, isUndefined, Shortcuts } from '@tarojs/shared';
+import type { PageConfig } from '@tarojs/taro';
+
+import { raf } from '../bom/raf.js';
+import { BEHAVIORS, CUSTOM_WRAPPER, EXTERNAL_CLASSES, ON_HIDE, ON_LOAD, ON_READY, ON_SHOW, OPTIONS, PAGE_INIT, VIEW } from '../constants/index.js';
+import { Current } from '../current.js';
+import { eventHandler } from '../dom/event.js';
+import type { TaroRootElement } from '../dom/root.js';
+import { eventCenter } from '../emitter/emitter.js';
+import env from '../env.js';
+import type { Func, MpInstance } from '../interface/index.js';
+import { perf } from '../perf.js';
+import { customWrapperCache, incrementId } from '../utils/index.js';
+import type { Instance, PageInstance, PageProps } from './instance.js';
+
+const instances = new Map<string, Instance>();
+const pageId = incrementId();
+
+export function injectPageInstance(inst: Instance<PageProps>, id: string) {
+  hooks.call('mergePageInstance', instances.get(id), inst);
+  instances.set(id, inst);
+}
+
+export function getPageInstance(id: string): Instance | undefined {
+  return instances.get(id);
+}
+
+export function addLeadingSlash(path?: string): string {
+  if (path == null) {
+    return '';
+  }
+  return path.charAt(0) === '/' ? path : `/${path}`;
+}
+
+export function safeExecute(path: string, lifecycle: string, ...args: unknown[]) {
+  const instance = instances.get(path);
+
+  if (instance == null) {
+    return;
+  }
+
+  const func = hooks.call('getLifecycle', instance, lifecycle as keyof PageInstance);
+
+  if (isArray(func)) {
+    const res = func.map(fn => fn.apply(instance, args));
+    return res[0];
+  }
+
+  if (!isFunction(func)) {
+    return;
+  }
+
+  return func.apply(instance, args);
+}
+
+export function stringify(obj?: Record<string, unknown>) {
+  if (obj == null) {
+    return '';
+  }
+  const path = Object.keys(obj).map((key) => {
+    return `${key}=${obj[key]}`;
+  }).join('&');
+  return path === '' ? path : `?${path}`;
+}
+
+export function getPath(id: string, options?: Record<string, unknown>): string {
+  const idx = id.indexOf('?');
+  return `${idx > -1 ? id.substring(0, idx) : id}${stringify(options)}`;
+}
+
+export function getOnReadyEventKey(path: string) {
+  return `${path}.${ON_READY}`;
+}
+
+export function getOnShowEventKey(path: string) {
+  return `${path}.${ON_SHOW}`;
+}
+
+export function getOnHideEventKey(path: string) {
+  return `${path}.${ON_HIDE}`;
+}
+
+export function createPageConfig(component: any, pageName?: string, data?: Record<string, unknown>, pageConfig?: PageConfig) {
+  // 小程序 Page 构造器是一个傲娇小公主，不能把复杂的对象挂载到参数上
+  const id = pageName ?? `taro_page_${pageId()}`;
+  const [
+    ONLOAD,
+    ONUNLOAD,
+    ONREADY,
+    ONSHOW,
+    ONHIDE,
+    LIFECYCLES,
+  ] = hooks.call('getMiniLifecycleImpl')!.page;
+  let pageElement: TaroRootElement | null = null;
+  let unmounting = false;
+  let prepareMountList: (() => void)[] = [];
+
+  function setCurrentRouter(page: MpInstance) {
+    const router = page.route || page.__route__ || page.$taroPath;
+    Current.router = {
+      params: page.$taroParams!,
+      path: addLeadingSlash(router),
+      $taroPath: page.$taroPath,
+      onReady: getOnReadyEventKey(id),
+      onShow: getOnShowEventKey(id),
+      onHide: getOnHideEventKey(id),
+    };
+    if (!isUndefined(page.exitState)) {
+      Current.router.exitState = page.exitState;
+    }
+  }
+  let loadResolver: (...args: unknown[]) => void;
+  let hasLoaded: Promise<void>;
+  const config: PageInstance = {
+    [ONLOAD](this: MpInstance, options: Readonly<Record<string, unknown>> = {}, cb?: Func) {
+      hasLoaded = new Promise(resolve => { loadResolver = resolve; });
+
+      perf.start(PAGE_INIT);
+
+      Current.page = this as any;
+      this.config = pageConfig || {};
+
+      // this.$taroPath 是页面唯一标识
+      const uniqueOptions = Object.assign({}, options, { $taroTimestamp: Date.now() });
+      const $taroPath = this.$taroPath = getPath(id, uniqueOptions);
+      // this.$taroParams 作为暴露给开发者的页面参数对象，可以被随意修改
+      if (this.$taroParams == null) {
+        this.$taroParams = uniqueOptions;
+      }
+
+      setCurrentRouter(this);
+
+      const mount = () => {
+        Current.app!.mount!(component, $taroPath, () => {
+          pageElement = env.document.getElementById<TaroRootElement>($taroPath);
+
+          ensure(pageElement !== null, '没有找到页面实例。');
+          safeExecute($taroPath, ON_LOAD, this.$taroParams);
+          loadResolver();
+          pageElement.ctx = this;
+          pageElement.performUpdate(true, cb);
+        });
+      };
+      if (unmounting) {
+        prepareMountList.push(mount);
+      } else {
+        mount();
+      }
+    },
+    [ONUNLOAD]() {
+      const { $taroPath } = this;
+      // 触发onUnload生命周期
+      safeExecute($taroPath, ONUNLOAD);
+      unmounting = true;
+      Current.app!.unmount!($taroPath, () => {
+        unmounting = false;
+        instances.delete($taroPath);
+        if (pageElement) {
+          pageElement.ctx = null;
+          pageElement = null;
+        }
+        if (prepareMountList.length) {
+          prepareMountList.forEach(fn => fn());
+          prepareMountList = [];
+        }
+      });
+    },
+    [ONREADY]() {
+      // 触发生命周期
+      safeExecute(this.$taroPath, ON_READY);
+      // 通过事件触发子组件的生命周期
+      raf(() => eventCenter.trigger(getOnReadyEventKey(id)));
+      this.onReady.called = true;
+    },
+    [ONSHOW](options = {}) {
+      hasLoaded.then(() => {
+        // 设置 Current 的 page 和 router
+        Current.page = this as any;
+        setCurrentRouter(this);
+        // 触发生命周期
+        safeExecute(this.$taroPath, ON_SHOW, options);
+        // 通过事件触发子组件的生命周期
+        raf(() => eventCenter.trigger(getOnShowEventKey(id)));
+      });
+    },
+    [ONHIDE]() {
+      // 设置 Current 的 page 和 router
+      if (Current.page === this) {
+        Current.page = null;
+        Current.router = null;
+      }
+      // 触发生命周期
+      safeExecute(this.$taroPath, ON_HIDE);
+      // 通过事件触发子组件的生命周期
+      eventCenter.trigger(getOnHideEventKey(id));
+    },
+  };
+
+  LIFECYCLES.forEach((lifecycle) => {
+    config[lifecycle] = function () {
+      return safeExecute(this.$taroPath, lifecycle, ...arguments);
+    };
+  });
+
+  // onShareAppMessage 和 onShareTimeline 一样，会影响小程序右上方按钮的选项，因此不能默认注册。
+  if (component.onShareAppMessage ||
+      component.prototype?.onShareAppMessage ||
+      component.enableShareAppMessage) {
+    config.onShareAppMessage = function (options) {
+      const target = options?.target;
+      if (target) {
+        const { id } = target;
+        const element = document.getElementById(id);
+        if (element) {
+          target!.dataset = element.dataset;
+        }
+      }
+      return safeExecute(this.$taroPath, 'onShareAppMessage', options);
+    };
+  }
+  if (component.onShareTimeline ||
+      component.prototype?.onShareTimeline ||
+      component.enableShareTimeline) {
+    config.onShareTimeline = function () {
+      return safeExecute(this.$taroPath, 'onShareTimeline');
+    };
+  }
+
+  config.eh = eventHandler;
+
+  if (!isUndefined(data)) {
+    config.data = data;
+  }
+
+  hooks.call('modifyPageObject', config);
+
+  return config;
+}
+
+export function createComponentConfig(component: React.ComponentClass, componentName?: string, data?: Record<string, unknown>) {
+  const id = componentName ?? `taro_component_${pageId()}`;
+  let componentElement: TaroRootElement | null = null;
+
+  const config: any = {
+    attached() {
+      perf.start(PAGE_INIT);
+      const path = getPath(id, { id: this.getPageId?.() || pageId() });
+      Current.app!.mount!(component, path, () => {
+        componentElement = env.document.getElementById<TaroRootElement>(path);
+        ensure(componentElement !== null, '没有找到组件实例。');
+        this.$taroInstances = instances.get(path);
+        safeExecute(path, ON_LOAD);
+        if (componentElement) {
+          componentElement.ctx = this;
+          componentElement.performUpdate(true);
+        }
+      });
+    },
+    detached() {
+      const path = getPath(id, { id: this.getPageId() });
+      Current.app!.unmount!(path, () => {
+        instances.delete(path);
+        if (componentElement) {
+          componentElement.ctx = null;
+        }
+      });
+    },
+    methods: {
+      eh: eventHandler,
+    },
+  };
+
+  if (!isUndefined(data)) {
+    config.data = data;
+  }
+
+  [OPTIONS, EXTERNAL_CLASSES, BEHAVIORS].forEach(key => {
+    config[key] = component[key] ?? EMPTY_OBJ;
+  });
+
+  return config;
+}
+
+export function createRecursiveComponentConfig(componentName?: string) {
+  const isCustomWrapper = componentName === CUSTOM_WRAPPER;
+  const lifeCycles = isCustomWrapper
+    ? {
+      attached() {
+        const componentId = this.data.i?.sid;
+        if (isString(componentId)) {
+          customWrapperCache.set(componentId, this);
+        }
+      },
+      detached() {
+        const componentId = this.data.i?.sid;
+        if (isString(componentId)) {
+          customWrapperCache.delete(componentId);
+        }
+      },
+    }
+    : EMPTY_OBJ;
+
+  return {
+    properties: {
+      i: {
+        type: Object,
+        value: {
+          [Shortcuts.NodeName]: VIEW,
+        },
+      },
+      l: {
+        type: String,
+        value: '',
+      },
+    },
+    options: {
+      addGlobalClass: true,
+      virtualHost: !isCustomWrapper,
+    },
+    methods: {
+      eh: eventHandler,
+    },
+    ...lifeCycles,
+  };
+}

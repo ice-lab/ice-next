@@ -15,8 +15,6 @@ export class MiniWebpackPlugin {
   getPlugins() {
     const providerPlugin = this.getProviderPlugin();
     const definePlugin = this.getDefinePlugin();
-    // const definePluginOptions = definePlugin.args[0];
-    // const miniPlugin = this.getMainPlugin(definePluginOptions);
     const miniPlugin = this.getMainPlugin({});
     const plugins: Array<any> = [
       providerPlugin,
@@ -28,14 +26,14 @@ export class MiniWebpackPlugin {
 
   getProviderPlugin() {
     return new webpack.ProvidePlugin({
-      window: ['@tarojs/runtime', 'window'],
-      document: ['@tarojs/runtime', 'document'],
-      navigator: ['@tarojs/runtime', 'navigator'],
-      requestAnimationFrame: ['@tarojs/runtime', 'requestAnimationFrame'],
-      cancelAnimationFrame: ['@tarojs/runtime', 'cancelAnimationFrame'],
-      Element: ['@tarojs/runtime', 'TaroElement'],
-      SVGElement: ['@tarojs/runtime', 'SVGElement'],
-      MutationObserver: ['@tarojs/runtime', 'MutationObserver'],
+      window: ['@ice/miniapp-runtime', 'window'],
+      document: ['@ice/miniapp-runtime', 'document'],
+      navigator: ['@ice/miniapp-runtime', 'navigator'],
+      requestAnimationFrame: ['@ice/miniapp-runtime', 'requestAnimationFrame'],
+      cancelAnimationFrame: ['@ice/miniapp-runtime', 'cancelAnimationFrame'],
+      Element: ['@ice/miniapp-runtime', 'TaroElement'],
+      SVGElement: ['@ice/miniapp-runtime', 'SVGElement'],
+      MutationObserver: ['@ice/miniapp-runtime', 'MutationObserver'],
     });
   }
 
@@ -49,7 +47,8 @@ export class MiniWebpackPlugin {
     } = this.config;
 
     env.FRAMEWORK = JSON.stringify(framework);
-    env.TARO_ENV = JSON.stringify(buildAdapter);
+    env.TARO_ENV = JSON.stringify('wechat-miniprogram');
+    console.log('🚀 ~ file: plugin.ts ~ line 53 ~ MiniWebpackPlugin ~ getDefinePlugin ~ env.TARO_ENV', env.TARO_ENV);
     const envConstants = Object.keys(env).reduce((target, key) => {
       target[`process.env.${key}`] = env[key];
       return target;
@@ -70,13 +69,12 @@ export class MiniWebpackPlugin {
   }
 
   getMainPlugin(definePluginOptions) {
-    const { rootDir, outputDir, runtimePath, nodeModulesPath, template, deviceRatio, fileType } = this.config;
+    const { rootDir, outputDir, nodeModulesPath, template, deviceRatio, fileType } = this.config;
     const sourceDir = path.join(rootDir, 'src');
     const options = {
       /** paths */
       sourceDir,
       outputDir,
-      runtimePath,
       nodeModulesPath,
       /** config & message */
       framework: 'react',

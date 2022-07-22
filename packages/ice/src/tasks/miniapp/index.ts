@@ -1,51 +1,42 @@
 import * as path from 'path';
+import fg from 'fast-glob';
 import type { Config } from '@ice/types';
 import { CACHE_DIR } from '../../constant.js';
-import { Template } from './webpack/wechat-template/index.js';
+import { RUNTIME_TMP_DIR } from '../../constant.js';
+import getMiniappPlatformConfig from './platforms/index.js';
 import getMiniappWebpackConfig from './webpack/index.js';
 
-// Copied from webpack-config
+// The same as @ice/webpack-config
 function getEntry(rootDir: string) {
   // check entry.client.ts
-  // let entryFile = fg.sync('entry.client.{tsx,ts,jsx.js}', {
-  //   cwd: path.join(rootDir, 'src'),
-  //   absolute: true,
-  // })[0];
-  let entryFile: string;
+  let entryFile = fg.sync('entry.client.{tsx,ts,jsx.js}', {
+    cwd: path.join(rootDir, 'src'),
+    absolute: true,
+  })[0];
   if (!entryFile) {
     // use generated file in template directory
-    entryFile = path.join(rootDir, '.ice/entry.client.ts');
+    entryFile = path.join(rootDir, RUNTIME_TMP_DIR, 'entry.client.ts');
   }
-
-  // const dataLoaderFile = path.join(rootDir, '.ice/data-loader.ts');
   return {
     main: entryFile,
-    // FIXME: https://github.com/ice-lab/ice-next/issues/217, https://github.com/ice-lab/ice-next/issues/199
   };
 }
 
-const getMiniappTask = ({ rootDir, command }): Config => {
-  // TODO: entry
+const getMiniappTask = ({ rootDir, command, platform }): Config => {
   const entry = getEntry(rootDir);
-  const outputDir = path.join(rootDir, 'build', 'ali-miniapp');
+  // TODO:不支持被用户修改
+  const outputDir = path.join(rootDir, 'build', platform);
   const mode = command === 'start' ? 'development' : 'production';
-  const template = new Template();
-  const runtimePath = '@tarojs/plugin-platform-weapp/dist/runtime';
+  const { template, globalObject, fileType } = getMiniappPlatformConfig(platform);
+
   const miniappWebpackConfig = getMiniappWebpackConfig({
-    // TODO:
     rootDir,
     entry,
     outputDir,
     mode,
     template,
-    runtimePath,
-    globalObject: 'wx',
-    fileType: {
-      style: '.wxss',
-      config: '.json',
-      script: '.js',
-      templ: '.wxml',
-    },
+    globalObject,
+    fileType,
   });
   return {
     mode,
@@ -60,6 +51,11 @@ const getMiniappTask = ({ rootDir, command }): Config => {
     optimization: miniappWebpackConfig.optimization,
     performance: miniappWebpackConfig.performance,
     devServer: {}, // No need to use devServer in miniapp
+    swcOptions: {
+      jsxTransform: true,
+      // getData is built by data-loader
+      removeExportExprs: ['getData', 'getServerData', 'getStaticData'],
+    },
   };
 };
 

@@ -1,6 +1,6 @@
 import { UnRecursiveTemplate } from '@tarojs/shared/dist/template.js';
 
-export class Template extends UnRecursiveTemplate {
+export default class Template extends UnRecursiveTemplate {
   pluginOptions: any;
   supportXS = true;
   Adapter = {

@@ -3,12 +3,12 @@
 export default function Home() {
   return (
     <>
-      <h2 className="title">Home Page</h2>
-      <div className="data">
-        <div>foo: </div>
-        <div>users:</div>
-        <div>userInfo: </div>
-      </div>
+      <view className="title">Home Page</view>
+      <view className="data">
+        <view>foo: </view>
+        <view>users:</view>
+        <view>userInfo: </view>
+      </view>
     </>
   );
 }

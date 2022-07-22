@@ -71,7 +71,7 @@ export class MiniWebpackModule {
         })],
       },
       // script
-      this.getScriptRule(),
+      // this.getScriptRule(),
     ];
     return { rules };
   }

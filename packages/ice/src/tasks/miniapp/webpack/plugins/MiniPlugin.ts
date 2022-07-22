@@ -5,6 +5,7 @@ import taroHelper from '@tarojs/helper';
 import type { RecursiveTemplate, UnRecursiveTemplate } from '@tarojs/shared/dist/template';
 import type { AppConfig, Config } from '@tarojs/taro';
 import fs from 'fs-extra';
+import { minify } from 'html-minifier';
 import { urlToRequest } from 'loader-utils';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
 import EntryDependency from 'webpack/lib/dependencies/EntryDependency.js';
@@ -12,14 +13,12 @@ import webpackSources from 'webpack-sources';
 
 import TaroSingleEntryDependency from '../dependencies/TaroSingleEntryDependency.js';
 import { componentConfig } from '../template/component.js';
-import type { AddPageChunks, Func, IComponent, IFileType } from '../utils/types.js';
+import type { IComponent } from '../utils/types.js';
 import TaroLoadChunksPlugin from './TaroLoadChunksPlugin.js';
 import TaroNormalModulesPlugin from './TaroNormalModulesPlugin.js';
-import TaroSingleEntryPlugin from './TaroSingleEntryPlugin.js';
 
 const { ConcatSource, RawSource } = webpackSources;
 const {
-  FRAMEWORK_EXT_MAP,
   isAliasPath,
   isEmptyObject,
   META_TYPE,
@@ -36,37 +35,6 @@ const {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PLUGIN_NAME = 'TaroMiniPlugin';
-
-interface ITaroMiniPluginOptions {
-  appEntry?: string;
-  constantsReplaceList: {
-    [key: string]: any;
-  };
-  sourceDir: string;
-  commonChunks: string[];
-  framework: string;
-  baseLevel: number;
-  addChunkPages?: AddPageChunks;
-  minifyXML?: {
-    collapseWhitespace?: boolean;
-  };
-  fileType: IFileType;
-  template: RecursiveTemplate | UnRecursiveTemplate;
-  modifyBuildAssets?: Func;
-  modifyMiniConfigs?: Func;
-  runtimePath?: string | string[];
-  onCompilerMake?: Func;
-  onParseCreateElement?: Func;
-  blended: boolean;
-  alias: Record<string, string>;
-  deviceRatio: any;
-  designWidth: number;
-  loaderMeta?: Record<string, string>;
-  hot: boolean;
-  logger?: {
-    quiet?: boolean;
-  };
-}
 
 export interface IComponentObj {
   name?: string;
@@ -105,7 +73,7 @@ export default class TaroMiniPlugin {
   dependencies = new Map<string, TaroSingleEntryDependency>();
   loadChunksPlugin: TaroLoadChunksPlugin;
   themeLocation: string;
-  pageLoaderName = '@tarojs/taro-loader/lib/page.js';
+  pageLoaderName = '@ice/miniapp-loader/lib/page.js';
   independentPackages = new Map<string, string[]>();
 
   constructor(options = {}) {
@@ -215,7 +183,6 @@ class App extends React.Component {
       this.tryAsync<webpack.Compilation>(async compilation => {
         const { dependencies } = this;
         const promises: Promise<null>[] = [];
-        this.compileIndependentPages(compiler, compilation, dependencies, promises);
         dependencies.forEach(dep => {
           promises.push(new Promise<null>((resolve, reject) => {
             compilation.addEntry(this.options.sourceDir, dep, {
@@ -240,35 +207,8 @@ class App extends React.Component {
        */
       webpack.NormalModule.getCompilationHooks(compilation).loader.tap(PLUGIN_NAME, (_loaderContext, module:/** TaroNormalModule */ any) => {
         const { framework, loaderMeta = {}, designWidth, deviceRatio } = this.options;
-        if (module.miniType === META_TYPE.ENTRY) {
-          const loaderName = '@tarojs/taro-loader';
-          if (!isLoaderExist(module.loaders, loaderName)) {
-            module.loaders.unshift({
-              loader: loaderName,
-              options: {
-                framework,
-                loaderMeta,
-                prerender: false,
-                config: this.appConfig,
-                runtimePath: this.options.runtimePath || '@tarojs/plugin-platform-weapp/dist/runtime',
-                blended: this.options.blended,
-                pxTransformConfig: {
-                  designWidth: designWidth || 750,
-                  deviceRatio: deviceRatio || {
-                    750: 1,
-                  },
-                },
-              },
-            });
-          }
-        } else if (module.miniType === META_TYPE.PAGE) {
-          let isIndependent = false;
-          this.independentPackages.forEach(pages => {
-            if (pages.includes(module.resource)) {
-              isIndependent = true;
-            }
-          });
-          const loaderName = (isIndependent ? '@tarojs/taro-loader/lib/independentPage' : this.pageLoaderName);
+        if (module.miniType === META_TYPE.PAGE) {
+          const loaderName = this.pageLoaderName;
           if (!isLoaderExist(module.loaders, loaderName)) {
             module.loaders.unshift({
               loader: loaderName,
@@ -279,13 +219,12 @@ class App extends React.Component {
                 prerender: false,
                 config: this.filesConfig,
                 appConfig: this.appConfig,
-                runtimePath: this.options.runtimePath,
                 hot: this.options.hot,
               },
             });
           }
         } else if (module.miniType === META_TYPE.COMPONENT) {
-          const loaderName = '@tarojs/taro-loader/lib/component';
+          const loaderName = '@ice/miniapp-loader/lib/component.js';
           if (!isLoaderExist(module.loaders, loaderName)) {
             module.loaders.unshift({
               loader: loaderName,
@@ -294,7 +233,6 @@ class App extends React.Component {
                 loaderMeta,
                 name: module.name,
                 prerender: false,
-                runtimePath: this.options.runtimePath,
               },
             });
           }
@@ -419,7 +357,7 @@ class App extends React.Component {
     this.getTabBarFiles(this.appConfig);
     this.pages = new Set([
       ...appPages.map<IComponent>(item => {
-        const pagePath = resolveMainFilePath(path.join(this.options.sourceDir, item), FRAMEWORK_EXT_MAP[framework]);
+        const pagePath = resolveMainFilePath(path.join(this.options.sourceDir, item), SCRIPT_EXT);
         const pageTemplatePath = this.getTemplatePath(pagePath);
         const isNative = this.isNativePageORComponent(pageTemplatePath);
         return {
@@ -611,7 +549,7 @@ class App extends React.Component {
               }
             });
             if (!hasPageIn) {
-              const pagePath = resolveMainFilePath(path.join(this.options.sourceDir, pageItem), FRAMEWORK_EXT_MAP[framework]);
+              const pagePath = resolveMainFilePath(path.join(this.options.sourceDir, pageItem), SCRIPT_EXT);
               const templatePath = this.getTemplatePath(pagePath);
               const isNative = this.isNativePageORComponent(templatePath);
               if (isIndependent) {
@@ -643,87 +581,6 @@ class App extends React.Component {
     }
   }
 
-  compileIndependentPages(compiler, compilation, dependencies, promises) {
-    const { independentPackages } = this;
-    if (independentPackages.size) {
-      const JsonpTemplatePlugin = require('webpack/lib/web/JsonpTemplatePlugin');
-      const NaturalChunkIdsPlugin = require('webpack/lib/ids/NaturalChunkIdsPlugin');
-      const SplitChunksPlugin = require('webpack/lib/optimize/SplitChunksPlugin');
-      const RuntimeChunkPlugin = require('webpack/lib/optimize/RuntimeChunkPlugin');
-      const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-
-      independentPackages.forEach((pages, name) => {
-        const childCompiler = compilation.createChildCompiler(PLUGIN_NAME, {
-          path: `${compiler.options.output.path}/${name}`,
-          chunkLoadingGlobal: `subpackage_${name}`,
-        });
-        const compPath = path.resolve(__dirname, '..', 'template/comp');
-        childCompiler.inputFileSystem = compiler.inputFileSystem;
-        childCompiler.outputFileSystem = compiler.outputFileSystem;
-        childCompiler.context = compiler.context;
-        new JsonpTemplatePlugin().apply(childCompiler);
-        new NaturalChunkIdsPlugin().apply(childCompiler);
-        new MiniCssExtractPlugin({
-          filename: `[name]${this.options.fileType.style}`,
-          chunkFilename: `[name]${this.options.fileType.style}`,
-        }).apply(childCompiler);
-        new webpack.DefinePlugin(this.options.constantsReplaceList).apply(childCompiler);
-        if (compiler.options.optimization) {
-          new SplitChunksPlugin({
-            chunks: 'all',
-            maxInitialRequests: Infinity,
-            minSize: 0,
-            cacheGroups: {
-              vendors: {
-                name: `${name}/vendors`,
-                minChunks: 1,
-                test: module => {
-                  return (/[\\/]node_modules[\\/]/.test(module.resource) && module.resource.indexOf(compPath) < 0);
-                },
-                priority: 10,
-              },
-            },
-          }).apply(childCompiler);
-          new RuntimeChunkPlugin({
-            name: `${name}/runtime`,
-          }).apply(childCompiler);
-        }
-        const childPages = new Set<IComponent>();
-        pages.forEach(pagePath => {
-          if (dependencies.has(pagePath)) {
-            const dep = dependencies.get(pagePath);
-            new TaroSingleEntryPlugin(compiler.context, dep?.request, dep?.name, dep?.miniType).apply(childCompiler);
-          }
-          this.pages.forEach(item => {
-            if (item.path === pagePath) {
-              childPages.add(item);
-            }
-          });
-          dependencies.delete(pagePath);
-        });
-        new TaroLoadChunksPlugin({
-          commonChunks: [`${name}/runtime`, `${name}/vendors`],
-          addChunkPages: this.options.addChunkPages,
-          pages: childPages,
-          framework: this.options.framework,
-          isIndependentPackages: true,
-          needAddCommon: [`${name}/comp`, `${name}/custom-wrapper`],
-        }).apply(childCompiler);
-        // 添加 comp 和 custom-wrapper 组件
-        new TaroSingleEntryPlugin(compiler.context, path.resolve(__dirname, '..', 'template/comp'), `${name}/comp`, META_TYPE.STATIC).apply(childCompiler);
-        new TaroSingleEntryPlugin(compiler.context, path.resolve(__dirname, '..', 'template/custom-wrapper'), `${name}/custom-wrapper`, META_TYPE.STATIC).apply(childCompiler);
-        promises.push(new Promise((resolve, reject) => {
-          childCompiler.runAsChild(err => {
-            if (err) {
-              return reject(err);
-            }
-            resolve(null);
-          });
-        }).catch(err => console.log(err)));
-      });
-    }
-  }
-
   /**
    * 搜集 tabbar icon 图标路径
    * 收集自定义 tabbar 组件
@@ -742,7 +599,7 @@ class App extends React.Component {
       });
       if (tabBar.custom) {
         const customTabBarPath = path.join(sourceDir, 'custom-tab-bar');
-        const customTabBarComponentPath = resolveMainFilePath(customTabBarPath, [...FRAMEWORK_EXT_MAP[framework], ...SCRIPT_EXT]);
+        const customTabBarComponentPath = resolveMainFilePath(customTabBarPath, [...SCRIPT_EXT]);
         if (fs.existsSync(customTabBarComponentPath)) {
           const customTabBarComponentTemplPath = this.getTemplatePath(customTabBarComponentPath);
           const isNative = this.isNativePageORComponent(customTabBarComponentTemplPath);
@@ -831,30 +688,6 @@ class App extends React.Component {
     this.generateTemplateFile(compilation, baseTemplateName, template.buildTemplate, componentConfig);
     this.generateTemplateFile(compilation, customWrapperName, template.buildCustomComponentTemplate, this.options.fileType.templ);
     this.generateXSFile(compilation, 'utils');
-    // 为独立分包生成 base/comp/custom-wrapper
-    this.independentPackages.forEach((_pages, name) => {
-      this.generateTemplateFile(compilation, `${name}/${baseTemplateName}`, template.buildTemplate, componentConfig);
-      if (!template.isSupportRecursive) {
-        // 如微信、QQ 不支持递归模版的小程序，需要使用自定义组件协助递归
-        this.generateConfigFile(compilation, `${name}/${baseCompName}`, {
-          component: true,
-          usingComponents: {
-            [baseCompName]: `./${baseCompName}`,
-            [customWrapperName]: `./${customWrapperName}`,
-          },
-        });
-        this.generateConfigFile(compilation, `${name}/${customWrapperName}`, {
-          component: true,
-          usingComponents: {
-            [baseCompName]: `./${baseCompName}`,
-            [customWrapperName]: `./${customWrapperName}`,
-          },
-        });
-        this.generateTemplateFile(compilation, `${name}/${baseCompName}`, template.buildBaseComponentTemplate, this.options.fileType.templ);
-      }
-      this.generateTemplateFile(compilation, `${name}/${customWrapperName}`, template.buildCustomComponentTemplate, this.options.fileType.templ);
-      this.generateXSFile(compilation, `${name}/utils`);
-    });
     this.components.forEach(component => {
       const importBaseTemplatePath = promoteRelativePath(path.relative(component.path, path.join(sourceDir, this.getTemplatePath(baseTemplateName))));
       const config = this.filesConfig[this.getConfigFilePath(component.name)];
@@ -870,13 +703,6 @@ class App extends React.Component {
       const config = this.filesConfig[this.getConfigFilePath(page.name)];
       let isIndependent = false;
       let independentName = '';
-      this.independentPackages.forEach((pages, name) => {
-        if (pages.includes(page.path)) {
-          isIndependent = true;
-          independentName = name;
-          importBaseTemplatePath = promoteRelativePath(path.relative(page.path, path.join(sourceDir, name, this.getTemplatePath(baseTemplateName))));
-        }
-      });
       if (config) {
         let importBaseCompPath = promoteRelativePath(path.relative(page.path, path.join(sourceDir, this.getTargetFilePath(baseCompName, ''))));
         let importCustomWrapperPath = promoteRelativePath(path.relative(page.path, path.join(sourceDir, this.getTargetFilePath(customWrapperName, ''))));
@@ -922,7 +748,6 @@ class App extends React.Component {
     const fileTemplName = this.getTemplatePath(this.getComponentName(filePath));
 
     if (this.options.minifyXML?.collapseWhitespace) {
-      const { minify } = require('html-minifier');
       templStr = minify(templStr, {
         collapseWhitespace: true,
         keepClosingSlash: true,
