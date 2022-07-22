@@ -15,7 +15,7 @@ import build from './commands/build.js';
 import mergeTaskConfig from './utils/mergeTaskConfig.js';
 import getWatchEvents from './getWatchEvents.js';
 import { compileAppConfig } from './analyzeRuntime.js';
-import { initProcessEnv, updateRuntimeEnv, getCoreEnvKeys } from './utils/runtimeEnv.js';
+import { setEnv, updateRuntimeEnv, getCoreEnvKeys } from './utils/runtimeEnv.js';
 import getRuntimeModules from './utils/getRuntimeModules.js';
 import { generateRoutesInfo } from './routes.js';
 import getWebTask from './tasks/web/index.js';
@@ -111,10 +111,9 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const platformTaskConfig = taskConfigs.find(({ name }) => ALL_PLATFORMS.includes(name));
   // get userConfig after setup because of userConfig maybe modified by plugins
   const { userConfig } = ctx;
-  const { routes: routesConfig, server } = userConfig;
+  const { routes: routesConfig, server, syntaxFeatures } = userConfig;
 
-  // load dotenv, set to process.env
-  await initProcessEnv(rootDir, command, commandArgs);
+  await setEnv(rootDir, commandArgs);
   const coreEnvKeys = getCoreEnvKeys();
 
   const routesInfo = await generateRoutesInfo(rootDir, routesConfig);
@@ -127,6 +126,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     runtimeModules,
     coreEnvKeys,
     basename: platformTaskConfig.config.basename || '/',
+    memoryRouter: platformTaskConfig.config.memoryRouter,
     hydrate: !csr,
   });
   dataCache.set('routes', JSON.stringify(routesInfo.routeManifest));
@@ -142,6 +142,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     task: platformTaskConfig,
     command,
     server,
+    syntaxFeatures,
   });
 
   addWatchEvent(

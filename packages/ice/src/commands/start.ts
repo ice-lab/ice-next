@@ -19,6 +19,7 @@ import createMockMiddleware from '../middlewares/mock/createMiddleware.js';
 import { ROUTER_MANIFEST, RUNTIME_TMP_DIR, SERVER_ENTRY, SERVER_OUTPUT_DIR, WEB, MINIAPP_PLATFORMS } from '../constant.js';
 import ServerCompilerPlugin from '../webpack/ServerCompilerPlugin.js';
 import { getAppConfig } from '../analyzeRuntime.js';
+import keepPlatform from '../utils/keepPlatform.js';
 
 const { merge } = lodash;
 
@@ -47,7 +48,7 @@ const start = async (
   let compiler;
 
   if (platform === WEB) {
-    // Compile server entry after the webpack compilation.
+      // Compile server entry after the webpack compilation.
     const outputDir = webpackConfigs[0].output.path;
     const { ssg, ssr, server: { format } } = userConfig;
     const entryPoint = path.join(rootDir, SERVER_ENTRY);
@@ -67,6 +68,22 @@ const start = async (
           },
           {
             preBundle: format === 'esm',
+            swc: {
+              // Remove components and getData when document only.
+              removeExportExprs: false ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
+              compilationConfig: {
+                jsc: {
+                  transform: {
+                    constModules: {
+                      globals: {
+                        '@uni/env': keepPlatform('node'),
+                        'universal-env': keepPlatform('node'),
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
         ],
         serverCompileTask,
@@ -88,6 +105,7 @@ const start = async (
         }
         const appConfig = getAppConfig();
         const routeManifestPath = path.join(rootDir, ROUTER_MANIFEST);
+        // both ssr and ssg, should render the whole page in dev mode.
         const documentOnly = !ssr && !ssg;
 
         const serverRenderMiddleware = createRenderMiddleware({
@@ -140,7 +158,7 @@ const start = async (
         devServer,
       });
     });
-    return { devServer, compiler };
+    return { compiler, devServer };
   } else if (MINIAPP_PLATFORMS.includes(platform)) {
     compiler = await webpackCompiler({
       rootDir,
