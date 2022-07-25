@@ -32,14 +32,14 @@ export const startFixture = async function (example: string) {
 
   // wait generate assets manifest
   await new Promise((resolve) => {
-    compiler.hooks.done.tap('done',() => {
+    compiler.hooks.done.tap('done', () => {
       resolve(true);
-    })
+    });
   });
 
   return {
     port,
-    devServer
+    devServer,
   };
 };
 
