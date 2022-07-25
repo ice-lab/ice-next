@@ -2,7 +2,8 @@ import path from 'path';
 import getPort from 'get-port';
 import Browser, { Page } from './browser';
 import { Server } from 'http';
-import createService from '../../packages/ice/src/createService';
+import Service from '../../packages/ice/src/Service';
+import serve from '../../packages/ice/src/commands/serve';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -21,14 +22,14 @@ export const startFixture = async function (example: string) {
   const port = await getPort();
   const rootDir = path.join(__dirname, `../../examples/${example}`);
   process.env.DISABLE_FS_CACHE = 'true';
-  const service = await createService({ rootDir, command: 'start', commandArgs: {
+  const service = new Service({ rootDir, command: 'start', commandArgs: {
     host: '0.0.0.0',
     port,
     open: false,
   }});
+  await service.start();
+  const { compiler, devServer } = await serve(service, { devPath: '' });
 
-  // @ts-ignore
-  const { compiler, devServer } = await service.run();
   // wait generate assets manifest
   await new Promise((resolve) => {
     compiler.hooks.done.tap('done',() => {
