@@ -12,7 +12,7 @@ export default function getServerEntry(rootDir: string, task: TaskConfig<Config>
   })[0];
   if (!entryFile) {
     // use generated file in template directory
-    entryFile = task.config.server.entry || path.join(rootDir, SERVER_ENTRY);
+    entryFile = task.config?.server?.entry || path.join(rootDir, SERVER_ENTRY);
   }
   return entryFile;
 }
