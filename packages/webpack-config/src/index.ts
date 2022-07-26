@@ -79,12 +79,15 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     tsCheckerOptions,
     eslintOptions,
     entry,
+    output,
     splitChunks,
     assetsManifest,
     concatenateModules,
     devServer,
     fastRefresh,
     logging,
+    optimization,
+    performance,
   } = config;
   const absoluteOutputDir = path.isAbsolute(outputDir) ? outputDir : path.join(rootDir, outputDir);
   const dev = mode !== 'production';
@@ -146,7 +149,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     },
     entry: entry || (() => getEntry(rootDir, runtimeTmpDir)),
     externals,
-    output: {
+    output: output || {
       publicPath,
       path: absoluteOutputDir,
       filename: `js/${hashKey ? `[name]-[${hashKey}].js` : '[name].js'}`,
@@ -166,12 +169,19 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     },
     resolve: {
       alias: aliasWithRoot,
+      symlinks: true,
       extensions: ['.ts', '.tsx', '.jsx', '...'],
+      mainFields: ['browser', 'module', 'jsnext:main', 'main'],
       fallback: {
         // TODO: add more fallback module
         events: require.resolve('events'),
         stream: false,
+        fs: false,
+        path: false,
       },
+    },
+    resolveLoader: {
+      modules: ['node_modules'],
     },
     watchOptions: {
       // add a delay before rebuilding once routes changed
@@ -179,7 +189,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
       aggregateTimeout: 200,
       ignored: watchIgnoredRegexp,
     },
-    optimization: {
+    optimization: optimization || {
       splitChunks: splitChunks == false ? undefined : getSplitChunksConfig(rootDir),
       minimize: minify,
       minimizer: [
@@ -214,7 +224,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     infrastructureLogging: {
       level: 'warn',
     },
-    performance: false,
+    performance: performance || false,
     devtool: getDevtoolValue(sourceMap),
     plugins: [
       ...plugins,

@@ -1,0 +1,34 @@
+{
+  "name": "basic-project",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "ice start",
+    "start:wechat": "ice start --platform wechat-miniprogram",
+    "build": "ice build"
+  },
+  "description": "",
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@ice/app": "workspace:*",
+    "@ice/plugin-auth": "workspace:*",
+    "@ice/plugin-rax-compat": "workspace:*",
+    "@ice/runtime": "workspace:*",
+    "@ice/miniapp-loader": "workspace:*",
+    "@tarojs/plugin-framework-react": "3.5.0-beta.7",
+    "@tarojs/plugin-platform-weapp": "3.5.0-beta.7",
+    "@tarojs/runtime": "^3.4.12",
+    "@tarojs/taro": "^3.4.12",
+    "ahooks": "^3.3.8",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.2",
+    "browserslist": "^4.19.3",
+    "regenerator-runtime": "^0.13.9",
+    "speed-measure-webpack-plugin": "^1.5.0",
+    "webpack": "^5.73.0"
+  }
+}
