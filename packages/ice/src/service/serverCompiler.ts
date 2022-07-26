@@ -157,7 +157,7 @@ interface CreateDepsMetadataOptions {
  *  Create dependencies metadata only when server entry is bundled to esm.
  */
 async function createDepsMetadata({ rootDir, task, plugins }: CreateDepsMetadataOptions) {
-  const serverEntry = getServerEntry(rootDir, task);
+  const serverEntry = getServerEntry(rootDir, task.config?.server?.entry);
 
   const deps = await scanImports([serverEntry], {
     rootDir,
