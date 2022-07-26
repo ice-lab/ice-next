@@ -48,7 +48,7 @@ const build = async (
   });
   const { ssg, server: { format } } = userConfig;
   // compile server bundle
-  const entryPoint = getServerEntry(rootDir);
+  const entryPoint = getServerEntry(rootDir, taskConfigs[0]);
   const esm = format === 'esm';
   const outJSExtension = esm ? '.mjs' : '.cjs';
   const serverOutputDir = path.join(outputDir, SERVER_OUTPUT_DIR);

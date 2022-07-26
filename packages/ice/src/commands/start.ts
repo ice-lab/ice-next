@@ -45,7 +45,7 @@ const start = async (
   // Compile server entry after the webpack compilation.
   const outputDir = webpackConfigs[0].output.path;
   const { ssg, ssr, server: { format } } = userConfig;
-  const entryPoint = getServerEntry(rootDir);
+  const entryPoint = getServerEntry(rootDir, taskConfigs[0]);
   const esm = format === 'esm';
   const outJSExtension = esm ? '.mjs' : '.cjs';
   webpackConfigs[0].plugins.push(
