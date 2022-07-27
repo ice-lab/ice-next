@@ -41,6 +41,12 @@ function getCompilerPlugins(config: Config, compiler: Compiler) {
     new RegExp(SKIP_COMPILE.map((dep) => `node_modules/?.+${dep}/`).join('|')),
     /bundles\/compiled/,
   ];
+
+  compilerPlugins.push(
+    ...transformPlugins,
+    ...transforms.map((transform, index) => ({ name: `transform_${index}`, transform })),
+  );
+
   if (swcOptions) {
     compilerPlugins.push(compilationPlugin({
       sourceMap,
@@ -52,14 +58,9 @@ function getCompilerPlugins(config: Config, compiler: Compiler) {
     }));
   }
 
-  compilerPlugins.push(
-    ...transformPlugins,
-    ...transforms.map((transform, index) => ({ name: `transform_${index}`, transform })),
-  );
-
   return compiler === 'webpack'
     ? compilerPlugins.map(plugin => createUnplugin(() => getPluginTransform(plugin, 'webpack')).webpack())
-    : compilerPlugins.map(plugin => createUnplugin(() => getPluginTransform(plugin, 'esbuild')).esbuild());
+    : compilerPlugins.map(plugin => getPluginTransform(plugin, 'esbuild'));
 }
 
 export default getCompilerPlugins;

@@ -1,12 +1,34 @@
 import fs from 'fs';
 import * as path from 'path';
-import type { Plugin, PluginBuild } from 'esbuild';
+import type { Plugin, PluginBuild, Loader } from 'esbuild';
 import type { UnpluginOptions, UnpluginContext } from 'unplugin';
 
 interface PluginOptions {
   plugins?: UnpluginOptions[];
   namespace?: string;
   filter?: RegExp;
+}
+
+const extToLoader: Record<string, Loader> = {
+  '.js': 'js',
+  '.mjs': 'js',
+  '.cjs': 'js',
+  '.jsx': 'jsx',
+  '.ts': 'ts',
+  '.cts': 'ts',
+  '.mts': 'ts',
+  '.tsx': 'tsx',
+  '.css': 'css',
+  '.less': 'css',
+  '.stylus': 'css',
+  '.scss': 'css',
+  '.sass': 'css',
+  '.json': 'json',
+  '.txt': 'text',
+};
+
+export function guessLoader(id: string): Loader {
+  return extToLoader[path.extname(id).toLowerCase()] || 'js';
 }
 
 /**
@@ -55,12 +77,14 @@ const transformPipe = (options: PluginOptions = {}): Plugin => {
         // it is required to forward `resolveDir` for esbuild to find dependencies.
         const resolveDir = path.dirname(args.path);
         const sourceCode = await fs.promises.readFile(args.path, 'utf8');
-        return plugins.reduce(({ contents }, plugin) => {
+        const loader = guessLoader(id);
+        return await plugins.reduce(async (prevData, plugin) => {
+          const { contents } = await prevData;
           const { transform, transformInclude } = plugin;
-          if (transformInclude?.(id)) {
-            const result = transform.call(pluginContext, contents, id);
+          if (!transformInclude || transformInclude?.(id)) {
+            const result = await transform.call(pluginContext, contents, id);
             if (typeof result === 'string') {
-              return { contents: result, resolveDir };
+              return { contents: result, resolveDir, loader };
             } else if (typeof result === 'object' && result !== null) {
               let { code, map } = result;
               if (map) {
@@ -70,11 +94,11 @@ const transformPipe = (options: PluginOptions = {}): Plugin => {
                 map = fixSourceMap(map);
                 code += `\n//# sourceMappingURL=${map.toUrl()}`;
               }
-              return { contents: code, resolveDir };
+              return { contents: code, resolveDir, loader };
             }
           }
-          return { contents, resolveDir };
-        }, { contents: sourceCode, resolveDir });
+          return { contents, resolveDir, loader };
+        }, Promise.resolve({ contents: sourceCode, resolveDir, loader }));
       });
     },
   };

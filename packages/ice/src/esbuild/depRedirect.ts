@@ -31,7 +31,7 @@ export const transformImportPlugin = (metadata: DepsMetaData) => {
       },
     },
     transformInclude(id: string) {
-      return /\.js|jsx|ts|tsx/.test(id);
+      return /\.(js|jsx|ts|tsx|mjs)$/.test(id);
     },
     async transform(source: string, id: string) {
       await init;
