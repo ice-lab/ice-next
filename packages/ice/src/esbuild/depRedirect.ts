@@ -1,7 +1,6 @@
 import path from 'path';
-import type { Plugin, TransformOptions } from 'esbuild';
+import type { TransformOptions, PluginBuild } from 'esbuild';
 import { transform } from 'esbuild';
-import fse from 'fs-extra';
 import { parse as parseJS } from 'acorn';
 import MagicString from 'magic-string';
 import esModuleLexer from '@ice/bundles/compiled/es-module-lexer/index.js';
@@ -13,76 +12,76 @@ const { init, parse } = esModuleLexer;
 
 type ImportNameSpecifier = { importedName: string; localName: string };
 
-/**
- * Redirect original dependency to the pre-bundle dependency(cjs) which is handled by preBundleCJSDeps function.
- */
-const createDepRedirectPlugin = (metadata: DepsMetaData): Plugin => {
+export const transformImportPlugin = (metadata: DepsMetaData) => {
+  const { deps } = metadata;
+  let redirectDepIds = [];
   return {
-    name: 'esbuild-dep-redirect',
-    setup(build) {
-      const { deps } = metadata;
-      const redirectDepIds = [];
-
-      build.onResolve({ filter: /.*/ }, ({ path: id }) => {
-        if (redirectDepIds.includes(id)) {
-          return {
-            path: id,
-            external: true,
-          };
+    name: 'transform-import',
+    esbuild: {
+      setup(build: PluginBuild) {
+        redirectDepIds = [];
+        build.onResolve({ filter: /.*/ }, ({ path: id }) => {
+          if (redirectDepIds.includes(id)) {
+            return {
+              path: id,
+              external: true,
+            };
+          }
+        });
+      },
+    },
+    transformInclude(id: string) {
+      return /\.js|jsx|ts|tsx/.test(id);
+    },
+    async transform(source: string, id: string) {
+      await init;
+      let imports: readonly ImportSpecifier[] = [];
+      const transformed = await transformWithESBuild(
+        source,
+        id,
+      );
+      source = transformed.code;
+      imports = parse(transformed.code)[0];
+      const str = new MagicString(source);
+      for (let index = 0; index < imports.length; index++) {
+        const {
+          // depId start and end
+          s: start,
+          e: end,
+          ss: expStart,
+          se: expEnd,
+          n: specifier,
+        } = imports[index];
+        if (!(specifier in deps)) {
+          continue;
         }
-      });
-      build.onLoad({ filter: /\.(js|jsx|ts|tsx)$/ }, async ({ path: id }) => {
-        await init;
-        let source = await fse.readFile(id, 'utf-8');
-        let imports: readonly ImportSpecifier[] = [];
-        const transformed = await transformWithESBuild(
-          source,
-          id,
+
+        const importExp = source.slice(expStart, expEnd);
+        const filePath = deps[specifier].file;
+        redirectDepIds.push(filePath);
+        const rewritten = transformCjsImport(
+          importExp,
+          filePath,
+          specifier,
+          index,
         );
-        source = transformed.code;
-        imports = parse(transformed.code)[0];
-        const str = new MagicString(source);
-        for (let index = 0; index < imports.length; index++) {
-          const {
-            // depId start and end
-            s: start,
-            e: end,
-            ss: expStart,
-            se: expEnd,
-            n: specifier,
-          } = imports[index];
-          if (!(specifier in deps)) {
-            continue;
-          }
-
-          const importExp = source.slice(expStart, expEnd);
-          const filePath = deps[specifier].file;
-          redirectDepIds.push(filePath);
-          const rewritten = transformCjsImport(
-            importExp,
-            filePath,
-            specifier,
-            index,
-          );
-          if (rewritten) {
-            str.overwrite(expStart, expEnd, rewritten, {
-              contentOnly: true,
-            });
-          } else {
-            // export * from '...'
-            str.overwrite(start, end, filePath, { contentOnly: true });
-          }
+        if (rewritten) {
+          str.overwrite(expStart, expEnd, rewritten, {
+            contentOnly: true,
+          });
+        } else {
+          // export * from '...'
+          str.overwrite(start, end, filePath, { contentOnly: true });
         }
-
-        const contents = str.toString();
-        return {
-          contents,
-        };
-      });
+      }
+      return str.toString();
     },
   };
 };
 
+/**
+ * Redirect original dependency to the pre-bundle dependency(cjs) which is handled by preBundleCJSDeps function.
+ */
 // Fork from https://github.com/vitejs/vite/blob/d98c8a710b8f0804120c05e5bd3eb403f17e7b30/packages/vite/src/node/plugins/esbuild.ts#L60
 async function transformWithESBuild(
   input: string,
@@ -207,4 +206,4 @@ function makeLegalIdentifier(str: string) {
   return identifier || '_';
 }
 
-export default createDepRedirectPlugin;
+export default transformImportPlugin;
