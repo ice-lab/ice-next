@@ -41,7 +41,7 @@ function getCompilerPlugins(config: Config, compiler: Compiler) {
     new RegExp(SKIP_COMPILE.map((dep) => `node_modules/?.+${dep}/`).join('|')),
     /bundles\/compiled/,
   ];
-
+  // Add custom transform before swc compilation so the source code can be got before transformed.
   compilerPlugins.push(
     ...transformPlugins,
     ...transforms.map((transform, index) => ({ name: `transform_${index}`, transform })),
