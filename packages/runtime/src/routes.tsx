@@ -150,8 +150,12 @@ function RouteComponent({ id, load }: { id: string; load: RouteItem['load'] }) {
   // get current route component from latest routeModules
   const { routeModules, appConfig } = useAppContext();
   if (appConfig.router.type === 'hash') {
-    console.log('React.lazy(load)==>', React.lazy(load));
-    return React.lazy(load);
+    const Component = React.lazy(load);
+    return (
+      <React.Suspense>
+        <Component />
+      </React.Suspense>
+    );
   }
   const { default: Component } = routeModules[id] || {};
   if (process.env.NODE_ENV === 'development') {

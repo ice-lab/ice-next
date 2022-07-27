@@ -142,12 +142,16 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
   }
 
   const appConfig = getAppConfig(app);
-  const matches = matchRoutes(routes, location, serverOnlyBasename || basename);
-  const routePath = getCurrentRoutePath(matches);
 
-  if (!matches.length) {
-    return render404();
+  let matches: RouteMatch[] = [];
+  if (appConfig?.router?.type !== 'hash') {
+    matches = matchRoutes(routes, location, serverOnlyBasename || basename);
+    if (!matches.length) {
+      return render404();
+    }
   }
+
+  const routePath = getCurrentRoutePath(matches);
 
   if (documentOnly) {
     return renderDocument(matches, routePath, renderOptions, {});
