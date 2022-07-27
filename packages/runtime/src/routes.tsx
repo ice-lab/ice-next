@@ -123,11 +123,10 @@ export function createRouteElements(
   RouteWrappers?: RouteWrapperConfig[],
 ) {
   return routes.map((routeItem: RouteItem) => {
-    let { path, children, index, id, layout, element, ...rest } = routeItem;
-
+    let { path, children, index, id, layout, element, load, ...rest } = routeItem;
     element = (
       <RouteWrapper id={id} isLayout={layout} wrappers={RouteWrappers}>
-        <RouteComponent id={id} />
+        <RouteComponent id={id} load={load} />
       </RouteWrapper>
     );
 
@@ -147,9 +146,13 @@ export function createRouteElements(
   });
 }
 
-function RouteComponent({ id }: { id: string }) {
+function RouteComponent({ id, load }: { id: string; load: RouteItem['load'] }) {
   // get current route component from latest routeModules
-  const { routeModules } = useAppContext();
+  const { routeModules, appConfig } = useAppContext();
+  if (appConfig.router.type === 'hash') {
+    console.log('React.lazy(load)==>', React.lazy(load));
+    return React.lazy(load);
+  }
   const { default: Component } = routeModules[id] || {};
   if (process.env.NODE_ENV === 'development') {
     if (!Component) {
