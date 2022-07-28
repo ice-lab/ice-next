@@ -35,7 +35,8 @@ function getPluginTransform(plugin: UnpluginOptions, type: 'esbuild' | 'webpack'
 function getCompilerPlugins(config: Config, compiler: 'webpack'): WebpackConfig['plugins'];
 function getCompilerPlugins(config: Config, compiler: 'esbuild'): BuildOptions['plugins'];
 function getCompilerPlugins(config: Config, compiler: Compiler) {
-  const { sourceMap,
+  const {
+    sourceMap,
     transformPlugins = [],
     transforms = [],
     mode,
