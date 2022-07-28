@@ -82,7 +82,7 @@ const transformPipe = (options: PluginOptions = {}): Plugin => {
           const { contents } = await prevData;
           const { transform, transformInclude } = plugin;
           if (!transformInclude || transformInclude?.(id)) {
-            const result = await transform.call(pluginContext, contents, id);
+            const result = transform && await transform.call(pluginContext, contents, id);
             if (typeof result === 'string') {
               return { contents: result, resolveDir, loader };
             } else if (typeof result === 'object' && result !== null) {
