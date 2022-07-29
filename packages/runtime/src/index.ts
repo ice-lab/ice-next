@@ -24,6 +24,7 @@ import {
   Links,
   Scripts,
   Main,
+  Data,
 } from './Document.js';
 import type {
   RuntimePlugin,
@@ -54,6 +55,7 @@ export {
   Title,
   Links,
   Scripts,
+  Data,
   Main,
   dataLoader,
   // react-router-dom API

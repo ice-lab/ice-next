@@ -64,8 +64,7 @@ export function Links() {
 }
 
 export function Scripts() {
-  const { routesData, routesConfig, matches, assetsManifest, documentOnly, routeModules, basename } = useAppContext();
-  const appData = useAppData();
+  const { routesConfig, matches, assetsManifest } = useAppContext();
 
   const routeScripts = getScripts(matches, routesConfig);
   const pageAssets = getPageAssets(matches, assetsManifest);
@@ -73,28 +72,8 @@ export function Scripts() {
   // entry assets need to be load before page assets
   const scripts = entryAssets.concat(pageAssets).filter(path => path.indexOf('.js') > -1);
 
-  const matchedIds = matches.map(match => match.route.id);
-  const routePath = getCurrentRoutePath(matches);
-
-  const appContext: AppContext = {
-    appData,
-    routesData,
-    routesConfig,
-    assetsManifest,
-    appConfig: {},
-    matchedIds,
-    routeModules,
-    routePath,
-    basename,
-  };
-
   return (
     <>
-      {/*
-       * disable hydration warning for csr.
-       * initial app data may not equal csr result.
-       */}
-      <script suppressHydrationWarning={documentOnly} dangerouslySetInnerHTML={{ __html: `window.__ICE_APP_CONTEXT__=${JSON.stringify(appContext)}` }} />
       {
         routeScripts.map(script => {
           const { block, ...props } = script;
@@ -107,6 +86,32 @@ export function Scripts() {
         })
       }
     </>
+  );
+}
+
+export function Data() {
+  const { routesData, routesConfig, matches, assetsManifest, documentOnly, routeModules, basename } = useAppContext();
+  const appData = useAppData();
+  const matchedIds = matches.map(match => match.route.id);
+  const routePath = getCurrentRoutePath(matches);
+  const appContext: AppContext = {
+    appData,
+    routesData,
+    routesConfig,
+    assetsManifest,
+    appConfig: {},
+    matchedIds,
+    routeModules,
+    routePath,
+    basename,
+  };
+  return (
+    // Disable hydration warning for csr.
+    // Initial app data may not equal csr result.
+    <script
+      suppressHydrationWarning={documentOnly}
+      dangerouslySetInnerHTML={{ __html: `window.__ICE_APP_CONTEXT__=${JSON.stringify(appContext)}` }}
+    />
   );
 }
 

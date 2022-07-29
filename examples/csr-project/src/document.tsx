@@ -1,4 +1,4 @@
-import { Meta, Title, Links, Main, Scripts } from 'ice';
+import { Meta, Title, Links, Main, Scripts, Data } from 'ice';
 
 function Document() {
   return (
@@ -13,6 +13,7 @@ function Document() {
       </head>
       <body>
         <Main />
+        <Data />
         <Scripts />
       </body>
     </html>

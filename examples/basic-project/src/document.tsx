@@ -1,4 +1,4 @@
-import { Meta, Title, Links, Main, Scripts, useAppData } from 'ice';
+import { Meta, Title, Links, Main, Scripts, useAppData, Data } from 'ice';
 import type { AppData } from 'ice';
 
 function Document() {
@@ -21,6 +21,7 @@ function Document() {
       </head>
       <body>
         <Main />
+        <Data />
         <Scripts />
       </body>
     </html>

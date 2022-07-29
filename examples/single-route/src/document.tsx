@@ -1,6 +1,6 @@
 /* eslint-disable react/self-closing-comp */
 import React from 'react';
-import { Meta, Title, Links, Main, Scripts } from 'ice';
+import { Meta, Title, Links, Main, Scripts, Data } from 'ice';
 
 function Document(props) {
   return (
@@ -17,6 +17,7 @@ function Document(props) {
         <Main>
           {props.children}
         </Main>
+        <Data />
         <Scripts />
       </body>
     </html>
