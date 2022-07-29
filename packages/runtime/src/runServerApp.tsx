@@ -136,7 +136,7 @@ function pipeToResponse(res: ServerResponse, pipe: NodeWritablePiper) {
 
 async function doRender(serverContext: ServerContext, renderOptions: RenderOptions): Promise<RenderResult> {
   const { req } = serverContext;
-  const { routes, documentOnly, app, basename, serverOnlyBasename } = renderOptions;
+  const { routes, documentOnly, app, basename, serverOnlyBasename, disableFallback } = renderOptions;
 
   const location = getLocation(req.url);
 
@@ -178,6 +178,9 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
       routePath,
     });
   } catch (err) {
+    if (disableFallback) {
+      throw err;
+    }
     console.error('Warning: render server entry error, downgrade to csr.', err);
     return renderDocument(matches, routePath, renderOptions, {});
   }
