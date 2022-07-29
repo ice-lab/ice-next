@@ -98,7 +98,7 @@ const transformPipe = (options: PluginOptions = {}): Plugin => {
         // it is required to forward `resolveDir` for esbuild to find dependencies.
         const resolveDir = path.dirname(args.path);
         const loader = guessLoader(id);
-        return await plugins.reduce(async (prevData, plugin) => {
+        const transformedResult = await plugins.reduce(async (prevData, plugin) => {
           const { contents } = await prevData;
           const { transform, transformInclude } = plugin;
           if (!transformInclude || transformInclude?.(id)) {
@@ -138,6 +138,10 @@ const transformPipe = (options: PluginOptions = {}): Plugin => {
           }
           return { contents, resolveDir, loader };
         }, Promise.resolve({ contents: null, resolveDir, loader }));
+        // Make sure contents is not null when return.
+        if (transformedResult.contents) {
+          return transformedResult;
+        }
       });
     },
   };
