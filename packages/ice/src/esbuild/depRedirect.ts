@@ -34,7 +34,6 @@ export const transformImportPlugin = (metadata: DepsMetaData) => {
       return /\.(js|jsx|ts|tsx)$/.test(id);
     },
     async transform(source: string, id: string) {
-      console.log(source);
       await init;
       let imports: readonly ImportSpecifier[] = [];
       const transformed = await transformWithESBuild(
@@ -75,7 +74,6 @@ export const transformImportPlugin = (metadata: DepsMetaData) => {
           str.overwrite(start, end, filePath, { contentOnly: true });
         }
       }
-      console.log('result ==>', str.toString());
       return str.toString();
     },
   };

@@ -76,7 +76,7 @@ const transformPipe = (options: PluginOptions = {}): Plugin => {
           pluginResolveIds.push(plugin?.resolveId);
         }
       });
-      if (pluginResolveIds) {
+      if (pluginResolveIds.length > 0) {
         build.onResolve({ filter }, async (args) => {
           const isEntry = args.kind === 'entry-point';
           return await pluginResolveIds.reduce(async (resolveData, resolveId) => {
