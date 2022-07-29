@@ -68,37 +68,76 @@ const transformPipe = (options: PluginOptions = {}): Plugin => {
         error(message) { errors.push({ text: String(message) }); },
         warn(message) { warnings.push({ text: String(message) }); },
       };
+      const pluginResolveIds = [];
       plugins.forEach(plugin => {
         // Call esbuild specific Logic like onResolve.
         plugin?.esbuild?.setup(build);
+        if (plugin?.resolveId) {
+          pluginResolveIds.push(plugin?.resolveId);
+        }
       });
+      if (pluginResolveIds) {
+        build.onResolve({ filter }, async (args) => {
+          const isEntry = args.kind === 'entry-point';
+          return await pluginResolveIds.reduce(async (resolveData, resolveId) => {
+            const { id, external } = resolveData;
+            if (!external) {
+              const result = await resolveId(id, isEntry ? undefined : args.importer, { isEntry });
+              if (typeof result === 'string') {
+                return { path: result };
+              } else if (typeof result === 'object' && result !== null) {
+                return { path: result.id, external: result.external };
+              }
+            }
+            return resolveData;
+          }, Promise.resolve({ path: args.path }));
+        });
+      }
       build.onLoad({ filter, namespace }, async (args) => {
         const id = args.path;
         // it is required to forward `resolveDir` for esbuild to find dependencies.
         const resolveDir = path.dirname(args.path);
-        const sourceCode = await fs.promises.readFile(args.path, 'utf8');
         const loader = guessLoader(id);
         return await plugins.reduce(async (prevData, plugin) => {
           const { contents } = await prevData;
           const { transform, transformInclude } = plugin;
           if (!transformInclude || transformInclude?.(id)) {
-            const result = transform && await transform.call(pluginContext, contents, id);
-            if (typeof result === 'string') {
-              return { contents: result, resolveDir, loader };
-            } else if (typeof result === 'object' && result !== null) {
-              let { code, map } = result;
-              if (map) {
-                if (!map.sourcesContent || map.sourcesContent.length === 0) {
-                  map.sourcesContent = [code];
-                }
-                map = fixSourceMap(map);
-                code += `\n//# sourceMappingURL=${map.toUrl()}`;
+            let sourceCode = contents;
+            let sourceMap = null;
+            if (plugin.load) {
+              const result = await plugin.load.call(pluginContext, id);
+              if (typeof result === 'string') {
+                sourceCode = result;
+              } else if (typeof result === 'object' && result !== null) {
+                sourceCode = result.code;
+                sourceMap = result.map;
               }
-              return { contents: code, resolveDir, loader };
             }
+            if (!sourceCode) {
+              // Caution: 'utf8' assumes the input file is not in binary.
+              // If you want your plugin handle binary files, make sure to execute `plugin.load()` first.
+              sourceCode = await fs.promises.readFile(args.path, 'utf8');
+            }
+            if (transform) {
+              const result = await transform.call(pluginContext, sourceCode, id);
+              if (typeof result === 'string') {
+                sourceCode = result;
+              } else if (typeof result === 'object' && result !== null) {
+                sourceCode = result.code;
+                sourceMap = result.map;
+              }
+            }
+            if (sourceMap) {
+              if (!sourceMap.sourcesContent || sourceMap.sourcesContent.length === 0) {
+                sourceMap.sourcesContent = [sourceCode];
+              }
+              sourceMap = fixSourceMap(sourceMap);
+              sourceCode += `\n//# sourceMappingURL=${sourceMap.toUrl()}`;
+            }
+            return { contents: sourceCode, resolveDir, loader };
           }
           return { contents, resolveDir, loader };
-        }, Promise.resolve({ contents: sourceCode, resolveDir, loader }));
+        }, Promise.resolve({ contents: null, resolveDir, loader }));
       });
     },
   };
