@@ -64,7 +64,8 @@ export function Links() {
 }
 
 export function Scripts() {
-  const { routesConfig, matches, assetsManifest } = useAppContext();
+  const { routesData, routesConfig, matches, assetsManifest, documentOnly, routeModules, basename } = useAppContext();
+  const appData = useAppData();
 
   const routeScripts = getScripts(matches, routesConfig);
   const pageAssets = getPageAssets(matches, assetsManifest);
@@ -72,8 +73,31 @@ export function Scripts() {
   // entry assets need to be load before page assets
   const scripts = entryAssets.concat(pageAssets).filter(path => path.indexOf('.js') > -1);
 
+  const matchedIds = matches.map(match => match.route.id);
+  const routePath = getCurrentRoutePath(matches);
+
+  const appContext: AppContext = {
+    appData,
+    routesData,
+    routesConfig,
+    assetsManifest,
+    appConfig: {},
+    matchedIds,
+    routeModules,
+    routePath,
+    basename,
+  };
+
   return (
     <>
+      {/*
+       * disable hydration warning for csr.
+       * initial app data may not equal csr result.
+       */}
+      <script
+        suppressHydrationWarning={documentOnly}
+        dangerouslySetInnerHTML={{ __html: `window.__ICE_APP_CONTEXT__=Object.assign(${JSON.stringify(appContext)}, window.__ICE_APP_CONTEXT__ || {})` }}
+      />
       {
         routeScripts.map(script => {
           const { block, ...props } = script;
@@ -90,27 +114,15 @@ export function Scripts() {
 }
 
 export function Data() {
-  const { routesData, routesConfig, matches, assetsManifest, documentOnly, routeModules, basename } = useAppContext();
+  const { routesData, documentOnly } = useAppContext();
   const appData = useAppData();
-  const matchedIds = matches.map(match => match.route.id);
-  const routePath = getCurrentRoutePath(matches);
-  const appContext: AppContext = {
-    appData,
-    routesData,
-    routesConfig,
-    assetsManifest,
-    appConfig: {},
-    matchedIds,
-    routeModules,
-    routePath,
-    basename,
-  };
+
   return (
     // Disable hydration warning for csr.
-    // Initial app data may not equal csr result.
+    // initial app data may not equal csr result.
     <script
       suppressHydrationWarning={documentOnly}
-      dangerouslySetInnerHTML={{ __html: `window.__ICE_APP_CONTEXT__=${JSON.stringify(appContext)}` }}
+      dangerouslySetInnerHTML={{ __html: `window.__ICE_APP_CONTEXT__=${JSON.stringify({ routesData, appData })}` }}
     />
   );
 }
