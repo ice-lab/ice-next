@@ -6,6 +6,7 @@ import type { Location } from 'history';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
+import { AppDataProvider, getAppData } from './AppData.js';
 import getAppConfig from './appConfig.js';
 import { DocumentContextProvider } from './Document.js';
 import { loadRouteModules, loadRoutesData, getRoutesConfig } from './routes.js';
@@ -14,29 +15,33 @@ import { createStaticNavigator } from './server/navigator.js';
 import type { NodeWritablePiper } from './server/streamRender.js';
 import type {
   AppContext, RouteItem, ServerContext,
+  AppData,
   AppExport, RuntimePlugin, CommonJsRuntime, AssetsManifest,
-  ComponentWithChildren,
   RouteMatch,
   RequestContext,
   AppConfig,
   RouteModules,
   RenderMode,
+  DocumentComponent,
 } from './types.js';
 import getRequestContext from './requestContext.js';
 import matchRoutes from './matchRoutes.js';
+import getCurrentRoutePath from './utils/getCurrentRoutePath.js';
 
 interface RenderOptions {
   app: AppExport;
   assetsManifest: AssetsManifest;
   routes: RouteItem[];
   runtimeModules: (RuntimePlugin | CommonJsRuntime)[];
-  Document: ComponentWithChildren<{}>;
+  Document: DocumentComponent;
   documentOnly?: boolean;
   renderMode?: RenderMode;
   // basename is used both for server and client, once set, it will be sync to client.
   basename?: string;
   // serverOnlyBasename is used when just want to change basename for server.
   serverOnlyBasename?: string;
+  routePath?: string;
+  disableFallback?: boolean;
 }
 
 interface Piper {
@@ -70,6 +75,9 @@ export async function renderToHTML(requestContext: ServerContext, renderOptions:
       statusCode: 200,
     };
   } catch (error) {
+    if (renderOptions.disableFallback) {
+      throw error;
+    }
     console.error('Warning: piperToString error, downgrade to csr.', error);
     // downgrade to csr.
     const result = fallback();
@@ -97,6 +105,9 @@ export async function renderToResponse(requestContext: ServerContext, renderOpti
     try {
       await pipeToResponse(res, pipe);
     } catch (error) {
+      if (renderOptions.disableFallback) {
+        throw error;
+      }
       console.error('PiperToResponse error, downgrade to csr.', error);
       // downgrade to csr.
       const result = await fallback();
@@ -130,15 +141,23 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
   const location = getLocation(req.url);
 
   const requestContext = getRequestContext(location, serverContext);
+
+  let appData;
+  // don't need to execute getAppData in CSR
+  if (!documentOnly) {
+    appData = await getAppData(app, requestContext);
+  }
+
   const appConfig = getAppConfig(app);
   const matches = matchRoutes(routes, location, serverOnlyBasename || basename);
+  const routePath = getCurrentRoutePath(matches);
 
   if (!matches.length) {
     return render404();
   }
 
   if (documentOnly) {
-    return renderDocument(matches, renderOptions, {});
+    return renderDocument(matches, routePath, renderOptions, {});
   }
 
   // FIXME: 原来是在 renderDocument 之前执行这段逻辑。
@@ -153,12 +172,14 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
       matches,
       location,
       appConfig,
+      appData,
       routeModules,
       basename,
+      routePath,
     });
   } catch (err) {
     console.error('Warning: render server entry error, downgrade to csr.', err);
-    return renderDocument(matches, renderOptions, {});
+    return renderDocument(matches, routePath, renderOptions, {});
   }
 }
 
@@ -177,7 +198,9 @@ interface renderServerEntry {
   matches: RouteMatch[];
   location: Location;
   appConfig: AppConfig;
+  appData: AppData;
   routeModules: RouteModules;
+  routePath: string;
   basename?: string;
 }
 
@@ -191,9 +214,11 @@ async function renderServerEntry(
     matches,
     location,
     appConfig,
+    appData,
     renderOptions,
     routeModules,
     basename,
+    routePath,
   }: renderServerEntry,
 ): Promise<RenderResult> {
   const {
@@ -211,12 +236,14 @@ async function renderServerEntry(
     appExport,
     assetsManifest,
     appConfig,
+    appData,
     routesData,
     routesConfig,
     matches,
     routes,
     routeModules,
     basename,
+    routePath,
   };
 
   const runtime = new Runtime(appContext);
@@ -241,16 +268,18 @@ async function renderServerEntry(
 
   const element = (
     <AppContextProvider value={appContext}>
-      <DocumentContextProvider value={documentContext}>
-        <Document />
-      </DocumentContextProvider>
+      <AppDataProvider value={appData}>
+        <DocumentContextProvider value={documentContext}>
+          <Document pagePath={routePath} />
+        </DocumentContextProvider>
+      </AppDataProvider>
     </AppContextProvider>
   );
 
   const pipe = renderToNodeStream(element, false);
 
   const fallback = () => {
-    return renderDocument(matches, renderOptions, routeModules);
+    return renderDocument(matches, routePath, renderOptions, routeModules);
   };
 
   return {
@@ -264,7 +293,12 @@ async function renderServerEntry(
 /**
  * Render Document for CSR.
  */
-function renderDocument(matches: RouteMatch[], options: RenderOptions, routeModules: RouteModules): RenderResult {
+function renderDocument(
+  matches: RouteMatch[],
+  routePath: string,
+  options: RenderOptions,
+  routeModules: RouteModules,
+): RenderResult {
   const {
     routes,
     assetsManifest,
@@ -274,18 +308,21 @@ function renderDocument(matches: RouteMatch[], options: RenderOptions, routeModu
   } = options;
 
   const routesData = null;
+  const appData = null;
   const appConfig = getAppConfig(app);
   const routesConfig = getRoutesConfig(matches, {}, routeModules);
 
   const appContext: AppContext = {
     assetsManifest,
     appConfig,
+    appData,
     routesData,
     routesConfig,
     matches,
     routes,
     documentOnly: true,
     routeModules,
+    routePath,
     basename,
   };
 
@@ -296,7 +333,7 @@ function renderDocument(matches: RouteMatch[], options: RenderOptions, routeModu
   const html = ReactDOMServer.renderToString(
     <AppContextProvider value={appContext}>
       <DocumentContextProvider value={documentContext}>
-        <Document />
+        <Document pagePath={routePath} />
       </DocumentContextProvider>
     </AppContextProvider>,
   );

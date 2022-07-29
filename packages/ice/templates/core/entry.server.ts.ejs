@@ -25,10 +25,12 @@ interface RenderOptions {
   renderMode?: RenderMode;
   basename?: string;
   serverOnlyBasename?: string;
+  routePath?: string;
+  disableFallback?: boolean;
 }
 
 export async function renderToHTML(requestContext, options: RenderOptions = {}) {
-  const { documentOnly, renderMode = 'SSR', basename, serverOnlyBasename } = options;
+  const { documentOnly, renderMode = 'SSR', basename, serverOnlyBasename, routePath, disableFallback } = options;
   setRuntimeEnv(renderMode);
 
   return await runtime.renderToHTML(requestContext, {
@@ -41,11 +43,13 @@ export async function renderToHTML(requestContext, options: RenderOptions = {}) 
     basename: basename || getRouterBasename(),
     documentOnly,
     renderMode,
+    routePath,
+    disableFallback,
   });
 }
 
 export async function renderToResponse(requestContext, options: RenderOptions = {}) {
-  const { documentOnly, renderMode = 'SSR', basename, serverOnlyBasename } = options;
+  const { documentOnly, renderMode = 'SSR', basename, serverOnlyBasename, disableFallback } = options;
   setRuntimeEnv(options);
 
   runtime.renderToResponse(requestContext, {
@@ -58,5 +62,6 @@ export async function renderToResponse(requestContext, options: RenderOptions = 
     basename: basename || getRouterBasename(),
     documentOnly,
     renderMode,
+    disableFallback,
   });
 }

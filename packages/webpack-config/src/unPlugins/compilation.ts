@@ -18,10 +18,11 @@ interface Options {
   sourceMap?: Config['sourceMap'];
   compileExcludes?: RegExp[];
   swcOptions?: Config['swcOptions'];
+  cacheDir?: string;
 }
 
 const compilationPlugin = (options: Options): UnpluginOptions => {
-  const { sourceMap, mode, fastRefresh, compileIncludes = [], compileExcludes, swcOptions = {} } = options;
+  const { sourceMap, mode, fastRefresh, compileIncludes = [], compileExcludes, swcOptions = {}, cacheDir } = options;
   const compileRegex = compileIncludes.map((includeRule) => {
     return includeRule instanceof RegExp ? includeRule : new RegExp(includeRule);
   });
@@ -64,10 +65,12 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
         merge(programmaticOptions, compilationConfig);
       }
 
-      if (removeExportExprs && /(.*)pages(.*)\.(jsx?|tsx?|mjs)$/.test(id)) {
+      // handle app.tsx and page entries only
+      if (removeExportExprs && (/(.*)pages(.*)\.(jsx?|tsx?|mjs)$/.test(id) || /(.*)src\/app/.test(id))) {
         merge(programmaticOptions, {
           jsc: {
             experimental: {
+              cacheRoot: cacheDir,
               plugins: [
                 [
                   require.resolve('@ice/swc-plugin-remove-export'),
@@ -132,16 +135,18 @@ function getJsxTransformOptions({
       loose: true,
     },
   };
-
+  const syntaxFeatures = {
+    dynamicImport: true,
+    decorators: true,
+    privateMethod: true,
+    importMeta: true,
+    exportNamespaceFrom: true,
+  };
   const jsOptions = merge({
     jsc: {
       parser: {
         jsx: true,
-        dynamicImport: true,
-        functionBind: true,
-        exportDefaultFrom: true,
-        exportNamespaceFrom: true,
-        decorators: true,
+        ...syntaxFeatures,
       },
     },
   }, commonOptions);
@@ -149,10 +154,9 @@ function getJsxTransformOptions({
   const tsOptions = merge({
     jsc: {
       parser: {
-        syntax: 'typescript',
         tsx: true,
-        decorators: true,
-        dynamicImport: true,
+        ...syntaxFeatures,
+        syntax: 'typescript',
       },
     },
   }, commonOptions);
