@@ -36,7 +36,6 @@ export default class DataLoaderPlugin {
             entryPoints: [filePath],
             write: false,
             inject: [],
-            minify: process.env.NODE_ENV === 'production',
           }, {
             swc: {
               removeExportExprs: ['default', 'getConfig', 'getServerData', 'getStaticData'],
