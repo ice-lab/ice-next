@@ -12,6 +12,7 @@ const { init, parse } = esModuleLexer;
 
 type ImportNameSpecifier = { importedName: string; localName: string };
 
+// Redirect original dependency to the pre-bundle dependency(cjs) which is handled by preBundleCJSDeps function.
 export const transformImportPlugin = (metadata: DepsMetaData) => {
   const { deps } = metadata;
   let redirectDepIds = [];
@@ -79,9 +80,6 @@ export const transformImportPlugin = (metadata: DepsMetaData) => {
   };
 };
 
-/**
- * Redirect original dependency to the pre-bundle dependency(cjs) which is handled by preBundleCJSDeps function.
- */
 // Fork from https://github.com/vitejs/vite/blob/d98c8a710b8f0804120c05e5bd3eb403f17e7b30/packages/vite/src/node/plugins/esbuild.ts#L60
 async function transformWithESBuild(
   input: string,
