@@ -110,7 +110,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
 
   const routesInfo = await generateRoutesInfo(rootDir, routesConfig);
   const hasExportAppData = (await getFileExports({ rootDir, file: 'src/app' })).includes('getAppData');
-  console.log('hasExportAppData', hasExportAppData);
   const csr = !userConfig.ssr && !userConfig.ssg;
 
   // add render data
