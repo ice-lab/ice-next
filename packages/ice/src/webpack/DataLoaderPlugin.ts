@@ -54,6 +54,7 @@ export default class DataLoaderPlugin {
             },
             preBundle: false,
             externalDependencies: false,
+            transformEnv: false,
           });
           compilation.emitAsset('js/data-loader.js', new RawSource(new TextDecoder('utf-8').decode(outputFiles[0].contents)));
         } else {

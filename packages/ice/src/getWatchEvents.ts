@@ -8,6 +8,7 @@ import type Generator from './service/runtimeGenerator';
 import { compileAppConfig } from './analyzeRuntime.js';
 import getGlobalStyleGlobPattern from './utils/getGlobalStyleGlobPattern.js';
 import renderExportsTemplate from './utils/renderExportsTemplate.js';
+import { getFileExports } from './service/analyze.js';
 
 interface Options {
   targetDir: string;
@@ -41,7 +42,10 @@ const getWatchEvents = (options: Options): WatchEvent[] => {
             path.join(rootDir, targetDir, 'route-manifest.json'),
             routesRenderData,
           );
-          renderExportsTemplate(routesRenderData, generator.renderFile, {
+          renderExportsTemplate({
+            ...routesRenderData,
+            hasExportAppData: !!cache.get('hasExportAppData'),
+          }, generator.renderFile, {
             rootDir,
             runtimeDir: targetDir,
             templateDir: path.join(templateDir, '../exports'),
@@ -86,6 +90,18 @@ const getWatchEvents = (options: Options): WatchEvent[] => {
     /src\/app.(js|jsx|ts|tsx)/,
     async (event: string) => {
       if (event === 'change') {
+        const hasExportAppData = (await getFileExports({ rootDir, file: 'src/app' })).includes('getAppData');
+        if (hasExportAppData !== !!cache.get('hasExportAppData')) {
+          cache.set('hasExportAppData', hasExportAppData ? 'true' : '');
+          renderExportsTemplate({
+            ...JSON.parse(cache.get('routes')),
+            hasExportAppData,
+          }, generator.renderFile, {
+            rootDir,
+            runtimeDir: targetDir,
+            templateDir: path.join(templateDir, '../exports'),
+          });
+        }
         consola.debug('[event]', 'Compile app config.');
         await compileAppConfig({ rootDir, serverCompiler });
       }

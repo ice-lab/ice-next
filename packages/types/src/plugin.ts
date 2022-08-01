@@ -17,6 +17,7 @@ export type ServerCompiler = (
     swc?: Config['swcOptions'];
     preBundle?: boolean;
     externalDependencies?: boolean;
+    transformEnv?: boolean;
   }
 ) => Promise<BuildResult & { serverEntry: string }>;
 export type WatchEvent = [

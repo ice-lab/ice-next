@@ -1,8 +1,7 @@
 import { dataLoader } from '@ice/runtime';
-import { getAppData } from '@/app';
+<% if(hasExportAppData) {-%>import { getAppData } from '@/app';<% } -%>
 
 <%- loaders %>
-
-loaders['__app'] = getAppData;
+<% if(hasExportAppData) {-%>loaders['__app'] = getAppData;<% } -%>
 
 dataLoader.init(loaders);

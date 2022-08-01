@@ -2,21 +2,17 @@ import * as path from 'path';
 import { formatNestedRouteManifest, generateRouteManifest } from '@ice/route-manifest';
 import type { NestedRouteManifest } from '@ice/route-manifest';
 import type { UserConfig } from '@ice/types';
-import { getRouteExports } from './service/analyze.js';
+import { getFileExports } from './service/analyze.js';
 
 export async function generateRoutesInfo(rootDir: string, routesConfig: UserConfig['routes'] = {}) {
   const routeManifest = generateRouteManifest(rootDir, routesConfig.ignoreFiles, routesConfig.defineRoutes);
 
   const analyzeTasks = Object.keys(routeManifest).map(async (key) => {
     const routeItem = routeManifest[key];
-    const routeId = routeItem.id;
     // add exports filed for route manifest
-    routeItem.exports = await getRouteExports({
+    routeItem.exports = await getFileExports({
       rootDir,
-      routeConfig: {
-        file: path.join('./src/pages', routeItem.file),
-        routeId,
-      },
+      file: path.join('./src/pages', routeItem.file),
     });
   });
   await Promise.all(analyzeTasks);

@@ -49,18 +49,12 @@ export function createServerCompiler(options: Options) {
     defineVars[key] = JSON.stringify(define[key]);
   });
 
-  // get runtime variable for server build
-  const runtimeDefineVars = {};
-  Object.keys(process.env).forEach((key) => {
-    if (/^ICE_CORE_/i.test(key)) {
-      // in server.entry
-      runtimeDefineVars[`__process.env.${key}__`] = JSON.stringify(process.env[key]);
-    } else if (/^ICE_/i.test(key)) {
-      runtimeDefineVars[`process.env.${key}`] = JSON.stringify(process.env[key]);
-    }
-  });
-
-  const serverCompiler: ServerCompiler = async (customBuildOptions, { preBundle, swc, externalDependencies } = {}) => {
+  const serverCompiler: ServerCompiler = async (customBuildOptions, {
+    preBundle,
+    swc,
+    externalDependencies,
+    transformEnv = true,
+  } = {}) => {
     let depsMetadata: DepsMetaData;
     let swcOptions = merge({}, {
       // Only get the `compilationConfig` from task config.
@@ -85,6 +79,17 @@ export function createServerCompiler(options: Options) {
         plugins: enableSyntaxFeatures ? transformPlugins : [],
       });
     }
+    // get runtime variable for server build
+    const runtimeDefineVars = {};
+    Object.keys(process.env).forEach((key) => {
+      // Do not transform env when bundle client side code.
+      if (/^ICE_CORE_/i.test(key) && transformEnv) {
+        // in server.entry
+        runtimeDefineVars[`__process.env.${key}__`] = JSON.stringify(process.env[key]);
+      } else if (/^ICE_/i.test(key)) {
+        runtimeDefineVars[`process.env.${key}`] = JSON.stringify(process.env[key]);
+      }
+    });
     const define = {
       // ref: https://github.com/evanw/esbuild/blob/master/CHANGELOG.md#01117
       // in esm, this in the global should be undefined. Set the following config to avoid warning

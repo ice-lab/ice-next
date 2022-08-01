@@ -25,6 +25,7 @@ import getRoutePaths from './utils/getRoutePaths.js';
 import { RUNTIME_TMP_DIR } from './constant.js';
 import ServerCompileTask from './utils/ServerCompileTask.js';
 import renderExportsTemplate from './utils/renderExportsTemplate.js';
+import { getFileExports } from './service/analyze.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -108,21 +109,27 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const coreEnvKeys = getCoreEnvKeys();
 
   const routesInfo = await generateRoutesInfo(rootDir, routesConfig);
-
+  const hasExportAppData = (await getFileExports({ rootDir, file: 'src/app' })).includes('getAppData');
+  console.log('hasExportAppData', hasExportAppData);
   const csr = !userConfig.ssr && !userConfig.ssg;
 
   // add render data
   generator.setRenderData({
     ...routesInfo,
+    hasExportAppData,
     runtimeModules,
     coreEnvKeys,
     basename: webTaskConfig.config.basename,
     memoryRouter: webTaskConfig.config.memoryRouter,
     hydrate: !csr,
   });
-  dataCache.set('routes', JSON.stringify(routesInfo.routeManifest));
+  dataCache.set('routes', JSON.stringify(routesInfo));
+  dataCache.set('hasExportAppData', hasExportAppData ? 'true' : '');
   // Render exports files if route component export getData / getConfig.
-  renderExportsTemplate(routesInfo, generator.addRenderFile, {
+  renderExportsTemplate({
+    ...routesInfo,
+    hasExportAppData,
+  }, generator.addRenderFile, {
     rootDir,
     runtimeDir: RUNTIME_TMP_DIR,
     templateDir: path.join(templateDir, '../exports'),
