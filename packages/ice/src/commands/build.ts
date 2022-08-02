@@ -14,6 +14,7 @@ import generateHTML from '../utils/generateHTML.js';
 import emptyDir from '../utils/emptyDir.js';
 import keepPlatform from '../utils/keepPlatform.js';
 import getServerEntry from '../utils/getServerEntry.js';
+import formatBuildFailure from '../utils/formatBuildFailure.js';
 
 const build = async (
   context: Context<Config>,
@@ -76,36 +77,41 @@ const build = async (
       } else {
         compiler?.close?.(() => {});
         const isSuccessful = !messages.errors.length;
-        const serverCompilerResult = await serverCompiler(
-          {
-            entryPoints: { index: entryPoint },
-            outdir: serverOutputDir,
-            splitting: esm,
-            format,
-            platform: esm ? 'browser' : 'node',
-            outExtension: { '.js': outJSExtension },
-          },
-          {
-            preBundle: format === 'esm' && (ssr || ssg),
-            swc: {
-              // Remove components and getData when ssg and ssr both `false`.
-              removeExportExprs: (!ssg && !ssr) ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
-              compilationConfig: {
-                jsc: {
-                  transform: {
-                    constModules: {
-                      globals: {
-                        '@uni/env': keepPlatform('node'),
-                        'universal-env': keepPlatform('node'),
+        try {
+          const serverCompilerResult = await serverCompiler(
+            {
+              entryPoints: { index: entryPoint },
+              outdir: serverOutputDir,
+              splitting: esm,
+              format,
+              platform: esm ? 'browser' : 'node',
+              outExtension: { '.js': outJSExtension },
+            },
+            {
+              preBundle: format === 'esm' && (ssr || ssg),
+              swc: {
+                // Remove components and getData when ssg and ssr both `false`.
+                removeExportExprs: (!ssg && !ssr) ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
+                compilationConfig: {
+                  jsc: {
+                    transform: {
+                      constModules: {
+                        globals: {
+                          '@uni/env': keepPlatform('node'),
+                          'universal-env': keepPlatform('node'),
+                        },
                       },
                     },
                   },
                 },
               },
             },
-          },
-        );
-        serverEntry = serverCompilerResult.serverEntry;
+          );
+          serverEntry = serverCompilerResult.serverEntry;
+        } catch (error) {
+          formatBuildFailure('ICE build failed.', error);
+          return;
+        }
 
         let renderMode;
         if (ssg) {

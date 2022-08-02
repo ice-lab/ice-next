@@ -10,6 +10,7 @@ import type { Config } from '@ice/types';
 import flattenId from '../utils/flattenId.js';
 import formatPath from '../utils/formatPath.js';
 import { BUILDIN_CJS_DEPS, BUILDIN_ESM_DEPS } from '../constant.js';
+import formatBuildFailure from '../utils/formatBuildFailure.js';
 
 interface PackageData {
   data: {
@@ -90,19 +91,23 @@ export default async function preBundleCJSDeps(options: PreBundleDepsOptions): P
     };
   }
 
-  await build({
-    absWorkingDir: process.cwd(),
-    entryPoints: flatIdDeps,
-    bundle: true,
-    logLevel: 'error',
-    outdir: depsCacheDir,
-    format: 'cjs',
-    platform: 'node',
-    loader: { '.js': 'jsx' },
-    ignoreAnnotations: true,
-    plugins,
-    external: [...BUILDIN_CJS_DEPS, ...BUILDIN_ESM_DEPS],
-  });
+  try {
+    await build({
+      absWorkingDir: process.cwd(),
+      entryPoints: flatIdDeps,
+      bundle: true,
+      logLevel: 'error',
+      outdir: depsCacheDir,
+      format: 'cjs',
+      platform: 'node',
+      loader: { '.js': 'jsx' },
+      ignoreAnnotations: true,
+      plugins,
+      external: [...BUILDIN_CJS_DEPS, ...BUILDIN_ESM_DEPS],
+    });
+  } catch (error) {
+    formatBuildFailure('Bundling dependencies failed.', error);
+  }
 
   await fse.writeJSON(metadataJSONPath, metadata, { spaces: 2 });
 

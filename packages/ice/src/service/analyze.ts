@@ -10,6 +10,7 @@ import { getRouteCache, setRouteCache } from '../utils/persistentCache.js';
 import { getFileHash } from '../utils/hash.js';
 
 import scanPlugin from '../esbuild/scan.js';
+import formatBuildFailure from '../utils/formatBuildFailure.js';
 
 interface Options {
   parallel?: number;
@@ -220,27 +221,32 @@ export async function getRouteExports(options: RouteOptions): Promise<string[]> 
   }
   const fileHash = await getFileHash(routePath);
   if (!cached || cached.hash !== fileHash) {
-    // get route export by esbuild
-    const result = await build({
-      loader: { '.js': 'jsx' },
-      entryPoints: [routePath],
-      platform: 'neutral',
-      format: 'esm',
-      metafile: true,
-      write: false,
-      logLevel: 'silent',
-    });
-    for (let key in result.metafile.outputs) {
-      let output = result.metafile.outputs[key];
-      if (output.entryPoint) {
-        cached = {
-          exports: output.exports,
-          hash: fileHash,
-        };
-        // write cached
-        setRouteCache(rootDir, routeId, cached);
-        break;
+    try {
+      // get route export by esbuild
+      const result = await build({
+        loader: { '.js': 'jsx' },
+        entryPoints: [routePath],
+        platform: 'neutral',
+        format: 'esm',
+        metafile: true,
+        write: false,
+        logLevel: 'silent',
+      });
+
+      for (let key in result.metafile.outputs) {
+        let output = result.metafile.outputs[key];
+        if (output.entryPoint) {
+          cached = {
+            exports: output.exports,
+            hash: fileHash,
+          };
+          // write cached
+          setRouteCache(rootDir, routeId, cached);
+          break;
+        }
       }
+    } catch (error) {
+      formatBuildFailure(`Getting route ${routePath} exports failed.`, error);
     }
   }
   return cached.exports;
