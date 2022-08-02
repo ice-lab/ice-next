@@ -25,6 +25,7 @@ import createSpinner from './utils/createSpinner.js';
 import getRoutePaths from './utils/getRoutePaths.js';
 import { RUNTIME_TMP_DIR } from './constant.js';
 import ServerCompileTask from './utils/ServerCompileTask.js';
+import ExportConfig from './service/config.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -138,6 +139,29 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     server,
     syntaxFeatures,
   });
+  const appExportConfig = new ExportConfig({
+    entry: path.join(rootDir, 'src/app'),
+    outfile: path.join(rootDir, 'node_modules/entry.mjs'),
+    // Only remove top level code for src/app.
+    transformInclude: (id) => id.includes('src/app') || id.includes('.ice'),
+  });
+  const routeExportConfig = new ExportConfig({
+    entry: path.join(rootDir, RUNTIME_TMP_DIR, 'routes-config.ts'),
+    outfile: path.join(rootDir, 'node_modules/route.mjs'),
+    // Only remove top level code for route component file.
+    transformInclude: (id) => id.includes('src/pages'),
+  });
+  appExportConfig.setCompiler(serverCompiler);
+  routeExportConfig.setCompiler(serverCompiler);
+
+  const getAppConfig = (exportNames: string[]) => {
+    return appExportConfig.getConfig(exportNames);
+  };
+
+  const getRoutesConfig = (specifyRoutId?: string) => {
+    const routeConfig = routeExportConfig.getConfig(['getConfig']);
+    return specifyRoutId ? routeConfig[specifyRoutId] : routeConfig;
+  };
 
   addWatchEvent(
     ...getWatchEvents({
@@ -153,7 +177,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   let appConfig: AppConfig;
   try {
     // should after generator, otherwise it will compile error
-    appConfig = await compileAppConfig({ serverCompiler, rootDir });
+    appConfig = await getAppConfig(['default', 'defineAppConfig']);
   } catch (err) {
     consola.warn('Failed to get app config:', err.message);
     consola.debug(err);
