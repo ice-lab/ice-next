@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import storage from '../utils/storage';
-import { isInternal } from '../utils/internal';
+import { isIntranet } from '../utils/internal';
 import styles from './Root.module.css';
 
 const NO_REDIRECT_KEY = 'no-redirect-internal';
@@ -9,7 +9,7 @@ const STORAGE_VALID_TIME = 7 * (24 * 60 * 60 * 1000);
 
 // Bypass SSR environment.
 if (typeof window !== 'undefined') {
-  isInternal().then(() => {
+  isIntranet().then(() => {
     // Add QA tag entry for internal users.
     const script = document.createElement('script');
     script.src = 'https://links.alibaba-inc.com/widgetInit/5f717ef787f98104f34edc18';

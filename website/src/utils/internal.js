@@ -1,21 +1,14 @@
-const privateURL = `https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/rmsportal/VmvVUItLdPNqKlNGuRHi.png?r=${Date.now()}`;
 const EVENT_NAME = 'check:internal';
 let pending = false;
 
-export function isInternal() {
+export function isIntranet() {
   if (pending === false) {
     pending = true;
-    return new Promise((resolve) => {
-      const img = document.createElement('img');
-      img.onload = () => {
-        resolve();
+    return _checkIntranet().then((validAuthorization) => {
+      if (validAuthorization) {
         window.dispatchEvent(new CustomEvent(EVENT_NAME));
         pending = false;
-      };
-      setTimeout(() => {
-        // Delay 1s to check.
-        img.src = privateURL;
-      }, 1000);
+      }
     });
   } else {
     return new Promise((resolve) => {
@@ -23,5 +16,21 @@ export function isInternal() {
         resolve();
       });
     });
+  }
+}
+
+async function _checkIntranet() {
+  try {
+    const checkResult = await fetch(
+      'https://alilang-intranet.alibaba-inc.com/is_white_list.json',
+      { headers: { 'need-json': '1' } },
+    ).then((res) => res.json());
+    return (
+      checkResult &&
+      checkResult.content === true &&
+      checkResult.hasError === false
+    );
+  } catch (error) {
+    return false;
   }
 }
