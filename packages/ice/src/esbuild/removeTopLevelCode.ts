@@ -37,7 +37,6 @@ const removeCodePlugin = (keepExports: string[], transformInclude: (id: string) 
         const ast = parse(source, parserOptions);
         traverse(ast, removeTopLevelCode(keepExports));
         const contents = generate(ast).code;
-        console.log('contents', contents);
         return {
           contents,
           loader: isTS ? 'tsx' : 'jsx',

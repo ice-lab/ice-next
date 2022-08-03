@@ -14,7 +14,6 @@ import start from './commands/start.js';
 import build from './commands/build.js';
 import mergeTaskConfig from './utils/mergeTaskConfig.js';
 import getWatchEvents from './getWatchEvents.js';
-import { compileAppConfig } from './analyzeRuntime.js';
 import { setEnv, updateRuntimeEnv, getCoreEnvKeys } from './utils/runtimeEnv.js';
 import getRuntimeModules from './utils/getRuntimeModules.js';
 import { generateRoutesInfo } from './routes.js';
@@ -24,7 +23,7 @@ import createSpinner from './utils/createSpinner.js';
 import getRoutePaths from './utils/getRoutePaths.js';
 import { RUNTIME_TMP_DIR } from './constant.js';
 import ServerCompileTask from './utils/ServerCompileTask.js';
-import ExportConfig from './service/config.js';
+import { getAppExportConfig, getRouteExportConfig } from './service/config.js';
 import renderExportsTemplate from './utils/renderExportsTemplate.js';
 import { getFileExports } from './service/analyze.js';
 
@@ -148,29 +147,14 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     server,
     syntaxFeatures,
   });
-  const appExportConfig = new ExportConfig({
-    entry: path.join(rootDir, 'src/app'),
-    outfile: path.join(rootDir, 'node_modules/entry.mjs'),
-    // Only remove top level code for src/app.
-    transformInclude: (id) => id.includes('src/app') || id.includes('.ice'),
-  });
-  const routeExportConfig = new ExportConfig({
-    entry: path.join(rootDir, RUNTIME_TMP_DIR, 'routes-config.ts'),
-    outfile: path.join(rootDir, 'node_modules/route.mjs'),
-    // Only remove top level code for route component file.
-    transformInclude: (id) => id.includes('src/pages'),
-  });
-  appExportConfig.setCompiler(serverCompiler);
-  routeExportConfig.setCompiler(serverCompiler);
-
-  const getAppConfig = (exportNames: string[]) => {
-    return appExportConfig.getConfig(exportNames);
-  };
-
-  const getRoutesConfig = (specifyRoutId?: string) => {
-    const routeConfig = routeExportConfig.getConfig(['getConfig']);
-    return specifyRoutId ? routeConfig[specifyRoutId] : routeConfig;
-  };
+  const { getAppConfig, init: initAppConfigCompiler } = getAppExportConfig(rootDir);
+  const {
+    getRoutesConfig,
+    init: initRouteConfigCompiler,
+    reCompile: reCompileRouteConfig,
+  } = getRouteExportConfig(rootDir);
+  initAppConfigCompiler(serverCompiler);
+  initRouteConfigCompiler(serverCompiler);
 
   addWatchEvent(
     ...getWatchEvents({
@@ -186,12 +170,11 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   let appConfig: AppConfig;
   try {
     // should after generator, otherwise it will compile error
-    appConfig = await getAppConfig(['default', 'defineAppConfig']);
+    appConfig = (await getAppConfig()).default;
   } catch (err) {
     consola.warn('Failed to get app config:', err.message);
     consola.debug(err);
   }
-
 
   const disableRouter = userConfig.removeHistoryDeadCode && routesInfo.routesCount <= 1;
   if (disableRouter) {
@@ -210,12 +193,18 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
           return await start(ctx, {
             taskConfigs,
             serverCompiler,
+            getRoutesConfig,
+            getAppConfig,
+            reCompileRouteConfig,
+            dataCache,
             appConfig,
             devPath: (routePaths[0] || '').replace(/^\//, ''),
             spinner: buildSpinner,
           });
         } else if (command === 'build') {
           return await build(ctx, {
+            getRoutesConfig,
+            getAppConfig,
             taskConfigs,
             serverCompiler,
             spinner: buildSpinner,
