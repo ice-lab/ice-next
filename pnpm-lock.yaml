@@ -566,12 +566,12 @@ importers:
       eslint: ^7.0.0
       react: ^18.0.0
       react-dom: ^18.0.0
-      style-unit: ^3.0.4
+      style-unit: ^3.0.5
       stylelint: ^13.7.2
     dependencies:
       '@swc/helpers': 0.4.3
       create-react-class: 15.7.0
-      style-unit: 3.0.4
+      style-unit: 3.0.5
     devDependencies:
       '@ice/pkg': 1.0.0-rc.5
       '@ice/pkg-plugin-docusaurus': 1.0.0-rc.5s_odlaausotkceep6dlrlm24exna
@@ -16324,6 +16324,13 @@ packages:
     resolution: {integrity: sha512-jGYAsSmFvJGEAocNFmxsryWG+YUqtLZ8R8KmQtoVhBnhEVEaZE/53Yrg8I/2WLBrGxHC30wxGd4w9T+A7VxbfA==}
     dependencies:
       '@babel/runtime': 7.17.9
+      universal-env: 3.3.3
+    dev: false
+
+  /style-unit/3.0.5:
+    resolution: {integrity: sha512-xL+kev1W1dPthdhpQqZs9Qk1zenQiHKyy9oy2/VasW4z6wi7m7qQvMe67foPsr99JSs0115X0TCN1ch1n0XqSw==}
+    dependencies:
+      '@babel/runtime': 7.18.3
       universal-env: 3.3.3
     dev: false
 
