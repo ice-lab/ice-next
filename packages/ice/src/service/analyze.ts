@@ -4,9 +4,9 @@ import fs from 'fs-extra';
 import fg from 'fast-glob';
 import moduleLexer from '@ice/bundles/compiled/es-module-lexer/index.js';
 import { transform, build } from 'esbuild';
-import type { Loader } from 'esbuild';
+import type { Loader, Plugin } from 'esbuild';
 import consola from 'consola';
-import { getRouteCache, setRouteCache } from '../utils/persistentCache.js';
+import { getCache, setCache } from '../utils/persistentCache.js';
 import { getFileHash } from '../utils/hash.js';
 
 import scanPlugin from '../esbuild/scan.js';
@@ -34,7 +34,7 @@ export function resolveId(id: string, alias: Alias) {
     const strictKey = isStrict ? aliasKey.slice(0, -1) : aliasKey;
     const aliasValue = alias[aliasKey];
     if (!aliasValue) return false;
-    if (aliasValue.match(/.(j|t)s(x)?$/)) {
+    if (aliasValue.match(/\.(j|t)s(x)?$/)) {
       if (aliasedPath === strictKey) {
         aliasedPath = aliasValue;
         break;
@@ -159,12 +159,13 @@ interface ScanOptions {
   rootDir: string;
   alias?: Alias;
   depImports?: Record<string, string>;
+  plugins?: Plugin[];
   exclude?: string[];
 }
 
 export async function scanImports(entries: string[], options?: ScanOptions) {
   const start = performance.now();
-  const { alias = {}, depImports = {}, exclude = [], rootDir } = options;
+  const { alias = {}, depImports = {}, exclude = [], rootDir, plugins } = options;
   const deps = { ...depImports };
 
   await Promise.all(
@@ -177,12 +178,15 @@ export async function scanImports(entries: string[], options?: ScanOptions) {
         format: 'esm',
         logLevel: 'silent',
         loader: { '.js': 'jsx' },
-        plugins: [scanPlugin({
-          rootDir,
-          deps,
-          alias,
-          exclude,
-        })],
+        plugins: [
+          scanPlugin({
+            rootDir,
+            deps,
+            alias,
+            exclude,
+          }),
+          ...(plugins || []),
+        ],
       }),
     ));
   consola.debug(`Scan completed in ${(performance.now() - start).toFixed(2)}ms:`, deps);
@@ -195,31 +199,33 @@ function orderedDependencies(deps: Record<string, string>) {
   depsList.sort((a, b) => a[0].localeCompare(b[0]));
   return Object.fromEntries(depsList);
 }
-interface RouteOptions {
+
+interface FileOptions {
+  file: string;
   rootDir: string;
-  routeConfig: {
-    file: string;
-    routeId: string;
-  };
 }
 
 type CachedRouteExports = { hash: string; exports: string[] };
 
-export async function getRouteExports(options: RouteOptions): Promise<string[]> {
-  const { rootDir, routeConfig: { file, routeId } } = options;
-  const routePath = path.join(rootDir, file);
+export async function getFileExports(options: FileOptions): Promise<CachedRouteExports['exports']> {
+  const { rootDir, file } = options;
+  let filePath = path.join(rootDir, file);
   let cached: CachedRouteExports | null = null;
   try {
-    cached = await getRouteCache(rootDir, routeId);
+    cached = await getCache(rootDir, filePath);
   } catch (err) {
     // ignore cache error
   }
-  const fileHash = await getFileHash(routePath);
+  if (!path.extname(filePath)) {
+    const patterns = [`${filePath}.{js,ts,jsx,tsx}`];
+    filePath = fg.sync(patterns)[0];
+  }
+  const fileHash = await getFileHash(filePath);
   if (!cached || cached.hash !== fileHash) {
     // get route export by esbuild
     const result = await build({
       loader: { '.js': 'jsx' },
-      entryPoints: [routePath],
+      entryPoints: [filePath],
       platform: 'neutral',
       format: 'esm',
       metafile: true,
@@ -234,7 +240,7 @@ export async function getRouteExports(options: RouteOptions): Promise<string[]> 
           hash: fileHash,
         };
         // write cached
-        setRouteCache(rootDir, routeId, cached);
+        setCache(rootDir, filePath, cached);
         break;
       }
     }

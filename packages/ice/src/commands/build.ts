@@ -9,9 +9,11 @@ import webpack from '@ice/bundles/compiled/webpack/index.js';
 import type ora from '@ice/bundles/compiled/ora/index.js';
 import webpackCompiler from '../service/webpackCompiler.js';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
-import { RUNTIME_TMP_DIR, SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
+import { RUNTIME_TMP_DIR, SERVER_OUTPUT_DIR } from '../constant.js';
 import generateHTML from '../utils/generateHTML.js';
 import emptyDir from '../utils/emptyDir.js';
+import keepPlatform from '../utils/keepPlatform.js';
+import getServerEntry from '../utils/getServerEntry.js';
 
 const build = async (
   context: Context<Config>,
@@ -46,11 +48,10 @@ const build = async (
   });
   const { ssg, ssr, server: { format } } = userConfig;
   // compile server bundle
-  const entryPoint = path.join(rootDir, SERVER_ENTRY);
+  const entryPoint = getServerEntry(rootDir, taskConfigs[0].config?.server?.entry);
   const esm = format === 'esm';
   const outJSExtension = esm ? '.mjs' : '.cjs';
   const serverOutputDir = path.join(outputDir, SERVER_OUTPUT_DIR);
-  const documentOnly = !ssg && !ssr;
   let serverEntry;
   const { stats, isSuccessful, messages } = await new Promise((resolve, reject): void => {
     let messages: { errors: string[]; warnings: string[] };
@@ -85,11 +86,22 @@ const build = async (
             outExtension: { '.js': outJSExtension },
           },
           {
-            preBundle: format === 'esm',
+            preBundle: format === 'esm' && (ssr || ssg),
             swc: {
-              // Remove components and getData when document only.
-              removeExportExprs: documentOnly ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
-              jsxTransform: true,
+              // Remove components and getData when ssg and ssr both `false`.
+              removeExportExprs: (!ssg && !ssr) ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
+              compilationConfig: {
+                jsc: {
+                  transform: {
+                    constModules: {
+                      globals: {
+                        '@uni/env': keepPlatform('node'),
+                        'universal-env': keepPlatform('node'),
+                      },
+                    },
+                  },
+                },
+              },
             },
           },
         );
@@ -105,7 +117,8 @@ const build = async (
           rootDir,
           outputDir,
           entry: serverEntry,
-          documentOnly,
+          // only ssg need to generate the whole page html when build time.
+          documentOnly: !ssg,
           renderMode,
         });
         resolve({

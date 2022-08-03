@@ -13,9 +13,11 @@ import webpackCompiler from '../service/webpackCompiler.js';
 import prepareURLs from '../utils/prepareURLs.js';
 import createRenderMiddleware from '../middlewares/ssr/renderMiddleware.js';
 import createMockMiddleware from '../middlewares/mock/createMiddleware.js';
-import { ROUTER_MANIFEST, RUNTIME_TMP_DIR, SERVER_ENTRY, SERVER_OUTPUT_DIR } from '../constant.js';
+import { ROUTER_MANIFEST, RUNTIME_TMP_DIR, SERVER_OUTPUT_DIR } from '../constant.js';
 import ServerCompilerPlugin from '../webpack/ServerCompilerPlugin.js';
 import { getAppConfig } from '../analyzeRuntime.js';
+import keepPlatform from '../utils/keepPlatform.js';
+import getServerEntry from '../utils/getServerEntry.js';
 
 const { merge } = lodash;
 
@@ -43,7 +45,7 @@ const start = async (
   // Compile server entry after the webpack compilation.
   const outputDir = webpackConfigs[0].output.path;
   const { ssg, ssr, server: { format } } = userConfig;
-  const entryPoint = path.join(rootDir, SERVER_ENTRY);
+  const entryPoint = getServerEntry(rootDir, taskConfigs[0].config?.server?.entry);
   const esm = format === 'esm';
   const outJSExtension = esm ? '.mjs' : '.cjs';
   webpackConfigs[0].plugins.push(
@@ -59,7 +61,23 @@ const start = async (
           outExtension: { '.js': outJSExtension },
         },
         {
-          preBundle: format === 'esm',
+          preBundle: format === 'esm' && (ssr || ssg),
+          swc: {
+            // Remove components and getData when document only.
+            removeExportExprs: false ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
+            compilationConfig: {
+              jsc: {
+                transform: {
+                  constModules: {
+                    globals: {
+                      '@uni/env': keepPlatform('node'),
+                      'universal-env': keepPlatform('node'),
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       ],
       serverCompileTask,
@@ -81,6 +99,7 @@ const start = async (
       }
       const appConfig = getAppConfig();
       const routeManifestPath = path.join(rootDir, ROUTER_MANIFEST);
+      // both ssr and ssg, should render the whole page in dev mode.
       const documentOnly = !ssr && !ssg;
 
       const serverRenderMiddleware = createRenderMiddleware({
