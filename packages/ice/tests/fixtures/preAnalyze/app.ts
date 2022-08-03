@@ -1,13 +1,9 @@
-import type { AppConfig } from 'ice';
-import { runApp } from 'ice';
-import { request, type Request } from 'ice';
+import { defineAppConfig } from '@ice/runtime';
 import page from '@/page';
 import url from './a.png';
 
 console.log(url);
-runApp({
-  request,
-  page,
-} as AppConfig)
+console.log(page);
+defineAppConfig({});
 
 export default () => {};

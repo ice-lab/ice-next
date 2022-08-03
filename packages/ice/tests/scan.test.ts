@@ -11,24 +11,27 @@ describe('scan import', () => {
 
   it('basic scan', async () => {
     const deps = await scanImports([path.join(__dirname, './fixtures/preAnalyze/app.ts')], { alias, rootDir });
-    expect(deps.ice.name).toStrictEqual('ice');
-    expect(deps.ice.pkgPath).toBeDefined();
-    expect(deps.react.name).toStrictEqual('react');
+    expect(deps['@ice/runtime'].name).toEqual('@ice/runtime');
+    expect(deps['@ice/runtime'].pkgPath).toBeDefined();
+    expect(deps.react.name).toEqual('react');
     expect(deps.react.pkgPath).toBeDefined();
   });
 
   it('scan with exclude', async () => {
-    const deps = await scanImports([path.join(__dirname, './fixtures/preAnalyze/app.ts')], { alias, rootDir, exclude: ['ice'] });
-    expect(deps.react.name).toStrictEqual('react');
+    const deps = await scanImports([path.join(__dirname, './fixtures/preAnalyze/app.ts')], { alias, rootDir, exclude: ['@ice/runtime'] });
+    expect(deps.react.name).toEqual('react');
     expect(deps.react.pkgPath).toBeDefined();
-    expect(deps.ice).toBeUndefined();
+    expect(deps['@ice/runtime']).toBeUndefined();
   });
 
   it('scan with depImports', async () => {
-    const deps = await scanImports([path.join(__dirname, './fixtures/preAnalyze/app.ts')], { alias, rootDir, depImports: { ice: { name: 'ice' }, react: { name: 'react' } } });
-    expect(deps.ice.name).toStrictEqual('ice');
-    expect(deps.ice.pkgPath).toBeDefined();
-    expect(deps.react.name).toStrictEqual('react');
-    expect(deps.react.pkgPath).toBeDefined();
+    const deps = await scanImports(
+      [path.join(__dirname, './fixtures/preAnalyze/app.ts')],
+      { alias, rootDir, depImports: { '@ice/runtime': { name: '@ice/runtime' }, react: { name: 'react' } } }
+    );
+    expect(deps['@ice/runtime'].name).toEqual('@ice/runtime');
+    expect(deps['@ice/runtime'].pkgPath).toBeUndefined();
+    expect(deps.react.name).toEqual('react');
+    expect(deps.react.pkgPath).toBeUndefined();
   });
 });
