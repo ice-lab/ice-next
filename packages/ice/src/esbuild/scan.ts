@@ -13,7 +13,7 @@ const require = createRequire(import.meta.url);
 
 export interface DepScanData {
   name: string;
-  pkgPath: string;
+  pkgPath?: string;
 }
 
 interface Options {
