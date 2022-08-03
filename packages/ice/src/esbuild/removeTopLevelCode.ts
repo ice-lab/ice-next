@@ -6,9 +6,9 @@ import babelGenerate from '@babel/generator';
 import removeTopLevelCode from '../utils/babelPluginRemoveCode.js';
 
 // @ts-ignore @babel/traverse is not a valid export in esm
-const { default: traverse } = babelTraverse;
+const traverse = babelTraverse.default || babelTraverse;
 // @ts-ignore @babel/generate is not a valid export in esm
-const { default: generate } = babelGenerate;
+const generate = babelGenerate.default || babelGenerate;
 
 const removeCodePlugin = (keepExports: string[], transformInclude: (id: string) => boolean): Plugin => {
   const parserOptions: ParserOptions = {
