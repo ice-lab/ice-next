@@ -11,9 +11,14 @@
       "default": "./esm/index.js"
     },
     "./runtime": {
-      "types": "./esm/runtime/index.d.ts",
-      "import": "./esm/runtime/index.js",
-      "default": "./esm/runtime/index.js"
+      "types": "./esm/runtime.d.ts",
+      "import": "./esm/runtime.js",
+      "default": "./esm/runtime.js"
+    },
+    "./esm/runtime": {
+      "types": "./esm/runtime.d.ts",
+      "import": "./esm/runtime.js",
+      "default": "./esm/runtime.js"
     }
   },
   "main": "./esm/index.js",
@@ -29,7 +34,8 @@
   },
   "devDependencies": {
     "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0"
+    "@types/react-dom": "^18.0.0",
+    "regenerator-runtime": "^0.13.9"
   },
   "peerDependencies": {
     "react": "^18.0.0",

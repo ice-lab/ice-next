@@ -17,7 +17,7 @@ const plugin: Plugin<Options> = () => ({
       if (appStorePath) {
         config.alias = {
           ...config.alias || {},
-          $store: '',
+          $store: appStorePath,
         };
       }
 
@@ -32,6 +32,5 @@ function getAppStorePath(srcPath: string) {
   // e.g: src/store.[j|t]s
   return storeFileType ? path.join(srcPath, `store${storeFileType}`) : '';
 }
-
 
 export default plugin;

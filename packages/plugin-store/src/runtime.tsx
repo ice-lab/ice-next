@@ -1,5 +1,6 @@
 import * as React from 'react';
 import type { RuntimePlugin, AppProvider } from '@ice/types';
+import { createStore } from '@ice/store';
 import appStore from '$store';
 
 const runtime: RuntimePlugin = async ({ addProvider }) => {
@@ -17,4 +18,5 @@ const runtime: RuntimePlugin = async ({ addProvider }) => {
   }
 };
 
+export { createStore };
 export default runtime;
