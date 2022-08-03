@@ -98,15 +98,16 @@ async function webpackCompiler(options: {
         if (process.env.CLOUDIDE_ENV) {
           logoutMessage += `\n   - IDE server: https://${process.env.WORKSPACE_UUID}-${commandArgs.port}.${process.env.WORKSPACE_HOST}${devPath}`;
         } else {
+          const localDevUrl = urls.localUrlForBrowser + devPath;
           logoutMessage += `\n
-   - Local  : ${chalk.underline.white(urls.localUrlForBrowser)}${devPath}
-   - Network:  ${chalk.underline.white(urls.lanUrlForTerminal)}${devPath}`;
+   - Local  : ${chalk.underline.white(localDevUrl)}
+   - Network:  ${chalk.underline.white(localDevUrl)}`;
+
+          if (commandArgs.open) {
+            openBrowser(localDevUrl);
+          }
         }
         consola.log(`${logoutMessage}\n`);
-
-        if (commandArgs.open) {
-          openBrowser(urls.localUrlForBrowser);
-        }
       }
       // compiler.hooks.done is AsyncSeriesHook which does not support async function
       await applyHook('after.start.compile', {
