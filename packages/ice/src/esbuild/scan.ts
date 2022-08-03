@@ -32,7 +32,7 @@ const scanPlugin = (options: Options): Plugin => {
   const dataUrlRE = /^\s*data:/i;
   const httpUrlRE = /^(https?:)?\/\//;
   const cache = new Map<string, string | false>();
-  const pkgNameCache = new Map<string, Omit<DepScanData, 'importer'>>();
+  const pkgNameCache = new Map<string, DepScanData>();
   const resolve = (id: string, importer: string) => {
     const cacheKey = `${id}${importer && path.dirname(importer)}`;
     if (cache.has(cacheKey)) {
@@ -52,7 +52,7 @@ const scanPlugin = (options: Options): Plugin => {
     return resolved;
   };
 
-  const getPackageData = (resolved: string): Omit<DepScanData, 'importer'> => {
+  const getPackageData = (resolved: string): DepScanData => {
     if (pkgNameCache.has(resolved)) {
       return pkgNameCache.get(resolved);
     }
