@@ -29,14 +29,14 @@ interface PreBundleDepsOptions {
   depsInfo: Record<string, DepScanData>;
   cacheDir: string;
   taskConfig: Config;
-  plugins: Plugin[];
+  plugins?: Plugin[];
 }
 
 /**
  * Pre bundle dependencies from esm to cjs.
  */
 export default async function preBundleCJSDeps(options: PreBundleDepsOptions): Promise<PreBundleDepsResult> {
-  const { depsInfo, cacheDir, taskConfig, plugins } = options;
+  const { depsInfo, cacheDir, taskConfig, plugins = [] } = options;
   const metadata = createDepsMetadata(depsInfo, taskConfig);
 
   if (!Object.keys(depsInfo)) {
