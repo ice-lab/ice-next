@@ -12,15 +12,17 @@ describe('scan import', () => {
   it('basic scan', async () => {
     const deps = await scanImports([path.join(__dirname, './fixtures/scan/app.ts')], { alias, rootDir });
     expect(deps['@ice/runtime'].name).toEqual('@ice/runtime');
-    expect(deps['@ice/runtime'].pkgPath).toBeDefined();
+    expect(/(@ice\/)?runtime\/package\.json/.test(deps['@ice/runtime'].pkgPath!)).toBeTruthy();
+    expect(deps['@ice/runtime/client'].name).toEqual('@ice/runtime/client');
+    expect(/(@ice\/)?runtime\/package\.json/.test(deps['@ice/runtime/client'].pkgPath!)).toBeTruthy();
     expect(deps.react.name).toEqual('react');
-    expect(deps.react.pkgPath).toBeDefined();
+    expect(/react\/package\.json/.test(deps['react'].pkgPath!)).toBeTruthy();
   });
 
   it('scan with exclude', async () => {
     const deps = await scanImports([path.join(__dirname, './fixtures/scan/app.ts')], { alias, rootDir, exclude: ['@ice/runtime'] });
     expect(deps.react.name).toEqual('react');
-    expect(deps.react.pkgPath).toBeDefined();
+    expect(/react\/package\.json/.test(deps['react'].pkgPath!)).toBeTruthy();
     expect(deps['@ice/runtime']).toBeUndefined();
   });
 
