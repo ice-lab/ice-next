@@ -91,7 +91,7 @@ const transformPipe = (options: PluginOptions = {}): Plugin => {
             }
             return resolveData;
           }, Promise.resolve({ path: args.path }));
-          if (path.isAbsolute(res.path)) {
+          if (path.isAbsolute(res.path) || res.external) {
             return res;
           }
         });

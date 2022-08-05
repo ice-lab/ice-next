@@ -1,5 +1,5 @@
 import path from 'path';
-import type { TransformOptions, PluginBuild } from 'esbuild';
+import type { TransformOptions } from 'esbuild';
 import { transform } from 'esbuild';
 import { parse as parseJS } from 'acorn';
 import MagicString from 'magic-string';
