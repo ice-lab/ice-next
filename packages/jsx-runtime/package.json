@@ -42,8 +42,7 @@
     "style-unit": "^3.0.4"
   },
   "devDependencies": {
-    "@ice/pkg": "^1.0.0-rc.0",
-    "@ice/pkg-plugin-docusaurus": "^1.0.0-rc.0",
+    "@ice/pkg": "^1.0.0",
     "@iceworks/spec": "^1.0.0",
     "eslint": "^7.0.0",
     "@types/react": "^18.0.0",
