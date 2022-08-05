@@ -6,6 +6,7 @@ import MagicString from 'magic-string';
 import esModuleLexer from '@ice/bundles/compiled/es-module-lexer/index.js';
 import type { ImportSpecifier } from '@ice/bundles/compiled/es-module-lexer/index.js';
 import type { Node } from 'estree';
+import type { UnpluginOptions } from 'unplugin';
 import type { DepsMetaData } from '../service/preBundleCJSDeps.js';
 
 const { init, parse } = esModuleLexer;
@@ -13,32 +14,23 @@ const { init, parse } = esModuleLexer;
 type ImportNameSpecifier = { importedName: string; localName: string };
 
 // Redirect original dependency to the pre-bundle dependency(cjs) which is handled by preBundleCJSDeps function.
-export const transformImportPlugin = (metadata: DepsMetaData) => {
+export const transformImportPlugin = (metadata: DepsMetaData): UnpluginOptions => {
   const { deps } = metadata;
-  let redirectDepIds = [];
-  console.log(123123123);
+  const redirectDepIds = [];
   return {
     name: 'transform-import',
-    esbuild: {
-      setup(build: PluginBuild) {
-        redirectDepIds = [];
-        build.onResolve({ filter: /.*/ }, ({ path: id }) => {
-          console.log('redirectDepIds===>', redirectDepIds);
-          if (redirectDepIds.includes(id)) {
-            return {
-              path: id,
-              external: true,
-            };
-          }
-        });
-      },
+    resolveId(id) {
+      if (redirectDepIds.includes(id)) {
+        return {
+          id,
+          external: true,
+        };
+      }
     },
     transformInclude(id: string) {
-      console.log('xxxxxxxxx', /\.(js|jsx|ts|tsx)$/.test(id));
       return /\.(js|jsx|ts|tsx)$/.test(id);
     },
     async transform(source: string, id: string) {
-      console.log('transform===>');
       await init;
       let imports: readonly ImportSpecifier[] = [];
       const transformed = await transformWithESBuild(

@@ -14,6 +14,7 @@ const alias = { '@': path.join(__dirname, './fixtures/scan') };
 const rootDir = path.join(__dirname, './fixtures/scan');
 const cacheDir = path.join(rootDir, '.ice');
 const appEntry = path.join(__dirname, './fixtures/scan/app.ts');
+const outdir = path.join(rootDir, 'build');
 
 it('transform module import', async () => {
   const deps = await scanImports([appEntry], { alias, rootDir });
@@ -25,14 +26,17 @@ it('transform module import', async () => {
   const transformImportPlugin = createUnplugin(() => transformImport(metadata)).esbuild;
   await esbuild.build({
     entryPoints: [appEntry],
-    outdir: path.join(rootDir, 'build'),
+    outdir,
     plugins: [
+      aliasPlugin({ alias, format: 'esm', externalDependencies: false }),
       transformImportPlugin(),
-      aliasPlugin({ alias, format: 'esm', externalDependencies: false })
     ],
-  })
+  });
+  const buildContent = await fse.readFile(path.join(outdir, 'app.js'));
+  expect(buildContent.includes(path.join(rootDir, '.ice/deps/@ice_runtime_client.js'))).toBeTruthy();
+  expect(buildContent.includes(path.join(rootDir, '.ice/deps/@ice_runtime.js'))).toBeTruthy();
 });
 
-// afterAll(async () => {
-//   await fse.remove(cacheDir);
-// });
+afterAll(async () => {
+  await fse.remove(cacheDir);
+});
