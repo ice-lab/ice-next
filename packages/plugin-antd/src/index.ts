@@ -20,11 +20,9 @@ const plugin: Plugin<PluginOptions> = ({ theme, dark, compact }) => ({
           const { rules } = webpackConfig.module;
           let lessLoader = null;
           rules.some((rule) => {
-            console.log(rule);
             if (typeof rule === 'object' &&
             rule.test instanceof RegExp &&
             rule?.test?.source?.match(/less/)) {
-              console.log('get loader');
               lessLoader = Array.isArray(rule?.use) &&
                 rule.use.find((use) => typeof use === 'object' && use.loader.includes('less-loader'));
               return true;
