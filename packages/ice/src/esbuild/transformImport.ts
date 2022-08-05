@@ -16,12 +16,14 @@ type ImportNameSpecifier = { importedName: string; localName: string };
 export const transformImportPlugin = (metadata: DepsMetaData) => {
   const { deps } = metadata;
   let redirectDepIds = [];
+  console.log(123123123);
   return {
     name: 'transform-import',
     esbuild: {
       setup(build: PluginBuild) {
         redirectDepIds = [];
         build.onResolve({ filter: /.*/ }, ({ path: id }) => {
+          console.log('redirectDepIds===>', redirectDepIds);
           if (redirectDepIds.includes(id)) {
             return {
               path: id,
@@ -32,9 +34,11 @@ export const transformImportPlugin = (metadata: DepsMetaData) => {
       },
     },
     transformInclude(id: string) {
+      console.log('xxxxxxxxx', /\.(js|jsx|ts|tsx)$/.test(id));
       return /\.(js|jsx|ts|tsx)$/.test(id);
     },
     async transform(source: string, id: string) {
+      console.log('transform===>');
       await init;
       let imports: readonly ImportSpecifier[] = [];
       const transformed = await transformWithESBuild(

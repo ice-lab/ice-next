@@ -1,0 +1,17 @@
+{
+  "hash": "dc8396ec",
+  "deps": {
+    "@ice/runtime": {
+      "file": "/Users/luhc228/workspace/github/ice-next/packages/ice/tests/fixtures/scan/.ice/deps/@ice_runtime.js",
+      "src": "/Users/luhc228/workspace/github/ice-next/packages/runtime/esm/index.js"
+    },
+    "@ice/runtime/client": {
+      "file": "/Users/luhc228/workspace/github/ice-next/packages/ice/tests/fixtures/scan/.ice/deps/@ice_runtime_client.js",
+      "src": "/Users/luhc228/workspace/github/ice-next/packages/runtime/esm/index.js"
+    },
+    "react": {
+      "file": "/Users/luhc228/workspace/github/ice-next/packages/ice/tests/fixtures/scan/.ice/deps/react.js",
+      "src": "/Users/luhc228/workspace/github/ice-next/node_modules/.pnpm/react@18.0.0/node_modules/react/index.js"
+    }
+  }
+}
