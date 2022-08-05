@@ -2594,7 +2594,7 @@ packages:
     dev: true
 
   /@builder/swc-darwin-arm64/0.2.0:
-    resolution: {integrity: sha512-+nmnScnq40eMKqCLpVwl7P/JCHrzm9q1ECvD/nGTNATweMB0hhTjX7V/5DfHELl1RHGnw7NchAuVJDesNa9daw==, tarball: '@builder/swc-darwin-arm64/download/@builder/swc-darwin-arm64-0.2.0.tgz'}
+    resolution: {integrity: sha512-+nmnScnq40eMKqCLpVwl7P/JCHrzm9q1ECvD/nGTNATweMB0hhTjX7V/5DfHELl1RHGnw7NchAuVJDesNa9daw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
@@ -4632,6 +4632,21 @@ packages:
       - ts-node
     dev: true
 
+  /@ice/store/2.0.1:
+    resolution: {integrity: sha512-hopb8IduVb5Xgh2oOL2UT0w1UOXMo1alJTVyiSHUJ+LmKaJ+0j7Yqr8Ans12Qse7Xa7GroLIxUEZSBsJFIQGTg==}
+    peerDependencies:
+      react: ^16.8.3 || ^17
+    dependencies:
+      immer: 9.0.14
+      lodash.isfunction: 3.0.9
+      react-redux: 7.2.8
+      redux: 4.2.0
+      redux-thunk: 2.4.1_redux@4.2.0
+    transitivePeerDependencies:
+      - react-dom
+      - react-native
+    dev: false
+
   /@ice/swc-plugin-keep-platform/0.1.0:
     resolution: {integrity: sha512-y9ckEmUBr6e6dzYzHVAV/+WMhBcHkOGnIiIQh91cTm1ZlGq5gMEbJDQJh/0ucacBrMpWNCPDvJwsBvqHZDVIdQ==}
     dev: false
@@ -4807,7 +4822,7 @@ packages:
     optional: true
 
   /@node-rs/jieba-darwin-arm64/1.6.1:
-    resolution: {integrity: sha512-GeoDe7XVTF6z8JUtD98QvwudsMaHV5EBXs5uO43SobeIkShH3Nujq5gLMD5kWoJXTxDrTgJe4wT42EwUaBEH2Q==, tarball: '@node-rs/jieba-darwin-arm64/download/@node-rs/jieba-darwin-arm64-1.6.1.tgz'}
+    resolution: {integrity: sha512-GeoDe7XVTF6z8JUtD98QvwudsMaHV5EBXs5uO43SobeIkShH3Nujq5gLMD5kWoJXTxDrTgJe4wT42EwUaBEH2Q==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
@@ -5492,7 +5507,7 @@ packages:
     optional: true
 
   /@swc/core-darwin-arm64/1.2.168:
-    resolution: {integrity: sha512-/kciTqYbEryg3e2C+/Twpww7LBc+zaF7yhz2AmxOrA7nQKuUNHA3Q/Y4sXthSXD2BLqPABJETbRmfmumNi8gQA==, tarball: '@swc/core-darwin-arm64/download/@swc/core-darwin-arm64-1.2.168.tgz'}
+    resolution: {integrity: sha512-/kciTqYbEryg3e2C+/Twpww7LBc+zaF7yhz2AmxOrA7nQKuUNHA3Q/Y4sXthSXD2BLqPABJETbRmfmumNi8gQA==}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [darwin]
@@ -5501,7 +5516,7 @@ packages:
     optional: true
 
   /@swc/core-darwin-arm64/1.2.210:
-    resolution: {integrity: sha512-7PEHF1AHRpVcMtttfOVtyjZq73VUVaLsBnTWUqdFv1toRu42n+CmnXm3brmnSwyi7TTtCU/nahunWNmBbJeG8A==, tarball: '@swc/core-darwin-arm64/download/@swc/core-darwin-arm64-1.2.210.tgz'}
+    resolution: {integrity: sha512-7PEHF1AHRpVcMtttfOVtyjZq73VUVaLsBnTWUqdFv1toRu42n+CmnXm3brmnSwyi7TTtCU/nahunWNmBbJeG8A==}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [darwin]
@@ -5938,7 +5953,7 @@ packages:
     resolution: {integrity: sha512-qjDJRrmvBMiTx+jyLxvLfJU7UznFuokDv4f3WRuriHKERccVpFU+8XMQUAbDzoiJCsmexxRExQeMwwCdamSKDA==}
 
   /@types/hoist-non-react-statics/3.3.1:
-    resolution: {integrity: sha1-ESSq/lEYy1kZd66xzqrtEHDrA58=, tarball: '@types/hoist-non-react-statics/download/@types/hoist-non-react-statics-3.3.1.tgz'}
+    resolution: {integrity: sha512-iMIqiko6ooLrTh1joXodJK5X9xeEALT1kM5G3ZLhD3hszxBdIEd5C75U834D9mLcINgD4OyZf5uQXjkuYydWvA==}
     dependencies:
       '@types/react': 18.0.8
       hoist-non-react-statics: 3.3.2
@@ -6062,7 +6077,7 @@ packages:
     dev: true
 
   /@types/react-redux/7.1.24:
-    resolution: {integrity: sha512-7FkurKcS1k0FHZEtdbbgN8Oc6b+stGSfZYjQGicofJ0j4U0qIn/jaSvnP2pLwZKiai3/17xqqxkkrxTgN8UNbQ==, tarball: '@types/react-redux/download/@types/react-redux-7.1.24.tgz'}
+    resolution: {integrity: sha512-7FkurKcS1k0FHZEtdbbgN8Oc6b+stGSfZYjQGicofJ0j4U0qIn/jaSvnP2pLwZKiai3/17xqqxkkrxTgN8UNbQ==}
     dependencies:
       '@types/hoist-non-react-statics': 3.3.1
       '@types/react': 18.0.8
@@ -9237,7 +9252,7 @@ packages:
     optional: true
 
   /esbuild-darwin-arm64/0.14.38:
-    resolution: {integrity: sha512-eqF+OejMI3mC5Dlo9Kdq/Ilbki9sQBw3QlHW3wjLmsLh+quNfHmGMp3Ly1eWm981iGBMdbtSS9+LRvR2T8B3eQ==, tarball: esbuild-darwin-arm64/download/esbuild-darwin-arm64-0.14.38.tgz}
+    resolution: {integrity: sha512-eqF+OejMI3mC5Dlo9Kdq/Ilbki9sQBw3QlHW3wjLmsLh+quNfHmGMp3Ly1eWm981iGBMdbtSS9+LRvR2T8B3eQ==}
     engines: {node: '>=12'}
     cpu: [arm64]
     os: [darwin]
@@ -9764,7 +9779,7 @@ packages:
       micromatch: 4.0.5
       normalize-path: 3.0.0
       schema-utils: 3.1.1
-      webpack: 5.73.0_esbuild@0.14.38
+      webpack: 5.73.0_@swc+core@1.2.210
     dev: true
 
   /eslint/7.32.0:
@@ -10406,7 +10421,7 @@ packages:
       semver: 7.3.7
       tapable: 2.2.1
       typescript: 4.6.4
-      webpack: 5.73.0_esbuild@0.14.38
+      webpack: 5.73.0_@swc+core@1.2.210
     dev: true
 
   /form-data/4.0.0:
@@ -12132,7 +12147,7 @@ packages:
     resolution: {integrity: sha512-ff3BX/tSioo+XojX4MOsOMhJw0nZoUEF011LX8g8d3gvjVbxd89cCio4BCXronjxcTUIJUoqKEUA+n4CqvvRPw==}
 
   /lodash.isfunction/3.0.9:
-    resolution: {integrity: sha1-Bt4l302zJ6yTGYHRvbBn5a9o0FE=, tarball: lodash.isfunction/download/lodash.isfunction-3.0.9.tgz}
+    resolution: {integrity: sha512-AirXNj15uRIMMPihnkInB4i3NHeb4iBtNg9WRWuK2o31S+ePwwNmDPaTL3o7dTJ+VXNZim7rFs4rxN4YU1oUJw==}
     dev: false
 
   /lodash.memoize/4.1.2:
@@ -15033,7 +15048,7 @@ packages:
     dev: false
 
   /react-redux/7.2.8:
-    resolution: {integrity: sha512-6+uDjhs3PSIclqoCk0kd6iX74gzrGc3W5zcAjbrFgEdIjRSQObdIwfx80unTkVUYvbQ95Y8Av3OvFHq1w5EOUw==, tarball: react-redux/download/react-redux-7.2.8.tgz}
+    resolution: {integrity: sha512-6+uDjhs3PSIclqoCk0kd6iX74gzrGc3W5zcAjbrFgEdIjRSQObdIwfx80unTkVUYvbQ95Y8Av3OvFHq1w5EOUw==}
     peerDependencies:
       react: ^16.8.3 || ^17 || ^18
       react-dom: '*'
@@ -15297,7 +15312,7 @@ packages:
     dev: true
 
   /redux-thunk/2.4.1_redux@4.2.0:
-    resolution: {integrity: sha512-OOYGNY5Jy2TWvTL1KgAlVy6dcx3siPJ1wTq741EPyUKfn6W6nChdICjZwCd0p8AZBs5kWpZlbkXW2nE/zjUa+Q==, tarball: redux-thunk/download/redux-thunk-2.4.1.tgz}
+    resolution: {integrity: sha512-OOYGNY5Jy2TWvTL1KgAlVy6dcx3siPJ1wTq741EPyUKfn6W6nChdICjZwCd0p8AZBs5kWpZlbkXW2nE/zjUa+Q==}
     peerDependencies:
       redux: ^4
     dependencies:
@@ -15305,7 +15320,7 @@ packages:
     dev: false
 
   /redux/4.2.0:
-    resolution: {integrity: sha512-oSBmcKKIuIR4ME29/AeNUnl5L+hvBq7OaJWzaptTQJAntaPvxIJqfnjbaEiCzzaIz+XmVILfqAM3Ob0aXLPfjA==, tarball: redux/download/redux-4.2.0.tgz}
+    resolution: {integrity: sha512-oSBmcKKIuIR4ME29/AeNUnl5L+hvBq7OaJWzaptTQJAntaPvxIJqfnjbaEiCzzaIz+XmVILfqAM3Ob0aXLPfjA==}
     dependencies:
       '@babel/runtime': 7.18.3
     dev: false
@@ -17822,7 +17837,7 @@ packages:
       mime-types: 2.1.35
       range-parser: 1.2.1
       schema-utils: 4.0.0
-      webpack: 5.73.0_esbuild@0.14.38
+      webpack: 5.73.0_@swc+core@1.2.210
 
   /webpack-dev-server/4.8.1_webpack@5.72.0:
     resolution: {integrity: sha512-dwld70gkgNJa33czmcj/PlKY/nOy/BimbrgZRaR9vDATBQAYgLzggR0nxDtPLJiLrMgZwbE6RRfJ5vnBBasTyg==}
@@ -17910,7 +17925,7 @@ packages:
       serve-index: 1.9.1
       sockjs: 0.3.24
       spdy: 4.0.2
-      webpack: 5.73.0_esbuild@0.14.38
+      webpack: 5.73.0_@swc+core@1.2.210
       webpack-dev-middleware: 5.3.1_webpack@5.73.0
       ws: 8.5.0
     transitivePeerDependencies:
