@@ -15,8 +15,7 @@ describe(`build ${example}`, () => {
     const res = await setupBrowser({ example });
     page = res.page as Page;
     browser = res.browser;
-    expect(await page.$$text('h1')).toStrictEqual(['Layout']);
-    expect(await page.$$text('h2')).toStrictEqual(['Home']);
+    expect((await page.content()).includes('<div id="ice-container"></div>')).toBeTruthy();
   }, 120000);
 
   afterAll(async () => {
