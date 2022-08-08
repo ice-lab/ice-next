@@ -12,10 +12,13 @@ describe(`build ${example}`, () => {
 
   test('open /', async () => {
     await buildFixture(example);
-    const res = await setupBrowser({ example });
+    const res = await setupBrowser({ example, disableJS: false });
     page = res.page as Page;
     browser = res.browser;
-    expect((await page.content()).includes('<div id="ice-container"></div>')).toBeTruthy();
+    await page.waitForFunction(`document.getElementsByTagName('h1').length > 0`);
+    await page.waitForFunction(`document.getElementsByTagName('h2').length > 0`);
+    expect(await page.$$text('h1')).toStrictEqual(['Layout']);
+    expect(await page.$$text('h2')).toStrictEqual(['Home']);
   }, 120000);
 
   afterAll(async () => {
@@ -32,6 +35,8 @@ describe(`start ${example}`, () => {
     const res = await setupStartBrowser({ server: devServer, port });
     page = res.page;
     browser = res.browser;
+    await page.waitForFunction(`document.getElementsByTagName('h1').length > 0`);
+    await page.waitForFunction(`document.getElementsByTagName('h2').length > 0`);
     expect(await page.$$text('h1')).toStrictEqual(['Layout']);
     expect(await page.$$text('h2')).toStrictEqual(['Home']);
   }, 120000);
