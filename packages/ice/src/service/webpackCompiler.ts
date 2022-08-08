@@ -67,8 +67,7 @@ async function webpackCompiler(options: {
   } catch (err) {
     consola.error('Failed to compile.');
     consola.log('');
-    // consola.error(err.message || err);
-    consola.error(err);
+    consola.error(err.message || err);
   }
 
   let isFirstCompile = true;
