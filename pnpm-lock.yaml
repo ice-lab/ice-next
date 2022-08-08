@@ -494,7 +494,6 @@ importers:
       react: ^18.0.0
       react-dom: ^18.0.0
       style-unit: ^3.0.4
-      typescript: ^4.7.4
     dependencies:
       style-unit: 3.0.4
     devDependencies:
@@ -503,7 +502,6 @@ importers:
       '@types/react-dom': 18.0.3
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
-      typescript: 4.7.4
 
   packages/plugin-antd:
     specifiers:
@@ -575,7 +573,6 @@ importers:
       react: ^18.0.0
       react-dom: ^18.0.0
       style-unit: ^3.0.5
-      typescript: ^4.7.4
     dependencies:
       '@swc/helpers': 0.4.3
       create-react-class: 15.7.0
@@ -587,7 +584,6 @@ importers:
       '@types/react-dom': 18.0.3
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
-      typescript: 4.7.4
 
   packages/route-manifest:
     specifiers:
