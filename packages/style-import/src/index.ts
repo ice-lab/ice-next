@@ -13,6 +13,9 @@ export async function importStyle(code: string, options: TransformOptions): Prom
   map: ReturnType<MagicString['generateMap']>;
 }> {
   const { style, libraryName, sourceMap } = options;
+  if (!style) {
+    return null;
+  }
   await init;
   let imports: readonly ImportSpecifier[] = [];
   try {
@@ -43,7 +46,7 @@ export async function importStyle(code: string, options: TransformOptions): Prom
           return;
         }
         exports.forEach(({ n: importName }) => {
-          const stylePath = typeof style === 'boolean' ? `${libraryName}/es/${importName}/style` : style(importName);
+          const stylePath = typeof style === 'function' ? style(importName) : `${libraryName}/es/${importName}/style`;
           if (stylePath) {
             styleStatements.push(`import '${stylePath}';`);
           }

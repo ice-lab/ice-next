@@ -53,4 +53,9 @@ describe('import style', () => {
     const result = await importStyle(sourceCode, { libraryName: 'antd', style: true });
     expect(result?.code).toBe(sourceCode);
   });
+  it('style false', async () => {
+    const sourceCode = `import { Button } from 'antd';`;
+    const result = await importStyle(sourceCode, { libraryName: 'antd', style: false });
+    expect(result).toBe(null);
+  });
 });
