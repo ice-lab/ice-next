@@ -1,17 +1,27 @@
 import { createRequire } from 'module';
 import type { Plugin } from '@ice/types';
+import styleImportPlugin from '@ice/style-import';
 
 interface PluginOptions {
   theme?: Record<string, string>;
   dark?: Boolean;
   compact?: Boolean;
+  importStyle?: Boolean;
 }
 
 const require = createRequire(import.meta.url);
 
-const plugin: Plugin<PluginOptions> = ({ theme, dark, compact }) => ({
+const plugin: Plugin<PluginOptions> = ({ theme, dark, compact, importStyle }) => ({
   name: '@ice/plugin-antd',
   setup: ({ onGetConfig }) => {
+    if (importStyle) {
+      onGetConfig((config) => {
+        config.transformPlugins = [...(config.transformPlugins || []), styleImportPlugin({
+          libraryName: 'antd',
+          style: (name) => `antd/es/${name.toLocaleLowerCase()}/style`,
+        })];
+      });
+    }
     if (theme || dark || compact) {
       onGetConfig((config) => {
         // Modify webpack config of less rule for antd theme.
