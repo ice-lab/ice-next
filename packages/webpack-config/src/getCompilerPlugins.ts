@@ -11,7 +11,7 @@ const SKIP_COMPILE = [
   // polyfill and helpers
   'core-js', 'core-js-pure', '@swc/helpers', '@babel/runtime',
   // built-in runtime
-  'react', 'react-dom', 'react-router', 'react-router-dom',
+  'react', 'react-dom',
   // dev dependencies
   '@pmmmwh/react-refresh-webpack-plugin', 'webpack', 'webpack-dev-server', 'react-refresh',
 ];
@@ -35,14 +35,30 @@ function getPluginTransform(plugin: UnpluginOptions, type: 'esbuild' | 'webpack'
 function getCompilerPlugins(config: Config, compiler: 'webpack'): WebpackConfig['plugins'];
 function getCompilerPlugins(config: Config, compiler: 'esbuild'): BuildOptions['plugins'];
 function getCompilerPlugins(config: Config, compiler: Compiler) {
-  const { sourceMap, transformPlugins = [], transforms = [], mode, compileIncludes, swcOptions, fastRefresh } = config;
+  const {
+    sourceMap,
+    transformPlugins = [],
+    transforms = [],
+    mode,
+    compileIncludes,
+    swcOptions,
+    fastRefresh,
+    cacheDir,
+  } = config;
   const compilerPlugins = [];
   const compileExcludes = [
     new RegExp(SKIP_COMPILE.map((dep) => `node_modules/?.+${dep}/`).join('|')),
     /bundles\/compiled/,
   ];
+  // Add custom transform before swc compilation so the source code can be got before transformed.
+  compilerPlugins.push(
+    ...transformPlugins,
+    ...transforms.map((transform, index) => ({ name: `transform_${index}`, transform })),
+  );
+
   if (swcOptions) {
     compilerPlugins.push(compilationPlugin({
+      cacheDir,
       sourceMap,
       fastRefresh,
       mode,
@@ -52,14 +68,10 @@ function getCompilerPlugins(config: Config, compiler: Compiler) {
     }));
   }
 
-  compilerPlugins.push(
-    ...transformPlugins,
-    ...transforms.map((transform, index) => ({ name: `transform_${index}`, transform })),
-  );
-
   return compiler === 'webpack'
-    ? compilerPlugins.map(plugin => createUnplugin(() => getPluginTransform(plugin, 'webpack')).webpack())
-    : compilerPlugins.map(plugin => createUnplugin(() => getPluginTransform(plugin, 'esbuild')).esbuild());
+    // Plugins will be transformed as webpack loader, the execute order of webpack loader is reversed.
+    ? compilerPlugins.reverse().map(plugin => createUnplugin(() => getPluginTransform(plugin, 'webpack')).webpack())
+    : compilerPlugins.map(plugin => getPluginTransform(plugin, 'esbuild'));
 }
 
 export default getCompilerPlugins;

@@ -18,10 +18,11 @@ interface Options {
   sourceMap?: Config['sourceMap'];
   compileExcludes?: RegExp[];
   swcOptions?: Config['swcOptions'];
+  cacheDir?: string;
 }
 
 const compilationPlugin = (options: Options): UnpluginOptions => {
-  const { sourceMap, mode, fastRefresh, compileIncludes = [], compileExcludes, swcOptions = {} } = options;
+  const { sourceMap, mode, fastRefresh, compileIncludes = [], compileExcludes, swcOptions = {}, cacheDir } = options;
   const compileRegex = compileIncludes.map((includeRule) => {
     return includeRule instanceof RegExp ? includeRule : new RegExp(includeRule);
   });
@@ -58,23 +59,34 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
 
       merge(programmaticOptions, commonOptions);
 
-      const { removeExportExprs, compilationConfig } = swcOptions;
+      const { removeExportExprs, compilationConfig, keepPlatform } = swcOptions;
 
       if (compilationConfig) {
         merge(programmaticOptions, compilationConfig);
       }
 
+      const swcPlugins = [];
       // handle app.tsx and page entries only
       if (removeExportExprs && (/(.*)pages(.*)\.(jsx?|tsx?|mjs)$/.test(id) || /(.*)src\/app/.test(id))) {
+        swcPlugins.push([
+          require.resolve('@ice/swc-plugin-remove-export'),
+          removeExportExprs,
+        ]);
+      }
+
+      if (keepPlatform) {
+        swcPlugins.push([
+          require.resolve('@ice/swc-plugin-keep-platform'),
+          keepPlatform,
+        ]);
+      }
+
+      if (swcPlugins.length > 0) {
         merge(programmaticOptions, {
           jsc: {
             experimental: {
-              plugins: [
-                [
-                  require.resolve('@ice/swc-plugin-remove-export'),
-                  removeExportExprs,
-                ],
-              ],
+              cacheRoot: cacheDir,
+              plugins: swcPlugins,
             },
           },
         });
