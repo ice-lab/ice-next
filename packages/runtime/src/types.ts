@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'http';
-import type { Action, Location } from 'history';
+import type { Action, InitialEntry, Location } from 'history';
 import type { ComponentType, ReactNode, PropsWithChildren } from 'react';
 import type { HydrationOptions } from 'react-dom/client';
 import type { Navigator, Params } from 'react-router-dom';
@@ -31,7 +31,10 @@ export interface RouteConfig {
 export interface AppExport {
   default?: AppConfig;
   [key: string]: any;
+  getAppData?: GetAppData;
 }
+
+export type GetAppData = (ctx: RequestContext) => Promise<AppData> | AppData;
 
 // app.getData & route.getData
 export type GetData = (ctx: RequestContext) => Promise<RouteData> | RouteData;
@@ -40,11 +43,12 @@ export type GetStaticData = (ctx: RequestContext) => Promise<RouteData> | RouteD
 // route.getConfig
 export type GetConfig = (args: { data: RouteData }) => RouteConfig;
 
-export interface AppConfig extends Record<string, any> {
+export interface AppConfig {
   app?: App;
   router?: {
-    type?: 'hash' | 'browser';
+    type?: 'hash' | 'browser' | 'memory';
     basename?: string;
+    initialEntries?: InitialEntry[];
   };
 }
 
@@ -59,10 +63,12 @@ export interface RoutesData {
 // useAppContext
 export interface AppContext {
   appConfig: AppConfig;
+  appData: any;
   assetsManifest: AssetsManifest;
   routesData: RoutesData;
   routesConfig: RoutesConfig;
   routeModules: RouteModules;
+  routePath: string;
   matches?: RouteMatch[];
   routes?: RouteItem[];
   documentOnly?: boolean;
@@ -109,6 +115,10 @@ export interface RouteItem {
 }
 
 export type ComponentWithChildren<P = {}> = ComponentType<PropsWithChildren<P>>;
+
+export type DocumentComponent = ComponentWithChildren<{
+  pagePath: string;
+}>;
 
 export interface RouteWrapperConfig {
   Wrapper: RouteWrapper;
