@@ -1,4 +1,4 @@
-import { Outlet, useData, useConfig } from 'ice';
+import { Outlet } from 'ice';
 
 export default () => {
   return (

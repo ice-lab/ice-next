@@ -1,6 +1,6 @@
 import React from 'react';
 import RouteWrapper from './RouteWrapper.js';
-import type { RouteItem, RouteModules, RouteWrapperConfig, RouteMatch, RequestContext, RoutesConfig, RoutesData, RenderMode } from './types.js';
+import type { RouteItem, RouteModules, RouteWrapperConfig, RouteMatch, RequestContext, RoutesConfig, RoutesData, RenderMode, AppConfig } from './types.js';
 import { useAppContext } from './AppContext.js';
 
 type RouteModule = Pick<RouteItem, 'id' | 'load'>;
@@ -121,12 +121,13 @@ export function getRoutesConfig(
 export function createRouteElements(
   routes: RouteItem[],
   RouteWrappers?: RouteWrapperConfig[],
+  appConfig?: AppConfig,
 ) {
   return routes.map((routeItem: RouteItem) => {
     let { path, children, index, id, layout, element, load, ...rest } = routeItem;
     element = (
       <RouteWrapper id={id} isLayout={layout} wrappers={RouteWrappers}>
-        <RouteComponent id={id} load={load} />
+        {appConfig?.router?.type === 'hash' ? <HashRouteComponent load={load} /> : <BrowserRouteComponent id={id} />}
       </RouteWrapper>
     );
 
@@ -139,30 +140,31 @@ export function createRouteElements(
     };
 
     if (children) {
-      route.children = createRouteElements(children, RouteWrappers);
+      route.children = createRouteElements(children, RouteWrappers, appConfig);
     }
 
     return route;
   });
 }
 
-function RouteComponent({ id, load }: { id: string; load: RouteItem['load'] }) {
+function HashRouteComponent({ load }: { load: RouteItem['load'] }) {
+  const Component = React.lazy(load);
+  return (
+    <React.Suspense>
+      <Component />
+    </React.Suspense>
+  );
+}
+
+function BrowserRouteComponent({ id }: { id: string }) {
   // get current route component from latest routeModules
-  const { routeModules, appConfig } = useAppContext();
-  if (appConfig.router.type === 'hash') {
-    const Component = React.lazy(load);
-    return (
-      <React.Suspense>
-        <Component />
-      </React.Suspense>
-    );
-  }
+  const { routeModules } = useAppContext();
   const { default: Component } = routeModules[id] || {};
   if (process.env.NODE_ENV === 'development') {
     if (!Component) {
       throw new Error(
         `Route "${id}" has no component! Please go add a \`default\` export in the route module file.\n` +
-          'If you were trying to navigate or submit to a resource route, use `<a>` instead of `<Link>` or `<Form reloadDocument>`.',
+        'If you were trying to navigate or submit to a resource route, use `<a>` instead of `<Link>` or `<Form reloadDocument>`.',
       );
     }
   }
