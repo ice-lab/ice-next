@@ -14,19 +14,20 @@ import start from './commands/start.js';
 import build from './commands/build.js';
 import mergeTaskConfig from './utils/mergeTaskConfig.js';
 import getWatchEvents from './getWatchEvents.js';
-import { compileAppConfig } from './analyzeRuntime.js';
 import { setEnv, updateRuntimeEnv, getCoreEnvKeys } from './utils/runtimeEnv.js';
 import getRuntimeModules from './utils/getRuntimeModules.js';
 import { generateRoutesInfo } from './routes.js';
 import getWebTask from './tasks/web/index.js';
-import getMiniappTask from './tasks/miniapp/index.js';
-import getDataLoaderTask from './tasks/web/data-loader.js';
 import * as config from './config.js';
 import { WEB, MINIAPP_PLATFORMS, ALL_PLATFORMS } from './constant.js';
 import createSpinner from './utils/createSpinner.js';
 import getRoutePaths from './utils/getRoutePaths.js';
 import { RUNTIME_TMP_DIR } from './constant.js';
 import ServerCompileTask from './utils/ServerCompileTask.js';
+import { getAppExportConfig, getRouteExportConfig } from './service/config.js';
+import renderExportsTemplate from './utils/renderExportsTemplate.js';
+import { getFileExports } from './service/analyze.js';
+import getMiniappTask from './tasks/miniapp/index.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -38,7 +39,7 @@ interface CreateServiceOptions {
 
 async function createService({ rootDir, command, commandArgs }: CreateServiceOptions) {
   const buildSpinner = createSpinner('loading config...');
-  const templateDir = path.join(__dirname, '../templates/');
+  const templateDir = path.join(__dirname, '../templates/core/');
   const configFile = 'ice.config.(mts|mjs|ts|js|cjs|json)';
   const dataCache = new Map<string, string>();
   const generator = new Generator({
@@ -95,9 +96,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   if (platform === WEB) {
     // register web
     ctx.registerTask(WEB, getWebTask({ rootDir, command }));
-
-    // register data-loader
-    ctx.registerTask('data-loader', getDataLoaderTask({ rootDir, command }));
   } else if (MINIAPP_PLATFORMS.includes(platform)) {
     ctx.registerTask(platform, getMiniappTask({ rootDir, command, platform }));
   }
@@ -117,7 +115,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const coreEnvKeys = getCoreEnvKeys();
 
   const routesInfo = await generateRoutesInfo(rootDir, routesConfig);
-
+  const hasExportAppData = (await getFileExports({ rootDir, file: 'src/app' })).includes('getAppData');
   const csr = !userConfig.ssr && !userConfig.ssg || platform !== WEB;
 
   // add render data
@@ -126,13 +124,24 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     iceRuntimePath: platform === WEB ? '@ice/runtime' : '@ice/runtime/miniapp',
     needRoutes: platform === WEB,
     needDocument: platform === WEB,
+    hasExportAppData,
     runtimeModules,
     coreEnvKeys,
     basename: platformTaskConfig.config.basename || '/',
     memoryRouter: platformTaskConfig.config.memoryRouter,
     hydrate: !csr,
   });
-  dataCache.set('routes', JSON.stringify(routesInfo.routeManifest));
+  dataCache.set('routes', JSON.stringify(routesInfo));
+  dataCache.set('hasExportAppData', hasExportAppData ? 'true' : '');
+  // Render exports files if route component export getData / getConfig.
+  renderExportsTemplate({
+    ...routesInfo,
+    hasExportAppData,
+  }, generator.addRenderFile, {
+    rootDir,
+    runtimeDir: RUNTIME_TMP_DIR,
+    templateDir: path.join(templateDir, '../exports'),
+  });
 
   // render template before webpack compile
   const renderStart = new Date().getTime();
@@ -147,6 +156,14 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     server,
     syntaxFeatures,
   });
+  const { getAppConfig, init: initAppConfigCompiler } = getAppExportConfig(rootDir);
+  const {
+    getRoutesConfig,
+    init: initRouteConfigCompiler,
+    reCompile: reCompileRouteConfig,
+  } = getRouteExportConfig(rootDir);
+  initAppConfigCompiler(serverCompiler);
+  initRouteConfigCompiler(serverCompiler);
 
   addWatchEvent(
     ...getWatchEvents({
@@ -162,12 +179,11 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   let appConfig: AppConfig;
   try {
     // should after generator, otherwise it will compile error
-    appConfig = await compileAppConfig({ serverCompiler, rootDir });
+    appConfig = (await getAppConfig()).default;
   } catch (err) {
     consola.warn('Failed to get app config:', err.message);
     consola.debug(err);
   }
-
 
   const disableRouter = userConfig.removeHistoryDeadCode && routesInfo.routesCount <= 1;
   if (disableRouter) {
@@ -186,12 +202,18 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
           return await start(ctx, {
             taskConfigs,
             serverCompiler,
+            getRoutesConfig,
+            getAppConfig,
+            reCompileRouteConfig,
+            dataCache,
             appConfig,
             devPath: (routePaths[0] || '').replace(/^\//, ''),
             spinner: buildSpinner,
           });
         } else if (command === 'build') {
           return await build(ctx, {
+            getRoutesConfig,
+            getAppConfig,
             taskConfigs,
             serverCompiler,
             spinner: buildSpinner,
