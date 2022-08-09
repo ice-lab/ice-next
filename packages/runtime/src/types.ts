@@ -3,7 +3,7 @@ import type { Action, InitialEntry, Location } from 'history';
 import type { ComponentType, ReactNode, PropsWithChildren } from 'react';
 import type { HydrationOptions } from 'react-dom/client';
 import type { Navigator, Params } from 'react-router-dom';
-import type { useConfig, useData } from './RouteContext.js';
+import type { useConfig, useData, useRouteModule } from './RouteContext.js';
 
 type VoidFunction = () => void;
 type AppLifecycle = 'onShow' | 'onHide' | 'onPageNotFound' | 'onShareAppMessage' | 'onUnhandledRejection' | 'onLaunch' | 'onError' | 'onTabItemClick';
@@ -99,6 +99,7 @@ export interface RouteComponent {
   getServerData?: GetServerData;
   getData?: GetData;
   getConfig?: GetConfig;
+  [key: string]: any;
 }
 
 export interface RouteItem {
@@ -154,6 +155,7 @@ export interface RuntimeAPI {
   appContext: AppContext;
   useData: typeof useData;
   useConfig: typeof useConfig;
+  useRouteModule: typeof useRouteModule;
 }
 
 export interface RuntimePlugin {

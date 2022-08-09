@@ -16,7 +16,7 @@ import type {
   ComponentWithChildren,
 } from './types.js';
 import DefaultAppRouter from './AppRouter.js';
-import { useData, useConfig } from './RouteContext.js';
+import { useData, useConfig, useRouteModule } from './RouteContext.js';
 
 class Runtime {
   private appContext: AppContext;
@@ -59,6 +59,7 @@ class Runtime {
       setAppRouter: this.setAppRouter,
       useData,
       useConfig,
+      useRouteModule,
     };
 
     const runtimeModule = (module as CommonJsRuntime).default || module as RuntimePlugin;
