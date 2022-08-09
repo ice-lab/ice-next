@@ -12,3 +12,9 @@ export default function Home() {
     </>
   );
 }
+
+export function getConfig() {
+  return {
+    title: 'Home',
+  };
+}
