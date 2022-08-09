@@ -1,6 +1,5 @@
 import * as path from 'path';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
-import taroHelper from '@tarojs/helper';
 import MiniPlugin from './plugins/MiniPlugin.js';
 export class MiniWebpackPlugin {
   config: any;

@@ -49,14 +49,6 @@ function isLoaderExist(loaders, loaderName: string) {
   return loaders.some(item => item.loader === loaderName);
 }
 
-function extractPagesFromRouteManifest(manifest) {
-  const pages = [];
-  manifest.forEach(item => {
-    pages.push(`pages/${item.id}`);
-  });
-  return pages;
-}
-
 export default class TaroMiniPlugin {
   /** 插件配置选项 */
   options: any;

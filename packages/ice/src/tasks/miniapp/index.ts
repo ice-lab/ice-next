@@ -1,8 +1,7 @@
 import * as path from 'path';
 import fg from 'fast-glob';
 import type { Config } from '@ice/types';
-import { CACHE_DIR } from '../../constant.js';
-import { RUNTIME_TMP_DIR } from '../../constant.js';
+import { RUNTIME_TMP_DIR, CACHE_DIR } from '../../constant.js';
 import getMiniappPlatformConfig from './platforms/index.js';
 import getMiniappWebpackConfig from './webpack/index.js';
 
