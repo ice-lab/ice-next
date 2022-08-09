@@ -21,6 +21,7 @@ import ServerCompilerPlugin from '../webpack/ServerCompilerPlugin.js';
 import ReCompilePlugin from '../webpack/ReCompilePlugin.js';
 import getServerEntry from '../utils/getServerEntry.js';
 import getRouterBasename from '../utils/getRouterBasename.js';
+import emptyDir from '../utils/emptyDir.js';
 
 const { merge } = lodash;
 
@@ -60,7 +61,11 @@ const start = async (
     runtimeTmpDir: RUNTIME_TMP_DIR,
   }));
 
-  let compiler;
+  const hooksAPI = {
+    serverCompiler,
+    getAppConfig,
+    getRoutesConfig,
+  };
 
   if (platform === WEB) {
     // Compile server entry after the webpack compilation.
@@ -152,11 +157,6 @@ const start = async (
       devServerConfig.port as number,
       urlPathname.endsWith('/') ? urlPathname : `${urlPathname}/`,
     );
-    const hooksAPI = {
-      serverCompiler,
-      getAppConfig,
-      getRoutesConfig,
-    };
     const compiler = await webpackCompiler({
       rootDir,
       webpackConfigs,
@@ -178,15 +178,17 @@ const start = async (
     });
     return { compiler, devServer };
   } else if (MINIAPP_PLATFORMS.includes(platform)) {
-    compiler = await webpackCompiler({
+    const outputDir = webpackConfigs[0].output.path;
+    await emptyDir(outputDir);
+    const compiler = await webpackCompiler({
       rootDir,
       webpackConfigs,
       taskConfigs,
       commandArgs,
       command,
-      applyHook,
-      serverCompiler,
       spinner,
+      applyHook,
+      hooksAPI,
     });
     let messages: { errors: string[]; warnings: string[] };
     compiler.watch({

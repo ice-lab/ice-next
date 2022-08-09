@@ -18,6 +18,7 @@ import { setEnv, updateRuntimeEnv, getCoreEnvKeys } from './utils/runtimeEnv.js'
 import getRuntimeModules from './utils/getRuntimeModules.js';
 import { generateRoutesInfo } from './routes.js';
 import getWebTask from './tasks/web/index.js';
+import getMiniappTask from './tasks/miniapp/index.js';
 import * as config from './config.js';
 import { WEB, MINIAPP_PLATFORMS, ALL_PLATFORMS } from './constant.js';
 import createSpinner from './utils/createSpinner.js';
@@ -27,7 +28,6 @@ import ServerCompileTask from './utils/ServerCompileTask.js';
 import { getAppExportConfig, getRouteExportConfig } from './service/config.js';
 import renderExportsTemplate from './utils/renderExportsTemplate.js';
 import { getFileExports } from './service/analyze.js';
-import getMiniappTask from './tasks/miniapp/index.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -93,11 +93,19 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const runtimeModules = getRuntimeModules(plugins);
 
   const { platform } = commandArgs;
+
+  const { getAppConfig, init: initAppConfigCompiler } = getAppExportConfig(rootDir);
+  const {
+    getRoutesConfig,
+    init: initRouteConfigCompiler,
+    reCompile: reCompileRouteConfig,
+  } = getRouteExportConfig(rootDir);
+
   if (platform === WEB) {
     // register web
     ctx.registerTask(WEB, getWebTask({ rootDir, command }));
   } else if (MINIAPP_PLATFORMS.includes(platform)) {
-    ctx.registerTask(platform, getMiniappTask({ rootDir, command, platform }));
+    ctx.registerTask(platform, getMiniappTask({ rootDir, command, platform, getAppConfig, getRoutesConfig }));
   }
 
   // register config
@@ -156,12 +164,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     server,
     syntaxFeatures,
   });
-  const { getAppConfig, init: initAppConfigCompiler } = getAppExportConfig(rootDir);
-  const {
-    getRoutesConfig,
-    init: initRouteConfigCompiler,
-    reCompile: reCompileRouteConfig,
-  } = getRouteExportConfig(rootDir);
+
   initAppConfigCompiler(serverCompiler);
   initRouteConfigCompiler(serverCompiler);
 

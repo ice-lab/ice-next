@@ -2,7 +2,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import taroHelper from '@tarojs/helper';
 
-import type { RecursiveTemplate, UnRecursiveTemplate } from '@tarojs/shared/dist/template';
+import type { UnRecursiveTemplate } from '@tarojs/shared/dist/template';
 import type { AppConfig, Config } from '@tarojs/taro';
 import fs from 'fs-extra';
 import { minify } from 'html-minifier';
@@ -14,7 +14,6 @@ import webpackSources from 'webpack-sources';
 import TaroSingleEntryDependency from '../dependencies/TaroSingleEntryDependency.js';
 import { componentConfig } from '../template/component.js';
 import type { IComponent } from '../utils/types.js';
-import { ROUTER_MANIFEST } from '../../../../constant.js';
 import TaroLoadChunksPlugin from './TaroLoadChunksPlugin.js';
 import TaroNormalModulesPlugin from './TaroNormalModulesPlugin.js';
 
@@ -24,7 +23,6 @@ const {
   META_TYPE,
   NODE_MODULES_REG,
   promoteRelativePath,
-  readConfig,
   REG_STYLE,
   resolveMainFilePath,
   SCRIPT_EXT,
@@ -243,12 +241,11 @@ export default class TaroMiniPlugin {
    * 分析 app 入口文件，搜集页面、组件信息，
    * 往 this.dependencies 中添加资源模块
    */
-  run(compiler: webpack.Compiler) {
-    this.appConfig = this.getAppConfig();
+  async run(compiler: webpack.Compiler) {
+    this.appConfig = await this.getAppConfig();
     this.getPages();
-    this.getPagesConfig();
+    await this.getPagesConfig();
     this.getDarkMode();
-    this.getConfigFiles(compiler);
     this.addEntries();
   }
 
@@ -256,15 +253,15 @@ export default class TaroMiniPlugin {
    * 获取 app config 配置内容
    * @returns app config 配置内容
    */
-  getAppConfig(): AppConfig {
-    const { rootDir } = this.options;
-    const routeManifestPath = path.join(rootDir, ROUTER_MANIFEST);
-    const routes = JSON.parse(fs.readFileSync(routeManifestPath, 'utf-8'));
-    const pages = extractPagesFromRouteManifest(routes);
-    // TODO: window 配置后续从 app.tsx 中的 miniappManifest 中提取
+  async getAppConfig(): Promise<AppConfig> {
+    const { getAppConfig } = this.options;
+    const { miniappManifest } = await getAppConfig(['miniappManifest']);
     const appConfig = {
-      pages,
+      pages: miniappManifest.routes.map(route => `pages/${route}`),
+      ...miniappManifest,
     };
+    delete appConfig.routes;
+
     this.filesConfig[APP_CONFIG_FILE] = {
       content: appConfig,
       path: APP_CONFIG_FILE,
@@ -306,35 +303,12 @@ export default class TaroMiniPlugin {
   /**
    * 读取页面及其依赖的组件的配置
    */
-  getPagesConfig() {
-    this.pages.forEach(page => {
-      this.compileFile(page);
-    });
-  }
-
-  /**
-   * 往 this.dependencies 中新增或修改所有 config 配置模块
-   */
-  getConfigFiles(compiler: webpack.Compiler) {
-    // TODO: ICE 无实体配置文件，考虑删除该逻辑
-    const { filesConfig } = this;
-    Object.keys(filesConfig).forEach(item => {
-      if (fs.existsSync(filesConfig[item].path)) {
-        this.addEntry(filesConfig[item].path, item, META_TYPE.CONFIG);
-      }
-    });
-
-    // webpack createChunkAssets 前一刻，去除所有 config chunks
-    compiler.hooks.compilation.tap(PLUGIN_NAME, compilation => {
-      compilation.hooks.beforeChunkAssets.tap(PLUGIN_NAME, () => {
-        const { chunks } = compilation;
-        const configNames = Object.keys(filesConfig);
-
-        for (const chunk of chunks) {
-          if (configNames.find(configName => configName === chunk.name)) chunks.delete(chunk);
-        }
-      });
-    });
+  async getPagesConfig() {
+    const { getRoutesConfig } = this.options;
+    const routesConfig = (await getRoutesConfig()).default;
+    for (let page of this.pages) {
+      await this.compileFile(page, routesConfig);
+    }
   }
 
   /**
@@ -376,7 +350,7 @@ export default class TaroMiniPlugin {
           this.addEntry(item.templatePath, this.getTemplatePath(item.name), META_TYPE.NORMAL);
         }
       } else {
-        this.addEntry(item.path, item.name, META_TYPE.PAGE, { entryPage: true });
+        this.addEntry(item.path, item.name, META_TYPE.PAGE);
       }
     });
     // TODO:处理 this.components
@@ -389,16 +363,17 @@ export default class TaroMiniPlugin {
   /**
    * 读取页面、组件的配置，并递归读取依赖的组件的配置
    */
-  compileFile(file: IComponent) {
+  async compileFile(file: IComponent, routesConfig: any) {
+    // Remove pages/ prefix
+    const id = file.name.slice(6);
+    const routeConfig = routesConfig[id]?.();
     const filePath = file.path;
-    // TODO: 这里应该读取页面的 getConfig 中的配置
     const fileConfigPath = file.isNative ? this.replaceExt(filePath, '.json') : this.getConfigFilePath(filePath);
-    const fileConfig = readConfig(fileConfigPath);
     // TODO: 如果使用原生小程序组件，则需要配置 usingComponents，需要递归收集依赖的第三方组件
     // const { usingComponents } = fileConfig;
 
     this.filesConfig[this.getConfigFilePath(file.name)] = {
-      content: fileConfig,
+      content: routeConfig,
       path: fileConfigPath,
     };
   }

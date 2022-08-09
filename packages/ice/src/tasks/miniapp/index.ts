@@ -3,7 +3,6 @@ import fg from 'fast-glob';
 import type { Config } from '@ice/types';
 import { CACHE_DIR } from '../../constant.js';
 import { RUNTIME_TMP_DIR } from '../../constant.js';
-import keepPlatform from '../../utils/keepPlatform.js';
 import getMiniappPlatformConfig from './platforms/index.js';
 import getMiniappWebpackConfig from './webpack/index.js';
 
@@ -23,7 +22,7 @@ function getEntry(rootDir: string) {
   };
 }
 
-const getMiniappTask = ({ rootDir, command, platform }): Config => {
+const getMiniappTask = ({ rootDir, command, platform, getAppConfig, getRoutesConfig }): Config => {
   const entry = getEntry(rootDir);
   // TODO:不支持被用户修改
   const outputDir = path.join(rootDir, 'build', platform);
@@ -38,6 +37,8 @@ const getMiniappTask = ({ rootDir, command, platform }): Config => {
     template,
     globalObject,
     fileType,
+    getAppConfig,
+    getRoutesConfig,
   });
   return {
     mode,
@@ -53,18 +54,7 @@ const getMiniappTask = ({ rootDir, command, platform }): Config => {
     performance: miniappWebpackConfig.performance,
     devServer: {}, // No need to use devServer in miniapp
     swcOptions: {
-      compilationConfig: {
-        jsc: {
-          transform: {
-            constModules: {
-              globals: {
-                '@uni/env': keepPlatform(platform),
-                'universal-env': keepPlatform(platform),
-              },
-            },
-          },
-        },
-      },
+      keepPlatform: 'miniapp',
       // getData is built by data-loader
       removeExportExprs: ['getData', 'getServerData', 'getStaticData'],
     },

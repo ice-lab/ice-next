@@ -40,7 +40,6 @@ async function webpackCompiler(options: {
     webpackConfigs,
     spinner,
     devPath,
-    rootDir,
   } = options;
   const { platform } = commandArgs;
   const { serverCompiler } = hooksAPI;
@@ -51,8 +50,10 @@ async function webpackCompiler(options: {
     webpackConfigs,
     ...hooksAPI,
   });
-  // Add webpack plugin of data-loader
-  webpackConfigs[0].plugins.push(new DataLoaderPlugin({ serverCompiler, rootDir }));
+  // Add webpack plugin of data-loader in web task
+  if (platform === WEB) {
+    webpackConfigs[0].plugins.push(new DataLoaderPlugin({ serverCompiler, rootDir }));
+  }
 
   // Add default plugins for spinner
   webpackConfigs[0].plugins.push((compiler: Compiler) => {

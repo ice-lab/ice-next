@@ -1,10 +1,7 @@
 import * as path from 'path';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
 import taroHelper from '@tarojs/helper';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import MiniPlugin from './plugins/MiniPlugin.js';
-
-const { PLATFORMS } = taroHelper;
 export class MiniWebpackPlugin {
   config: any;
 
@@ -64,7 +61,7 @@ export class MiniWebpackPlugin {
   }
 
   getMainPlugin(definePluginOptions) {
-    const { rootDir, outputDir, nodeModulesPath, template, deviceRatio, fileType } = this.config;
+    const { rootDir, outputDir, nodeModulesPath, template, deviceRatio, fileType, getAppConfig, getRoutesConfig } = this.config;
     const sourceDir = path.join(rootDir, 'src');
     const options = {
       /** paths */
@@ -82,8 +79,8 @@ export class MiniWebpackPlugin {
       minifyXML: {},
       alias: {},
       constantsReplaceList: definePluginOptions,
-      /** building mode */
-      hot: false,
+      getAppConfig,
+      getRoutesConfig,
     };
     return new MiniPlugin(options);
   }

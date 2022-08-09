@@ -18,3 +18,13 @@ export function getConfig() {
     title: 'Home',
   };
 }
+
+export function getData() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        name: 'About',
+      });
+    }, 1 * 100);
+  });
+}
