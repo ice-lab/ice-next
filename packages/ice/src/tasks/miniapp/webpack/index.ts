@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { createRequire } from 'node:module';
-import type { Configuration } from 'webpack';
+import { RUNTIME_TMP_DIR } from '../../../constant.js';
 import { MiniWebpackModule } from './module.js';
 import { MiniWebpackPlugin } from './plugin.js';
 
@@ -40,7 +40,7 @@ export default function getMiniappWebpackConfig(rawConfig: any): any {
       symlinks: true,
       mainFields: ['browser', 'module', 'jsnext:main', 'main'],
       alias: {
-        ice: path.join(rootDir, '.ice', 'index.ts'),
+        ice: path.join(rootDir, RUNTIME_TMP_DIR, 'index.ts'),
         '@': path.join(rootDir, 'src'),
         // 小程序使用 regenerator-runtime@0.11
         'regenerator-runtime': require.resolve('regenerator-runtime'),

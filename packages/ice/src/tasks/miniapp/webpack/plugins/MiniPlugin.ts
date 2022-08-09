@@ -14,27 +14,25 @@ import webpackSources from 'webpack-sources';
 import TaroSingleEntryDependency from '../dependencies/TaroSingleEntryDependency.js';
 import { componentConfig } from '../template/component.js';
 import type { IComponent } from '../utils/types.js';
+import { ROUTER_MANIFEST } from '../../../../constant.js';
 import TaroLoadChunksPlugin from './TaroLoadChunksPlugin.js';
 import TaroNormalModulesPlugin from './TaroNormalModulesPlugin.js';
 
 const { ConcatSource, RawSource } = webpackSources;
 const {
-  isAliasPath,
   isEmptyObject,
   META_TYPE,
   NODE_MODULES_REG,
-  printLog,
-  processTypeEnum,
   promoteRelativePath,
   readConfig,
   REG_STYLE,
-  replaceAliasPath,
   resolveMainFilePath,
   SCRIPT_EXT,
 } = taroHelper;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PLUGIN_NAME = 'TaroMiniPlugin';
+const APP_CONFIG_FILE = 'app.json';
 
 export interface IComponentObj {
   name?: string;
@@ -53,6 +51,14 @@ function isLoaderExist(loaders, loaderName: string) {
   return loaders.some(item => item.loader === loaderName);
 }
 
+function extractPagesFromRouteManifest(manifest) {
+  const pages = [];
+  manifest.forEach(item => {
+    pages.push(`pages/${item.id}`);
+  });
+  return pages;
+}
+
 export default class TaroMiniPlugin {
   /** 插件配置选项 */
   options: any;
@@ -66,10 +72,8 @@ export default class TaroMiniPlugin {
   isWatch = false;
   /** 页面列表 */
   pages = new Set<IComponent>();
-  components = new Set<IComponent>();
   /** tabbar icon 图片路径列表 */
   tabBarIcons = new Set<string>();
-  prerenderPages: Set<string>;
   dependencies = new Map<string, TaroSingleEntryDependency>();
   loadChunksPlugin: TaroLoadChunksPlugin;
   themeLocation: string;
@@ -77,44 +81,12 @@ export default class TaroMiniPlugin {
   independentPackages = new Map<string, string[]>();
 
   constructor(options = {}) {
-    this.options = Object.assign({
-      sourceDir: '',
-      framework: 'nerv',
-      commonChunks: ['runtime', 'vendors'],
-      fileType: {
-        style: '.wxss',
-        config: '.json',
-        script: '.js',
-        templ: '.wxml',
-        xs: '.wxs',
-      },
-      minifyXML: {},
-      hot: false,
-    }, options);
-
-    this.options.loaderMeta = {
-      importFrameworkStatement: `
-import * as React from 'react'
-import ReactDOM from 'react-dom'
-`,
-      mockAppStatement: `
-class App extends React.Component {
-  render () {
-    return this.props.children
-  }
-}
-`,
-      frameworkArgs: 'React, ReactDOM, config',
-      creator: 'createReactApp',
-      creatorLocation: '@tarojs/plugin-framework-react/dist/runtime',
-      importFrameworkName: 'React',
-    };
+    this.options = options;
 
     const { template, baseLevel } = this.options;
     if (template.isSupportRecursive === false && baseLevel > 0) {
       (template as UnRecursiveTemplate).baseLevel = baseLevel;
     }
-    this.prerenderPages = new Set();
   }
 
   /**
@@ -140,7 +112,6 @@ class App extends React.Component {
     const {
       commonChunks,
       addChunkPages,
-      framework,
     } = this.options;
     /** build mode */
     compiler.hooks.run.tapAsync(
@@ -151,7 +122,6 @@ class App extends React.Component {
           commonChunks: commonChunks,
           addChunkPages: addChunkPages,
           pages: this.pages,
-          framework: framework,
         }).apply(compiler);
       }),
     );
@@ -170,7 +140,6 @@ class App extends React.Component {
             commonChunks: commonChunks,
             addChunkPages: addChunkPages,
             pages: this.pages,
-            framework: framework,
           });
           this.loadChunksPlugin.apply(compiler);
         }
@@ -192,7 +161,6 @@ class App extends React.Component {
           }));
         });
         await Promise.all(promises);
-        await this.options.onCompilerMake?.(compilation);
       }),
     );
 
@@ -206,37 +174,24 @@ class App extends React.Component {
        * 往 NormalModule.loaders 中插入对应的 Taro Loader
        */
       webpack.NormalModule.getCompilationHooks(compilation).loader.tap(PLUGIN_NAME, (_loaderContext, module:/** TaroNormalModule */ any) => {
-        const { framework, loaderMeta = {}, designWidth, deviceRatio } = this.options;
+        const { loaderMeta = {} } = this.options;
         if (module.miniType === META_TYPE.PAGE) {
+          // debugger;
           const loaderName = this.pageLoaderName;
           if (!isLoaderExist(module.loaders, loaderName)) {
             module.loaders.unshift({
               loader: loaderName,
               options: {
-                framework,
                 loaderMeta,
                 name: module.name,
-                prerender: false,
                 config: this.filesConfig,
                 appConfig: this.appConfig,
-                hot: this.options.hot,
-              },
-            });
-          }
-        } else if (module.miniType === META_TYPE.COMPONENT) {
-          const loaderName = '@ice/miniapp-loader/lib/component.js';
-          if (!isLoaderExist(module.loaders, loaderName)) {
-            module.loaders.unshift({
-              loader: loaderName,
-              options: {
-                framework,
-                loaderMeta,
-                name: module.name,
-                prerender: false,
+                miniType: module.miniType,
               },
             });
           }
         }
+        // TODO: 组件 loader 处理
       });
 
       compilation.hooks.processAssets.tapAsync(
@@ -265,14 +220,7 @@ class App extends React.Component {
    * @returns app 入口文件路径
    */
   getAppEntry(compiler: webpack.Compiler) {
-    // const originalEntry = compiler.options.entry as webpack.Entry
-    // compiler.options.entry = {}
-    // return path.resolve(this.context, originalEntry.app[0])
     const { entry } = compiler.options;
-    if (this.options.appEntry) {
-      compiler.options.entry = {};
-      return this.options.appEntry;
-    }
     function getEntryPath(entry) {
       const app = entry.main;
       if (Array.isArray(app)) {
@@ -309,30 +257,18 @@ class App extends React.Component {
    * @returns app config 配置内容
    */
   getAppConfig(): AppConfig {
-    // FIXME:
-    // 从 .ice/route.manifest.json 提取 pages 信息
-    // TODO: window 配置后续从 app.tsx 提取
-    const appName = path.basename(this.appEntry).replace(path.extname(this.appEntry), '');
-    this.compileFile({
-      name: appName,
-      path: this.appEntry,
-      isNative: false,
-    });
-
-    // FIXME:
+    const { rootDir } = this.options;
+    const routeManifestPath = path.join(rootDir, ROUTER_MANIFEST);
+    const routes = JSON.parse(fs.readFileSync(routeManifestPath, 'utf-8'));
+    const pages = extractPagesFromRouteManifest(routes);
+    // TODO: window 配置后续从 app.tsx 中的 miniappManifest 中提取
     const appConfig = {
-      pages: ['pages/index'],
+      pages,
     };
-
-    // this.filesConfig[this.getConfigFilePath(appName)] = {
-    //   content: appConfig,
-    //   path: this.appEntry
-    // };
-    // const fileConfig = this.filesConfig[this.getConfigFilePath(appName)]
-    // const appConfig = fileConfig ? fileConfig.content || {} : {}
-    if (isEmptyObject(appConfig)) {
-      throw new Error('缺少 app 全局配置文件，请检查！');
-    }
+    this.filesConfig[APP_CONFIG_FILE] = {
+      content: appConfig,
+      path: APP_CONFIG_FILE,
+    };
     return appConfig as AppConfig;
   }
 
@@ -349,11 +285,6 @@ class App extends React.Component {
       throw new Error('全局配置缺少 pages 字段，请检查！');
     }
 
-    printLog(processTypeEnum.COMPILE, '发现入口', this.getShowPath(this.appEntry));
-    if (!this.isWatch && this.options.logger?.quiet === false) {
-    }
-    const { framework } = this.options;
-    this.prerenderPages = new Set();
     this.getTabBarFiles(this.appConfig);
     this.pages = new Set([
       ...appPages.map<IComponent>(item => {
@@ -369,7 +300,7 @@ class App extends React.Component {
         };
       }),
     ]);
-    this.getSubPackages(this.appConfig);
+    // TODO: 收集分包配置中的页面
   }
 
   /**
@@ -377,9 +308,6 @@ class App extends React.Component {
    */
   getPagesConfig() {
     this.pages.forEach(page => {
-      if (!this.isWatch && this.options.logger?.quiet === false) {
-        printLog(processTypeEnum.COMPILE, '发现页面', this.getShowPath(page.path));
-      }
       this.compileFile(page);
     });
   }
@@ -388,6 +316,7 @@ class App extends React.Component {
    * 往 this.dependencies 中新增或修改所有 config 配置模块
    */
   getConfigFiles(compiler: webpack.Compiler) {
+    // TODO: ICE 无实体配置文件，考虑删除该逻辑
     const { filesConfig } = this;
     Object.keys(filesConfig).forEach(item => {
       if (fs.existsSync(filesConfig[item].path)) {
@@ -447,22 +376,10 @@ class App extends React.Component {
           this.addEntry(item.templatePath, this.getTemplatePath(item.name), META_TYPE.NORMAL);
         }
       } else {
-        this.addEntry(item.path, item.name, META_TYPE.PAGE);
+        this.addEntry(item.path, item.name, META_TYPE.PAGE, { entryPage: true });
       }
     });
-    this.components.forEach(item => {
-      if (item.isNative) {
-        this.addEntry(item.path, item.name, META_TYPE.NORMAL);
-        if (item.stylePath && fs.existsSync(item.stylePath)) {
-          this.addEntry(item.stylePath, this.getStylePath(item.name), META_TYPE.NORMAL);
-        }
-        if (item.templatePath && fs.existsSync(item.templatePath)) {
-          this.addEntry(item.templatePath, this.getTemplatePath(item.name), META_TYPE.NORMAL);
-        }
-      } else {
-        this.addEntry(item.path, item.name, META_TYPE.COMPONENT);
-      }
-    });
+    // TODO:处理 this.components
   }
 
   replaceExt(file: string, ext: string) {
@@ -474,100 +391,16 @@ class App extends React.Component {
    */
   compileFile(file: IComponent) {
     const filePath = file.path;
+    // TODO: 这里应该读取页面的 getConfig 中的配置
     const fileConfigPath = file.isNative ? this.replaceExt(filePath, '.json') : this.getConfigFilePath(filePath);
     const fileConfig = readConfig(fileConfigPath);
-    const { usingComponents } = fileConfig;
-
-    // 递归收集依赖的第三方组件
-    if (usingComponents) {
-      const componentNames = Object.keys(usingComponents);
-      const depComponents: Array<{ name: string; path: string }> = [];
-      const { alias } = this.options;
-      for (const compName of componentNames) {
-        let compPath = usingComponents[compName];
-
-        if (isAliasPath(compPath, alias)) {
-          compPath = replaceAliasPath(filePath, compPath, alias);
-          fileConfig.usingComponents[compName] = compPath;
-        }
-
-        depComponents.push({
-          name: compName,
-          path: compPath,
-        });
-
-        if (!componentConfig.thirdPartyComponents.has(compName) && !file.isNative) {
-          componentConfig.thirdPartyComponents.set(compName, new Set());
-        }
-      }
-      depComponents.forEach(item => {
-        const componentPath = resolveMainFilePath(path.resolve(path.dirname(file.path), item.path));
-        if (fs.existsSync(componentPath) && !Array.from(this.components).some(item => item.path === componentPath)) {
-          const componentName = this.getComponentName(componentPath);
-          const componentTempPath = this.getTemplatePath(componentPath);
-          const isNative = this.isNativePageORComponent(componentTempPath);
-          const componentObj = {
-            name: componentName,
-            path: componentPath,
-            isNative,
-            stylePath: isNative ? this.getStylePath(componentPath) : undefined,
-            templatePath: isNative ? this.getTemplatePath(componentPath) : undefined,
-          };
-          this.components.add(componentObj);
-          this.compileFile(componentObj);
-        }
-      });
-    }
+    // TODO: 如果使用原生小程序组件，则需要配置 usingComponents，需要递归收集依赖的第三方组件
+    // const { usingComponents } = fileConfig;
 
     this.filesConfig[this.getConfigFilePath(file.name)] = {
       content: fileConfig,
       path: fileConfigPath,
     };
-  }
-
-  /**
-   * 收集分包配置中的页面
-   */
-  getSubPackages(appConfig: AppConfig) {
-    const subPackages = appConfig.subPackages || appConfig.subpackages;
-    const { framework } = this.options;
-    if (subPackages && subPackages.length) {
-      subPackages.forEach(item => {
-        if (item.pages && item.pages.length) {
-          const { root } = item;
-          const isIndependent = !!item.independent;
-          if (isIndependent) {
-            this.independentPackages.set(root, []);
-          }
-          item.pages.forEach(page => {
-            let pageItem = `${root}/${page}`;
-            pageItem = pageItem.replace(/\/{2,}/g, '/');
-            let hasPageIn = false;
-            this.pages.forEach(({ name }) => {
-              if (name === pageItem) {
-                hasPageIn = true;
-              }
-            });
-            if (!hasPageIn) {
-              const pagePath = resolveMainFilePath(path.join(this.options.sourceDir, pageItem), SCRIPT_EXT);
-              const templatePath = this.getTemplatePath(pagePath);
-              const isNative = this.isNativePageORComponent(templatePath);
-              if (isIndependent) {
-                const independentPages = this.independentPackages.get(root);
-                independentPages?.push(pagePath);
-              }
-              this.pages.add({
-                name: pageItem,
-                path: pagePath,
-                isNative,
-                stylePath: isNative ? this.getStylePath(pagePath) : undefined,
-                templatePath: isNative ? this.getTemplatePath(pagePath) : undefined,
-              });
-            }
-          });
-        }
-      });
-    }
   }
 
   /**
@@ -587,7 +420,6 @@ class App extends React.Component {
    */
   getTabBarFiles(appConfig: AppConfig) {
     const { tabBar } = appConfig;
-    const { sourceDir, framework } = this.options;
     if (tabBar && typeof tabBar === 'object' && !isEmptyObject(tabBar)) {
       // eslint-disable-next-line dot-notation
       const list = tabBar['list'] || [];
@@ -597,26 +429,7 @@ class App extends React.Component {
         // eslint-disable-next-line dot-notation
         item['selectedIconPath'] && this.tabBarIcons.add(item['selectedIconPath']);
       });
-      if (tabBar.custom) {
-        const customTabBarPath = path.join(sourceDir, 'custom-tab-bar');
-        const customTabBarComponentPath = resolveMainFilePath(customTabBarPath, [...SCRIPT_EXT]);
-        if (fs.existsSync(customTabBarComponentPath)) {
-          const customTabBarComponentTemplPath = this.getTemplatePath(customTabBarComponentPath);
-          const isNative = this.isNativePageORComponent(customTabBarComponentTemplPath);
-          if (!this.isWatch && this.options.logger?.quiet === false) {
-            printLog(processTypeEnum.COMPILE, '自定义 tabBar', this.getShowPath(customTabBarComponentPath));
-          }
-          const componentObj: IComponent = {
-            name: 'custom-tab-bar/index',
-            path: customTabBarComponentPath,
-            isNative,
-            stylePath: isNative ? this.getStylePath(customTabBarComponentPath) : undefined,
-            templatePath: isNative ? this.getTemplatePath(customTabBarComponentPath) : undefined,
-          };
-          this.compileFile(componentObj);
-          this.components.add(componentObj);
-        }
-      }
+      // TODO: custom tabBar
     }
   }
 
@@ -631,35 +444,16 @@ class App extends React.Component {
 
   /** 生成小程序相关文件 */
   async generateMiniFiles(compilation: webpack.Compilation) {
-    const { template, modifyBuildAssets, modifyMiniConfigs, sourceDir } = this.options;
+    const { template, sourceDir } = this.options;
     const baseTemplateName = 'base';
     const baseCompName = 'comp';
     const customWrapperName = 'custom-wrapper';
 
-    /**
-     * 与原生小程序混写时解析模板与样式
-     */
-    compilation.getAssets().forEach(({ name: assetPath }) => {
-      const styleExt = this.options.fileType.style;
-      const templExt = this.options.fileType.templ;
-      if (new RegExp(`(\\${styleExt}|\\${templExt})\\.js(\\.map){0,1}$`).test(assetPath)) {
-        delete compilation.assets[assetPath];
-      } else if (new RegExp(`${styleExt}${styleExt}$`).test(assetPath)) {
-        const assetObj = compilation.assets[assetPath];
-        const newAssetPath = assetPath.replace(styleExt, '');
-        compilation.assets[newAssetPath] = assetObj;
-        delete compilation.assets[assetPath];
-      }
-    });
+    // TODO:与原生小程序混写时解析模板与样式
 
-    if (typeof modifyMiniConfigs === 'function') {
-      await modifyMiniConfigs(this.filesConfig);
-    }
-    if (!this.options.blended) {
-      const appConfigPath = this.getConfigFilePath(this.appEntry);
-      const appConfigName = path.basename(appConfigPath).replace(path.extname(appConfigPath), '');
-      this.generateConfigFile(compilation, this.appEntry, this.filesConfig[appConfigName] ? this.filesConfig[appConfigName].content : {});
-    }
+    // app.json
+    this.generateConfigFile(compilation, APP_CONFIG_FILE, this.filesConfig[APP_CONFIG_FILE].content);
+
     if (!template.isSupportRecursive) {
       // 如微信、QQ 不支持递归模版的小程序，需要使用自定义组件协助递归
       this.generateTemplateFile(compilation, baseCompName, template.buildBaseComponentTemplate, this.options.fileType.templ);
@@ -688,28 +482,12 @@ class App extends React.Component {
     this.generateTemplateFile(compilation, baseTemplateName, template.buildTemplate, componentConfig);
     this.generateTemplateFile(compilation, customWrapperName, template.buildCustomComponentTemplate, this.options.fileType.templ);
     this.generateXSFile(compilation, 'utils');
-    this.components.forEach(component => {
-      const importBaseTemplatePath = promoteRelativePath(path.relative(component.path, path.join(sourceDir, this.getTemplatePath(baseTemplateName))));
-      const config = this.filesConfig[this.getConfigFilePath(component.name)];
-      if (config) {
-        this.generateConfigFile(compilation, component.path, config.content);
-      }
-      if (!component.isNative) {
-        this.generateTemplateFile(compilation, component.path, template.buildPageTemplate, importBaseTemplatePath);
-      }
-    });
     this.pages.forEach(page => {
       let importBaseTemplatePath = promoteRelativePath(path.relative(page.path, path.join(sourceDir, this.getTemplatePath(baseTemplateName))));
       const config = this.filesConfig[this.getConfigFilePath(page.name)];
-      let isIndependent = false;
-      let independentName = '';
       if (config) {
         let importBaseCompPath = promoteRelativePath(path.relative(page.path, path.join(sourceDir, this.getTargetFilePath(baseCompName, ''))));
         let importCustomWrapperPath = promoteRelativePath(path.relative(page.path, path.join(sourceDir, this.getTargetFilePath(customWrapperName, ''))));
-        if (isIndependent) {
-          importBaseCompPath = promoteRelativePath(path.relative(page.path, path.join(sourceDir, independentName, this.getTargetFilePath(baseCompName, ''))));
-          importCustomWrapperPath = promoteRelativePath(path.relative(page.path, path.join(sourceDir, independentName, this.getTargetFilePath(customWrapperName, ''))));
-        }
         config.content.usingComponents = {
           [customWrapperName]: importCustomWrapperPath,
           ...config.content.usingComponents,
@@ -727,9 +505,6 @@ class App extends React.Component {
     this.injectCommonStyles(compilation);
     if (this.themeLocation) {
       this.generateDarkModeFile(compilation);
-    }
-    if (typeof modifyBuildAssets === 'function') {
-      await modifyBuildAssets(compilation.assets, this);
     }
   }
 
@@ -758,7 +533,6 @@ class App extends React.Component {
   }
 
   generateXSFile(compilation: webpack.Compilation, xsPath) {
-    debugger;
     const ext = this.options.fileType.xs;
     if (ext == null) {
       return;
@@ -843,6 +617,7 @@ class App extends React.Component {
    * 小程序全局样式文件中引入 common chunks 中的公共样式文件
    */
   injectCommonStyles({ assets }: webpack.Compilation) {
+    // debugger;
     const styleExt = this.options.fileType.style;
     const appStyle = `app${styleExt}`;
     const REG_STYLE_EXT = new RegExp(`\\.(${styleExt.replace('.', '')})(\\?.*)?$`);

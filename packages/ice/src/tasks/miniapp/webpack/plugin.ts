@@ -42,13 +42,8 @@ export class MiniWebpackPlugin {
       env = {},
       runtime = {} as Record<string, boolean>,
       defineConstants = {},
-      framework = 'react',
-      buildAdapter = PLATFORMS.WEAPP,
     } = this.config;
 
-    env.FRAMEWORK = JSON.stringify(framework);
-    env.TARO_ENV = JSON.stringify('wechat-miniprogram');
-    console.log('🚀 ~ file: plugin.ts ~ line 53 ~ MiniWebpackPlugin ~ getDefinePlugin ~ env.TARO_ENV', env.TARO_ENV);
     const envConstants = Object.keys(env).reduce((target, key) => {
       target[`process.env.${key}`] = env[key];
       return target;
@@ -73,11 +68,11 @@ export class MiniWebpackPlugin {
     const sourceDir = path.join(rootDir, 'src');
     const options = {
       /** paths */
+      rootDir,
       sourceDir,
       outputDir,
       nodeModulesPath,
       /** config & message */
-      framework: 'react',
       fileType,
       template,
       commonChunks: ['runtime', 'vendors', 'taro', 'common', 'ice'],
