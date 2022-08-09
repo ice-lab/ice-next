@@ -1,6 +1,6 @@
 import { createRequire } from 'module';
 import type { Plugin } from '@ice/types';
-// import styleImportPlugin from '@ice/style-import';
+import styleImportPlugin from '@ice/style-import';
 
 interface PluginOptions {
   theme?: Record<string, string>;
@@ -30,15 +30,15 @@ function getVariablesPath({
 const plugin: Plugin<PluginOptions> = (options = {}) => ({
   name: '@ice/plugin-fusion',
   setup: ({ onGetConfig }) => {
-    const { theme, themePackage } = options;
-    /* if (importStyle) {
+    const { theme, themePackage, importStyle } = options;
+    if (importStyle) {
       onGetConfig((config) => {
         config.transformPlugins = [...(config.transformPlugins || []), styleImportPlugin({
-          libraryName: 'antd',
-          style: (name) => `@alifd/next/es/${name.toLocaleLowerCase()}/style2`,
+          libraryName: '@alifd/next',
+          style: (name) => `@alifd/next/es/${name.toLocaleLowerCase()}/${importStyle === 'sass' ? 'style' : 'style2'}`,
         })];
       });
-    } */
+    }
     if (theme || themePackage) {
       onGetConfig((config) => {
         // Modify webpack config of scss rule for fusion theme.

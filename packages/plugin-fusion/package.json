@@ -11,6 +11,7 @@
     "!esm/**/*.map"
   ],
   "dependencies": {
+    "@ice/style-import": "^1.0.0"
   },
   "devDependencies": {
     "@ice/types": "^1.0.0"
