@@ -1,12 +1,7 @@
-import { hooks } from '@tarojs/shared';
+import getAppConfig from '../appConfig.js';
+import runClientApp from './runClientApp.js';
 
-import * as taroHooks from './hooks.js';
-
-hooks.tap('initNativeApi', (taro) => {
-  for (const hook in taroHooks) {
-    taro[hook] = taroHooks[hook];
-  }
-});
-
-export * from './connect.js';
-export * from './hooks.js';
+export {
+  runClientApp,
+  getAppConfig,
+};

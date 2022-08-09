@@ -11,7 +11,8 @@
     "./server": "./esm/index.server.js",
     "./jsx-runtime": "./esm/jsx-runtime.js",
     "./jsx-dev-runtime": "./esm/jsx-dev-runtime.js",
-    "./matchRoutes": "./esm/matchRoutes.js"
+    "./matchRoutes": "./esm/matchRoutes.js",
+    "./miniapp": "./esm/miniapp/index.js"
   },
   "files": [
     "esm",

@@ -8,7 +8,7 @@ import { Current, document, getPageInstance,
 } from '@ice/miniapp-runtime';
 import { EMPTY_OBJ, hooks } from '@tarojs/shared';
 import type { AppConfig } from '@tarojs/taro';
-import type React from 'react';
+import React, { createElement } from 'react';
 
 import { reactMeta } from './react-meta.js';
 import { ensureIsArray, HOOKS_APP_ID, isClassComponent, setDefaultDescriptor, setRouterParams } from './utils.js';
@@ -17,12 +17,9 @@ type PageComponent = React.CElement<PageProps, React.Component<PageProps, any, a
 
 declare const App: any;
 
-let h: typeof React.createElement;
-let ReactDOM;
-
 const pageKeyId = incrementId();
 
-export function setReconciler(ReactDOM) {
+export function setReconciler() {
   hooks.tap('getLifecycle', (instance, lifecycle: string) => {
     lifecycle = lifecycle.replace(/^on(Show|Hide)$/, 'componentDid$1');
     return instance[lifecycle];
@@ -32,9 +29,10 @@ export function setReconciler(ReactDOM) {
     event.type = event.type.replace(/-/g, '');
   });
 
-  hooks.tap('batchedEventUpdates', (cb) => {
-    ReactDOM.unstable_batchedUpdates(cb);
-  });
+  // TODO: 了解一下 hooks 是干嘛的
+  // hooks.tap('batchedEventUpdates', (cb) => {
+  //   ReactDOM.unstable_batchedUpdates(cb);
+  // });
 
   hooks.tap('mergePageInstance', (prev, next) => {
     if (!prev || !next) return;
@@ -85,11 +83,11 @@ export function connectReactPage(
           ? []
           // TODO
           // @ts-ignore
-          : h(reactMeta.PageContext.Provider, { value: id }, h(Page, {
+          : createElement(reactMeta.PageContext.Provider, { value: id }, createElement(Page, {
             ...this.props,
             ...refs,
           }));
-        return h(
+        return createElement(
           'root',
           { id },
           children,
@@ -99,6 +97,62 @@ export function connectReactPage(
   };
 }
 
+type IProps = {
+  children: React.ReactNode | undefined;
+};
+
+class AppComponent extends React.Component<IProps> {
+  render() {
+    return this.props.children;
+  }
+}
+
+let appWrapper: AppWrapper;
+const appInstanceRef = React.createRef<ReactAppInstance>();
+
+export class AppWrapper extends React.Component {
+  // run createElement() inside the render function to make sure that owner is right
+  private pages: Array<() => PageComponent> = [];
+  private elements: Array<PageComponent> = [];
+
+  constructor(props) {
+    super(props);
+    appWrapper = this;
+  }
+
+  public mount(pageComponent: ReactPageComponent, id: string, cb: () => void) {
+    const pageWrapper = connectReactPage(React, id)(pageComponent);
+    const key = id + pageKeyId();
+    const page = () => createElement(pageWrapper, { key, tid: id });
+    this.pages.push(page);
+    this.forceUpdate(cb);
+  }
+
+  public unmount(id: string, cb: () => void) {
+    const { elements } = this;
+    const idx = elements.findIndex(item => item.props.tid === id);
+    elements.splice(idx, 1);
+    this.forceUpdate(cb);
+  }
+
+  public render() {
+    const { pages, elements } = this;
+
+    while (pages.length > 0) {
+      const page = pages.pop()!;
+      elements.push(page());
+    }
+
+    const props: React.ComponentProps<any> | null = { ref: appInstanceRef };
+
+    return createElement(
+      AppComponent,
+      props,
+      elements.slice(),
+    );
+  }
+}
+
 /**
  * 桥接小程序 App 构造器和 React 渲染流程
  * @param react 框架
@@ -106,85 +160,14 @@ export function connectReactPage(
  * @param config 入口组件配置 app.config.js 的内容
  * @returns 传递给 App 构造器的对象 obj ：App(obj)
  */
-export function createReactApp(
-  react: typeof React,
-  dom,
+ export function createMiniApp(
   config: AppConfig,
 ) {
-  reactMeta.R = react;
-  h = react.createElement;
-  ReactDOM = dom;
-  const appInstanceRef = react.createRef<ReactAppInstance>();
-  let appWrapper: AppWrapper;
-
-  setReconciler(ReactDOM);
+  setReconciler();
 
   function getAppInstance(): ReactAppInstance | null {
     return appInstanceRef.current;
   }
-
-  function renderReactRoot() {
-    let appId = 'app';
-    ReactDOM.version = react.version;
-    const container = document.getElementById(appId);
-    const root = ReactDOM.createRoot(container);
-    root.render?.(h(AppWrapper));
-  }
-
-  type IProps = {
-    children: React.ReactNode | undefined;
-  };
-
-  class AppComponent extends react.Component<IProps> {
-    render() {
-      return this.props.children;
-    }
-  }
-
-  class AppWrapper extends react.Component {
-    // run createElement() inside the render function to make sure that owner is right
-    private pages: Array<() => PageComponent> = [];
-    private elements: Array<PageComponent> = [];
-
-    constructor(props) {
-      super(props);
-      appWrapper = this;
-    }
-
-    public mount(pageComponent: ReactPageComponent, id: string, cb: () => void) {
-      const pageWrapper = connectReactPage(react, id)(pageComponent);
-      const key = id + pageKeyId();
-      const page = () => h(pageWrapper, { key, tid: id });
-      this.pages.push(page);
-      this.forceUpdate(cb);
-    }
-
-    public unmount(id: string, cb: () => void) {
-      const { elements } = this;
-      const idx = elements.findIndex(item => item.props.tid === id);
-      elements.splice(idx, 1);
-      this.forceUpdate(cb);
-    }
-
-    public render() {
-      const { pages, elements } = this;
-
-      while (pages.length > 0) {
-        const page = pages.pop()!;
-        elements.push(page());
-      }
-
-      const props: React.ComponentProps<any> | null = { ref: appInstanceRef };
-
-      return h(
-        AppComponent,
-        props,
-        elements.slice(),
-      );
-    }
-  }
-
-  renderReactRoot();
 
   const [ONLAUNCH, ONSHOW, ONHIDE] = hooks.call('getMiniLifecycleImpl')!.app;
 

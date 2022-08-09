@@ -16,7 +16,6 @@ import { updateRoutesConfig } from './routesConfig.js';
 import getRequestContext from './requestContext.js';
 import getAppConfig from './appConfig.js';
 import matchRoutes from './matchRoutes.js';
-import { createReactApp } from './miniapp/index.js';
 
 interface RunClientAppOptions {
   app: AppExport;
@@ -28,83 +27,75 @@ interface RunClientAppOptions {
   memoryRouter?: boolean;
 }
 
-declare const wx: any;
-
 export default async function runClientApp(options: RunClientAppOptions) {
-  if (typeof wx === undefined) {
-    const {
-      app,
-      routes,
-      runtimeModules,
-      Document,
-      basename: defaultBasename,
-      hydrate,
-      memoryRouter,
-    } = options;
-    const appContextFromServer: AppContext = (window as any).__ICE_APP_CONTEXT__ || {};
-    let {
-      appData,
-      routesData,
-      routesConfig,
-      assetsManifest,
-      basename: basenameFromServer,
-      routePath,
-    } = appContextFromServer;
+  const {
+    app,
+    routes,
+    runtimeModules,
+    Document,
+    basename: defaultBasename,
+    hydrate,
+    memoryRouter,
+  } = options;
+  const appContextFromServer: AppContext = (window as any).__ICE_APP_CONTEXT__ || {};
+  let {
+    appData,
+    routesData,
+    routesConfig,
+    assetsManifest,
+    basename: basenameFromServer,
+    routePath,
+  } = appContextFromServer;
 
-    const requestContext = getRequestContext(window.location);
+  // TODO: 小程序中需要获取 path 信息，然后拿到对应的页面中的 getData/getConfig 等方法并执行
+  const requestContext = getRequestContext(window.location);
 
-    if (!appData) {
-      appData = await getAppData(app, requestContext);
-    }
+  if (!appData) {
+    appData = await getAppData(app, requestContext);
+  }
 
-    const appConfig = getAppConfig(app);
+  const appConfig = getAppConfig(app);
 
-    const basename = basenameFromServer || defaultBasename;
-    const matches = matchRoutes(
-      routes,
-      memoryRouter ? routePath : window.location,
-      basename,
-    );
-    const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
+  const basename = basenameFromServer || defaultBasename;
+  const matches = matchRoutes(
+    routes,
+    memoryRouter ? routePath : window.location,
+    basename,
+  );
+  const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
-    if (!routesData) {
-      routesData = await loadRoutesData(matches, requestContext, routeModules);
-    }
-    if (!routesConfig) {
-      routesConfig = getRoutesConfig(matches, routesConfig, routeModules);
-    }
+  if (!routesData) {
+    routesData = await loadRoutesData(matches, requestContext, routeModules);
+  }
+  if (!routesConfig) {
+    routesConfig = getRoutesConfig(matches, routesConfig, routeModules);
+  }
 
-    const appContext: AppContext = {
-      appExport: app,
-      routes,
-      appConfig,
-      appData,
-      routesData,
-      routesConfig,
-      assetsManifest,
-      matches,
-      routeModules,
-      basename,
-      routePath,
-    };
+  const appContext: AppContext = {
+    appExport: app,
+    routes,
+    appConfig,
+    appData,
+    routesData,
+    routesConfig,
+    assetsManifest,
+    matches,
+    routeModules,
+    basename,
+    routePath,
+  };
 
-    const runtime = new Runtime(appContext);
+  const runtime = new Runtime(appContext);
 
-    if (hydrate) {
-      runtime.setRender((container, element) => {
-        ReactDOM.hydrateRoot(container, element);
-      });
-    }
-
-    await Promise.all(runtimeModules.map(m => runtime.loadModule(m)).filter(Boolean));
-
-    render(runtime, Document, { memoryRouter, routePath });
-  } else {
-    // TODO: 第三个参数 config 对接一下，暂时先写死
-    createReactApp(React, ReactDOM, {
-      pages: ['pages/index'],
+  if (hydrate) {
+    runtime.setRender((container, element) => {
+      ReactDOM.hydrateRoot(container, element);
     });
   }
+
+  await Promise.all(runtimeModules.map(m => runtime.loadModule(m)).filter(Boolean));
+
+  render(runtime, Document, { memoryRouter, routePath });
 }
 
 interface RenderOptions {
@@ -114,10 +105,10 @@ interface RenderOptions {
 
 async function render(
   runtime: Runtime,
-  Document: DocumentComponent,
-  options: RenderOptions,
+  Document?: DocumentComponent,
+  options?: RenderOptions,
 ) {
-  const { routePath, memoryRouter } = options;
+  const { routePath, memoryRouter } = options || {};
   const appContext = runtime.getAppContext();
   const { appConfig } = appContext;
   const render = runtime.getRender();
@@ -126,8 +117,8 @@ async function render(
   const AppRouter = runtime.getAppRouter();
 
   const createHistory = process.env.ICE_CORE_ROUTER === 'true'
-    ? createRouterHistory(appConfig?.router?.type, memoryRouter)
-    : createHistorySingle;
+  ? createRouterHistory(appConfig?.router?.type, memoryRouter)
+  : createHistorySingle;
   const createHistoryOptions: Parameters<typeof createHistory>[0] = {
     window,
   };
