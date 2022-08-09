@@ -149,23 +149,21 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
   }
 
   const appConfig = getAppConfig(app);
+  // HashRouter loads route modules by the CSR.
+  if (appConfig?.router?.type === 'hash') {
+    return renderDocument({ matches: [], renderOptions, routeModules: {} });
+  }
 
-  let matches: RouteMatch[] = [];
-  let routeModules: RouteModules = {};
-  let routePath: string | undefined;
-  if (appConfig?.router?.type !== 'hash') {
-    matches = matchRoutes(routes, location, serverOnlyBasename || basename);
+  const matches = matchRoutes(routes, location, serverOnlyBasename || basename);
+  if (!matches.length) {
+    return render404();
+  }
 
-    if (!matches.length) {
-      return render404();
-    }
+  const routePath = getCurrentRoutePath(matches);
+  const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
-    routePath = getCurrentRoutePath(matches);
-    routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
-
-    if (documentOnly) {
-      return renderDocument({ matches, routePath, renderOptions, routeModules });
-    }
+  if (documentOnly) {
+    return renderDocument({ matches, routePath, renderOptions, routeModules });
   }
 
   try {

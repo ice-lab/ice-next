@@ -127,7 +127,7 @@ export function createRouteElements(
     let { path, children, index, id, layout, element, load, ...rest } = routeItem;
     element = (
       <RouteWrapper id={id} isLayout={layout} wrappers={RouteWrappers}>
-        {appConfig?.router?.type === 'hash' ? <HashRouteComponent load={load} /> : <BrowserRouteComponent id={id} />}
+        <RouteComponent id={id} />
       </RouteWrapper>
     );
 
@@ -147,16 +147,7 @@ export function createRouteElements(
   });
 }
 
-function HashRouteComponent({ load }: { load: RouteItem['load'] }) {
-  const Component = React.lazy(load);
-  return (
-    <React.Suspense>
-      <Component />
-    </React.Suspense>
-  );
-}
-
-function BrowserRouteComponent({ id }: { id: string }) {
+function RouteComponent({ id }: { id: string }) {
   // get current route component from latest routeModules
   const { routeModules } = useAppContext();
   const { default: Component } = routeModules[id] || {};
