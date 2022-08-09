@@ -36,7 +36,7 @@ export default function App(props: Props) {
   }
 
   const routes = useMemo(
-    () => createRouteElements(originRoutes, RouteWrappers, appConfig),
+    () => createRouteElements(originRoutes, RouteWrappers),
     // `originRoutes` and `RouteWrappers` will not be changed
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],

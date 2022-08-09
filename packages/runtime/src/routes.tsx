@@ -121,10 +121,9 @@ export function getRoutesConfig(
 export function createRouteElements(
   routes: RouteItem[],
   RouteWrappers?: RouteWrapperConfig[],
-  appConfig?: AppConfig,
 ) {
   return routes.map((routeItem: RouteItem) => {
-    let { path, children, index, id, layout, element, load, ...rest } = routeItem;
+    let { path, children, index, id, layout, element, ...rest } = routeItem;
     element = (
       <RouteWrapper id={id} isLayout={layout} wrappers={RouteWrappers}>
         <RouteComponent id={id} />
@@ -140,7 +139,7 @@ export function createRouteElements(
     };
 
     if (children) {
-      route.children = createRouteElements(children, RouteWrappers, appConfig);
+      route.children = createRouteElements(children, RouteWrappers);
     }
 
     return route;
