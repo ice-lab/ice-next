@@ -20,6 +20,9 @@
     "type": "http",
     "url": "https://github.com/ice-lab/ice-next/tree/master/packages/plugin-fusion"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "watch": "tsc -w",
     "build": "tsc"
