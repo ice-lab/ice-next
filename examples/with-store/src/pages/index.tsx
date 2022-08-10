@@ -7,13 +7,13 @@ function Home() {
   const [countState, countDispatcher] = pageStore.useModel('counter');
   return (
     <>
-      <div>
+      <div id="username">
         name: {userState.name}
       </div>
       <div>
-        <button onClick={() => countDispatcher.inc()}>+</button>
-        {countState.count}
-        <button onClick={() => countDispatcher.dec()}>-</button>
+        <button type="button" id="inc" onClick={() => countDispatcher.inc()}>+</button>
+        <span id="count">{countState.count}</span>
+        <button type="button" id="dec" onClick={() => countDispatcher.dec()}>-</button>
       </div>
       <Link to="/blog">Blog</Link>
     </>

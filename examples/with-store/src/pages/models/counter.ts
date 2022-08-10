@@ -5,11 +5,11 @@ export default createModel({
     count: 0,
   },
   reducers: {
-    inc(prevState) {
-      prevState.count += 1;
+    inc(prevState, count = 1) {
+      prevState.count += count;
     },
-    dec(prevState) {
-      prevState.count -= 1;
+    dec(prevState, count = 1) {
+      prevState.count -= count;
     },
   },
 });
