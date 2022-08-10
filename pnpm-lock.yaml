@@ -305,6 +305,25 @@ importers:
       '@types/react-dom': 18.0.3
       regenerator-runtime: 0.13.9
 
+  examples/with-hook-store:
+    specifiers:
+      '@ice/app': workspace:*
+      '@ice/plugin-hook-store': workspace:*
+      '@ice/runtime': workspace:*
+      '@types/react': ^18.0.0
+      '@types/react-dom': ^18.0.0
+      browserslist: ^4.19.3
+      regenerator-runtime: ^0.13.9
+    dependencies:
+      '@ice/app': link:../../packages/ice
+      '@ice/runtime': link:../../packages/runtime
+    devDependencies:
+      '@ice/plugin-hook-store': link:../../packages/plugin-hook-store
+      '@types/react': 18.0.17
+      '@types/react-dom': 18.0.6
+      browserslist: 4.21.3
+      regenerator-runtime: 0.13.9
+
   examples/with-pha:
     specifiers:
       '@ice/app': workspace:*
@@ -593,6 +612,31 @@ importers:
       '@ice/style-import': link:../style-import
     devDependencies:
       '@ice/types': link:../types
+
+  packages/plugin-hook-store:
+    specifiers:
+      '@ice/hooks-store': ^0.1.1
+      '@ice/types': ^1.0.0
+      '@types/micromatch': ^4.0.2
+      '@types/react': ^18.0.0
+      '@types/react-dom': ^18.0.0
+      fast-glob: ^3.2.11
+      micromatch: ^4.0.5
+      react: ^18.2.0
+      react-dom: ^18.2.0
+      regenerator-runtime: ^0.13.9
+    dependencies:
+      '@ice/hooks-store': 0.1.1_react@18.2.0
+      fast-glob: 3.2.11
+      micromatch: 4.0.5
+    devDependencies:
+      '@ice/types': link:../types
+      '@types/micromatch': 4.0.2
+      '@types/react': 18.0.17
+      '@types/react-dom': 18.0.6
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      regenerator-runtime: 0.13.9
 
   packages/plugin-pha:
     specifiers:
@@ -5309,6 +5353,14 @@ packages:
   /@humanwhocodes/object-schema/1.2.1:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
+
+  /@ice/hooks-store/0.1.1_react@18.2.0:
+    resolution: {integrity: sha512-NQwor8UkgLX6b/fQkQl8Ur4msYUtw5WMKGRjbg4udu1VVkQpUjasXGsjQ+S41t0l9lsoBcZT+kaLcAqN33C82Q==}
+    peerDependencies:
+      react: ^16.8.0
+    dependencies:
+      react: 18.2.0
+    dev: false
 
   /@ice/pkg-plugin-component/1.0.0:
     resolution: {integrity: sha512-Mff6Em1RwY2NOZgciQyy2NXL65u9ebHV2Jqb5746vUVEh0l7Xpokb+3djV1pKcgED4wU8pSuSQ6jj+hXd9Ht1Q==}
