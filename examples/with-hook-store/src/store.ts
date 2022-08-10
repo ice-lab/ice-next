@@ -1,4 +1,4 @@
 import { createStore } from '@ice/plugin-hook-store/esm/runtime';
-import useUser from './models/useUser';
+import useTodo from './models/useTodo';
 
-export default createStore({ useUser });
+export default createStore({ useTodo });

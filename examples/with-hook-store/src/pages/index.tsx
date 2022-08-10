@@ -1,14 +1,25 @@
 import { Link } from 'ice';
+import pageStore from './store';
 import appStore from '@/store';
 
 function Home() {
-  const { name } = appStore.useHooks('useUser');
+  const { todos } = appStore.useHooks('useTodo');
+  const { count, increment, decrement } = pageStore.useHooks('useCounter');
+
   return (
     <>
-      <div id="username">
-        name: {name}
+      <div>
+        ToDo List
+        <ul id="todos">
+          {todos.map(todo => (<li key={todo.id}>{todo.name}</li>))}
+        </ul>
       </div>
-      <Link to="/blog">Blog</Link>
+      <div>
+        <button type="button" onClick={() => increment()}>+</button>
+        <span>{count}</span>
+        <button type="button" onClick={() => decrement()}>-</button>
+      </div>
+      <Link to="/about">About</Link>
     </>
   );
 }
