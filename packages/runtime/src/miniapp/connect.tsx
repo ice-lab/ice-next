@@ -1,4 +1,5 @@
 import type {
+  MountOptions,
   AppInstance, Instance,
   PageLifeCycle, PageProps,
   ReactAppInstance, ReactPageComponent,
@@ -10,6 +11,7 @@ import { EMPTY_OBJ, hooks } from '@tarojs/shared';
 import type { AppConfig } from '@tarojs/taro';
 import React, { createElement } from 'react';
 
+import { ConfigProvider, DataProvider } from '../RouteContext.js';
 import { reactMeta } from './react-meta.js';
 import { ensureIsArray, HOOKS_APP_ID, isClassComponent, setDefaultDescriptor, setRouterParams } from './utils.js';
 
@@ -54,7 +56,9 @@ export function connectReactPage(
   R: typeof React,
   id: string,
 ) {
-  return (Page: ReactPageComponent): React.ComponentClass<PageProps> => {
+  return (Page: ReactPageComponent, { routeData, routeConfig }): React.ComponentClass<PageProps> => {
+    console.log('🚀 ~ file: connect.tsx ~ line 60 ~ return ~ routeConfig', routeConfig);
+    console.log('🚀 ~ file: connect.tsx ~ line 60 ~ return ~ routeData', routeData);
     // eslint-disable-next-line dot-notation
     const isReactComponent = isClassComponent(R, Page);
     const inject = (node?: Instance) => node && injectPageInstance(node, id);
@@ -67,7 +71,7 @@ export function connectReactPage(
     if (reactMeta.PageContext === EMPTY_OBJ) {
       reactMeta.PageContext = R.createContext('');
     }
-
+    const PageContextProvider = reactMeta.PageContext.Provider;
     return class PageWrapper extends R.Component<PageProps, { hasError: boolean }> {
       state = {
         hasError: false,
@@ -77,16 +81,21 @@ export function connectReactPage(
         Current.app?.onError?.(error.message + error.stack);
         return { hasError: true };
       }
-
+      /* TODO:
+        * 3. routeData
+        * 4. routeConfig
+      */
       render() {
         const children = this.state.hasError
-          ? []
-          // TODO
-          // @ts-ignore
-          : createElement(reactMeta.PageContext.Provider, { value: id }, createElement(Page, {
-            ...this.props,
-            ...refs,
-          }));
+        ? []
+        : (<DataProvider value={routeData}>
+          <ConfigProvider value={routeConfig}>
+            <PageContextProvider value={id}>
+              {/* @ts-ignore */}
+              <Page {...this.props} {...refs} />
+            </PageContextProvider>
+          </ConfigProvider>
+        </DataProvider>);
         return createElement(
           'root',
           { id },
@@ -120,8 +129,8 @@ export class AppWrapper extends React.Component {
     appWrapper = this;
   }
 
-  public mount(pageComponent: ReactPageComponent, id: string, cb: () => void) {
-    const pageWrapper = connectReactPage(React, id)(pageComponent);
+  public mount(pageComponent: ReactPageComponent, { id, routeData, routeConfig }: MountOptions, cb: () => void) {
+    const pageWrapper = connectReactPage(React, id)(pageComponent, { routeData, routeConfig });
     const key = id + pageKeyId();
     const page = () => createElement(pageWrapper, { key, tid: id });
     this.pages.push(page);
@@ -176,8 +185,8 @@ export class AppWrapper extends React.Component {
       appWrapper.forceUpdate(cb);
     },
 
-    mount(component: ReactPageComponent, id: string, cb: () => void) {
-      appWrapper.mount(component, id, cb);
+    mount(component: ReactPageComponent, { id, routeData, routeConfig }: MountOptions, cb: () => void) {
+      appWrapper.mount(component, { id, routeData, routeConfig }, cb);
     },
 
     unmount(id: string, cb: () => void) {

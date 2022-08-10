@@ -8,6 +8,8 @@ import type Generator from './service/runtimeGenerator';
 import getGlobalStyleGlobPattern from './utils/getGlobalStyleGlobPattern.js';
 import renderExportsTemplate from './utils/renderExportsTemplate.js';
 import { getFileExports } from './service/analyze.js';
+import { WEB, MINIAPP_PLATFORMS } from './constant.js';
+
 
 interface Options {
   targetDir: string;
@@ -16,10 +18,11 @@ interface Options {
   cache: Map<string, string>;
   ctx: Context<Config>;
   serverCompiler: ServerCompiler;
+  platform: string;
 }
 
 const getWatchEvents = (options: Options): WatchEvent[] => {
-  const { generator, targetDir, templateDir, cache, ctx } = options;
+  const { generator, targetDir, templateDir, cache, ctx, platform } = options;
   const { userConfig: { routes: routesConfig }, configFile, rootDir } = ctx;
   const watchRoutes: WatchEvent = [
     /src\/pages\/?[\w*-:.$]+$/,
@@ -59,10 +62,11 @@ const getWatchEvents = (options: Options): WatchEvent[] => {
   const watchGlobalStyle: WatchEvent = [
     getGlobalStyleGlobPattern(),
     (event: string, filePath: string) => {
+      const indexTemplate = MINIAPP_PLATFORMS.includes(platform) ? 'index.miniapp.ts.ejs' : 'index.ts.ejs';
       if (event === 'unlink') {
         consola.log('[event]', `style '${filePath}': ${event}`);
         generator.renderFile(
-          path.join(templateDir, 'index.ts.ejs'),
+          path.join(templateDir, indexTemplate),
           path.join(rootDir, targetDir, 'index.ts'),
           { globalStyle: undefined },
         );
@@ -70,7 +74,7 @@ const getWatchEvents = (options: Options): WatchEvent[] => {
       if (event === 'add') {
         consola.log('[event]', `style '${filePath}': ${event}`);
         generator.renderFile(
-          path.join(templateDir, 'index.ts.ejs'),
+          path.join(templateDir, indexTemplate),
           path.join(rootDir, targetDir, 'index.ts'),
           { globalStyle: `@/${path.basename(filePath)}` },
         );

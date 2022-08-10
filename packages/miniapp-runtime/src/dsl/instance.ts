@@ -64,9 +64,15 @@ interface Show {
   onHide?: () => void;
 }
 
+export interface MountOptions {
+  id: string;
+  routeData?: any;
+  routeConfig?: any;
+}
+
 export interface AppInstance extends Show {
   componentDidShow?: (options?: Record<string, unknown>) => void;
-  mount?: (component: ComponentClass, id: string, cb: (...args: any[]) => void) => void;
+  mount?: (component: ComponentClass, options: MountOptions, cb: (...args: any[]) => void) => void;
   onError?: (error: string) => void;
   onLaunch?: (options?: Record<string, unknown>) => void;
   onPageNotFound?: (res: any) => void;

@@ -14,20 +14,15 @@ export default function (this: webpack.LoaderContext<any>, source: string) {
   const config = getPageConfig(loaderConfig, this.resourcePath);
   const configString = JSON.stringify(config);
   const stringify = (s: string): string => stringifyRequest(this, s);
-  const { isNeedRawLoader } = options.loaderMeta;
-  // raw is a placeholder loader to locate changed .vue resource
-  const raw = path.join(__dirname, 'raw.js');
   const { loaders } = this;
   const thisLoaderIndex = loaders.findIndex(item => normalizePath(item.path).indexOf('@ice/miniapp-loader/lib/page') >= 0);
-  const componentPath = isNeedRawLoader
-    ? `${raw}!${this.resourcePath}`
-    : this.request.split('!').slice(thisLoaderIndex + 1).join('!');
+  const componentPath = this.request.split('!').slice(thisLoaderIndex + 1).join('!');
 
-
-  let instantiatePage = `var inst = Page(createPageConfig(component, '${options.name}', {root:{cn:[]}}, config || {}))`;
+  let instantiatePage = `var inst = Page(createPageConfig(component, '${options.name}', {root:{cn:[]}}, { getData, getConfig }, config || {}))`;
 
   return `import { createPageConfig } from '@ice/miniapp-runtime';
 import component from ${stringify(componentPath)};
+import { getData, getConfig } from ${stringify(componentPath)};
 var config = ${configString};
 ${config.enableShareTimeline ? 'component.enableShareTimeline = true' : ''}
 ${config.enableShareAppMessage ? 'component.enableShareAppMessage = true' : ''}

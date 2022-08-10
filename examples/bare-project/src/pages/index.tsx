@@ -1,6 +1,13 @@
 // import './index.css';
+import { useAppData, useConfig, useData } from 'ice';
 
 export default function Home() {
+  const appData = useAppData();
+  console.log('🚀 ~ file: index.tsx ~ line 6 ~ Home ~ appData', appData);
+  const config = useConfig();
+  console.log('🚀 ~ file: index.tsx ~ line 8 ~ Home ~ config', config);
+  const data = useData();
+  console.log('🚀 ~ file: index.tsx ~ line 10 ~ Home ~ data', data);
   return (
     <>
       <view className="title">Home Page</view>
@@ -19,7 +26,9 @@ export function getConfig() {
   };
 }
 
-export function getData() {
+export function getData(options) {
+  // options comes from onLoad in miniapp page config
+  console.log('options', options);
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({

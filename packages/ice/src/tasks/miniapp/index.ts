@@ -55,7 +55,7 @@ const getMiniappTask = ({ rootDir, command, platform, getAppConfig, getRoutesCon
     swcOptions: {
       keepPlatform: 'miniapp',
       // getData is built by data-loader
-      removeExportExprs: ['getData', 'getServerData', 'getStaticData'],
+      removeExportExprs: ['getServerData', 'getStaticData'],
     },
   };
 };

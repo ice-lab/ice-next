@@ -46,7 +46,6 @@ export default async function runClientApp(options: RunClientAppOptions) {
     routePath,
   } = appContextFromServer;
 
-  // TODO: 小程序中需要获取 path 信息，然后拿到对应的页面中的 getData/getConfig 等方法并执行
   const requestContext = getRequestContext(window.location);
 
   if (!appData) {

@@ -51,7 +51,8 @@ async function webpackCompiler(options: {
     ...hooksAPI,
   });
   // Add webpack plugin of data-loader in web task
-  if (platform === WEB) {
+  const needDataLoader = platform === WEB;
+  if (needDataLoader) {
     webpackConfigs[0].plugins.push(new DataLoaderPlugin({ serverCompiler, rootDir }));
   }
 

@@ -81,7 +81,7 @@ export function getOnHideEventKey(path: string) {
   return `${path}.${ON_HIDE}`;
 }
 
-export function createPageConfig(component: any, pageName?: string, data?: Record<string, unknown>, pageConfig?: PageConfig) {
+export function createPageConfig(component: any, pageName: string, data: Record<string, unknown>, { getData, getConfig }, pageConfig?: PageConfig) {
   // 小程序 Page 构造器是一个傲娇小公主，不能把复杂的对象挂载到参数上
   const id = pageName ?? `taro_page_${pageId()}`;
   const [
@@ -130,18 +130,24 @@ export function createPageConfig(component: any, pageName?: string, data?: Recor
       }
 
       setCurrentRouter(this);
-
+      const routeConfig = getConfig?.();
+      if (!getData) {
+        getData = () => new Promise<void>(resolve => resolve());
+      }
       const mount = () => {
-        Current.app!.mount!(component, $taroPath, () => {
-          pageElement = env.document.getElementById<TaroRootElement>($taroPath);
+        getData(this.$taroParams!).then(routeData => {
+          Current.app!.mount!(component, { id: $taroPath, routeData, routeConfig }, () => {
+            pageElement = env.document.getElementById<TaroRootElement>($taroPath);
 
-          ensure(pageElement !== null, '没有找到页面实例。');
-          safeExecute($taroPath, ON_LOAD, this.$taroParams);
-          loadResolver();
-          pageElement.ctx = this;
-          pageElement.performUpdate(true, cb);
+            ensure(pageElement !== null, '没有找到页面实例。');
+            safeExecute($taroPath, ON_LOAD, this.$taroParams);
+            loadResolver();
+            pageElement.ctx = this;
+            pageElement.performUpdate(true, cb);
+          });
         });
       };
+
       if (unmounting) {
         prepareMountList.push(mount);
       } else {
@@ -246,7 +252,7 @@ export function createComponentConfig(component: React.ComponentClass, component
     attached() {
       perf.start(PAGE_INIT);
       const path = getPath(id, { id: this.getPageId?.() || pageId() });
-      Current.app!.mount!(component, path, () => {
+      Current.app!.mount!(component, { id: path }, () => {
         componentElement = env.document.getElementById<TaroRootElement>(path);
         ensure(componentElement !== null, '没有找到组件实例。');
         this.$taroInstances = instances.get(path);

@@ -1,14 +1,13 @@
 import React from 'react';
 
-import Runtime from '../runtime.js';
 import { AppContextProvider } from '../AppContext.js';
 import { AppDataProvider, getAppData } from '../AppData.js';
 import type {
-  AppContext, AppExport, RouteItem, AppRouterProps, RoutesData, RoutesConfig,
-  RouteWrapperConfig, RuntimeModules, RouteMatch, RouteModules, AppConfig, DocumentComponent,
+  AppContext, AppExport, RouteWrapperConfig, RuntimeModules,
 } from '../types.js';
 
 import getAppConfig from '../appConfig.js';
+import Runtime from './runtime.js';
 import App from './App.js';
 import { createMiniApp } from './connect.js';
 
@@ -18,34 +17,22 @@ interface RunClientAppOptions {
 }
 
 export default async function runClientApp(options: RunClientAppOptions) {
-  /* TODO:
-    * 1. requestContext 获取，从 miniapp-runtime 的 Current.router 搞定
-    */
-  const { app } = options;
+  const { app, runtimeModules } = options;
   const appData = await getAppData(app);
-  console.log('🚀 ~ file: runClientApp.tsx ~ line 31 ~ runClientApp ~ appData', appData);
+  const { miniappManifest } = app;
   const appConfig = getAppConfig(app);
-  /* TODO:
-  * 3. routeData 怎么拿？（依赖 dynamic import）
-  * 4. routeConfig 怎么拿？（依赖 dynamic import）
-  */
-  // TODO:处理 types
-  // @ts-ignore
   const appContext: AppContext = {
     appExport: app,
     appConfig,
     appData,
-    // routesData,
-    // routesConfig,
   };
   const runtime = new Runtime(appContext);
-  /* TODO:
-  * 5. runtimeModules 是啥
-  */
+
+  // TODO: to be tested
+  await Promise.all(runtimeModules.map(m => runtime.loadModule(m)).filter(Boolean));
   render(runtime);
-  createMiniApp({
-    pages: ['pages/index'],
-  });
+  // TODO: transform routes to pages in miniappManifest
+  createMiniApp(miniappManifest);
 }
 
 async function render(

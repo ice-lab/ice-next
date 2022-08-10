@@ -175,6 +175,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
       cache: dataCache,
       ctx,
       serverCompiler,
+      platform,
     }),
   );
 
