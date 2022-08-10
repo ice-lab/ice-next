@@ -8,7 +8,7 @@ function Home() {
       <div id="username">
         name: {name}
       </div>
-      <Link to="/blog">Blog</Link>
+      <Link to="/counter">Counter</Link>
     </>
   );
 }
