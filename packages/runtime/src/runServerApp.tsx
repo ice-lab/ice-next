@@ -149,22 +149,19 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
   }
 
   const appConfig = getAppConfig(app);
-  // HashRouter loads route modules by the CSR.
-  if (appConfig?.router?.type === 'hash') {
-    return renderDocument({ matches: [], renderOptions, routeModules: {} });
-  }
-
   const matches = matchRoutes(routes, location, serverOnlyBasename || basename);
+  const routePath = getCurrentRoutePath(matches);
+
   if (!matches.length) {
     return render404();
   }
 
-  const routePath = getCurrentRoutePath(matches);
-  const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
-
   if (documentOnly) {
-    return renderDocument({ matches, routePath, renderOptions, routeModules });
+    return renderDocument(matches, routePath, renderOptions, {});
   }
+
+  // FIXME: https://github.com/ice-lab/ice-next/issues/427
+  const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   try {
     return await renderServerEntry({
@@ -181,7 +178,7 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
     });
   } catch (err) {
     console.error('Warning: render server entry error, downgrade to csr.', err);
-    return renderDocument({ matches, routePath, renderOptions, routeModules: {} });
+    return renderDocument(matches, routePath, renderOptions, {});
   }
 }
 
@@ -202,7 +199,7 @@ interface renderServerEntry {
   appConfig: AppConfig;
   appData: AppData;
   routeModules: RouteModules;
-  routePath?: string;
+  routePath: string;
   basename?: string;
 }
 
@@ -281,7 +278,7 @@ async function renderServerEntry(
   const pipe = renderToNodeStream(element, false);
 
   const fallback = () => {
-    return renderDocument({ matches, routePath, renderOptions, routeModules });
+    return renderDocument(matches, routePath, renderOptions, routeModules);
   };
 
   return {
@@ -292,23 +289,22 @@ async function renderServerEntry(
   };
 }
 
-interface RenderDocumentOptions {
-  matches: RouteMatch[];
-  routeModules: RouteModules;
-  renderOptions: RenderOptions;
-  routePath?: string;
-}
 /**
  * Render Document for CSR.
  */
-function renderDocument({ matches, routeModules, renderOptions, routePath }: RenderDocumentOptions): RenderResult {
+function renderDocument(
+  matches: RouteMatch[],
+  routePath: string,
+  options: RenderOptions,
+  routeModules: RouteModules,
+): RenderResult {
   const {
     routes,
     assetsManifest,
     app,
     Document,
     basename,
-  } = renderOptions;
+  } = options;
 
   const routesData = null;
   const appData = null;
