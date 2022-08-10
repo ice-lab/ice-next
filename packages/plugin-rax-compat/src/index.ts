@@ -2,6 +2,7 @@ import { createRequire } from 'module';
 import type { Plugin } from '@ice/types';
 import type { RuleSetRule } from 'webpack';
 import consola from 'consola';
+import merge from 'lodash.merge';
 
 const require = createRequire(import.meta.url);
 
@@ -30,9 +31,28 @@ const ruleSetStylesheet = {
 
 let warnOnce = false;
 
-function getPlugin(options: CompatRaxOptions): Plugin {
-  return ({ onGetConfig }) => {
+export interface CompatRaxOptions {
+  inlineStyle?: boolean;
+}
+
+const plugin: Plugin<CompatRaxOptions> = (options = {}) => ({
+  name: '@ice/plugin-rax-compat',
+  setup: ({ onGetConfig }) => {
     onGetConfig((config) => {
+      // Reset jsc.transform.react.runtime to classic.
+      config.swcOptions = merge(config.swcOptions || {}, {
+        compilationConfig: {
+          jsc: {
+            transform: {
+              react: {
+                runtime: 'classic',
+                pragma: 'createElement',
+                pragmaFrag: 'Fragment',
+              },
+            },
+          },
+        },
+      });
       Object.assign(config.alias, alias);
       if (options.inlineStyle) {
         if (!warnOnce) {
@@ -62,14 +82,7 @@ function getPlugin(options: CompatRaxOptions): Plugin {
         });
       }
     });
-  };
-}
-
-export interface CompatRaxOptions {
-  inlineStyle?: boolean;
-}
-
-export default (options: CompatRaxOptions | void) => ({
-  name: '@ice/plugin-rax-compat',
-  plugin: getPlugin(options || {}),
+  },
 });
+
+export default plugin;

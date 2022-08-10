@@ -6,30 +6,42 @@ import type { Location } from 'history';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
+import { AppDataProvider, getAppData } from './AppData.js';
 import getAppConfig from './appConfig.js';
 import { DocumentContextProvider } from './Document.js';
-import { loadRouteModules, loadRoutesData, getRoutesConfig, matchRoutes } from './routes.js';
+import { loadRouteModules, loadRoutesData, getRoutesConfig } from './routes.js';
 import { piperToString, renderToNodeStream } from './server/streamRender.js';
 import { createStaticNavigator } from './server/navigator.js';
 import type { NodeWritablePiper } from './server/streamRender.js';
 import type {
   AppContext, RouteItem, ServerContext,
+  AppData,
   AppExport, RuntimePlugin, CommonJsRuntime, AssetsManifest,
-  ComponentWithChildren,
   RouteMatch,
   RequestContext,
   AppConfig,
   RouteModules,
+  RenderMode,
+  DocumentComponent,
 } from './types.js';
 import getRequestContext from './requestContext.js';
+import matchRoutes from './matchRoutes.js';
+import getCurrentRoutePath from './utils/getCurrentRoutePath.js';
 
 interface RenderOptions {
   app: AppExport;
   assetsManifest: AssetsManifest;
   routes: RouteItem[];
   runtimeModules: (RuntimePlugin | CommonJsRuntime)[];
-  Document: ComponentWithChildren<{}>;
+  Document: DocumentComponent;
   documentOnly?: boolean;
+  renderMode?: RenderMode;
+  // basename is used both for server and client, once set, it will be sync to client.
+  basename?: string;
+  // serverOnlyBasename is used when just want to change basename for server.
+  serverOnlyBasename?: string;
+  routePath?: string;
+  disableFallback?: boolean;
 }
 
 interface Piper {
@@ -63,6 +75,9 @@ export async function renderToHTML(requestContext: ServerContext, renderOptions:
       statusCode: 200,
     };
   } catch (error) {
+    if (renderOptions.disableFallback) {
+      throw error;
+    }
     console.error('Warning: piperToString error, downgrade to csr.', error);
     // downgrade to csr.
     const result = fallback();
@@ -90,6 +105,9 @@ export async function renderToResponse(requestContext: ServerContext, renderOpti
     try {
       await pipeToResponse(res, pipe);
     } catch (error) {
+      if (renderOptions.disableFallback) {
+        throw error;
+      }
       console.error('PiperToResponse error, downgrade to csr.', error);
       // downgrade to csr.
       const result = await fallback();
@@ -118,23 +136,35 @@ function pipeToResponse(res: ServerResponse, pipe: NodeWritablePiper) {
 
 async function doRender(serverContext: ServerContext, renderOptions: RenderOptions): Promise<RenderResult> {
   const { req } = serverContext;
-  const { routes, documentOnly, app } = renderOptions;
+  const { routes, documentOnly, app, basename, serverOnlyBasename } = renderOptions;
+
   const location = getLocation(req.url);
 
   const requestContext = getRequestContext(location, serverContext);
-  const appConfig = getAppConfig(app);
-  const matches = matchRoutes(routes, location, appConfig?.router?.basename);
 
+  let appData;
+  // don't need to execute getAppData in CSR
+  if (!documentOnly) {
+    appData = await getAppData(app, requestContext);
+  }
+
+  const appConfig = getAppConfig(app);
+  // HashRouter loads route modules by the CSR.
+  if (appConfig?.router?.type === 'hash') {
+    return renderDocument({ matches: [], renderOptions, routeModules: {} });
+  }
+
+  const matches = matchRoutes(routes, location, serverOnlyBasename || basename);
   if (!matches.length) {
     return render404();
   }
 
-  if (documentOnly) {
-    return renderDocument(matches, renderOptions, {});
-  }
+  const routePath = getCurrentRoutePath(matches);
 
-  // FIXME: 原来是在 renderDocument 之前执行这段逻辑。
-  // 现在为了避免 CSR 时把页面组件都加载进来导致资源（比如 css）加载报错，带来的问题是调用 renderHTML 的时候 getConfig 失效了
+  if (documentOnly) {
+    return renderDocument({ matches, routePath, renderOptions, routeModules: {} });
+  }
+  // FIXME: https://github.com/ice-lab/ice-next/issues/427
   const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   try {
@@ -145,11 +175,14 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
       matches,
       location,
       appConfig,
+      appData,
       routeModules,
+      basename: serverOnlyBasename || basename,
+      routePath,
     });
   } catch (err) {
     console.error('Warning: render server entry error, downgrade to csr.', err);
-    return renderDocument(matches, renderOptions, {});
+    return renderDocument({ matches, routePath, renderOptions, routeModules: {} });
   }
 }
 
@@ -159,6 +192,19 @@ function render404(): RenderResult {
     value: 'Not Found',
     statusCode: 404,
   };
+}
+
+interface renderServerEntry {
+  appExport: AppExport;
+  requestContext: RequestContext;
+  renderOptions: RenderOptions;
+  matches: RouteMatch[];
+  location: Location;
+  appConfig: AppConfig;
+  appData: AppData;
+  routeModules: RouteModules;
+  routePath?: string;
+  basename?: string;
 }
 
 /**
@@ -171,37 +217,36 @@ async function renderServerEntry(
     matches,
     location,
     appConfig,
+    appData,
     renderOptions,
     routeModules,
-  }: {
-    appExport: AppExport;
-    requestContext: RequestContext;
-    renderOptions: RenderOptions;
-    matches: RouteMatch[];
-    location: Location;
-    appConfig: AppConfig;
-    routeModules: RouteModules;
-  },
+    basename,
+    routePath,
+  }: renderServerEntry,
 ): Promise<RenderResult> {
   const {
     assetsManifest,
     runtimeModules,
     routes,
+    renderMode,
     Document,
   } = renderOptions;
 
-  const routesData = await loadRoutesData(matches, requestContext, routeModules);
+  const routesData = await loadRoutesData(matches, requestContext, routeModules, renderMode);
   const routesConfig = getRoutesConfig(matches, routesData, routeModules);
 
   const appContext: AppContext = {
     appExport,
     assetsManifest,
     appConfig,
+    appData,
     routesData,
     routesConfig,
     matches,
     routes,
     routeModules,
+    basename,
+    routePath,
   };
 
   const runtime = new Runtime(appContext);
@@ -226,16 +271,18 @@ async function renderServerEntry(
 
   const element = (
     <AppContextProvider value={appContext}>
-      <DocumentContextProvider value={documentContext}>
-        <Document />
-      </DocumentContextProvider>
+      <AppDataProvider value={appData}>
+        <DocumentContextProvider value={documentContext}>
+          <Document pagePath={routePath} />
+        </DocumentContextProvider>
+      </AppDataProvider>
     </AppContextProvider>
   );
 
   const pipe = renderToNodeStream(element, false);
 
   const fallback = () => {
-    return renderDocument(matches, renderOptions, routeModules);
+    return renderDocument({ matches, routePath, renderOptions, routeModules });
   };
 
   return {
@@ -246,30 +293,41 @@ async function renderServerEntry(
   };
 }
 
+interface RenderDocumentOptions {
+  matches: RouteMatch[];
+  routeModules: RouteModules;
+  renderOptions: RenderOptions;
+  routePath?: string;
+}
 /**
  * Render Document for CSR.
  */
-function renderDocument(matches: RouteMatch[], options: RenderOptions, routeModules: RouteModules): RenderResult {
+function renderDocument({ matches, routeModules, renderOptions, routePath }: RenderDocumentOptions): RenderResult {
   const {
     routes,
     assetsManifest,
     app,
     Document,
-  } = options;
+    basename,
+  } = renderOptions;
 
   const routesData = null;
+  const appData = null;
   const appConfig = getAppConfig(app);
   const routesConfig = getRoutesConfig(matches, {}, routeModules);
 
   const appContext: AppContext = {
     assetsManifest,
     appConfig,
+    appData,
     routesData,
     routesConfig,
     matches,
     routes,
     documentOnly: true,
     routeModules,
+    routePath,
+    basename,
   };
 
   const documentContext = {
@@ -279,7 +337,7 @@ function renderDocument(matches: RouteMatch[], options: RenderOptions, routeModu
   const html = ReactDOMServer.renderToString(
     <AppContextProvider value={appContext}>
       <DocumentContextProvider value={documentContext}>
-        <Document />
+        <Document pagePath={routePath} />
       </DocumentContextProvider>
     </AppContextProvider>,
   );

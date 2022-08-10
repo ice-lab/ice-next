@@ -1,5 +1,5 @@
 import type webpack from 'webpack';
-import type { PluginAPI, CommandArgs, TaskConfig } from 'build-scripts';
+import type { Plugin as _Plugin, CommandArgs, TaskConfig } from 'build-scripts';
 import type { Configuration, Stats } from 'webpack';
 import type WebpackDevServer from 'webpack-dev-server';
 import type { BuildOptions, BuildResult } from 'esbuild';
@@ -9,9 +9,17 @@ import type { ExportData, AddRenderFile, AddTemplateFiles } from './generator.js
 
 type AddExport = (exportData: ExportData) => void;
 type EventName = 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir';
+
+type ServerCompilerBuildOptions = Pick<BuildOptions, 'write' | 'target' | 'minify' | 'inject' | 'format' | 'entryPoints' | 'outfile' | 'bundle' | 'outdir' | 'splitting' | 'platform' | 'outExtension' | 'plugins'>;
 export type ServerCompiler = (
-  buildOptions: Pick<BuildOptions, 'format' | 'entryPoints' | 'outfile' | 'bundle' | 'outdir' | 'splitting' | 'platform' | 'outExtension' | 'plugins'>
-) => Promise<BuildResult>;
+  buildOptions: ServerCompilerBuildOptions,
+  options?: {
+    swc?: Config['swcOptions'];
+    preBundle?: boolean;
+    externalDependencies?: boolean;
+    transformEnv?: boolean;
+  }
+) => Promise<BuildResult & { serverEntry: string }>;
 export type WatchEvent = [
   pattern: RegExp | string,
   event: (eventName: EventName, filePath: string) => void,
@@ -25,10 +33,16 @@ export interface Urls {
   localUrlForBrowser: string;
 }
 
+export type GetAppConfig = (exportNames?: string[]) => Promise<any>;
+export type GetRoutesConfig = (specifyRoutId?: string) => Promise<any>;
+
 interface BeforeCommandRunOptions {
   commandArgs: CommandArgs;
   webpackConfigs: Configuration | Configuration[];
   taskConfigs: TaskConfig<Config>[];
+  urls?: Urls;
+  getAppConfig: GetAppConfig;
+  getRoutesConfig: GetRoutesConfig;
   serverCompiler: ServerCompiler;
 }
 
@@ -39,6 +53,8 @@ interface AfterCommandCompileOptions {
   isFirstCompile: Boolean;
   urls: Urls;
   taskConfigs: TaskConfig<Config>[];
+  getAppConfig: GetAppConfig;
+  getRoutesConfig: GetRoutesConfig;
   serverCompiler: ServerCompiler;
 }
 
@@ -46,7 +62,7 @@ export interface HookLifecycle {
   'before.start.run': BeforeCommandRunOptions;
   'before.build.run': BeforeCommandRunOptions;
   'after.start.compile': AfterCommandCompileOptions;
-  'after.build.compile': AfterCommandCompileOptions;
+  'after.build.compile': AfterCommandCompileOptions & { serverEntry: string };
   'after.start.devServer': {
     urls: Urls;
     devServer: WebpackDevServer;
@@ -72,12 +88,14 @@ export interface ExtendsPluginAPI {
     addEvent?: (watchEvent: WatchEvent) => void;
     removeEvent?: (name: string) => void;
   };
+  serverCompileTask: {
+    set: (task: ReturnType<ServerCompiler>) => void;
+    get: () => ReturnType<ServerCompiler>;
+  };
 }
 
-interface OverwritePluginAPI extends ExtendsPluginAPI {
+export interface OverwritePluginAPI extends ExtendsPluginAPI {
   onHook: OnHook;
 }
 
-export interface Plugin<T = undefined> {
-  (api: PluginAPI<Config, OverwritePluginAPI>, options?: T): Promise<void> | void;
-}
+export type Plugin<Options = any> = (options?: Options) => _Plugin<Config, OverwritePluginAPI>;

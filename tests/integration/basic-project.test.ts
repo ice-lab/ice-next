@@ -22,12 +22,17 @@ describe(`build ${example}`, () => {
     page = res.page;
     browser = res.browser;
     expect(await page.$$text('h2')).toStrictEqual(['Home Page']);
+    expect(await page.$$text('#data-from')).toStrictEqual(['getStaticData']);
+
     const bundleContent = fs.readFileSync(path.join(__dirname, `../../examples/${example}/build/js/main.js`), 'utf-8');
     expect(bundleContent.includes('__REMOVED__')).toBe(false);
     expect(bundleContent.includes('__LOG__')).toBe(false);
     expect(bundleContent.includes('__WARN__')).toBe(false);
     expect(bundleContent.includes('__ERROR__')).toBe(true);
+    expect(bundleContent.includes('__IS_WEB__')).toBe(true);
+    expect(bundleContent.includes('__IS_NODE__')).toBe(false);
     expect(fs.existsSync(path.join(__dirname, `../../examples/${example}/build/favicon.ico`))).toBe(true);
+    expect(fs.existsSync(path.join(__dirname, `../../examples/${example}/build/js/data-loader.js`))).toBe(true);
 
     const dataLoaderPath = path.join(__dirname, `../../examples/${example}/build/js/data-loader.js`);
     // should not contain react
@@ -53,6 +58,7 @@ describe(`start ${example}`, () => {
     page = res.page;
     browser = res.browser;
     expect(await page.$$text('h2')).toStrictEqual(['Home Page']);
+    expect(await page.$$text('#data-from')).toStrictEqual(['getServerData']);
   }, 120000);
   // TODO: fix waitForNetworkIdle not resolved
   test.skip('should update config during client routing', async () => {

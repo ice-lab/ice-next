@@ -1,10 +1,6 @@
 import React from 'react';
-import type { Location } from 'history';
-import type { RouteObject } from 'react-router-dom';
-import { matchRoutes as originMatchRoutes } from 'react-router-dom';
-import { matchRoutesSingle } from './utils/history-single.js';
 import RouteWrapper from './RouteWrapper.js';
-import type { RouteItem, RouteModules, RouteWrapperConfig, RouteMatch, RequestContext, RoutesConfig, RoutesData } from './types.js';
+import type { RouteItem, RouteModules, RouteWrapperConfig, RouteMatch, RequestContext, RoutesConfig, RoutesData, RenderMode } from './types.js';
 import { useAppContext } from './AppContext.js';
 
 type RouteModule = Pick<RouteItem, 'id' | 'load'>;
@@ -43,6 +39,7 @@ export async function loadRoutesData(
   matches: RouteMatch[],
   requestContext: RequestContext,
   routeModules: RouteModules,
+  renderMode?: RenderMode,
 ): Promise<RoutesData> {
   const routesData: RoutesData = {};
 
@@ -65,10 +62,23 @@ export async function loadRoutesData(
     matches.map(async (match) => {
       const { id } = match.route;
       const routeModule = routeModules[id];
-      const { getData } = routeModule ?? {};
+      const { getData, getServerData, getStaticData } = routeModule ?? {};
 
-      if (getData) {
-        routesData[id] = await getData(requestContext);
+      let dataLoader;
+
+      // SSG -> getStaticData
+      // SSR -> getServerData || getData
+      // CSR -> getData
+      if (renderMode === 'SSG') {
+        dataLoader = getStaticData;
+      } else if (renderMode === 'SSR') {
+        dataLoader = getServerData || getData;
+      } else {
+        dataLoader = getData;
+      }
+
+      if (dataLoader) {
+        routesData[id] = await dataLoader(requestContext);
       }
     }),
   );
@@ -114,7 +124,6 @@ export function createRouteElements(
 ) {
   return routes.map((routeItem: RouteItem) => {
     let { path, children, index, id, layout, element, ...rest } = routeItem;
-
     element = (
       <RouteWrapper id={id} isLayout={layout} wrappers={RouteWrappers}>
         <RouteComponent id={id} />
@@ -140,33 +149,16 @@ export function createRouteElements(
 function RouteComponent({ id }: { id: string }) {
   // get current route component from latest routeModules
   const { routeModules } = useAppContext();
-  const { default: Component } = routeModules[id];
+  const { default: Component } = routeModules[id] || {};
   if (process.env.NODE_ENV === 'development') {
     if (!Component) {
       throw new Error(
         `Route "${id}" has no component! Please go add a \`default\` export in the route module file.\n` +
-          'If you were trying to navigate or submit to a resource route, use `<a>` instead of `<Link>` or `<Form reloadDocument>`.',
+        'If you were trying to navigate or submit to a resource route, use `<a>` instead of `<Link>` or `<Form reloadDocument>`.',
       );
     }
   }
   return <Component />;
-}
-
-export function matchRoutes(
-  routes: RouteItem[],
-  location: Partial<Location> | string,
-  basename?: string,
-): RouteMatch[] {
-  const matchRoutesFn = process.env.ICE_CORE_ROUTER === 'true' ? originMatchRoutes : matchRoutesSingle;
-  let matches = matchRoutesFn(routes as unknown as RouteObject[], location, basename);
-  if (!matches) return [];
-
-  return matches.map(({ params, pathname, pathnameBase, route }) => ({
-    params,
-    pathname,
-    route: route as unknown as RouteItem,
-    pathnameBase,
-  }));
 }
 
 /**

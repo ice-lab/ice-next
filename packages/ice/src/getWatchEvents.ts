@@ -1,10 +1,13 @@
 import * as path from 'path';
 import consola from 'consola';
-import type { WatchEvent } from '@ice/types/esm/plugin.js';
+import type { ServerCompiler, WatchEvent } from '@ice/types/esm/plugin.js';
 import type { Context } from 'build-scripts';
 import type { Config } from '@ice/types';
 import { generateRoutesInfo } from './routes.js';
 import type Generator from './service/runtimeGenerator';
+import getGlobalStyleGlobPattern from './utils/getGlobalStyleGlobPattern.js';
+import renderExportsTemplate from './utils/renderExportsTemplate.js';
+import { getFileExports } from './service/analyze.js';
 
 interface Options {
   targetDir: string;
@@ -12,6 +15,7 @@ interface Options {
   generator: Generator;
   cache: Map<string, string>;
   ctx: Context<Config>;
+  serverCompiler: ServerCompiler;
 }
 
 const getWatchEvents = (options: Options): WatchEvent[] => {
@@ -20,38 +24,56 @@ const getWatchEvents = (options: Options): WatchEvent[] => {
   const watchRoutes: WatchEvent = [
     /src\/pages\/?[\w*-:.$]+$/,
     async (eventName: string) => {
-      if (eventName === 'add' || eventName === 'unlink') {
+      if (eventName === 'add' || eventName === 'unlink' || eventName === 'change') {
         const routesRenderData = await generateRoutesInfo(rootDir, routesConfig);
         const stringifiedData = JSON.stringify(routesRenderData);
         if (cache.get('routes') !== stringifiedData) {
           cache.set('routes', stringifiedData);
           consola.debug('[event]', `routes data regenerated: ${stringifiedData}`);
-          generator.renderFile(
-            path.join(templateDir, 'routes.ts.ejs'),
-            path.join(rootDir, targetDir, 'routes.ts'),
-            routesRenderData,
-          );
-          generator.renderFile(
-            path.join(templateDir, 'route-manifest.json.ejs'),
-            path.join(rootDir, targetDir, 'route-manifest.json'),
-            routesRenderData,
-          );
-          generator.renderFile(
-            path.join(templateDir, 'data-loader.ts.ejs'),
-            path.join(rootDir, targetDir, 'data-loader.ts'),
-            routesRenderData,
-          );
+          if (eventName !== 'change') {
+            // Specify the route files to re-render.
+            generator.renderFile(
+              path.join(templateDir, 'routes.ts.ejs'),
+              path.join(rootDir, targetDir, 'routes.ts'),
+              routesRenderData,
+            );
+            generator.renderFile(
+              path.join(templateDir, 'route-manifest.json.ejs'),
+              path.join(rootDir, targetDir, 'route-manifest.json'),
+              routesRenderData,
+            );
+          }
+          renderExportsTemplate({
+            ...routesRenderData,
+            hasExportAppData: !!cache.get('hasExportAppData'),
+          }, generator.renderFile, {
+            rootDir,
+            runtimeDir: targetDir,
+            templateDir: path.join(templateDir, '../exports'),
+          });
         }
       }
     },
   ];
 
   const watchGlobalStyle: WatchEvent = [
-    /src\/global.(scss|less|css)/,
+    getGlobalStyleGlobPattern(),
     (event: string, filePath: string) => {
-      if (event === 'unlink' || event === 'add') {
-        consola.debug('[event]', `style '${filePath}': ${event}`);
-        // TODO render global style template
+      if (event === 'unlink') {
+        consola.log('[event]', `style '${filePath}': ${event}`);
+        generator.renderFile(
+          path.join(templateDir, 'index.ts.ejs'),
+          path.join(rootDir, targetDir, 'index.ts'),
+          { globalStyle: undefined },
+        );
+      }
+      if (event === 'add') {
+        consola.log('[event]', `style '${filePath}': ${event}`);
+        generator.renderFile(
+          path.join(templateDir, 'index.ts.ejs'),
+          path.join(rootDir, targetDir, 'index.ts'),
+          { globalStyle: `@/${path.basename(filePath)}` },
+        );
       }
     },
   ];
@@ -65,7 +87,27 @@ const getWatchEvents = (options: Options): WatchEvent[] => {
     },
   ];
 
-  return [watchConfigFile, watchRoutes, watchGlobalStyle];
+  const watchAppConfigFile: WatchEvent = [
+    /src\/app.(js|jsx|ts|tsx)/,
+    async (event: string) => {
+      if (event === 'change') {
+        const hasExportAppData = (await getFileExports({ rootDir, file: 'src/app' })).includes('getAppData');
+        if (hasExportAppData !== !!cache.get('hasExportAppData')) {
+          cache.set('hasExportAppData', hasExportAppData ? 'true' : '');
+          renderExportsTemplate({
+            ...JSON.parse(cache.get('routes')),
+            hasExportAppData,
+          }, generator.renderFile, {
+            rootDir,
+            runtimeDir: targetDir,
+            templateDir: path.join(templateDir, '../exports'),
+          });
+        }
+      }
+    },
+  ];
+
+  return [watchConfigFile, watchRoutes, watchGlobalStyle, watchAppConfigFile];
 };
 
 export default getWatchEvents;

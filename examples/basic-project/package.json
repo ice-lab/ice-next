@@ -13,12 +13,8 @@
     "@ice/plugin-auth": "workspace:*",
     "@ice/plugin-rax-compat": "workspace:*",
     "@ice/runtime": "workspace:*",
+    "@uni/env": "^1.1.0",
     "ahooks": "^3.3.8",
-    "rax": "^1.2.2",
-    "rax-image": "^2.4.1",
-    "rax-is-valid-element": "^1.0.0",
-    "rax-text": "^2.2.0",
-    "rax-view": "^2.3.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },
@@ -28,6 +24,6 @@
     "browserslist": "^4.19.3",
     "regenerator-runtime": "^0.13.9",
     "speed-measure-webpack-plugin": "^1.5.0",
-    "webpack": "^5.72.0"
+    "webpack": "^5.73.0"
   }
 }

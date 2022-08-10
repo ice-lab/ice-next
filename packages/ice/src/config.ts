@@ -4,8 +4,10 @@ import fse from 'fs-extra';
 import consola from 'consola';
 import type { UserConfig, Config } from '@ice/types';
 import type { UserConfigContext } from 'build-scripts';
+import lodash from '@ice/bundles/compiled/lodash/index.js';
 
 const require = createRequire(import.meta.url);
+const { merge } = lodash;
 
 const mergeDefaultValue = <T>(config: Config, key: string, value: T): Config => {
   if (value) {
@@ -43,6 +45,7 @@ const userConfig = [
   {
     name: 'devPublicPath',
     validation: 'string',
+    defaultValue: '/',
     setConfig: (config: Config, publicPath: UserConfig['publicPath'], context: UserConfigContext) => {
       return mergeDefaultValue(config, 'publicPath', context.command === 'start' && publicPath);
     },
@@ -50,6 +53,7 @@ const userConfig = [
   {
     name: 'publicPath',
     validation: 'string',
+    defaultValue: '/',
     setConfig: (config: Config, publicPath: UserConfig['publicPath'], context: UserConfigContext) => {
       return mergeDefaultValue(config, 'publicPath', context.command === 'build' && publicPath);
     },
@@ -71,6 +75,7 @@ const userConfig = [
   {
     name: 'outputDir',
     validation: 'string',
+    defaultValue: 'build',
     setConfig: (config: Config, outputDir: UserConfig['outputDir']) => {
       return mergeDefaultValue(config, 'outputDir', outputDir);
     },
@@ -267,6 +272,13 @@ const userConfig = [
     },
   },
   {
+    name: 'transform',
+    validation: 'function',
+    setConfig: (config: Config, transform: UserConfig['transform']) => {
+      config.transforms = config.transforms ? [...config.transforms, transform] : [transform];
+    },
+  },
+  {
     name: 'removeHistoryDeadCode',
     validation: 'boolean',
   },
@@ -277,6 +289,27 @@ const userConfig = [
   {
     name: 'experimental',
     validation: 'object',
+  },
+  {
+    name: 'syntaxFeatures',
+    validation: 'object',
+    setConfig: (config: Config, syntaxFeatures: UserConfig['syntaxFeatures']) => {
+      if (syntaxFeatures) {
+        const { exportDefaultFrom, functionBind } = syntaxFeatures;
+        if (exportDefaultFrom || functionBind) {
+          config.swcOptions = merge(config.swcOptions, {
+            compilationConfig: {
+              jsc: {
+                parser: {
+                  exportDefaultFrom: !!exportDefaultFrom,
+                  functionBind: !!functionBind,
+                },
+              },
+            },
+          });
+        }
+      }
+    },
   },
 ];
 

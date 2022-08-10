@@ -1,13 +1,15 @@
 import webpack from '@ice/bundles/compiled/webpack/index.js';
+import type ora from '@ice/bundles/compiled/ora/index.js';
 import consola from 'consola';
 import chalk from 'chalk';
 import type { CommandArgs, TaskConfig } from 'build-scripts';
 import type { Compiler, Configuration } from 'webpack';
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
-import type { Urls, ServerCompiler } from '@ice/types/esm/plugin.js';
+import type { Urls, ServerCompiler, GetAppConfig, GetRoutesConfig } from '@ice/types/esm/plugin.js';
 import type { Config } from '@ice/types';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
 import openBrowser from '../utils/openBrowser.js';
+import DataLoaderPlugin from '../webpack/DataLoaderPlugin.js';
 
 type WebpackConfig = Configuration & { devServer?: DevServerConfiguration };
 async function webpackCompiler(options: {
@@ -18,14 +20,45 @@ async function webpackCompiler(options: {
   applyHook: (key: string, opts?: {}) => Promise<void>;
   rootDir: string;
   urls?: Urls;
-  serverCompiler: ServerCompiler;
+  spinner: ora.Ora;
+  devPath?: string;
+  hooksAPI: {
+    serverCompiler: ServerCompiler;
+    getAppConfig: GetAppConfig;
+    getRoutesConfig: GetRoutesConfig;
+  };
 }) {
-  const { taskConfigs, urls, applyHook, command, commandArgs, serverCompiler, webpackConfigs } = options;
+  const {
+    taskConfigs,
+    urls,
+    applyHook,
+    command,
+    commandArgs,
+    hooksAPI,
+    webpackConfigs,
+    spinner,
+    devPath,
+    rootDir,
+  } = options;
+  const { serverCompiler } = hooksAPI;
   await applyHook(`before.${command}.run`, {
+    urls,
     commandArgs,
     taskConfigs,
     webpackConfigs,
-    serverCompiler,
+    ...hooksAPI,
+  });
+  // Add webpack plugin of data-loader
+  webpackConfigs[0].plugins.push(new DataLoaderPlugin({ serverCompiler, rootDir }));
+
+  // Add default plugins for spinner
+  webpackConfigs[0].plugins.push((compiler: Compiler) => {
+    compiler.hooks.beforeCompile.tap('spinner', () => {
+      spinner.text = 'compiling...';
+    });
+    compiler.hooks.afterEmit.tap('spinner', () => {
+      spinner.stop();
+    });
   });
   let compiler: Compiler;
   try {
@@ -49,19 +82,6 @@ async function webpackCompiler(options: {
     });
     const messages = formatWebpackMessages(statsData);
     const isSuccessful = !messages.errors.length;
-    if (isSuccessful && !process.env.DISABLE_STATS) {
-      const assetsStatsOptions = {
-        errors: false,
-        warnings: false,
-        colors: true,
-        assets: true,
-        chunks: false,
-        entrypoints: false,
-        modules: false,
-        timings: false,
-      };
-      consola.log(stats.toString(assetsStatsOptions));
-    }
     if (messages.errors.length) {
       // Only keep the first error. Others are often indicative
       // of the same problem, but confuse the reader with noise.
@@ -70,6 +90,7 @@ async function webpackCompiler(options: {
       }
       consola.error('Failed to compile.\n');
       consola.error(messages.errors.join('\n\n'));
+      consola.log(stats.toString());
       return;
     } else if (messages.warnings.length) {
       consola.warn('Compiled with warnings.\n');
@@ -80,16 +101,16 @@ async function webpackCompiler(options: {
         let logoutMessage = '\n';
         logoutMessage += chalk.green(' Starting the development server at:');
         if (process.env.CLOUDIDE_ENV) {
-          logoutMessage += `\n   - IDE server: https://${process.env.WORKSPACE_UUID}-${commandArgs.port}.${process.env.WORKSPACE_HOST}`;
+          logoutMessage += `\n   - IDE server: https://${process.env.WORKSPACE_UUID}-${commandArgs.port}.${process.env.WORKSPACE_HOST}${devPath}`;
         } else {
           logoutMessage += `\n
-   - Local  : ${chalk.underline.white(urls.localUrlForBrowser)}
-   - Network:  ${chalk.underline.white(urls.lanUrlForTerminal)}`;
+   - Local  : ${chalk.underline.white(`${urls.localUrlForBrowser}${devPath}`)}
+   - Network:  ${chalk.underline.white(`${urls.lanUrlForTerminal}${devPath}`)}`;
         }
         consola.log(`${logoutMessage}\n`);
 
         if (commandArgs.open) {
-          openBrowser(urls.localUrlForBrowser);
+          openBrowser(`${urls.localUrlForBrowser}${devPath}`);
         }
       }
       // compiler.hooks.done is AsyncSeriesHook which does not support async function
@@ -100,12 +121,11 @@ async function webpackCompiler(options: {
         urls,
         messages,
         taskConfigs,
-        serverCompiler,
+        ...hooksAPI,
       });
     }
 
     if (isSuccessful) {
-      consola.success(`Compiled successfully in ${(statsData.children ? statsData.children[0] : statsData).time} ms`);
       // if compiled successfully reset first compile flag after been posted to lifecycle hooks
       isFirstCompile = false;
     }

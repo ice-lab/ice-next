@@ -16,6 +16,7 @@ import Runtime from './runtime.js';
 import App from './App.js';
 import runClientApp from './runClientApp.js';
 import { useAppContext } from './AppContext.js';
+import { useAppData } from './AppData.js';
 import { useData, useConfig } from './RouteContext.js';
 import {
   Meta,
@@ -33,18 +34,20 @@ import type {
   ServerContext,
   AppProvider,
   RouteWrapper,
+  RenderMode,
+  GetAppData,
 } from './types.js';
-import { matchRoutes } from './routes.js';
 import dataLoader from './dataLoader.js';
-import { defineAppConfig } from './appConfig.js';
+import getAppConfig, { defineAppConfig } from './appConfig.js';
 
 export {
+  getAppConfig,
   defineAppConfig,
-  matchRoutes,
   Runtime,
   App,
   runClientApp,
   useAppContext,
+  useAppData,
   useData,
   useConfig,
   Meta,
@@ -76,4 +79,6 @@ export type {
   ServerContext,
   AppProvider,
   RouteWrapper,
+  RenderMode,
+  GetAppData,
 };
