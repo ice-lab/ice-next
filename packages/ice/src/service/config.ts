@@ -79,8 +79,7 @@ class Config {
     if (!targetFile) {
       targetFile = await this.compileTasks[taskKey];
     }
-    const result = await import(targetFile);
-    return result;
+    return await import(targetFile);
   };
 }
 
