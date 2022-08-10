@@ -612,10 +612,10 @@ importers:
       regenerator-runtime: ^0.13.9
     dependencies:
       '@ice/store': 2.0.2
-      '@ice/types': link:../types
       fast-glob: 3.2.11
       micromatch: 4.0.5
     devDependencies:
+      '@ice/types': link:../types
       '@types/micromatch': 4.0.2
       '@types/react': 18.0.15
       '@types/react-dom': 18.0.6
