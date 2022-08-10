@@ -3,10 +3,10 @@ import { fileURLToPath } from 'url';
 import type { Config, Plugin } from '@ice/types';
 import micromatch from 'micromatch';
 import fg from 'fast-glob';
-import { PAGE_STORE_MODULE_NAME, PAGE_STORE_PROVIDER_NAME, PAGE_STORE_GET_STATE_NAME } from './constants.js';
+import { PAGE_STORE_MODULE, PAGE_STORE_PROVIDER, PAGE_STORE_INITIAL_STATES } from './constants.js';
 
 interface Options {
-  disableResetPageState?: boolean;
+  disableResetPageState?: true;
 }
 const storeFilePattern = '**/store.{js,ts}';
 const ignoreStoreFilePatterns = ['**/models/**', storeFilePattern];
@@ -65,13 +65,14 @@ function exportStoreProviderPlugin({ pageDir, disableResetPageState }: { pageDir
 }
 
 function exportPageStore(source: string, disableResetPageState: boolean) {
-  const importStoreStatement = `import ${PAGE_STORE_MODULE_NAME} from './store';\n`;
+  const importStoreStatement = `import ${PAGE_STORE_MODULE} from './store';\n`;
   const exportStoreProviderStatement = disableResetPageState ? `
-const { Provider: ${PAGE_STORE_PROVIDER_NAME}, getState: ${PAGE_STORE_GET_STATE_NAME} } = ${PAGE_STORE_MODULE_NAME};
-export { ${PAGE_STORE_PROVIDER_NAME}, ${PAGE_STORE_GET_STATE_NAME} };` : `
-const { Provider: ${PAGE_STORE_PROVIDER_NAME} } = ${PAGE_STORE_MODULE_NAME};
-export { ${PAGE_STORE_PROVIDER_NAME} };
-`;
+const { Provider: ${PAGE_STORE_PROVIDER} } = ${PAGE_STORE_MODULE};
+export { ${PAGE_STORE_PROVIDER} };` : `
+const { Provider: ${PAGE_STORE_PROVIDER}, getState } = ${PAGE_STORE_MODULE};
+const ${PAGE_STORE_INITIAL_STATES} = getState();
+export { ${PAGE_STORE_PROVIDER}, ${PAGE_STORE_INITIAL_STATES} };`;
+
   return importStoreStatement + source + exportStoreProviderStatement;
 }
 

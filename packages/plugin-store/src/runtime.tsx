@@ -1,7 +1,7 @@
 import * as React from 'react';
 import type { RuntimePlugin, AppProvider, RouteWrapper } from '@ice/types';
 import { createStore } from '@ice/store';
-import { PAGE_STORE_GET_STATE_NAME, PAGE_STORE_PROVIDER_NAME } from './constants.js';
+import { PAGE_STORE_INITIAL_STATES, PAGE_STORE_PROVIDER } from './constants.js';
 import appStore from '$store';
 
 const runtime: RuntimePlugin = async ({ addWrapper, addProvider, useRouteModule }) => {
@@ -20,14 +20,13 @@ const runtime: RuntimePlugin = async ({ addWrapper, addProvider, useRouteModule 
   // page store
   const StoreProviderWrapper: RouteWrapper = ({ children }) => {
     const routeModule = useRouteModule();
-    if (routeModule[PAGE_STORE_PROVIDER_NAME]) {
-      const Provider = routeModule[PAGE_STORE_PROVIDER_NAME];
-      const getState = routeModule[PAGE_STORE_GET_STATE_NAME];
-      let initialStates;
-      if (getState) {
-        initialStates = getState();
+    if (routeModule[PAGE_STORE_PROVIDER]) {
+      const Provider = routeModule[PAGE_STORE_PROVIDER];
+      const initialStates = routeModule[PAGE_STORE_INITIAL_STATES];
+      if (initialStates) {
+        return <Provider initialStates={initialStates}>{children}</Provider>;
       }
-      return <Provider initialStates={initialStates}>{children}</Provider>;
+      return <Provider>{children}</Provider>;
     }
     return <>{children}</>;
   };
