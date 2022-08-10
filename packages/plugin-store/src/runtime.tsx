@@ -4,12 +4,12 @@ import { createStore, createModel } from '@ice/store';
 import { PAGE_STORE_INITIAL_STATES, PAGE_STORE_PROVIDER } from './constants.js';
 import appStore from '$store';
 
-const runtime: RuntimePlugin = async ({ addWrapper, addProvider, useRouteModule }) => {
+const runtime: RuntimePlugin = async ({ addWrapper, addProvider, useAppContext }) => {
   if (appStore && Object.prototype.hasOwnProperty.call(appStore, 'Provider')) {
     // Add app store Provider
     const StoreProvider: AppProvider = ({ children }) => {
       return (
-        // TODO: initialState
+        // TODO: support initialStates: https://github.com/ice-lab/ice-next/issues/395#issuecomment-1210552931
         <appStore.Provider>
           {children}
         </appStore.Provider>
@@ -18,8 +18,9 @@ const runtime: RuntimePlugin = async ({ addWrapper, addProvider, useRouteModule 
     addProvider(StoreProvider);
   }
   // page store
-  const StoreProviderWrapper: RouteWrapper = ({ children }) => {
-    const routeModule = useRouteModule();
+  const StoreProviderWrapper: RouteWrapper = ({ children, routeId }) => {
+    const { routeModules } = useAppContext();
+    const routeModule = routeModules[routeId];
     if (routeModule[PAGE_STORE_PROVIDER]) {
       const Provider = routeModule[PAGE_STORE_PROVIDER];
       const initialStates = routeModule[PAGE_STORE_INITIAL_STATES];

@@ -6,7 +6,7 @@ import fg from 'fast-glob';
 import { PAGE_STORE_MODULE, PAGE_STORE_PROVIDER, PAGE_STORE_INITIAL_STATES } from './constants.js';
 
 interface Options {
-  disableResetPageState?: true;
+  disableResetPageState?: boolean;
 }
 const storeFilePattern = '**/store.{js,ts}';
 const ignoreStoreFilePatterns = ['**/models/**', storeFilePattern];

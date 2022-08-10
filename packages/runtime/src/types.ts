@@ -3,7 +3,8 @@ import type { Action, InitialEntry, Location } from 'history';
 import type { ComponentType, ReactNode, PropsWithChildren } from 'react';
 import type { HydrationOptions } from 'react-dom/client';
 import type { Navigator, Params } from 'react-router-dom';
-import type { useConfig, useData, useRouteModule } from './RouteContext.js';
+import type { useConfig, useData } from './RouteContext.js';
+import type { useAppContext } from './AppContext.js';
 
 type VoidFunction = () => void;
 type AppLifecycle = 'onShow' | 'onHide' | 'onPageNotFound' | 'onShareAppMessage' | 'onUnhandledRejection' | 'onLaunch' | 'onError' | 'onTabItemClick';
@@ -155,7 +156,7 @@ export interface RuntimeAPI {
   appContext: AppContext;
   useData: typeof useData;
   useConfig: typeof useConfig;
-  useRouteModule: typeof useRouteModule;
+  useAppContext: typeof useAppContext;
 }
 
 export interface RuntimePlugin {

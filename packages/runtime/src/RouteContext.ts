@@ -1,13 +1,5 @@
 import * as React from 'react';
-import type { RouteData, RouteConfig, RouteComponent } from './types.js';
-
-const RouteModuleContext = React.createContext<RouteComponent | undefined>(undefined);
-RouteModuleContext.displayName = 'RouteModule';
-function useRouteModule(): RouteComponent {
-  const value = React.useContext(RouteModuleContext);
-  return value;
-}
-const RouteModuleProvider = RouteModuleContext.Provider;
+import type { RouteData, RouteConfig } from './types.js';
 
 const DataContext = React.createContext<RouteData | undefined>(undefined);
 DataContext.displayName = 'Data';
@@ -28,9 +20,6 @@ function useConfig(): RouteConfig {
 const ConfigProvider = ConfigContext.Provider;
 
 export {
-  useRouteModule,
-  RouteModuleProvider,
-
   useData,
   DataProvider,
 

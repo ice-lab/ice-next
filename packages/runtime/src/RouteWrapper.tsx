@@ -1,7 +1,7 @@
 import * as React from 'react';
 import type { RouteWrapperConfig } from './types.js';
 import { useAppContext } from './AppContext.js';
-import { DataProvider, ConfigProvider, RouteModuleProvider } from './RouteContext.js';
+import { DataProvider, ConfigProvider } from './RouteContext.js';
 
 interface Props {
   id: string;
@@ -12,7 +12,7 @@ interface Props {
 
 export default function RouteWrapper(props: Props) {
   const { wrappers = [], id, isLayout } = props;
-  const { routesData, routesConfig, routeModules } = useAppContext();
+  const { routesData, routesConfig } = useAppContext();
   // layout should only be wrapped by Wrapper with `layout: true`
   const filtered = isLayout ? wrappers.filter(wrapper => wrapper.layout === true) : wrappers;
   const RouteWrappers = filtered.map(item => item.Wrapper);
@@ -21,7 +21,7 @@ export default function RouteWrapper(props: Props) {
 
   if (RouteWrappers.length) {
     element = RouteWrappers.reduce((preElement, CurrentWrapper) => (
-      <CurrentWrapper>
+      <CurrentWrapper routeId={id}>
         {preElement}
       </CurrentWrapper>
     ), props.children);
@@ -30,13 +30,10 @@ export default function RouteWrapper(props: Props) {
   }
 
   return (
-    <RouteModuleProvider value={routeModules[id]}>
-      <DataProvider value={routesData[id]}>
-        <ConfigProvider value={routesConfig[id]}>
-          {element}
-        </ConfigProvider>
-      </DataProvider>
-    </RouteModuleProvider>
-
+    <DataProvider value={routesData[id]}>
+      <ConfigProvider value={routesConfig[id]}>
+        {element}
+      </ConfigProvider>
+    </DataProvider>
   );
 }
