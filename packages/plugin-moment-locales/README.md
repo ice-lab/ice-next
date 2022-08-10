@@ -4,8 +4,6 @@ plugin for load moment locales and reduce size of moment
 
 ## Usage
 
-## Usage
-
 ```js
 import { defineConfig } from '@ice/app';
 import moment from '@ice/plugin-moment-locale';
