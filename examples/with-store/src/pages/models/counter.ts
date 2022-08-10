@@ -1,4 +1,6 @@
-export default {
+import { createModel } from '@ice/plugin-store/esm/runtime';
+
+export default createModel({
   state: {
     count: 0,
   },
@@ -10,4 +12,4 @@ export default {
       prevState.count -= 1;
     },
   },
-};
+});
