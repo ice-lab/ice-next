@@ -589,17 +589,23 @@ importers:
     specifiers:
       '@ice/store': ^2.0.1
       '@ice/types': ^1.0.0
+      '@types/micromatch': ^4.0.2
       '@types/react': ^18.0.0
       '@types/react-dom': ^18.0.0
       es-module-lexer: ^1.0.2
+      fast-glob: ^3.2.11
       fs-extra: ^10.1.0
+      micromatch: ^4.0.5
       regenerator-runtime: ^0.13.9
     dependencies:
       '@ice/store': 2.0.2
       '@ice/types': link:../types
       es-module-lexer: 1.0.2
+      fast-glob: 3.2.11
       fs-extra: 10.1.0
+      micromatch: 4.0.5
     devDependencies:
+      '@types/micromatch': 4.0.2
       '@types/react': 18.0.15
       '@types/react-dom': 18.0.6
       regenerator-runtime: 0.13.9

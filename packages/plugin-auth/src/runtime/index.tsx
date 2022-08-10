@@ -22,6 +22,7 @@ const runtime: RuntimePlugin = async ({ appContext, useConfig, addProvider, addW
   };
 
   const AuthRouteWrapper: RouteWrapper = ({ children }) => {
+    console.log(123123);
     const [auth] = useAuth();
     const routeConfig = useConfig();
     const routeConfigAuth = routeConfig?.auth;

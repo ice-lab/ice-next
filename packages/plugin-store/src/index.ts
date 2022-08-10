@@ -1,22 +1,26 @@
 import * as path from 'path';
 import { fileURLToPath } from 'url';
-import type { Plugin } from '@ice/types';
-import fse from 'fs-extra';
-import { init, parse } from 'es-module-lexer';
+import type { Config, Plugin } from '@ice/types';
+import micromatch from 'micromatch';
+import fg from 'fast-glob';
+import { PAGE_STORE_MODULE_NAME, PAGE_STORE_PROVIDER_NAME, PAGE_STORE_GET_STATE_NAME } from './constants.js';
 
 interface Options {
-  disableResetPageState?: true;
+  disableResetPageState?: boolean;
 }
+const storeFilePattern = '**/store.{js,ts}';
+const ignoreStoreFilePatterns = ['**/models/**', storeFilePattern];
 
-const plugin: Plugin<Options> = () => ({
+const plugin: Plugin<Options> = (options) => ({
   name: '@ice/plugin-store',
   setup: ({ onGetConfig, modifyUserConfig, context: { rootDir, userConfig } }) => {
+    const { disableResetPageState = false } = options || {};
     const srcDir = path.join(rootDir, 'src');
     const pageDir = path.join(srcDir, 'pages');
 
     modifyUserConfig('routes', {
       ...(userConfig.routes || {}),
-      ignoreFiles: [...(userConfig?.routes?.ignoreFiles || []), '**/models/**', '**/store.{js,ts}'],
+      ignoreFiles: [...(userConfig?.routes?.ignoreFiles || []), ...ignoreStoreFilePatterns],
     });
 
     onGetConfig(config => {
@@ -30,7 +34,7 @@ const plugin: Plugin<Options> = () => ({
       }
       config.transformPlugins = [
         ...(config.transformPlugins || []),
-        exportStoreProviderPlugin({ pageDir }),
+        exportStoreProviderPlugin({ pageDir, disableResetPageState }),
       ];
       return config;
     });
@@ -38,27 +42,21 @@ const plugin: Plugin<Options> = () => ({
   runtime: path.join(path.dirname(fileURLToPath(import.meta.url)), 'runtime.js'),
 });
 
-function exportStoreProviderPlugin({ pageDir }: { pageDir: string }) {
+function exportStoreProviderPlugin({ pageDir, disableResetPageState }: { pageDir: string; disableResetPageState: boolean }): Config['transformPlugins'][0] {
   return {
     name: 'export-store-provider',
     enforce: 'post',
-    transform: async (source: string, id: string) => {
-      // TODO: filter the route component path
-      if (id.startsWith(pageDir) && id.endsWith('.tsx')) {
-        await init;
-        const [imports] = parse(source);
-        for (let index = 0; index < imports.length; index++) {
-          const {
-            n: specifier,
-          } = imports[index];
-          // TODO: page store
-          if (specifier === './store' && !source.includes('Provider')) {
-            // TODO: get the pageStore name
-            source += `\n
-const { Provider } = pageStore;
-export { Provider };`;
-            return source;
-          }
+    transformInclude: (id) => {
+      return id.startsWith(pageDir) && !micromatch.isMatch(id, ignoreStoreFilePatterns);
+    },
+    transform: async (source, id) => {
+      const pageStorePath = getPageStorePath(id);
+      if (pageStorePath) {
+        if (
+          isLayout(id) || // Current id is layout.
+          !isLayoutExisted(id) // If current id is route and there is no layout in the current dir.
+        ) {
+          return exportPageStore(source, disableResetPageState);
         }
       }
       return source;
@@ -66,10 +64,48 @@ export { Provider };`;
   };
 }
 
+function exportPageStore(source: string, disableResetPageState: boolean) {
+  const importStoreStatement = `import ${PAGE_STORE_MODULE_NAME} from './store';\n`;
+  const exportStoreProviderStatement = disableResetPageState ? `
+const { Provider: ${PAGE_STORE_PROVIDER_NAME}, getState: ${PAGE_STORE_GET_STATE_NAME} } = ${PAGE_STORE_MODULE_NAME};
+export { ${PAGE_STORE_PROVIDER_NAME}, ${PAGE_STORE_GET_STATE_NAME} };` : `
+const { Provider: ${PAGE_STORE_PROVIDER_NAME} } = ${PAGE_STORE_MODULE_NAME};
+export { ${PAGE_STORE_PROVIDER_NAME} };
+`;
+  return importStoreStatement + source + exportStoreProviderStatement;
+}
+
+/**
+ * Get the page store path which is at the same directory level.
+ * @param {string} id Route absolute path.
+ * @returns {string|undefined}
+ */
+function getPageStorePath(id: string): string | undefined {
+  const dir = path.dirname(id);
+  const result = fg.sync(storeFilePattern, { cwd: dir, deep: 1 });
+  return result.length ? path.join(dir, result[0]) : undefined;
+}
+
+function isLayout(id: string): boolean {
+  const extname = path.extname(id);
+  const idWithoutExtname = id.substring(0, id.length - extname.length);
+  return idWithoutExtname.endsWith('layout');
+}
+
+/**
+ * Check the current route component if there is layout.tsx at the same directory level.
+ * @param {string} id Route absolute path.
+ * @returns {boolean}
+ */
+function isLayoutExisted(id: string): boolean {
+  const dir = path.dirname(id);
+  const result = fg.sync('layout.{js,jsx,tsx}', { cwd: dir, deep: 1 });
+  return !!result.length;
+}
+
 function getAppStorePath(srcPath: string) {
-  const storeFileType = ['.js', '.ts'].find((fileType) => fse.pathExistsSync(path.join(srcPath, `store${fileType}`))) || '';
-  // e.g: src/store.[j|t]s
-  return storeFileType ? path.join(srcPath, `store${storeFileType}`) : '';
+  const result = fg.sync(storeFilePattern, { cwd: srcPath, deep: 1 });
+  return result.length ? path.join(srcPath, result[0]) : undefined;
 }
 
 export default plugin;
