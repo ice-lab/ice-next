@@ -8,7 +8,7 @@ interface PageConfig {
   path: string;
 }
 
-export default function (this: webpack.LoaderContext<any>, source: string) {
+export default function (this: webpack.LoaderContext<any>) {
   const options = getOptions(this);
   const { config: loaderConfig } = options;
   const config = getPageConfig(loaderConfig, this.resourcePath);

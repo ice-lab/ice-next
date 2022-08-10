@@ -4,7 +4,7 @@ import type {
   PageLifeCycle, PageProps,
   ReactAppInstance, ReactPageComponent,
 } from '@ice/miniapp-runtime';
-import { Current, document, getPageInstance,
+import { Current, getPageInstance,
   incrementId, injectPageInstance,
 } from '@ice/miniapp-runtime';
 import { EMPTY_OBJ, hooks } from '@tarojs/shared';

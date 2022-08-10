@@ -81,7 +81,12 @@ export function getOnHideEventKey(path: string) {
   return `${path}.${ON_HIDE}`;
 }
 
-export function createPageConfig(component: any, pageName: string, data: Record<string, unknown>, { getData, getConfig }, pageConfig?: PageConfig) {
+export function createPageConfig(
+  component: any,
+  pageName: string,
+  data: Record<string, unknown>,
+  { getData, getConfig },
+  pageConfig?: PageConfig) {
   // 小程序 Page 构造器是一个傲娇小公主，不能把复杂的对象挂载到参数上
   const id = pageName ?? `taro_page_${pageId()}`;
   const [
