@@ -5,8 +5,8 @@
     "start": "ice start",
     "build": "ice build"
   },
-  "description": "",
-  "author": "",
+  "description": "ICE example with plugin-request",
+  "author": "ICE Team",
   "license": "MIT",
   "dependencies": {
     "@ice/app": "workspace:*",
