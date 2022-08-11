@@ -1,6 +1,6 @@
 import { Meta, Title, Links, Main, Scripts } from 'ice';
 
-function Document(props) {
+function Document() {
   return (
     <html>
       <head>
