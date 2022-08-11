@@ -1,5 +1,4 @@
 import React from 'react';
-import { default as consola } from 'consola';
 import RouteWrapper from './RouteWrapper.js';
 import type { RouteItem, RouteModules, RouteWrapperConfig, RouteMatch, RequestContext, RoutesConfig, RoutesData, RenderMode } from './types.js';
 import { useAppContext } from './AppContext.js';
@@ -20,8 +19,8 @@ export async function loadRouteModule(route: RouteModule, routeModulesCache: Rou
     routeModulesCache[id] = routeModule;
     return routeModule;
   } catch (error) {
-    consola.error(`Failed to load route module: ${id}.`);
-    consola.debug(error);
+    console.error(`Failed to load route module: ${id}.`);
+    console.debug(error);
   }
 }
 

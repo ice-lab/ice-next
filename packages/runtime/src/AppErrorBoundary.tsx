@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { default as consola } from 'consola';
 
 interface State {
   error: Error;
@@ -19,7 +18,7 @@ export default class AppErrorBoundary extends React.Component<Props, State> {
   }
 
   public componentDidCatch(error, errorInfo) {
-    consola.error('AppErrorBoundary', error, errorInfo);
+    console.error('AppErrorBoundary', error, errorInfo);
   }
 
   public render() {

@@ -1,4 +1,3 @@
-import { default as consola } from 'consola';
 import type { GetData } from './types.js';
 import getRequestContext from './requestContext.js';
 
@@ -97,7 +96,7 @@ function init(loaders: Loaders) {
   try {
     loadInitialData(loaders);
   } catch (error) {
-    consola.error('Load initial data error: ', error);
+    console.error('Load initial data error: ', error);
   }
 
   (window as any).__ICE_DATA_LOADER__ = async (id) => {
