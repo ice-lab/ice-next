@@ -676,10 +676,10 @@ importers:
       axios: ^0.27.2
       regenerator-runtime: ^0.13.9
     dependencies:
-      '@ice/types': link:../types
       ahooks: 3.4.1
       axios: 0.27.2
     devDependencies:
+      '@ice/types': link:../types
       '@types/react': 18.0.17
       '@types/react-dom': 18.0.6
       regenerator-runtime: 0.13.9
