@@ -15,10 +15,11 @@ import aliasPlugin from '../esbuild/alias.js';
 import createAssetsPlugin from '../esbuild/assets.js';
 import { ASSETS_MANIFEST, CACHE_DIR, SERVER_OUTPUT_DIR } from '../constant.js';
 import emptyCSSPlugin from '../esbuild/emptyCSS.js';
-import transformImportPlugin from '../esbuild/depRedirect.js';
+import transformImportPlugin from '../esbuild/transformImport.js';
 import transformPipePlugin from '../esbuild/transformPipe.js';
 import isExternalBuiltinDep from '../utils/isExternalBuiltinDep.js';
 import getServerEntry from '../utils/getServerEntry.js';
+import type { DepScanData } from '../esbuild/scan.js';
 import { scanImports } from './analyze.js';
 import type { DepsMetaData } from './preBundleCJSDeps.js';
 import preBundleCJSDeps from './preBundleCJSDeps.js';
@@ -50,18 +51,12 @@ export function createServerCompiler(options: Options) {
     defineVars[key] = JSON.stringify(define[key]);
   });
 
-  // get runtime variable for server build
-  const runtimeDefineVars = {};
-  Object.keys(process.env).forEach((key) => {
-    if (/^ICE_CORE_/i.test(key)) {
-      // in server.entry
-      runtimeDefineVars[`__process.env.${key}__`] = JSON.stringify(process.env[key]);
-    } else if (/^ICE_/i.test(key)) {
-      runtimeDefineVars[`process.env.${key}`] = JSON.stringify(process.env[key]);
-    }
-  });
-
-  const serverCompiler: ServerCompiler = async (customBuildOptions, { preBundle, swc } = {}) => {
+  const serverCompiler: ServerCompiler = async (customBuildOptions, {
+    preBundle,
+    swc,
+    externalDependencies,
+    transformEnv = true,
+  } = {}) => {
     let depsMetadata: DepsMetaData;
     let swcOptions = merge({}, {
       // Only get the `compilationConfig` from task config.
@@ -90,6 +85,17 @@ export function createServerCompiler(options: Options) {
         ] : [],
       });
     }
+    // get runtime variable for server build
+    const runtimeDefineVars = {};
+    Object.keys(process.env).forEach((key) => {
+      // Do not transform env when bundle client side code.
+      if (/^ICE_CORE_/i.test(key) && transformEnv) {
+        // in server.entry
+        runtimeDefineVars[`__process.env.${key}__`] = JSON.stringify(process.env[key]);
+      } else if (/^ICE_/i.test(key)) {
+        runtimeDefineVars[`process.env.${key}`] = JSON.stringify(process.env[key]);
+      }
+    });
     const define = {
       // ref: https://github.com/evanw/esbuild/blob/master/CHANGELOG.md#01117
       // in esm, this in the global should be undefined. Set the following config to avoid warning
@@ -118,7 +124,7 @@ export function createServerCompiler(options: Options) {
         emptyCSSPlugin(),
         aliasPlugin({
           alias,
-          serverBundle: server.bundle,
+          externalDependencies: externalDependencies ?? !server.bundle,
           format,
         }),
         cssModulesPlugin({
@@ -180,7 +186,7 @@ async function createDepsMetadata({ rootDir, task, plugins }: CreateDepsMetadata
     plugins,
   });
 
-  function filterPreBundleDeps(deps: Record<string, string>) {
+  function filterPreBundleDeps(deps: Record<string, DepScanData>) {
     const preBundleDepsInfo = {};
     for (const dep in deps) {
       if (!isExternalBuiltinDep(dep)) {
@@ -195,7 +201,6 @@ async function createDepsMetadata({ rootDir, task, plugins }: CreateDepsMetadata
   const cacheDir = path.join(rootDir, CACHE_DIR);
   const ret = await preBundleCJSDeps({
     depsInfo: preBundleDepsInfo,
-    rootDir,
     cacheDir,
     taskConfig: task.config,
     plugins,

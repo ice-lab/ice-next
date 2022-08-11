@@ -10,12 +10,14 @@ import type { ExportData, AddRenderFile, AddTemplateFiles } from './generator.js
 type AddExport = (exportData: ExportData) => void;
 type EventName = 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir';
 
-type ServerCompilerBuildOptions = Pick<BuildOptions, 'minify' | 'inject' | 'format' | 'entryPoints' | 'outfile' | 'bundle' | 'outdir' | 'splitting' | 'platform' | 'outExtension' | 'plugins'>;
+type ServerCompilerBuildOptions = Pick<BuildOptions, 'write' | 'target' | 'minify' | 'inject' | 'format' | 'entryPoints' | 'outfile' | 'bundle' | 'outdir' | 'splitting' | 'platform' | 'outExtension' | 'plugins'>;
 export type ServerCompiler = (
   buildOptions: ServerCompilerBuildOptions,
   options?: {
     swc?: Config['swcOptions'];
     preBundle?: boolean;
+    externalDependencies?: boolean;
+    transformEnv?: boolean;
   }
 ) => Promise<BuildResult & { serverEntry: string }>;
 export type WatchEvent = [
@@ -31,11 +33,16 @@ export interface Urls {
   localUrlForBrowser: string;
 }
 
+export type GetAppConfig = (exportNames?: string[]) => Promise<any>;
+export type GetRoutesConfig = (specifyRoutId?: string) => Promise<any>;
+
 interface BeforeCommandRunOptions {
   commandArgs: CommandArgs;
   webpackConfigs: Configuration | Configuration[];
   taskConfigs: TaskConfig<Config>[];
   urls?: Urls;
+  getAppConfig: GetAppConfig;
+  getRoutesConfig: GetRoutesConfig;
   serverCompiler: ServerCompiler;
 }
 
@@ -46,6 +53,8 @@ interface AfterCommandCompileOptions {
   isFirstCompile: Boolean;
   urls: Urls;
   taskConfigs: TaskConfig<Config>[];
+  getAppConfig: GetAppConfig;
+  getRoutesConfig: GetRoutesConfig;
   serverCompiler: ServerCompiler;
 }
 

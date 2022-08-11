@@ -36,6 +36,7 @@ interface ConfigurationCtx extends Config {
 interface SwcOptions {
   removeExportExprs?: string[];
   compilationConfig?: SWCCompilationConfig;
+  keepPlatform?: 'node' | 'web' | 'weex' | 'miniapp';
 }
 
 type Experimental = Pick<Configuration, 'experiments'>;
@@ -47,6 +48,8 @@ type Transform = (this: UnpluginContext, code: string, id: string, options: Tran
 
 // Only support transform and transformInclude for now
 interface TransformPlugin {
+  name: string;
+  enforce?: string;
   transform?: Transform;
   transformInclude?: UnpluginOptions['transformInclude'];
 }
