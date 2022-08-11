@@ -4,13 +4,20 @@ import { createStore, createModel } from '@ice/store';
 import { PAGE_STORE_INITIAL_STATES, PAGE_STORE_PROVIDER } from './constants.js';
 import appStore from '$store';
 
-const runtime: RuntimePlugin = async ({ addWrapper, addProvider, useAppContext }) => {
+interface StoreData {
+  initialStates: Record<string, any>;
+}
+
+const runtime: RuntimePlugin = async ({ appContext, addWrapper, addProvider, useAppContext }) => {
+  const { appExport } = appContext;
+  const storeData: StoreData = (typeof appExport.store === 'function'
+    ? (await appExport.store()) : appExport.store) || {};
+  const { initialStates } = storeData;
   if (appStore && Object.prototype.hasOwnProperty.call(appStore, 'Provider')) {
     // Add app store Provider
     const StoreProvider: AppProvider = ({ children }) => {
       return (
-        // TODO: support initialStates: https://github.com/ice-lab/ice-next/issues/395#issuecomment-1210552931
-        <appStore.Provider>
+        <appStore.Provider initialStates={initialStates}>
           {children}
         </appStore.Provider>
       );
@@ -35,5 +42,18 @@ const runtime: RuntimePlugin = async ({ addWrapper, addProvider, useAppContext }
   addWrapper(StoreProviderWrapper, true);
 };
 
-export { createStore, createModel };
+
+type Store = (() => Promise<StoreData>) | StoreData;
+
+function defineStoreConfig(fn: Store) {
+  return fn;
+}
+
+export {
+  createStore,
+  createModel,
+
+  defineStoreConfig,
+};
+
 export default runtime;
