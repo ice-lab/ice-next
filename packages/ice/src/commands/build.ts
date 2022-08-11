@@ -4,7 +4,7 @@ import { getWebpackConfig } from '@ice/webpack-config';
 import type { Context, TaskConfig } from 'build-scripts';
 import type { StatsError } from 'webpack';
 import type { Config } from '@ice/types';
-import type { ServerCompiler } from '@ice/types/esm/plugin.js';
+import type { ServerCompiler, GetAppConfig, GetRoutesConfig } from '@ice/types/esm/plugin.js';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
 import type ora from '@ice/bundles/compiled/ora/index.js';
 import webpackCompiler from '../service/webpackCompiler.js';
@@ -12,7 +12,6 @@ import formatWebpackMessages from '../utils/formatWebpackMessages.js';
 import { RUNTIME_TMP_DIR, SERVER_OUTPUT_DIR } from '../constant.js';
 import generateHTML from '../utils/generateHTML.js';
 import emptyDir from '../utils/emptyDir.js';
-import keepPlatform from '../utils/keepPlatform.js';
 import getServerEntry from '../utils/getServerEntry.js';
 
 const build = async (
@@ -21,9 +20,11 @@ const build = async (
     taskConfigs: TaskConfig<Config>[];
     serverCompiler: ServerCompiler;
     spinner: ora.Ora;
+    getAppConfig: GetAppConfig;
+    getRoutesConfig: GetRoutesConfig;
   },
 ) => {
-  const { taskConfigs, serverCompiler, spinner } = options;
+  const { taskConfigs, serverCompiler, spinner, getAppConfig, getRoutesConfig } = options;
   const { applyHook, commandArgs, command, rootDir, userConfig } = context;
   const webpackConfigs = taskConfigs.map(({ config }) => getWebpackConfig({
     config,
@@ -35,16 +36,20 @@ const build = async (
   const outputDir = webpackConfigs[0].output.path;
 
   await emptyDir(outputDir);
-
+  const hooksAPI = {
+    serverCompiler,
+    getAppConfig,
+    getRoutesConfig,
+  };
   const compiler = await webpackCompiler({
     rootDir,
     webpackConfigs,
     taskConfigs,
     commandArgs,
     command,
-    applyHook,
-    serverCompiler,
     spinner,
+    applyHook,
+    hooksAPI,
   });
   const { ssg, ssr, server: { format } } = userConfig;
   // compile server bundle
@@ -90,18 +95,7 @@ const build = async (
             swc: {
               // Remove components and getData when ssg and ssr both `false`.
               removeExportExprs: (!ssg && !ssr) ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
-              compilationConfig: {
-                jsc: {
-                  transform: {
-                    constModules: {
-                      globals: {
-                        '@uni/env': keepPlatform('node'),
-                        'universal-env': keepPlatform('node'),
-                      },
-                    },
-                  },
-                },
-              },
+              keepPlatform: 'node',
             },
           },
         );
@@ -137,6 +131,8 @@ const build = async (
     taskConfigs,
     serverCompiler,
     serverEntry,
+    getAppConfig,
+    getRoutesConfig,
   });
 
   return { compiler };
