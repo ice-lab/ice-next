@@ -7,6 +7,7 @@ const getWebTask = ({ rootDir, command }): Config => {
   const defaultLogging = command === 'start' ? 'summary' : 'summary assets';
   return {
     mode: command === 'start' ? 'development' : 'production',
+    outputDir: 'build',
     sourceMap: command === 'start' ? 'cheap-module-source-map' : false,
     cacheDir: path.join(rootDir, CACHE_DIR),
     alias: {

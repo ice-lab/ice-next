@@ -75,7 +75,6 @@ const userConfig = [
   {
     name: 'outputDir',
     validation: 'string',
-    defaultValue: 'build',
     setConfig: (config: Config, outputDir: UserConfig['outputDir']) => {
       return mergeDefaultValue(config, 'outputDir', outputDir);
     },

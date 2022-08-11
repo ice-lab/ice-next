@@ -52,6 +52,7 @@ const getMiniappTask = ({ rootDir, command, platform, getAppConfig, getRoutesCon
     optimization: miniappWebpackConfig.optimization,
     performance: miniappWebpackConfig.performance,
     devServer: {}, // No need to use devServer in miniapp
+    enableCopyPlugin: true,
     swcOptions: {
       keepPlatform: 'miniapp',
       // getData is built by data-loader

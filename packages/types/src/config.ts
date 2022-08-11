@@ -151,8 +151,10 @@ export interface Config {
 
     buildOptions?: (options: BuildOptions) => BuildOptions;
   };
-  
+
   cssFilename?: string;
 
   cssChunkFilename?: string;
+
+  enableCopyPlugin?: boolean;
 }

@@ -88,8 +88,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     logging,
     optimization,
     performance,
-    cssFilename,
-    cssChunkFilename,
+    enableCopyPlugin,
   } = config;
   const absoluteOutputDir = path.isAbsolute(outputDir) ? outputDir : path.join(rootDir, outputDir);
   const dev = mode !== 'production';
@@ -249,7 +248,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
       eslintOptions && new ESlintPlugin(eslintOptions),
       // copy plugin only active in production
       // otherwise it will add assets to webpack compilation
-      !dev && new CopyPlugin({
+      (enableCopyPlugin || !dev) && new CopyPlugin({
         patterns: [{
           from: path.join(rootDir, 'public'),
           to: absoluteOutputDir,
