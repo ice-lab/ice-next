@@ -81,31 +81,31 @@ const build = async (
       } else {
         compiler?.close?.(() => {});
         const isSuccessful = !messages.errors.length;
-        try {
-          const serverCompilerResult = await serverCompiler(
-            {
-              entryPoints: { index: entryPoint },
-              outdir: serverOutputDir,
-              splitting: esm,
-              format,
-              platform: esm ? 'browser' : 'node',
-              outExtension: { '.js': outJSExtension },
+
+        const serverCompilerResult = await serverCompiler(
+          {
+            entryPoints: { index: entryPoint },
+            outdir: serverOutputDir,
+            splitting: esm,
+            format,
+            platform: esm ? 'browser' : 'node',
+            outExtension: { '.js': outJSExtension },
+          },
+          {
+            preBundle: format === 'esm' && (ssr || ssg),
+            swc: {
+              // Remove components and getData when ssg and ssr both `false`.
+              removeExportExprs: (!ssg && !ssr) ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
+              keepPlatform: 'node',
             },
-            {
-              preBundle: format === 'esm' && (ssr || ssg),
-              swc: {
-                // Remove components and getData when ssg and ssr both `false`.
-                removeExportExprs: (!ssg && !ssr) ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
-                keepPlatform: 'node',
-              },
-            },
-          );
-          serverEntry = serverCompilerResult.serverEntry;
-        } catch (error) {
+          },
+        );
+        if (serverCompilerResult.error) {
           consola.error('Build failed.');
-          consola.debug(error);
           return;
         }
+
+        serverEntry = serverCompilerResult.serverEntry;
 
         let renderMode;
         if (ssg) {

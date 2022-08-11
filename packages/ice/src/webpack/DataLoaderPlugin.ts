@@ -3,6 +3,7 @@ import fse from 'fs-extra';
 import type { ServerCompiler } from '@ice/types/esm/plugin.js';
 import type { Compiler } from 'webpack';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
+import consola from 'consola';
 import { RUNTIME_TMP_DIR } from '../constant.js';
 
 const pluginName = 'DataLoaderPlugin';
@@ -29,6 +30,7 @@ export default class DataLoaderPlugin {
         // Check file data-loader.ts if it is exists.
         const filePath = path.join(this.rootDir, RUNTIME_TMP_DIR, 'data-loader.ts');
         if (fse.existsSync(filePath)) {
+          try {
           const { outputFiles } = await this.serverCompiler({
             // Code will be transformed by @swc/core reset target to esnext make modern js syntax do not transformed.
             target: 'esnext',
@@ -45,6 +47,10 @@ export default class DataLoaderPlugin {
             transformEnv: false,
           });
           compilation.emitAsset('js/data-loader.js', new RawSource(new TextDecoder('utf-8').decode(outputFiles[0].contents)));
+          } catch (error) {
+            consola.error('Data-loader compile error.');
+            consola.debug(error);
+          }
         } else {
           compilation.deleteAsset('js/data-loader.js');
         }
