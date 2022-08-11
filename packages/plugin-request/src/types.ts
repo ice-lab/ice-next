@@ -1,24 +1,24 @@
 import type { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 
-export interface IInterceptorRequest <T = AxiosRequestConfig> {
+export interface InterceptorRequest<T = AxiosRequestConfig> {
   onConfig?: (config: T) => T | Promise<T>;
   onError?: (error: AxiosError) => Promise<void>;
 }
 
-export interface IInterceptorResponse <K = AxiosResponse> {
+export interface InterceptorResponse<K = AxiosResponse> {
   onConfig?: (response: K) => K | Promise<K>;
   onError?: (error: AxiosError) => Promise<void>;
 }
 
-export interface IInterceptors {
-  request?: IInterceptorRequest<AxiosRequestConfig>;
-  response?: IInterceptorResponse<AxiosResponse>;
+export interface Interceptors {
+  request?: InterceptorRequest<AxiosRequestConfig>;
+  response?: InterceptorResponse<AxiosResponse>;
 }
 
-interface ICustomRequest extends AxiosRequestConfig {
+interface CustomRequest extends AxiosRequestConfig {
   instanceName?: string;
   withFullResponse?: boolean;
-  interceptors?: IInterceptors;
+  interceptors?: Interceptors;
 }
 
-export type IRequest = ICustomRequest | ICustomRequest[];
+export type Request = CustomRequest | CustomRequest[];

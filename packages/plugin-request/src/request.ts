@@ -22,24 +22,24 @@ function createAxiosInstance(instanceName?: string) {
   return axiosInstances;
 }
 
-interface IRequestConfig extends AxiosRequestConfig {
+interface RequestConfig extends AxiosRequestConfig {
   instanceName?: string;
   withFullResponse?: boolean;
 }
 
-export interface IRequestProps {
-  get: <T = any>(url: string, config?: IRequestConfig) => Promise<T>;
-  delete: <T = any>(url: string, config?: IRequestConfig) => Promise<T>;
-  head: <T = any>(url: string, config?: IRequestConfig) => Promise<T>;
-  options: <T = any>(url: string, config?: IRequestConfig) => Promise<T>;
-  post: <T = any>(url: string, data?: any, config?: IRequestConfig) => Promise<T>;
-  put: <T = any>(url: string, data?: any, config?: IRequestConfig) => Promise<T>;
-  patch: <T = any>(url: string, data?: any, config?: IRequestConfig) => Promise<T>;
+export interface RequestProps {
+  get: <T = any>(url: string, config?: RequestConfig) => Promise<T>;
+  delete: <T = any>(url: string, config?: RequestConfig) => Promise<T>;
+  head: <T = any>(url: string, config?: RequestConfig) => Promise<T>;
+  options: <T = any>(url: string, config?: RequestConfig) => Promise<T>;
+  post: <T = any>(url: string, data?: any, config?: RequestConfig) => Promise<T>;
+  put: <T = any>(url: string, data?: any, config?: RequestConfig) => Promise<T>;
+  patch: <T = any>(url: string, data?: any, config?: RequestConfig) => Promise<T>;
 }
 
-interface IRequest extends IRequestProps {
-  <T = any>(options: IRequestConfig): Promise<T>;
-  <T = any>(url: string, config?: IRequestConfig): Promise<T>;
+interface Request extends RequestProps {
+  <T = any>(options: RequestConfig): Promise<T>;
+  <T = any>(url: string, config?: RequestConfig): Promise<T>;
   Cancel: CancelStatic;
   CancelToken: CancelTokenStatic;
   isCancel: (value: any) => boolean;
@@ -90,4 +90,4 @@ const request = async function <T = any>(options): Promise<T> {
 request.CancelToken = axios.CancelToken;
 request.isCancel = axios.isCancel;
 
-export default request as IRequest;
+export default request as Request;

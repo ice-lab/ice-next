@@ -1,5 +1,5 @@
 import type { Plugin } from '@ice/types';
-import type { IRequest, IInterceptors, IInterceptorRequest, IInterceptorResponse } from './types';
+import type { Request, Interceptors, InterceptorRequest, InterceptorResponse } from './types';
 
 interface PluginRequestOptions {}
 
@@ -23,10 +23,10 @@ const plugin: Plugin<PluginRequestOptions | void> = () => ({
 });
 
 export type {
-  IRequest,
-  IInterceptors,
-  IInterceptorRequest,
-  IInterceptorResponse,
+  Request,
+  Interceptors,
+  InterceptorRequest,
+  InterceptorResponse,
   PluginRequestOptions,
 };
 export default plugin;
