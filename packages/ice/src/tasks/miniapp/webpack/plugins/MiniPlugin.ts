@@ -584,21 +584,14 @@ export default class TaroMiniPlugin {
    * 小程序全局样式文件中引入 common chunks 中的公共样式文件
    */
   injectCommonStyles({ assets }: webpack.Compilation) {
-    // debugger;
     const styleExt = this.options.fileType.style;
     const appStyle = `app${styleExt}`;
     const REG_STYLE_EXT = new RegExp(`\\.(${styleExt.replace('.', '')})(\\?.*)?$`);
-
-    if (!assets[appStyle]) return;
-
-    const originSource = assets[appStyle];
-    const source = new ConcatSource(originSource);
-
+    const source = new ConcatSource('');
     Object.keys(assets).forEach(assetName => {
       const fileName = path.basename(assetName, path.extname(assetName));
       if ((REG_STYLE.test(assetName) || REG_STYLE_EXT.test(assetName)) && this.options.commonChunks.includes(fileName)) {
-        source.add('\n');
-        source.add(`@import ${JSON.stringify(urlToRequest(assetName))};`);
+        source.add(`@import ${JSON.stringify(urlToRequest(assetName))};\n`);
         assets[appStyle] = source;
       }
     });

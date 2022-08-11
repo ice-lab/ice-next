@@ -1,4 +1,4 @@
-// import './index.css';
+import './index.css';
 import { useAppData, useConfig, useData } from 'ice';
 
 export default function Home() {
@@ -10,7 +10,7 @@ export default function Home() {
   console.log('🚀 ~ file: index.tsx ~ line 10 ~ Home ~ data', data);
   return (
     <>
-      <view className="title">Home Page</view>
+      <view className="title" onClick={() => { console.log(123123); }}>Home Page</view>
       <view className="data">
         <view>foo: </view>
         <view>users:</view>

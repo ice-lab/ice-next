@@ -57,6 +57,8 @@ const getMiniappTask = ({ rootDir, command, platform, getAppConfig, getRoutesCon
       // getData is built by data-loader
       removeExportExprs: ['getServerData', 'getStaticData'],
     },
+    cssFilename: `[name]${fileType.style}`,
+    cssChunkFilename: `[name]${fileType.style}`,
   };
 };
 

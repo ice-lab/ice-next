@@ -85,7 +85,7 @@ function configCSSRule(config: CSSRuleConfig, options: Options) {
 }
 
 const css: ModifyWebpackConfig = (config, ctx) => {
-  const { supportedBrowsers, publicPath, hashKey } = ctx;
+  const { supportedBrowsers, publicPath, hashKey, cssFilename, cssChunkFilename } = ctx;
   const cssOutputFolder = 'css';
   config.module.rules.push(...([
     ['css'],
@@ -99,7 +99,8 @@ const css: ModifyWebpackConfig = (config, ctx) => {
   ] as CSSRuleConfig[]).map((config) => configCSSRule(config, { publicPath, browsers: supportedBrowsers })));
   config.plugins.push(
     new MiniCssExtractPlugin({
-      filename: `${cssOutputFolder}/${hashKey ? `[name]-[${hashKey}].css` : '[name].css'}`,
+      filename: cssFilename || `${cssOutputFolder}/${hashKey ? `[name]-[${hashKey}].css` : '[name].css'}`,
+      chunkFilename: cssChunkFilename || `[name].css`,
       // If the warning is triggered, it seen to be unactionable for the user,
       ignoreOrder: true,
     }),
