@@ -4,15 +4,15 @@ import { createStore, createModel } from '@ice/store';
 import { PAGE_STORE_INITIAL_STATES, PAGE_STORE_PROVIDER } from './constants.js';
 import appStore from '$store';
 
-interface StoreData {
+interface StoreConfig {
   initialStates: Record<string, any>;
 }
 
 const runtime: RuntimePlugin = async ({ appContext, addWrapper, addProvider, useAppContext }) => {
   const { appExport } = appContext;
-  const storeData: StoreData = (typeof appExport.store === 'function'
+  const storeConfig: StoreConfig = (typeof appExport.store === 'function'
     ? (await appExport.store()) : appExport.store) || {};
-  const { initialStates } = storeData;
+  const { initialStates } = storeConfig;
   if (appStore && Object.prototype.hasOwnProperty.call(appStore, 'Provider')) {
     // Add app store Provider
     const StoreProvider: AppProvider = ({ children }) => {
@@ -43,7 +43,7 @@ const runtime: RuntimePlugin = async ({ appContext, addWrapper, addProvider, use
 };
 
 
-type Store = (() => Promise<StoreData>) | StoreData;
+type Store = (() => Promise<StoreConfig>) | StoreConfig;
 
 function defineStoreConfig(fn: Store) {
   return fn;
