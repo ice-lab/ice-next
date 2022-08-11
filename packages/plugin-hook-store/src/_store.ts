@@ -5,6 +5,6 @@ import { createStore } from '@ice/hooks-store';
 
 const models = {};
 
-const store = createStore(models);
+const store: ReturnType<typeof createStore> = createStore(models);
 
 export default store;
