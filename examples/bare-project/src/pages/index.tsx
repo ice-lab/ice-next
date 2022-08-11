@@ -1,4 +1,4 @@
-import './index.css';
+import './index.scss';
 import { useAppData, useConfig, useData } from 'ice';
 
 export default function Home() {

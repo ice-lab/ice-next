@@ -1,8 +1,8 @@
-import './profile.css';
+import styles from './profile.module.css';
 export default function Profile() {
   return (
     <>
-      <view className="title">second profile</view>
+      <view className={styles.profile}>second profile</view>
     </>
   );
 }
