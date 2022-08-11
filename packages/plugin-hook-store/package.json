@@ -1,7 +1,7 @@
 {
   "name": "@ice/plugin-hook-store",
   "version": "1.0.0",
-  "description": "Lightweight React state management library based on @ice/hooks-store.",
+  "description": "A plugin of lightweight React Hooks state management based on @ice/hooks-store.",
   "license": "MIT",
   "type": "module",
   "exports": {

@@ -6,7 +6,7 @@ import micromatch from 'micromatch';
 import { PAGE_STORE_MODULE, PAGE_STORE_PROVIDER } from './constants.js';
 
 interface Options {
-  // TODO:
+  // TODO: https://github.com/ice-lab/ice-next/issues/395#issuecomment-1210552931
   // disableResetPageState?: boolean;
 }
 

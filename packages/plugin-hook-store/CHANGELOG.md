@@ -1,1 +1,5 @@
-# 1.0.0
+# CHANGELOG
+
+## 1.0.0
+
+- feat: init plugin
