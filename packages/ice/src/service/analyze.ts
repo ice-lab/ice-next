@@ -192,11 +192,11 @@ export async function scanImports(entries: string[], options?: ScanOptions) {
       ),
     );
     consola.debug(`Scan completed in ${(performance.now() - start).toFixed(2)}ms:`, deps);
-    return orderedDependencies(deps);
   } catch (error) {
     consola.error('Failed to scan imports.');
     consola.debug(error);
   }
+  return orderedDependencies(deps);
 }
 
 function orderedDependencies(deps: Record<string, DepScanData>) {
