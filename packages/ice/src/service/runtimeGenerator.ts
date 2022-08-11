@@ -44,13 +44,13 @@ export function generateExports(exportList: ExportData[]) {
     const specifiers = isDefaultImport ? [specifier] : specifier;
     const symbol = type ? ';' : ',';
     importStatements.push(`import ${type ? 'type ' : ''}${isDefaultImport ? specifier : `{ ${specifier.join(', ')} }`} from '${source}';`);
-    exportStatements = specifiers.map((specifierStr) => {
+    exportStatements.push(specifiers.map((specifierStr) => {
       if (exportAlias && exportAlias[specifierStr]) {
         return `${exportAlias[specifierStr]}: ${specifierStr}${symbol}`;
       } else {
         return `${specifierStr}${symbol}`;
       }
-    });
+    }));
   });
   return {
     importStr: importStatements.join('\n'),
