@@ -20,7 +20,8 @@ export async function loadRouteModule(route: RouteModule, routeModulesCache: Rou
     routeModulesCache[id] = routeModule;
     return routeModule;
   } catch (error) {
-    consola.error('Load Route Module Error: ', error);
+    consola.error(`Failed to load route module: ${id}.`);
+    consola.debug(error);
   }
 }
 

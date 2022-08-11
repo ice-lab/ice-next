@@ -10,7 +10,6 @@ import { getCache, setCache } from '../utils/persistentCache.js';
 import { getFileHash } from '../utils/hash.js';
 import scanPlugin from '../esbuild/scan.js';
 import type { DepScanData } from '../esbuild/scan.js';
-import formatBuildFailure from '../utils/formatBuildFailure.js';
 
 interface Options {
   parallel?: number;
@@ -169,29 +168,35 @@ export async function scanImports(entries: string[], options?: ScanOptions) {
   const { alias = {}, depImports = {}, exclude = [], rootDir, plugins } = options;
   const deps = { ...depImports };
 
-  await Promise.all(
-    entries.map((entry) =>
-      build({
-        absWorkingDir: rootDir,
-        write: false,
-        entryPoints: [entry],
-        bundle: true,
-        format: 'esm',
-        logLevel: 'silent',
-        loader: { '.js': 'jsx' },
-        plugins: [
-          scanPlugin({
-            rootDir,
-            deps,
-            alias,
-            exclude,
-          }),
-          ...(plugins || []),
-        ],
-      }),
-    ));
-  consola.debug(`Scan completed in ${(performance.now() - start).toFixed(2)}ms:`, deps);
-  return orderedDependencies(deps);
+  try {
+    await Promise.all(
+      entries.map((entry) =>
+        build({
+          absWorkingDir: rootDir,
+          write: false,
+          entryPoints: [entry],
+          bundle: true,
+          format: 'esm',
+          logLevel: 'silent',
+          loader: { '.js': 'jsx' },
+          plugins: [
+            scanPlugin({
+              rootDir,
+              deps,
+              alias,
+              exclude,
+            }),
+            ...(plugins || []),
+          ],
+        }),
+      ),
+    );
+    consola.debug(`Scan completed in ${(performance.now() - start).toFixed(2)}ms:`, deps);
+    return orderedDependencies(deps);
+  } catch (error) {
+    consola.error('Failed to scan imports.');
+    consola.debug(error);
+  }
 }
 
 function orderedDependencies(deps: Record<string, DepScanData>) {
@@ -244,7 +249,8 @@ export async function getFileExports(options: FileOptions): Promise<CachedRouteE
         }
       }
     } catch (error) {
-      formatBuildFailure(`Getting route ${filePath} exports failed.`, error);
+      consola.error(`Failed to get route ${filePath} exports.`);
+      consola.debug(error);
     }
   }
   return cached.exports;

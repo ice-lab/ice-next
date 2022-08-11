@@ -1,5 +1,6 @@
 import path from 'path';
 import { createHash } from 'crypto';
+import consola from 'consola';
 import fse from 'fs-extra';
 import { build } from 'esbuild';
 import type { Plugin } from 'esbuild';
@@ -10,7 +11,6 @@ import flattenId from '../utils/flattenId.js';
 import formatPath from '../utils/formatPath.js';
 import { BUILDIN_CJS_DEPS, BUILDIN_ESM_DEPS } from '../constant.js';
 import type { DepScanData } from '../esbuild/scan.js';
-import formatBuildFailure from '../utils/formatBuildFailure.js';
 
 interface DepInfo {
   file: string;
@@ -91,7 +91,8 @@ export default async function preBundleCJSDeps(options: PreBundleDepsOptions): P
       external: [...BUILDIN_CJS_DEPS, ...BUILDIN_ESM_DEPS],
     });
   } catch (error) {
-    formatBuildFailure('Bundling dependencies failed.', error);
+    consola.error('Failed to bundle dependencies.');
+    consola.debug(error);
   }
 
   await fse.writeJSON(metadataJSONPath, metadata, { spaces: 2 });

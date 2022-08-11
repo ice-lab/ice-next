@@ -1,3 +1,4 @@
+import consola from 'consola';
 import type { ExtendsPluginAPI, ServerCompiler } from '@ice/types/esm/plugin.js';
 import type { Compiler } from 'webpack';
 
@@ -23,7 +24,12 @@ export default class ServerCompilerPlugin {
 
   public apply(compiler: Compiler) {
     compiler.hooks.emit.tap(pluginName, () => {
-      this.serverCompileTask.set(this.serverCompiler(...this.serverCompilerOptions));
+      try {
+        this.serverCompileTask.set(this.serverCompiler(...this.serverCompilerOptions));
+      } catch (error) {
+        consola.error('Server compile error.');
+        consola.debug(error);
+      }
     });
   }
 }

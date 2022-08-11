@@ -13,7 +13,6 @@ import { RUNTIME_TMP_DIR, SERVER_OUTPUT_DIR } from '../constant.js';
 import generateHTML from '../utils/generateHTML.js';
 import emptyDir from '../utils/emptyDir.js';
 import getServerEntry from '../utils/getServerEntry.js';
-import formatBuildFailure from '../utils/formatBuildFailure.js';
 
 const build = async (
   context: Context<Config>,
@@ -103,7 +102,8 @@ const build = async (
           );
           serverEntry = serverCompilerResult.serverEntry;
         } catch (error) {
-          formatBuildFailure('ICE build failed.', error);
+          consola.error('Build failed.');
+          consola.debug(error);
           return;
         }
 

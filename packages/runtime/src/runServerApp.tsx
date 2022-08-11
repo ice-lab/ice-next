@@ -183,7 +183,7 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
     });
   } catch (err) {
     consola.error('Render server entry error, downgrade to CSR.', err);
-    return renderDocument(matches, routePath, renderOptions, {});
+    return renderDocument({ matches, routePath, renderOptions, routeModules: {} });
   }
 }
 
