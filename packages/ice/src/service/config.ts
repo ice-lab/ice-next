@@ -95,7 +95,7 @@ export const getAppExportConfig = (rootDir: string) => {
     getOutfile,
     needRecompile: async (entry, keepExports) => {
       let cached = null;
-      const cachedKey = `app_${keepExports.join('_')}`;
+      const cachedKey = `app_${keepExports.join('_')}_${process.env.__ICE_VERSION__}`;
       try {
         cached = await getCache(rootDir, cachedKey);
       } catch (err) {}
@@ -129,7 +129,7 @@ export const getRouteExportConfig = (rootDir: string) => {
     transformInclude: (id) => id.includes('src/pages'),
     needRecompile: async (entry) => {
       let cached = false;
-      const cachedKey = 'route_config_file';
+      const cachedKey = `route_config_file_${process.env.__ICE_VERSION__}`;
       try {
         cached = await getCache(rootDir, cachedKey);
       } catch (err) {}
