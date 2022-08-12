@@ -166,7 +166,6 @@ export default class TaroMiniPlugin {
       webpack.NormalModule.getCompilationHooks(compilation).loader.tap(PLUGIN_NAME, (_loaderContext, module:/** TaroNormalModule */ any) => {
         const { loaderMeta = {} } = this.options;
         if (module.miniType === META_TYPE.PAGE) {
-          // debugger;
           const loaderName = this.pageLoaderName;
           if (!isLoaderExist(module.loaders, loaderName)) {
             module.loaders.unshift({

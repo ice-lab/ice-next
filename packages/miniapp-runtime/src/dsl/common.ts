@@ -127,7 +127,7 @@ export function createPageConfig(
       this.config = pageConfig || {};
 
       // this.$taroPath 是页面唯一标识
-      const uniqueOptions = Object.assign({}, options, { $taroTimestamp: Date.now() });
+      const uniqueOptions = Object.assign({}, options);
       const $taroPath = this.$taroPath = getPath(id, uniqueOptions);
       // this.$taroParams 作为暴露给开发者的页面参数对象，可以被随意修改
       if (this.$taroParams == null) {

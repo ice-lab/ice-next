@@ -13,6 +13,7 @@ import type {
   ComponentWithChildren,
 } from '../types.js';
 import { useData, useConfig } from '../RouteContext.js';
+import { useAppContext } from '../AppContext.js';
 
 class Runtime {
   private appContext: AppContext;
@@ -50,6 +51,7 @@ class Runtime {
       appContext: this.appContext,
       useData,
       useConfig,
+      useAppContext,
     };
 
     const runtimeModule = (module as CommonJsRuntime).default || module as RuntimePlugin;
