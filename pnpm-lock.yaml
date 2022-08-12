@@ -345,19 +345,17 @@ importers:
       react: ^18.2.0
       react-dom: ^18.2.0
       regenerator-runtime: ^0.13.9
-      webpack: ^5.74.0
     dependencies:
       '@ice/app': link:../../packages/ice
       '@ice/plugin-request': link:../../packages/plugin-request
       '@ice/runtime': link:../../packages/runtime
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
+      regenerator-runtime: 0.13.9
     devDependencies:
       '@types/react': 18.0.17
       '@types/react-dom': 18.0.6
       browserslist: 4.21.3
-      regenerator-runtime: 0.13.9
-      webpack: 5.74.0
 
   examples/with-store:
     specifiers:

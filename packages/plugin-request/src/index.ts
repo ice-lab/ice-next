@@ -1,5 +1,7 @@
 import type { Plugin } from '@ice/types';
 import type { Request, Interceptors, InterceptorRequest, InterceptorResponse } from './types';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 interface PluginRequestOptions {}
 
@@ -20,6 +22,7 @@ const plugin: Plugin<PluginRequestOptions | void> = () => ({
       type: false,
     });
   },
+  runtime: path.join(path.dirname(fileURLToPath(import.meta.url)), 'runtime.js'),
 });
 
 export type {

@@ -37,6 +37,6 @@ function useRequest<TData, TParams extends any[]>(
 
 export default useRequest;
 
-function isFunction(fn: any) {
+function isFunction(fn: any): fn is Function {
   return typeof fn === 'function';
 }

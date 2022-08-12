@@ -111,7 +111,6 @@ async function render({ history, runtime, Document }: RenderOptions) {
   const RouteWrappers = runtime.getWrappers();
   const AppRouter = runtime.getAppRouter();
 
-
   render(
     document.getElementById(appConfig.app.rootId),
     <BrowserEntry

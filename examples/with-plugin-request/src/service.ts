@@ -1,15 +1,8 @@
 import { request } from 'ice';
 
 const service = {
-  getUser() {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          name: 'ICE',
-          age: 26,
-        });
-      }, 1000);
-    });
+  async getUser() {
+    return await request('/api/user');
   },
 
   async getRepo(id) {

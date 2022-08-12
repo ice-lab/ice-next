@@ -12,7 +12,7 @@ const axiosInstances = {
  * Create an axios instance.
  * @param instanceName
  */
-function createAxiosInstance(instanceName?: string) {
+export function createAxiosInstance(instanceName?: string) {
   if (instanceName) {
     if (axiosInstances[instanceName]) {
       return axiosInstances;
@@ -20,6 +20,37 @@ function createAxiosInstance(instanceName?: string) {
     axiosInstances[instanceName] = axios.create(DEFAULT_CONFIG);
   }
   return axiosInstances;
+}
+
+export function setAxiosInstance(requestConfig, axiosInstance) {
+  const { interceptors = {}, ...requestOptions } = requestConfig;
+  Object.keys(requestOptions).forEach(key => {
+    axiosInstance.defaults[key] = requestOptions[key];
+  });
+
+  function isExist(handlers, [fulfilled, rejected]) {
+    return handlers.some(item => item.fulfilled === fulfilled && item.rejected === rejected);
+  }
+
+  // Add request interceptor.
+  if (interceptors.request) {
+    const [fulfilled, rejected] = [
+      interceptors.request.onConfig || function (config) { return config; },
+      interceptors.request.onError || function (error) { return Promise.reject(error); },
+    ];
+    if (isExist(axiosInstance.interceptors.request.handlers, [fulfilled, rejected])) return;
+    axiosInstance.interceptors.request.use(fulfilled, rejected);
+  }
+
+  // Add response interceptor.
+  if (interceptors.response) {
+    const [fulfilled, rejected] = [
+      interceptors.response.onConfig || function (response) { return response; },
+      interceptors.response.onError || function (error) { return Promise.reject(error); },
+    ];
+    if (isExist(axiosInstance.interceptors.response.handlers, [fulfilled, rejected])) return;
+    axiosInstance.interceptors.response.use(fulfilled, rejected);
+  }
 }
 
 interface RequestConfig extends AxiosRequestConfig {

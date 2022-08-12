@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useRequest } from 'ice';
-import styles from './index.module.css';
 import service from '../service';
+import styles from './index.module.css';
 
 export default function home() {
   const { data, error, loading, request } = useRequest(service.getUser);
