@@ -29,7 +29,7 @@ import { isFunction, isObject, isNumber } from './type';
 const NON_DIMENSIONAL_REG = /opa|ntw|ne[ch]|ex(?:s|g|n|p|$)|^ord|zoo|grid|orp|ows|mnc|^columns$|bs|erim|onit/i;
 
 function createInputCompat(type: string) {
-  function InputCompat(props: any, ref: any) {
+  function InputCompat(props: any, ref: RefObject<any>) {
     const { value, onInput, ...rest } = props;
     const [v, setV] = useState(value);
     const onChange = useCallback((event: SyntheticEvent) => {
