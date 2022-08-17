@@ -39,6 +39,15 @@ function createInputCompat(type: string) {
       onInput && onInput(event.nativeEvent);
     }, [onInput]);
 
+    // Compat maxlength in rax-textinput, because maxlength is invalid props in web,it will be set attributes to element
+    // and react will Throw a warning in DEV.
+    // https://github.com/raxjs/rax-components/issues/459
+    // https://github.com/raxjs/rax-components/blob/master/packages/rax-textinput/src/index.tsx#L142
+    if (rest.maxlength) {
+      rest.maxLength = rest.maxlength;
+      delete rest.maxlength;
+    }
+
     return _createElement(type, {
       ...rest,
       value: v,
@@ -89,15 +98,6 @@ export function createElement<P extends {
     // and native input can also modify the value of self in Rax.
     // So we should compat input to InputCompat, the same as textarea.
     type = createInputCompat(type);
-
-    // Compat maxlength in rax-textinput, because maxlength is invalid props in web,it will be set attributes to element
-    // and react will Throw a warning in DEV.
-    // https://github.com/raxjs/rax-components/issues/459
-    // https://github.com/raxjs/rax-components/blob/master/packages/rax-textinput/src/index.tsx#L142
-    if (rest.maxlength) {
-      rest.maxLength = rest.maxlength;
-      delete rest.maxlength;
-    }
   }
 
   // Compat for visibility events.
