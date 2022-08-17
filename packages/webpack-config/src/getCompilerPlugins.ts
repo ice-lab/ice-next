@@ -11,7 +11,7 @@ const SKIP_COMPILE = [
   // polyfill and helpers
   'core-js', 'core-js-pure', '@swc/helpers', '@babel/runtime',
   // built-in runtime
-  'react', 'react-dom', 'react-router', 'react-router-dom',
+  'react', 'react-dom',
   // dev dependencies
   '@pmmmwh/react-refresh-webpack-plugin', 'webpack', 'webpack-dev-server', 'react-refresh',
 ];
@@ -50,10 +50,9 @@ function getCompilerPlugins(config: Config, compiler: Compiler) {
     new RegExp(SKIP_COMPILE.map((dep) => `node_modules/?.+${dep}/`).join('|')),
     /bundles\/compiled/,
   ];
-
   // Add custom transform before swc compilation so the source code can be got before transformed.
   compilerPlugins.push(
-    ...transformPlugins,
+    ...(transformPlugins.filter(({ enforce }) => !enforce || enforce === 'pre') || []),
     ...transforms.map((transform, index) => ({ name: `transform_${index}`, transform })),
   );
 
@@ -69,9 +68,14 @@ function getCompilerPlugins(config: Config, compiler: Compiler) {
     }));
   }
 
+  compilerPlugins.push(
+    ...(transformPlugins.filter(({ enforce }) => enforce === 'post') || []),
+  );
+
   return compiler === 'webpack'
-    ? compilerPlugins.map(plugin => createUnplugin(() => getPluginTransform(plugin, 'webpack')).webpack())
-    : compilerPlugins.map(plugin => createUnplugin(() => getPluginTransform(plugin, 'esbuild')).esbuild());
+    // Plugins will be transformed as webpack loader, the execute order of webpack loader is reversed.
+    ? compilerPlugins.reverse().map(plugin => createUnplugin(() => getPluginTransform(plugin, 'webpack')).webpack())
+    : compilerPlugins.map(plugin => getPluginTransform(plugin, 'esbuild'));
 }
 
 export default getCompilerPlugins;

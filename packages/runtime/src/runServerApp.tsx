@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import { Action, parsePath } from 'history';
 import type { Location } from 'history';
+import { default as consola } from 'consola';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
@@ -78,8 +79,8 @@ export async function renderToHTML(requestContext: ServerContext, renderOptions:
     if (renderOptions.disableFallback) {
       throw error;
     }
-    console.error('Warning: piperToString error, downgrade to csr.', error);
-    // downgrade to csr.
+    consola.error('PiperToString error, downgrade to CSR.', error);
+    // downgrade to CSR.
     const result = fallback();
     return result;
   }
@@ -108,8 +109,8 @@ export async function renderToResponse(requestContext: ServerContext, renderOpti
       if (renderOptions.disableFallback) {
         throw error;
       }
-      console.error('PiperToResponse error, downgrade to csr.', error);
-      // downgrade to csr.
+      consola.error('PiperToResponse error, downgrade to CSR.', error);
+      // downgrade to CSR.
       const result = await fallback();
       sendResult(res, result);
     }
@@ -149,19 +150,22 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
   }
 
   const appConfig = getAppConfig(app);
-  const matches = matchRoutes(routes, location, serverOnlyBasename || basename);
-  const routePath = getCurrentRoutePath(matches);
+  // HashRouter loads route modules by the CSR.
+  if (appConfig?.router?.type === 'hash') {
+    return renderDocument({ matches: [], renderOptions, routeModules: {} });
+  }
 
+  const matches = matchRoutes(routes, location, serverOnlyBasename || basename);
   if (!matches.length) {
     return render404();
   }
 
-  if (documentOnly) {
-    return renderDocument(matches, routePath, renderOptions, {});
-  }
+  const routePath = getCurrentRoutePath(matches);
 
-  // FIXME: 原来是在 renderDocument 之前执行这段逻辑。
-  // 现在为了避免 CSR 时把页面组件都加载进来导致资源（比如 css）加载报错，带来的问题是调用 renderHTML 的时候 getConfig 失效了
+  if (documentOnly) {
+    return renderDocument({ matches, routePath, renderOptions, routeModules: {} });
+  }
+  // FIXME: https://github.com/ice-lab/ice-next/issues/427
   const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   try {
@@ -174,15 +178,15 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
       appConfig,
       appData,
       routeModules,
-      basename,
+      basename: serverOnlyBasename || basename,
       routePath,
     });
   } catch (err) {
     if (disableFallback) {
       throw err;
     }
-    console.error('Warning: render server entry error, downgrade to csr.', err);
-    return renderDocument(matches, routePath, renderOptions, {});
+    consola.error('Warning: render server entry error, downgrade to csr.', err);
+    return renderDocument({ matches, routePath, renderOptions, routeModules: {} });
   }
 }
 
@@ -203,7 +207,7 @@ interface renderServerEntry {
   appConfig: AppConfig;
   appData: AppData;
   routeModules: RouteModules;
-  routePath: string;
+  routePath?: string;
   basename?: string;
 }
 
@@ -282,7 +286,7 @@ async function renderServerEntry(
   const pipe = renderToNodeStream(element, false);
 
   const fallback = () => {
-    return renderDocument(matches, routePath, renderOptions, routeModules);
+    return renderDocument({ matches, routePath, renderOptions, routeModules });
   };
 
   return {
@@ -293,22 +297,23 @@ async function renderServerEntry(
   };
 }
 
+interface RenderDocumentOptions {
+  matches: RouteMatch[];
+  routeModules: RouteModules;
+  renderOptions: RenderOptions;
+  routePath?: string;
+}
 /**
  * Render Document for CSR.
  */
-function renderDocument(
-  matches: RouteMatch[],
-  routePath: string,
-  options: RenderOptions,
-  routeModules: RouteModules,
-): RenderResult {
+function renderDocument({ matches, routeModules, renderOptions, routePath }: RenderDocumentOptions): RenderResult {
   const {
     routes,
     assetsManifest,
     app,
     Document,
     basename,
-  } = options;
+  } = renderOptions;
 
   const routesData = null;
   const appData = null;
