@@ -220,6 +220,7 @@ importers:
       browserslist: ^4.19.3
       react: ^18.0.0
       react-dom: ^18.0.0
+      regenerator-runtime: ^0.13.9
       webpack-bundle-analyzer: ^4.5.0
     dependencies:
       '@ice/app': link:../../packages/ice
@@ -230,6 +231,7 @@ importers:
       '@types/react': 18.0.8
       '@types/react-dom': 18.0.3
       browserslist: 4.20.3
+      regenerator-runtime: 0.13.9
       webpack-bundle-analyzer: 4.5.0
 
   examples/with-antd:
