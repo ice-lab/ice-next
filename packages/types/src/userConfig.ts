@@ -43,4 +43,5 @@ export interface UserConfig {
   experimental?: Config['experimental'];
   transform?: UnpluginOptions['transform'];
   syntaxFeatures?: SyntaxFeatures;
+  splitChunks?: boolean;
 }
