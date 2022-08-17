@@ -1,4 +1,4 @@
-export default async function compilationLoader(source: string, map: any) {
+module.exports = async function compilationLoader(source: string, map: any) {
   const options = this.getOptions();
   const callback = this.async();
   const { transform } = options;
@@ -10,4 +10,4 @@ export default async function compilationLoader(source: string, map: any) {
   } else {
     callback(null, source, map);
   }
-}
+};

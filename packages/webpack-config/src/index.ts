@@ -190,7 +190,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
         {
           test: compilation.transformInclude,
           use: {
-            loader: path.join(__dirname, 'webpackLoaders/compilationLoader.js'),
+            loader: require.resolve('./webpackLoaders/compilationLoader.cjs', { paths: [__dirname] }),
             options: {
               transform: compilation.transform,
             },
