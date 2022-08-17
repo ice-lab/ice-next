@@ -1,4 +1,4 @@
-import { defineAppConfig } from 'ice';
+import { defineAppConfig, history } from 'ice';
 import { defineAuthConfig } from '@ice/plugin-auth/esm/types';
 import { isWeb, isNode } from '@uni/env';
 import type { GetAppData } from 'ice';
@@ -6,6 +6,8 @@ import type { GetAppData } from 'ice';
 if (process.env.ICE_CORE_ERROR_BOUNDARY === 'true') {
   console.error('__REMOVED__');
 }
+
+console.log('history in app', history);
 
 console.log('__LOG__');
 console.warn('__WARN__');
