@@ -1,4 +1,4 @@
-import { Meta, Title, Links, Main, Scripts, Data } from 'ice';
+import { Meta, Title, Links, Main, Scripts } from 'ice';
 
 function Document(props) {
   return (
@@ -13,7 +13,6 @@ function Document(props) {
       </head>
       <body>
         <Main />
-        <Data />
         <Scripts />
       </body>
     </html>
