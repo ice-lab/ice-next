@@ -1,12 +1,13 @@
 import type { Config } from '@ice/types';
 import type { BuildOptions } from 'esbuild';
-import { createUnplugin } from 'unplugin';
-import type { UnpluginOptions } from 'unplugin';
+import unplugin from '@ice/bundles/compiled/unplugin/index.js';
+import type { UnpluginOptions } from '@ice/bundles/compiled/unplugin/index.js';
 import compilationPlugin from './unPlugins/compilation.js';
 import type { WebpackConfig } from './index.js';
 
 type Compiler = 'webpack' | 'esbuild';
 
+const { createUnplugin } = unplugin;
 const SKIP_COMPILE = [
   // polyfill and helpers
   'core-js', 'core-js-pure', '@swc/helpers', '@babel/runtime',

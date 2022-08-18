@@ -46,7 +46,22 @@ const tasks = [
     'postcss-preset-env', 'postcss-nested', 'postcss-modules', 'postcss-plugin-rpx2vw',
     'webpack-bundle-analyzer', 'es-module-lexer', 'terser',
     'eslint-webpack-plugin', 'copy-webpack-plugin', 'cacache', 'ora',
+    'unplugin',
   ].map((pkgName) => ({ pkgName })),
+  {
+    pkgName: 'unplugin',
+    declaration: false,
+    emptyDir: false,
+    file: 'node_modules/unplugin/dist/webpack/loaders/transform.js',
+    bundleName: 'webpack/loaders/transform.js',
+  },
+  {
+    pkgName: 'unplugin',
+    declaration: false,
+    emptyDir: false,
+    file: 'node_modules/unplugin/dist/webpack/loaders/load.js',
+    bundleName: 'webpack/loaders/load.js',
+  },
   {
     // pack main package
     pkgName: 'fork-ts-checker-webpack-plugin',
