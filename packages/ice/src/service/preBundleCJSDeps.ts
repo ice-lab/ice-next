@@ -12,6 +12,7 @@ import flattenId from '../utils/flattenId.js';
 import formatPath from '../utils/formatPath.js';
 import { BUILDIN_CJS_DEPS, BUILDIN_ESM_DEPS } from '../constant.js';
 import type { DepScanData } from '../esbuild/scan.js';
+import aliasPlugin from '../esbuild/alias.js';
 
 interface DepInfo {
   file: string;
@@ -89,7 +90,10 @@ export default async function preBundleCJSDeps(options: PreBundleDepsOptions): P
       platform: 'node',
       loader: { '.js': 'jsx' },
       ignoreAnnotations: true,
-      plugins,
+      plugins: [
+        aliasPlugin({ alias, format: 'cjs', externalDependencies: false }),
+        ...plugins,
+      ],
       external: [...BUILDIN_CJS_DEPS, ...BUILDIN_ESM_DEPS],
     });
   } catch (error) {
