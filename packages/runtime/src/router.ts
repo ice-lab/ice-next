@@ -4,4 +4,5 @@ export {
   useParams,
   useSearchParams,
   useLocation,
+  useNavigate,
 } from 'react-router-dom';
