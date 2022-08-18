@@ -90,6 +90,19 @@ const tasks = [
     },
   },
   {
+    pkgName: 'mini-css-extract-plugin',
+    skipCompile: true,
+    patch: () => {
+      // copy packages
+      const pkgPath = path.join(__dirname, '../node_modules/mini-css-extract-plugin');
+      const targetPath = path.join(__dirname, '../compiled/mini-css-extract-plugin');
+      const entryPath = path.join(targetPath, 'dist/index.js');
+      fs.copySync(path.join(pkgPath, 'dist'), path.join(targetPath, 'dist'));
+      fs.copyFileSync(path.join(targetPath, 'index.d.ts'), path.join(targetPath, 'dist/index.d.ts'));
+      fs.writeFileSync(entryPath, fs.readFileSync(entryPath, 'utf-8').replace('schema-utils', '@ice/bundles/compiled/schema-utils/index.js'));
+    },
+  },
+  {
     pkgName: 'terser-webpack-plugin',
     matchCopyFiles: (data: { resolvePath: string; resolveId: string }): boolean => {
       const { resolvePath, resolveId } = data;
