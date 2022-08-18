@@ -90,10 +90,10 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
   const dev = mode !== 'production';
   const supportedBrowsers = getSupportedBrowsers(rootDir, dev);
   const hashKey = hash === true ? 'hash:8' : (hash || '');
-  // formate alias
+  // format alias
   const aliasWithRoot = {};
   Object.keys(alias).forEach((key) => {
-    aliasWithRoot[key] = alias[key] && alias[key].startsWith('.') ? path.join(rootDir, alias[key]) : alias[key];
+    aliasWithRoot[key] = alias[key] && !path.isAbsolute(alias[key]) ? path.join(rootDir, alias[key]) : alias[key];
   });
 
   // auto stringify define value
