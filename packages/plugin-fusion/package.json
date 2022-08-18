@@ -11,7 +11,8 @@
     "!esm/**/*.map"
   ],
   "dependencies": {
-    "@ice/style-import": "^1.0.0"
+    "@ice/style-import": "^1.0.0",
+    "change-case": "^4.1.2"
   },
   "devDependencies": {
     "@ice/types": "^1.0.0"

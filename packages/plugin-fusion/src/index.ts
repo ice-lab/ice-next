@@ -1,6 +1,7 @@
 import { createRequire } from 'module';
 import type { Plugin } from '@ice/types';
 import styleImportPlugin from '@ice/style-import';
+import { paramCase } from 'change-case';
 
 interface PluginOptions {
   theme?: Record<string, string>;
@@ -35,7 +36,7 @@ const plugin: Plugin<PluginOptions> = (options = {}) => ({
       onGetConfig((config) => {
         config.transformPlugins = [...(config.transformPlugins || []), styleImportPlugin({
           libraryName: '@alifd/next',
-          style: (name) => `@alifd/next/es/${name.toLocaleLowerCase()}/${importStyle === 'sass' ? 'style' : 'style2'}`,
+          style: (name) => `@alifd/next/es/${paramCase(name)}/${importStyle === 'sass' ? 'style' : 'style2'}`,
         })];
       });
     }
