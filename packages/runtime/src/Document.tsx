@@ -70,7 +70,6 @@ export function Scripts(props) {
   const routeScripts = getScripts(matches, routesConfig);
   const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
-  // Page assets need to be load before entry assets, so when call dynamic import won't cause duplicate js chunk loaded.
   const scripts = entryAssets.concat(pageAssets).filter(path => path.indexOf('.js') > -1);
 
   const matchedIds = matches.map(match => match.route.id);
