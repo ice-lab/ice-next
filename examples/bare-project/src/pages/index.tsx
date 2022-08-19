@@ -24,7 +24,7 @@ export default function Home() {
         <image src="https://v3.ice.work/img/logo.png" />
         {/* @ts-ignore */}
         <image src={url} />
-        <Link to="/">222</Link>
+        <Link to="/?hello=world">222</Link>
       </view>
     </>
   );

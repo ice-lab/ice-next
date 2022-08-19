@@ -5,7 +5,9 @@ interface ILinkProps extends React.ComponentProps<any> {
   to: string;
 }
 
-function matchRoute(path: string, routes: Array<string>): string | undefined {
+function matchRoute(url: string, routes: Array<string>): string | undefined {
+  const [url_, hash] = url.split('#');
+  const [path, query] = url_.split('?');
   /*
   * path => route
   * 1.  /about => about or about/index
@@ -20,14 +22,12 @@ function matchRoute(path: string, routes: Array<string>): string | undefined {
       return route === 'index';
     }
   });
-  console.log('🚀 ~ file: Link.tsx ~ line 25 ~ matchRoute ~ matchedRoute', matchedRoute);
-  return matchedRoute;
+  return query ? `${matchedRoute}?${query}` : matchedRoute;
 }
 
 export default function Link(props: ILinkProps) {
   const { routes } = Current.app.config;
   const url = matchRoute(props.to, routes);
-  // TODO: navigator 其他值
   // @ts-ignore
   return <navigator url={url}>{props.children}</navigator>;
 }
