@@ -10,6 +10,7 @@ import getAppConfig from '../appConfig.js';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { createMiniApp } from './connect.js';
+import { setHistory } from './history.js';
 
 interface RunClientAppOptions {
   app: AppExport;
@@ -21,6 +22,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
   const appData = await getAppData(app);
   const { miniappManifest } = app;
   const appConfig = getAppConfig(app);
+  setHistory(miniappManifest.routes);
   const appContext: AppContext = {
     appExport: app,
     appConfig,

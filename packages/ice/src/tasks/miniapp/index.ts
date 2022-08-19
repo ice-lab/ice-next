@@ -54,7 +54,8 @@ const getMiniappTask = ({ rootDir, command, platform, getAppConfig, getRoutesCon
     devServer: {}, // No need to use devServer in miniapp
     enableCopyPlugin: true,
     swcOptions: {
-      keepPlatform: 'miniapp',
+      // compatible with former design that miniapp represents ali miniapp
+      keepPlatform: platform === 'ali-miniapp' ? 'miniapp' : platform,
       // getData is built by data-loader
       removeExportExprs: ['getServerData', 'getStaticData'],
     },

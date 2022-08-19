@@ -36,7 +36,7 @@ interface ConfigurationCtx extends Config {
 interface SwcOptions {
   removeExportExprs?: string[];
   compilationConfig?: SWCCompilationConfig;
-  keepPlatform?: 'node' | 'web' | 'weex' | 'miniapp';
+  keepPlatform?: 'node' | 'web' | 'weex' | 'miniapp' | 'wechat-miniprogram' | 'bytedance-microapp' | 'baidu-smartprogram' | 'kuaishou-miniprogram';
 }
 
 type Experimental = Pick<Configuration, 'experiments'>;

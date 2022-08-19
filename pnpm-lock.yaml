@@ -791,6 +791,7 @@ importers:
       '@types/react': ^18.0.8
       '@types/react-dom': ^18.0.3
       history: ^5.3.0
+      miniapp-history: ^0.1.7
       react: ^18.0.0
       react-dom: ^18.0.0
       react-router-dom: ^6.2.2
@@ -801,6 +802,7 @@ importers:
       '@tarojs/shared': 3.5.0-beta.7
       '@tarojs/taro': 3.5.0-beta.7_@types+react@18.0.17
       history: 5.3.0
+      miniapp-history: 0.1.7
       react-router-dom: 6.3.0_biqbaboplfbrettd7655fr4n2y
     devDependencies:
       '@types/react': 18.0.17
@@ -11835,6 +11837,12 @@ packages:
     dependencies:
       schema-utils: 4.0.0
       webpack: 5.74.0
+
+  /miniapp-history/0.1.7:
+    resolution: {integrity: sha512-q/+f8ncjeyDvPahMLEeknvJiKcVwZLVNDm3tNeB4o8sxJxoQbHIaStJ9SpQkbdhJn971kmoUQyH8aH26O7OvIw==}
+    dependencies:
+      universal-env: 3.3.3
+    dev: false
 
   /minimalistic-assert/1.0.1:
     resolution: {integrity: sha512-UtJcAD4yEaGtjPezWuO9wC4nwUnVH/8/Im3yEHQP4b67cXlD/Qr9hdITCU1xDbSEXg2XKNaP8jsReV7vQd00/A==}

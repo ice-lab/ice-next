@@ -4,6 +4,7 @@ import { useData, useConfig } from '../RouteContext.js';
 import runClientApp from './runClientApp.js';
 import Link from './Link.js';
 import useSearchParams from './useSearchParams.js';
+import { routerHistory as history } from './history.js';
 
 export {
   runClientApp,
@@ -14,4 +15,5 @@ export {
   useConfig,
   Link,
   useSearchParams,
+  history,
 };

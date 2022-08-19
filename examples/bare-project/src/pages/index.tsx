@@ -1,5 +1,5 @@
 import './index.scss';
-import { useAppData, useConfig, useData, Link, useSearchParams } from 'ice';
+import { useAppData, useConfig, useData, Link, useSearchParams, history } from 'ice';
 import json from '../test.json';
 import url from './ice.png';
 
@@ -25,6 +25,7 @@ export default function Home() {
         {/* @ts-ignore */}
         <image src={url} />
         <Link to="/?hello=world">222</Link>
+        <view onClick={() => { history.push('/?hello=computer'); }}>点我跳转</view>
       </view>
     </>
   );
