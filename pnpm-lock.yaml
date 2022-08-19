@@ -730,9 +730,9 @@ importers:
 
   packages/types:
     specifiers:
-      '@builder/swc': ^0.2.0
       '@ice/route-manifest': ^1.0.0
       '@ice/runtime': ^1.0.0
+      '@swc/core': 1.2.210
       build-scripts: ^2.0.0-23
       esbuild: ^0.14.23
       eslint: ^8.14.0
@@ -745,9 +745,9 @@ importers:
       webpack: ^5.73.0
       webpack-dev-server: ^4.7.4
     devDependencies:
-      '@builder/swc': 0.2.1
       '@ice/route-manifest': link:../route-manifest
       '@ice/runtime': link:../runtime
+      '@swc/core': 1.2.210
       build-scripts: 2.0.0-23
       esbuild: 0.14.54
       eslint: 8.22.0
@@ -757,7 +757,7 @@ importers:
       terser: 5.14.2
       typescript: 4.7.4
       unplugin: 0.9.3_3qmdnfoccgmcaqi5n264fyeyfi
-      webpack: 5.74.0_esbuild@0.14.54
+      webpack: 5.74.0_3cawqt5e67dzz3yqkvwzyd4tq4
       webpack-dev-server: 4.10.0_webpack@5.74.0
 
   packages/webpack-config:
@@ -2421,104 +2421,6 @@ packages:
 
   /@bcoe/v8-coverage/0.2.3:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
-    dev: true
-
-  /@builder/swc-darwin-arm64/0.2.0:
-    resolution: {integrity: sha512-+nmnScnq40eMKqCLpVwl7P/JCHrzm9q1ECvD/nGTNATweMB0hhTjX7V/5DfHELl1RHGnw7NchAuVJDesNa9daw==}
-    engines: {node: '>= 10'}
-    cpu: [arm64]
-    os: [darwin]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /@builder/swc-darwin-x64/0.2.0:
-    resolution: {integrity: sha512-vR9H+o5WmrasoAgMmL9HA2DfUosreGt0Pak54iOIyu3V6hSXaLxKuSidqEMcWBG1nN2wEYBvlzP8s04WusqPRQ==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [darwin]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /@builder/swc-linux-arm64-gnu/0.2.0:
-    resolution: {integrity: sha512-O18+aSQ7ZGcBwongjsatQ7OcJo9D0YDsBujPkQfQ0sBwnxmzGTw4kkXHr/K9Bou9wcy8TEpXRfaauaLHzzecAA==}
-    engines: {node: '>= 10'}
-    cpu: [arm64]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /@builder/swc-linux-arm64-musl/0.2.0:
-    resolution: {integrity: sha512-0vkGpqmJNOfsWh7qb3Mqga0gJPsAomxPitWapRlFQ736Q0qHL4Bb270/VZO3xcjA0zZKaN8VdwVw+Pxqg3ziQA==}
-    engines: {node: '>= 10'}
-    cpu: [arm64]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /@builder/swc-linux-x64-gnu/0.2.0:
-    resolution: {integrity: sha512-6gPaiwQq1l/eeNthOBvWInHU5i2bfbnGuw4YDsTF2pHhbHd7eR++N5viTROJLjFaZevWrNUbfMc47IMRGQg7WA==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /@builder/swc-linux-x64-musl/0.2.0:
-    resolution: {integrity: sha512-01zpp3sHM48x1Tl1fzM6si1E6ZIooJkXts+vPu36v265gXEb1winhFHCXXtQXvSHZ/XEyRFD1BcgdCm3goSJRw==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [linux]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /@builder/swc-win32-arm64-msvc/0.2.0:
-    resolution: {integrity: sha512-+06kFldeVV1Yzy2tfkeClwsglW50j6qG2vpTA3Tqwp5kEAGFNT1tUwsoWcbySJSCRlGBAVHDZxJlsUMqSK34Yw==}
-    engines: {node: '>= 10'}
-    cpu: [arm64]
-    os: [win32]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /@builder/swc-win32-ia32-msvc/0.2.0:
-    resolution: {integrity: sha512-wc9GA1YWv5ZxVYl73KDdRuX3All8reNIUbtPEKz2LwQ5locUX6gb7pdDzDz0et/xXjshZRGka7wDU2wzgi8Giw==}
-    engines: {node: '>= 10'}
-    cpu: [ia32]
-    os: [win32]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /@builder/swc-win32-x64-msvc/0.2.0:
-    resolution: {integrity: sha512-l8eMGTigKHrA46HAkXWblYwxQeT/SEe9yKrIYi2kfngWHNUALUFlPnnoJOSmLCGwPRZTHUgcx45Ta+15ahj5DQ==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [win32]
-    requiresBuild: true
-    dev: true
-    optional: true
-
-  /@builder/swc/0.2.1:
-    resolution: {integrity: sha512-ngo2sSS9bD26M8IrmQPAhCw0lv088oC/F01pPAx5TRLU5ugrG8p5UOGtZw4BIBm+8cxxXRQKdCo2Fa9D26aBWQ==}
-    engines: {node: '>= 12'}
-    dependencies:
-      '@napi-rs/triples': 1.1.0
-    optionalDependencies:
-      '@builder/swc-darwin-arm64': 0.2.0
-      '@builder/swc-darwin-x64': 0.2.0
-      '@builder/swc-linux-arm64-gnu': 0.2.0
-      '@builder/swc-linux-arm64-musl': 0.2.0
-      '@builder/swc-linux-x64-gnu': 0.2.0
-      '@builder/swc-linux-x64-musl': 0.2.0
-      '@builder/swc-win32-arm64-msvc': 0.2.0
-      '@builder/swc-win32-ia32-msvc': 0.2.0
-      '@builder/swc-win32-x64-msvc': 0.2.0
     dev: true
 
   /@colors/colors/1.5.0:
@@ -4201,10 +4103,6 @@ packages:
 
   /@mdx-js/util/1.6.22:
     resolution: {integrity: sha512-H1rQc1ZOHANWBvPcW+JpGwr+juXSxM8Q8YCkm3GhZd8REu1fHR3z99CErO1p9pkcfcxZnMdIZdIsXkOHY0NilA==}
-
-  /@napi-rs/triples/1.1.0:
-    resolution: {integrity: sha512-XQr74QaLeMiqhStEhLn1im9EOMnkypp7MZOwQhGzqp2Weu5eQJbpPxWxixxlYRKWPOmJjsk6qYfYH9kq43yc2w==}
-    dev: true
 
   /@node-rs/jieba-android-arm-eabi/1.6.1:
     resolution: {integrity: sha512-R1YQfsPr7sK3Tq1sM0//6lNAGJK9RnMT0ShITT+7EJYr5OufUBb38lf/mRhrLxR0NF1pycEsMjdCAwrWrHd8rA==}
@@ -15475,6 +15373,7 @@ packages:
       serialize-javascript: 6.0.0
       terser: 5.14.2
       webpack: 5.74.0_esbuild@0.14.54
+    dev: true
 
   /terser-webpack-plugin/5.3.5_vwzmvoh3samqo2nn3x7mqt365m:
     resolution: {integrity: sha512-AOEDLDxD2zylUGf/wxHxklEkOe2/r+seuyOWujejFrIxHf11brA1/dWQNIgXa1c6/Wkxgu7zvv0JhOWfc2ELEA==}
@@ -16014,7 +15913,7 @@ packages:
       acorn: 8.8.0
       chokidar: 3.5.3
       esbuild: 0.14.54
-      webpack: 5.74.0_esbuild@0.14.54
+      webpack: 5.74.0_3cawqt5e67dzz3yqkvwzyd4tq4
       webpack-sources: 3.2.3
       webpack-virtual-modules: 0.4.4
     dev: true
@@ -16482,7 +16381,7 @@ packages:
       serve-index: 1.9.1
       sockjs: 0.3.24
       spdy: 4.0.2
-      webpack: 5.74.0_esbuild@0.14.54
+      webpack: 5.74.0_3cawqt5e67dzz3yqkvwzyd4tq4
       webpack-dev-middleware: 5.3.3_webpack@5.74.0
       ws: 8.8.1
     transitivePeerDependencies:
@@ -16709,6 +16608,7 @@ packages:
       - '@swc/core'
       - esbuild
       - uglify-js
+    dev: true
 
   /webpackbar/5.0.2_webpack@5.74.0:
     resolution: {integrity: sha512-BmFJo7veBDgQzfWXl/wwYXr/VFus0614qZ8i9znqcl9fnEdiVkdbi0TedLQ6xAK92HZHDJ0QmyQ0fmuZPAgCYQ==}
