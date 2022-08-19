@@ -1,3 +1,8 @@
+<% if (globalStyle) {-%>
+  import '<%= globalStyle %>'
+<% } -%>
+
+<% if (platform === 'web') { -%>
 import {
   Link as OriginLink,
   Outlet as OriginOutlet,
@@ -10,10 +15,6 @@ import {
   useSearchParamsSingle,
   useLocationSingle,
 } from '@ice/runtime';
-
-<% if (globalStyle) {-%>
-import '<%= globalStyle %>'
-<% } -%>
 
 let Link: typeof OriginLink;
 let Outlet: typeof OriginOutlet;
@@ -53,6 +54,17 @@ export {
   Scripts,
   Main,
 } from '@ice/runtime';
+<% } else { -%>
+  export { 
+    defineAppConfig, 
+    useAppData, 
+    useData, 
+    useConfig, 
+    Link, 
+    useSearchParams, 
+  } from '@ice/runtime/miniapp';
+<% }-%>
+
 
 <%- framework.imports %>
 

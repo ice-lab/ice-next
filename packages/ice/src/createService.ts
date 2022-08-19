@@ -128,6 +128,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   // add render data
   generator.setRenderData({
     ...routesInfo,
+    platform,
     iceRuntimePath: platform === WEB ? '@ice/runtime' : '@ice/runtime/miniapp',
     needRoutes: platform === WEB,
     needDocument: platform === WEB,

@@ -62,11 +62,10 @@ const getWatchEvents = (options: Options): WatchEvent[] => {
   const watchGlobalStyle: WatchEvent = [
     getGlobalStyleGlobPattern(),
     (event: string, filePath: string) => {
-      const indexTemplate = MINIAPP_PLATFORMS.includes(platform) ? 'index.miniapp.ts.ejs' : 'index.ts.ejs';
       if (event === 'unlink') {
         consola.log('[event]', `style '${filePath}': ${event}`);
         generator.renderFile(
-          path.join(templateDir, indexTemplate),
+          path.join(templateDir, 'index.ts.ejs'),
           path.join(rootDir, targetDir, 'index.ts'),
           { globalStyle: undefined },
         );
@@ -74,7 +73,7 @@ const getWatchEvents = (options: Options): WatchEvent[] => {
       if (event === 'add') {
         consola.log('[event]', `style '${filePath}': ${event}`);
         generator.renderFile(
-          path.join(templateDir, indexTemplate),
+          path.join(templateDir, 'index.ts.ejs'),
           path.join(rootDir, targetDir, 'index.ts'),
           { globalStyle: `@/${path.basename(filePath)}` },
         );
