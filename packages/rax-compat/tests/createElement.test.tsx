@@ -51,7 +51,7 @@ describe('createElement', () => {
     const wrapper = render(createElement(
       'div',
       {
-        'data-testid': 'id',
+        'data-testid': 'rpxTest',
         style: {
           width: '300rpx'
         }
@@ -59,7 +59,36 @@ describe('createElement', () => {
       str
     ));
 
-    const node = wrapper.queryByTestId('id');
+    const node = wrapper.queryByTestId('rpxTest');
     expect(node.style.width).toBe('40vw');
+  });
+
+  it('should work with value', () => {
+    const str = 'hello world';
+    const wrapper = render(createElement(
+      'input',
+      {
+        'data-testid': 'valueTest',
+        value: str,
+      },
+    ));
+
+    const node = wrapper.queryByTestId('valueTest');
+    expect(node.value).toBe(str);
+  });
+
+  it('input set empty string to maxlength not be 0', () => {
+    const str = 'hello world';
+    const wrapper = render(createElement(
+      'input',
+      {
+        'data-testid': 'maxlengthTest',
+        value: str,
+        maxlength: ''
+      },
+    ));
+
+    const node = wrapper.queryByTestId('valueTest');
+    expect(node?.getAttribute('maxlength')).toBe(null);
   });
 });

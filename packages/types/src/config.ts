@@ -33,6 +33,7 @@ interface ConfigurationCtx extends Config {
   webpack: typeof webpack;
 }
 
+type Experimental = Configuration['experiments'];
 interface SwcOptions {
   removeExportExprs?: string[];
   compilationConfig?: SWCCompilationConfig;
