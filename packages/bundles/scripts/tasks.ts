@@ -22,7 +22,7 @@ export const taskExternals = {
 };
 
 const commonDeps = ['terser', 'tapable', 'cssnano', 'terser-webpack-plugin', 'webpack', 'schema-utils',
-'lodash', 'postcss-preset-env', 'loader-utils', 'source-map', 'find-up', 'common-path-prefix'];
+'lodash', 'postcss-preset-env', 'loader-utils', 'find-up', 'common-path-prefix'];
 
 const webpackDevServerDeps = ['bonjour-service', 'colorette', 'compression', 'connect-history-api-fallback',
 'default-gateway', 'express', 'graceful-fs', 'http-proxy-middleware',
@@ -157,7 +157,8 @@ const tasks = [
         const targetPath = path.join(__dirname, `../compiled/@pmmmwh/react-refresh-webpack-plugin/${filePath}`);
         if (path.extname(filePath) === '.js') {
           const fileContent = fs.readFileSync(sourcePath, 'utf8');
-          fs.writeFileSync(targetPath, replaceDeps(fileContent, commonDeps));
+          // Add source-map for react-refresh-webpack-plugin, while other dependencies should pack it.
+          fs.writeFileSync(targetPath, replaceDeps(fileContent, commonDeps.concat('source-map')));
         } else {
           fs.copyFileSync(sourcePath, targetPath);
         }
