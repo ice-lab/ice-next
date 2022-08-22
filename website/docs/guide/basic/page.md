@@ -37,7 +37,7 @@ export default function Home() {
 
 支持的页面级配置包含:
 
-#### title
+### title
 
 标题会显示在文档上，可以通过 `title` 属性来设置。 示例：
 
@@ -49,9 +49,9 @@ export function getConfig() {
 }
 ```
 
-#### metas
+### metas
 
-Meta 信息会显示在文档上，可以通过 `meta` 属性来设置。 示例：
+Meta 信息会显示在文档上，可以通过 `metas` 属性来设置。 示例：
 
 ```tsx
 export function getConfig() {
@@ -67,7 +67,7 @@ export function getConfig() {
 }
 ```
 
-#### links
+### links
 
 页面级需要额外插入的 `<link />` 标签，会被插入 `<head>` 标签内，先于页面自身的 Bundle 加载，是阻塞型的。
 
