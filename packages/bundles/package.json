@@ -86,7 +86,7 @@
     "globby": "13.1.2",
     "@pmmmwh/react-refresh-webpack-plugin": "0.5.7",
     "loader-utils": "^2.0.0",
-    "source-map": "0.7.4",
+    "source-map": "0.8.0-beta.0",
     "find-up": "5.0.0",
     "common-path-prefix": "3.0.0"
   }
