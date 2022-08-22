@@ -117,11 +117,11 @@ function resolvePackageEntry(depId: string, pkgPath: string, alias: TaskConfig<C
   // rax/element -> ./element
   const entry = aliasKey ? depId.replace(new RegExp(`^${aliasKey}`), '.') : depId;
   // resolve exports cjs field
-  let resolveEntryPoint = resolveExports(pkgJSON, entry, { require: true }) || '';
-  if (!resolveEntryPoint) {
-    resolveEntryPoint = pkgJSON['main'] || 'index.js';
+  let resolvedEntryPoint = resolveExports(pkgJSON, entry, { require: true }) || '';
+  if (!resolvedEntryPoint) {
+    resolvedEntryPoint = pkgJSON['main'] || 'index.js';
   }
-  const entryPointPath = path.join(pkgDir, resolveEntryPoint);
+  const entryPointPath = path.join(pkgDir, resolvedEntryPoint);
   return entryPointPath;
 }
 
