@@ -22,7 +22,7 @@ export const taskExternals = {
 };
 
 const commonDeps = ['terser', 'tapable', 'cssnano', 'terser-webpack-plugin', 'webpack', 'schema-utils',
-'lodash', 'postcss-preset-env'];
+'lodash', 'postcss-preset-env', 'loader-utils', 'source-map', 'find-up', 'common-path-prefix'];
 
 const webpackDevServerDeps = ['bonjour-service', 'colorette', 'compression', 'connect-history-api-fallback',
 'default-gateway', 'express', 'graceful-fs', 'http-proxy-middleware',
@@ -35,9 +35,9 @@ function replaceDeps(code: string, deps: string[]) {
   return deps.reduce((acc, curr) => {
     return acc
       // cjs
-      .replace(`require("${curr}")`, `require("${`@ice/bundles/compiled/${curr}`}")`)
+      .replace(new RegExp(`require\\(["']${curr}["']\\)`, 'g'), `require("${`@ice/bundles/compiled/${curr}`}")`)
       // esm
-      .replace(`from "${curr}"`, `from "${`@ice/bundles/compiled/${curr}`}"`);
+      .replace(new RegExp(`from ["']${curr}["']`, 'g'), `from "${`@ice/bundles/compiled/${curr}`}"`);
   }, code);
 }
 
@@ -58,7 +58,9 @@ const tasks = [
     'postcss-preset-env', 'postcss-nested', 'postcss-modules', 'postcss-plugin-rpx2vw',
     'webpack-bundle-analyzer', 'es-module-lexer', 'terser',
     'eslint-webpack-plugin', 'copy-webpack-plugin', 'cacache', 'ora', 'unplugin',
-    // webpack-dev-server dependencies blow
+    // Dependencies of react-refresh-webpack-plugin.
+    'loader-utils', 'source-map', 'find-up', 'common-path-prefix',
+    // Dependencies of webpack-dev-server.
     ...webpackDevServerDeps,
   ].map((pkgName) => ({ pkgName })),
   {
@@ -133,6 +135,26 @@ const tasks = [
         fs.ensureDirSync(path.join(__dirname, `../compiled/webpack-dev-server/${path.dirname(filePath)}`));
         const sourcePath = path.join(pkgPath, filePath);
         const targetPath = path.join(__dirname, `../compiled/webpack-dev-server/${filePath}`);
+        if (path.extname(filePath) === '.js') {
+          const fileContent = fs.readFileSync(sourcePath, 'utf8');
+          fs.writeFileSync(targetPath, replaceDeps(fileContent, webpackDevServerDeps.concat(commonDeps)));
+        } else {
+          fs.copyFileSync(sourcePath, targetPath);
+        }
+      });
+    },
+  },
+  {
+    pkgName: '@pmmmwh/react-refresh-webpack-plugin',
+    skipCompile: true,
+    patch: () => {
+      // Copy webpack-dev-server while all dependencies has been packed.
+      const pkgPath = path.join(__dirname, '../node_modules/@pmmmwh/react-refresh-webpack-plugin');
+      const filePaths = globbySync(['**/*'], { cwd: pkgPath, ignore: ['node_modules', 'types', 'bin'] });
+      filePaths.forEach((filePath) => {
+        fs.ensureDirSync(path.join(__dirname, `../compiled/@pmmmwh/react-refresh-webpack-plugin/${path.dirname(filePath)}`));
+        const sourcePath = path.join(pkgPath, filePath);
+        const targetPath = path.join(__dirname, `../compiled/@pmmmwh/react-refresh-webpack-plugin/${filePath}`);
         if (path.extname(filePath) === '.js') {
           const fileContent = fs.readFileSync(sourcePath, 'utf8');
           fs.writeFileSync(targetPath, replaceDeps(fileContent, webpackDevServerDeps.concat(commonDeps)));

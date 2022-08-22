@@ -24,7 +24,10 @@
     "jest-worker": "27.5.1",
     "less": "4.1.2",
     "postcss": "8.4.12",
-    "sass": "1.50.0"
+    "sass": "1.50.0",
+    "react-refresh": "0.14.0",
+    "core-js-pure": "^3.8.1",
+    "error-stack-parser": "^2.0.6"
   },
   "devDependencies": {
     "@types/cacache": "^15.0.1",
@@ -80,6 +83,11 @@
     "spdy": "^4.0.2",
     "webpack-dev-middleware": "^5.3.1",
     "ws": "^8.4.2",
-    "globby": "13.1.2"
+    "globby": "13.1.2",
+    "@pmmmwh/react-refresh-webpack-plugin": "0.5.7",
+    "loader-utils": "^2.0.0",
+    "source-map": "0.7.4",
+    "find-up": "5.0.0",
+    "common-path-prefix": "3.0.0"
   }
 }
