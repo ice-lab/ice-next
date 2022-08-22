@@ -148,16 +148,16 @@ const tasks = [
     pkgName: '@pmmmwh/react-refresh-webpack-plugin',
     skipCompile: true,
     patch: () => {
-      // Copy webpack-dev-server while all dependencies has been packed.
+      // Copy @pmmmwh/react-refresh-webpack-plugin while all dependencies has been packed.
       const pkgPath = path.join(__dirname, '../node_modules/@pmmmwh/react-refresh-webpack-plugin');
-      const filePaths = globbySync(['**/*'], { cwd: pkgPath, ignore: ['node_modules', 'types', 'bin'] });
+      const filePaths = globbySync(['**/*'], { cwd: pkgPath, ignore: ['node_modules', 'types'] });
       filePaths.forEach((filePath) => {
         fs.ensureDirSync(path.join(__dirname, `../compiled/@pmmmwh/react-refresh-webpack-plugin/${path.dirname(filePath)}`));
         const sourcePath = path.join(pkgPath, filePath);
         const targetPath = path.join(__dirname, `../compiled/@pmmmwh/react-refresh-webpack-plugin/${filePath}`);
         if (path.extname(filePath) === '.js') {
           const fileContent = fs.readFileSync(sourcePath, 'utf8');
-          fs.writeFileSync(targetPath, replaceDeps(fileContent, webpackDevServerDeps.concat(commonDeps)));
+          fs.writeFileSync(targetPath, replaceDeps(fileContent, commonDeps));
         } else {
           fs.copyFileSync(sourcePath, targetPath);
         }
