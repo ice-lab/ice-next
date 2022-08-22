@@ -44,8 +44,9 @@ function getCompilerPlugins(config: Config, compiler: Compiler) {
     ...(transformPlugins.filter(({ enforce }) => !enforce || enforce === 'pre') || []),
     ...transforms.map((transform, index) => ({ name: `transform_${index}`, transform })),
   );
-
-  if (swcOptions) {
+  // Use webpack loader instead of webpack plugin to do the compilation.
+  // Reason: https://github.com/unjs/unplugin/issues/154
+  if (swcOptions && compiler !== 'webpack') {
     compilerPlugins.push(compilationPlugin({
       cacheDir,
       sourceMap,

@@ -130,6 +130,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
       ...(typeof experimental?.lazyCompilation === 'object' ? { ...experimental.lazyCompilation } : {}),
     },
   } : {};
+  // get compile plugins
+  const compilerWebpackPlugins = getCompilerPlugins(config, 'webpack');
 
   const terserOptions: any = merge({
     compress: {
@@ -253,6 +255,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     devtool: getDevtoolValue(sourceMap),
     plugins: [
       ...plugins,
+      ...compilerWebpackPlugins,
       dev && fastRefresh && new ReactRefreshWebpackPlugin({
         exclude: [/node_modules/, /bundles\/compiled/],
         // use webpack-dev-server overlay instead
