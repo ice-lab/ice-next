@@ -1,6 +1,7 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs-extra';
+import { globbySync } from 'globby';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -18,16 +19,27 @@ export const taskExternals = {
   postcss: 'postcss',
   '@swc/core': '@swc/core',
   'jest-worker': 'jest-worker',
-  terser: '@ice/bundles/compiled/terser',
-  tapable: '@ice/bundles/compiled/tapable',
-  cssnano: '@ice/bundles/compiled/cssnano',
-  // depend by webpack
-  'terser-webpack-plugin': '@ice/bundles/compiled/terser-webpack-plugin',
-  webpack: '@ice/bundles/compiled/webpack',
-  'schema-utils': '@ice/bundles/compiled/schema-utils',
-  lodash: '@ice/bundles/compiled/lodash',
-  'postcss-preset-env': '@ice/bundles/compiled/postcss-preset-env',
 };
+
+const commonDeps = ['terser', 'tapable', 'cssnano', 'terser-webpack-plugin', 'webpack', 'schema-utils',
+'lodash', 'postcss-preset-env'];
+
+const webpackDevServerDeps = ['bonjour-service', 'colorette', 'compression', 'connect-history-api-fallback',
+'default-gateway', 'express', 'graceful-fs', 'http-proxy-middleware',
+'ipaddr.js', 'open', 'p-retry', 'portfinder', 'rimraf', 'selfsigned', 'serve-index',
+'sockjs', 'spdy', 'webpack-dev-middleware', 'ws'];
+
+commonDeps.concat(webpackDevServerDeps).forEach(dep => taskExternals[dep] = `@ice/bundles/compiled/${dep}`);
+
+function replaceDeps(code: string, deps: string[]) {
+  return deps.reduce((acc, curr) => {
+    return acc
+      // cjs
+      .replace(`require("${curr}")`, `require("${`@ice/bundles/compiled/${curr}`}")`)
+      // esm
+      .replace(`from "${curr}"`, `from "${`@ice/bundles/compiled/${curr}`}"`);
+  }, code);
+}
 
 export function filterExternals(externals: Record<string, string>, keys: string[]) {
   const filterExternals = {};
@@ -45,8 +57,9 @@ const tasks = [
     'less-loader', 'postcss-loader', 'sass-loader', 'css-loader',
     'postcss-preset-env', 'postcss-nested', 'postcss-modules', 'postcss-plugin-rpx2vw',
     'webpack-bundle-analyzer', 'es-module-lexer', 'terser',
-    'eslint-webpack-plugin', 'copy-webpack-plugin', 'cacache', 'ora',
-    'unplugin',
+    'eslint-webpack-plugin', 'copy-webpack-plugin', 'cacache', 'ora', 'unplugin',
+    // webpack-dev-server dependencies blow
+    ...webpackDevServerDeps,
   ].map((pkgName) => ({ pkgName })),
   {
     pkgName: 'unplugin',
@@ -107,6 +120,26 @@ const tasks = [
     matchCopyFiles: (data: { resolvePath: string; resolveId: string }): boolean => {
       const { resolvePath, resolveId } = data;
       return resolvePath.endsWith('./utils') && resolveId.endsWith('terser-webpack-plugin/dist/index.js');
+    },
+  },
+  {
+    pkgName: 'webpack-dev-server',
+    skipCompile: true,
+    patch: () => {
+      // Copy webpack-dev-server while all dependencies has been packed.
+      const pkgPath = path.join(__dirname, '../node_modules/webpack-dev-server');
+      const filePaths = globbySync(['**/*'], { cwd: pkgPath, ignore: ['node_modules', 'types', 'bin'] });
+      filePaths.forEach((filePath) => {
+        fs.ensureDirSync(path.join(__dirname, `../compiled/webpack-dev-server/${path.dirname(filePath)}`));
+        const sourcePath = path.join(pkgPath, filePath);
+        const targetPath = path.join(__dirname, `../compiled/webpack-dev-server/${filePath}`);
+        if (path.extname(filePath) === '.js') {
+          const fileContent = fs.readFileSync(sourcePath, 'utf8');
+          fs.writeFileSync(targetPath, replaceDeps(fileContent, webpackDevServerDeps.concat(commonDeps)));
+        } else {
+          fs.copyFileSync(sourcePath, targetPath);
+        }
+      });
     },
   },
   {
