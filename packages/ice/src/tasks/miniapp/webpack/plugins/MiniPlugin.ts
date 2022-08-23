@@ -296,7 +296,7 @@ export default class TaroMiniPlugin {
    */
   async getPagesConfig() {
     const { getRoutesConfig } = this.options;
-    const routesConfig = (await getRoutesConfig()).default;
+    const routesConfig = await getRoutesConfig();
     for (let page of this.pages) {
       await this.compileFile(page, routesConfig);
     }
