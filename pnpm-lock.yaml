@@ -1,8 +1,5 @@
 lockfileVersion: 5.4
 
-overrides:
-  build-scripts: 2.0.0-24
-
 importers:
 
   .:
@@ -465,7 +462,7 @@ importers:
       acorn: ^8.7.1
       address: ^1.1.2
       body-parser: ^1.20.0
-      build-scripts: 2.0.0-24
+      build-scripts: ^2.0.0-24
       chalk: ^4.0.0
       chokidar: ^3.5.3
       commander: ^9.0.0
@@ -734,7 +731,7 @@ importers:
       '@builder/swc': ^0.2.0
       '@ice/route-manifest': ^1.0.0
       '@ice/runtime': ^1.0.0
-      build-scripts: 2.0.0-24
+      build-scripts: ^2.0.0-24
       esbuild: ^0.14.23
       eslint: ^8.14.0
       eslint-webpack-plugin: 3.1.1
@@ -771,7 +768,7 @@ importers:
       '@rollup/pluginutils': ^4.2.0
       '@swc/core': 1.2.210
       browserslist: ^4.19.3
-      build-scripts: 2.0.0-24
+      build-scripts: ^2.0.0-24
       consola: ^2.15.3
       esbuild: ^0.14.23
       fast-glob: ^3.2.11
