@@ -1,5 +1,8 @@
 lockfileVersion: 5.4
 
+overrides:
+  build-scripts: 2.0.0-24
+
 importers:
 
   .:
@@ -462,7 +465,7 @@ importers:
       acorn: ^8.7.1
       address: ^1.1.2
       body-parser: ^1.20.0
-      build-scripts: ^2.0.0-23
+      build-scripts: 2.0.0-24
       chalk: ^4.0.0
       chokidar: ^3.5.3
       commander: ^9.0.0
@@ -507,7 +510,7 @@ importers:
       acorn: 8.7.1
       address: 1.1.2
       body-parser: 1.20.0
-      build-scripts: 2.0.0-23
+      build-scripts: 2.0.0-24
       chalk: 4.1.2
       commander: 9.2.0
       consola: 2.15.3
@@ -731,7 +734,7 @@ importers:
       '@builder/swc': ^0.2.0
       '@ice/route-manifest': ^1.0.0
       '@ice/runtime': ^1.0.0
-      build-scripts: ^2.0.0-23
+      build-scripts: 2.0.0-24
       esbuild: ^0.14.23
       eslint: ^8.14.0
       eslint-webpack-plugin: 3.1.1
@@ -746,7 +749,7 @@ importers:
       '@builder/swc': 0.2.0
       '@ice/route-manifest': link:../route-manifest
       '@ice/runtime': link:../runtime
-      build-scripts: 2.0.0-23
+      build-scripts: 2.0.0-24
       esbuild: 0.14.38
       eslint: 8.14.0
       eslint-webpack-plugin: 3.1.1_7fh3pplfe77vb5lwiuqfjafe74
@@ -768,7 +771,7 @@ importers:
       '@rollup/pluginutils': ^4.2.0
       '@swc/core': 1.2.210
       browserslist: ^4.19.3
-      build-scripts: ^2.0.0-23
+      build-scripts: 2.0.0-24
       consola: ^2.15.3
       esbuild: ^0.14.23
       fast-glob: ^3.2.11
@@ -796,7 +799,7 @@ importers:
       unplugin: 0.3.3_4upc34oiflw3lduyjvrzpjntau
     devDependencies:
       '@ice/types': link:../types
-      build-scripts: 2.0.0-23
+      build-scripts: 2.0.0-24
       esbuild: 0.14.38
       webpack: 5.73.0_ohfecwmx44wixok6ry5c6snfbe
       webpack-dev-server: 4.8.1_webpack@5.73.0
@@ -4804,7 +4807,7 @@ packages:
     peerDependencies:
       react: '*'
     dependencies:
-      '@types/react': 18.0.15
+      '@types/react': 18.0.17
       prop-types: 15.8.1
       react: 17.0.2
 
@@ -5233,7 +5236,6 @@ packages:
     cpu: [loong64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /@esbuild/linux-loong64/0.15.1:
@@ -5353,7 +5355,7 @@ packages:
       '@swc/core': 1.2.210
       acorn: 8.8.0
       autoprefixer: 10.4.8_postcss@8.4.14
-      build-scripts: 2.0.0-18
+      build-scripts: 2.0.0-24
       cac: 6.7.12
       chokidar: 3.5.3
       consola: 2.15.3
@@ -6591,14 +6593,14 @@ packages:
     resolution: {integrity: sha512-kpqnYK4wcdm5UaWI3fLcELopqLrHgLqNsdpHauzlQktfkHL3npOSwtj1Uz9oKBAzs7lFtVkV8j83voAz2D8fhw==}
     dependencies:
       '@types/history': 4.7.11
-      '@types/react': 18.0.15
+      '@types/react': 18.0.17
       '@types/react-router': 5.1.18
 
   /@types/react-router/5.1.18:
     resolution: {integrity: sha512-YYknwy0D0iOwKQgz9v8nOzt2J6l4gouBmDnWqUUznltOTaon+r8US8ky8HvN0tXvc38U9m6z/t2RsVsnd1zM0g==}
     dependencies:
       '@types/history': 4.7.11
-      '@types/react': 18.0.15
+      '@types/react': 18.0.17
 
   /@types/react/17.0.48:
     resolution: {integrity: sha512-zJ6IYlJ8cYYxiJfUaZOQee4lh99mFihBoqkOSEGV+dFi9leROW6+PgstzQ+w3gWTnUfskALtQPGHK6dYmPj+2A==}
@@ -6620,7 +6622,6 @@ packages:
       '@types/prop-types': 15.7.5
       '@types/scheduler': 0.16.2
       csstype: 3.1.0
-    dev: true
 
   /@types/react/18.0.8:
     resolution: {integrity: sha512-+j2hk9BzCOrrOSJASi5XiOyBbERk9jG5O73Ya4M0env5Ixi6vUNli4qy994AINcEF+1IEHISYFfIT4zwr++LKw==}
@@ -7837,32 +7838,14 @@ packages:
       ieee754: 1.2.1
     dev: true
 
-  /build-scripts/2.0.0-18:
-    resolution: {integrity: sha512-GN2V91DGV9ATUoa4dYLA+HBZnqRp/OlP7f0K5a9V9XSjVBTAi5ciJo27c+cTuOU9UU9q+lcjeYcqAT5rrmVx8g==}
+  /build-scripts/2.0.0-24:
+    resolution: {integrity: sha512-FoGyAZ+Xz3B51ui8mMnAtswVL7rxPjeA67ggzG08mDYK29XPdLdnS8rAI6cagxFiPjQ6o4BMzR2uFXcegxmBgA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
     dependencies:
       camelcase: 5.3.1
       commander: 2.20.3
       consola: 2.15.3
-      deepmerge: 4.2.2
       esbuild: 0.14.54
-      fast-glob: 3.2.11
-      fs-extra: 8.1.0
-      json5: 2.2.1
-      lodash: 4.17.21
-      npmlog: 4.1.2
-      picocolors: 1.0.0
-      semver: 7.3.7
-    dev: true
-
-  /build-scripts/2.0.0-23:
-    resolution: {integrity: sha512-2hoh/Zhcjx1HuELEd3+tnuk8koN2aLgwZsXn2oJpGuAjf0IhsglzZKKyaVxFbkOstlKik0s4AA1tJsQTA4qVYA==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
-    dependencies:
-      camelcase: 5.3.1
-      commander: 2.20.3
-      consola: 2.15.3
-      esbuild: 0.14.38
       fast-glob: 3.2.11
       fs-extra: 8.1.0
       json5: 2.2.1
@@ -9540,7 +9523,6 @@ packages:
     cpu: [x64]
     os: [android]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-android-64/0.15.1:
@@ -9566,7 +9548,6 @@ packages:
     cpu: [arm64]
     os: [android]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-android-arm64/0.15.1:
@@ -9592,7 +9573,6 @@ packages:
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-darwin-64/0.15.1:
@@ -9618,7 +9598,6 @@ packages:
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-darwin-arm64/0.15.1:
@@ -9644,7 +9623,6 @@ packages:
     cpu: [x64]
     os: [freebsd]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-freebsd-64/0.15.1:
@@ -9670,7 +9648,6 @@ packages:
     cpu: [arm64]
     os: [freebsd]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-freebsd-arm64/0.15.1:
@@ -9696,7 +9673,6 @@ packages:
     cpu: [ia32]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-32/0.15.1:
@@ -9722,7 +9698,6 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-64/0.15.1:
@@ -9748,7 +9723,6 @@ packages:
     cpu: [arm]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-arm/0.15.1:
@@ -9774,7 +9748,6 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-arm64/0.15.1:
@@ -9800,7 +9773,6 @@ packages:
     cpu: [mips64el]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-mips64le/0.15.1:
@@ -9826,7 +9798,6 @@ packages:
     cpu: [ppc64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-ppc64le/0.15.1:
@@ -9852,7 +9823,6 @@ packages:
     cpu: [riscv64]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-riscv64/0.15.1:
@@ -9878,7 +9848,6 @@ packages:
     cpu: [s390x]
     os: [linux]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-linux-s390x/0.15.1:
@@ -9904,7 +9873,6 @@ packages:
     cpu: [x64]
     os: [netbsd]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-netbsd-64/0.15.1:
@@ -9936,7 +9904,6 @@ packages:
     cpu: [x64]
     os: [openbsd]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-openbsd-64/0.15.1:
@@ -9978,7 +9945,6 @@ packages:
     cpu: [x64]
     os: [sunos]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-sunos-64/0.15.1:
@@ -10004,7 +9970,6 @@ packages:
     cpu: [ia32]
     os: [win32]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-windows-32/0.15.1:
@@ -10030,7 +9995,6 @@ packages:
     cpu: [x64]
     os: [win32]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-windows-64/0.15.1:
@@ -10056,7 +10020,6 @@ packages:
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
-    dev: true
     optional: true
 
   /esbuild-windows-arm64/0.15.1:
@@ -10122,7 +10085,6 @@ packages:
       esbuild-windows-32: 0.14.54
       esbuild-windows-64: 0.14.54
       esbuild-windows-arm64: 0.14.54
-    dev: true
 
   /esbuild/0.15.1:
     resolution: {integrity: sha512-zgxo2st9wSbdiR6rTo44l/L7ohttqdXFmhUi5tE6yWahgdBjCwZjBgIkm/gr/TcBTTIwyzd7em8WI37yZ+F2Mg==}
