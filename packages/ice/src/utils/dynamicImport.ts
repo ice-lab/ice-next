@@ -9,11 +9,11 @@ export default async function dynamicImport(filePath: string, timestamp?: boolea
     // Compatible with win32 path which starts with unsupported url scheme such as `D:/xx/xx/index.mjs`
     const importUrl = pathToFileURL(importPath);
     if (timestamp) {
-      importUrl.search = `t=${Date.now()}`;
+      importUrl.search = `version=${new Date().getTime()}`;
     }
     importPath = importUrl.toString();
   } else if (timestamp) {
-    importPath += `?t=${Date.now()}`;
+    importPath += `?version=${new Date().getTime()}`;
   }
   return await import(importPath);
 }
