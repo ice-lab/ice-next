@@ -1,7 +1,7 @@
 export default function Bar() {
   return (
-    <div>
+    <view>
       bar
-    </div>
+    </view>
   );
 }
