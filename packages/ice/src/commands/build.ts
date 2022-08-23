@@ -9,7 +9,7 @@ import webpack from '@ice/bundles/compiled/webpack/index.js';
 import type ora from '@ice/bundles/compiled/ora/index.js';
 import webpackCompiler from '../service/webpackCompiler.js';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
-import { RUNTIME_TMP_DIR, SERVER_OUTPUT_DIR } from '../constant.js';
+import { RUNTIME_TMP_DIR, SERVER_OUTPUT_DIR, WEB } from '../constant.js';
 import generateHTML from '../utils/generateHTML.js';
 import emptyDir from '../utils/emptyDir.js';
 import getServerEntry from '../utils/getServerEntry.js';
@@ -26,6 +26,7 @@ const build = async (
 ) => {
   const { taskConfigs, serverCompiler, spinner, getAppConfig, getRoutesConfig } = options;
   const { applyHook, commandArgs, command, rootDir, userConfig } = context;
+  const { platform } = commandArgs;
   const webpackConfigs = taskConfigs.map(({ config }) => getWebpackConfig({
     config,
     rootDir,
@@ -51,6 +52,7 @@ const build = async (
     applyHook,
     hooksAPI,
   });
+
   const { ssg, ssr, server: { format } } = userConfig;
   // compile server bundle
   const entryPoint = getServerEntry(rootDir, taskConfigs[0].config?.server?.entry);
@@ -82,45 +84,48 @@ const build = async (
         compiler?.close?.(() => {});
         const isSuccessful = !messages.errors.length;
 
-        const serverCompilerResult = await serverCompiler(
-          {
-            entryPoints: { index: entryPoint },
-            outdir: serverOutputDir,
-            splitting: esm,
-            format,
-            platform: esm ? 'browser' : 'node',
-            outExtension: { '.js': outJSExtension },
-          },
-          {
-            preBundle: format === 'esm' && (ssr || ssg),
-            swc: {
-              // Remove components and getData when ssg and ssr both `false`.
-              removeExportExprs: (!ssg && !ssr) ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
-              keepPlatform: 'node',
+        const shouldCompileServerBundle = platform === WEB;
+        if (shouldCompileServerBundle) {
+          const serverCompilerResult = await serverCompiler(
+            {
+              entryPoints: { index: entryPoint },
+              outdir: serverOutputDir,
+              splitting: esm,
+              format,
+              platform: esm ? 'browser' : 'node',
+              outExtension: { '.js': outJSExtension },
             },
-          },
-        );
-        if (serverCompilerResult.error) {
-          consola.error('Build failed.');
-          return;
+            {
+              preBundle: format === 'esm' && (ssr || ssg),
+              swc: {
+                // Remove components and getData when ssg and ssr both `false`.
+                removeExportExprs: (!ssg && !ssr) ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
+                keepPlatform: 'node',
+              },
+            },
+          );
+          if (serverCompilerResult.error) {
+            consola.error('Build failed.');
+            return;
+          }
+
+          serverEntry = serverCompilerResult.serverEntry;
+
+          let renderMode;
+          if (ssg) {
+            renderMode = 'SSG';
+          }
+
+          // generate html
+          await generateHTML({
+            rootDir,
+            outputDir,
+            entry: serverEntry,
+            // only ssg need to generate the whole page html when build time.
+            documentOnly: !ssg,
+            renderMode,
+          });
         }
-
-        serverEntry = serverCompilerResult.serverEntry;
-
-        let renderMode;
-        if (ssg) {
-          renderMode = 'SSG';
-        }
-
-        // generate html
-        await generateHTML({
-          rootDir,
-          outputDir,
-          entry: serverEntry,
-          // only ssg need to generate the whole page html when build time.
-          documentOnly: !ssg,
-          renderMode,
-        });
         resolve({
           stats,
           messages,
