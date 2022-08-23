@@ -79,14 +79,14 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     tsCheckerOptions,
     eslintOptions,
     entry,
-    output,
+    output = {},
     splitChunks,
     assetsManifest,
     concatenateModules,
     devServer,
     fastRefresh,
     logging,
-    optimization,
+    optimization = {},
     performance,
     enableCopyPlugin,
   } = config;
@@ -162,11 +162,12 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     },
     entry: entry || (() => getEntry(rootDir, runtimeTmpDir)),
     externals,
-    output: output || {
+    output: {
       publicPath,
       path: absoluteOutputDir,
       filename: `js/${hashKey ? `[name]-[${hashKey}].js` : '[name].js'}`,
       assetModuleFilename: 'assets/[name].[hash:8][ext]',
+      ...output,
     },
     context: rootDir,
     module: {
@@ -202,7 +203,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
       aggregateTimeout: 200,
       ignored: watchIgnoredRegexp,
     },
-    optimization: optimization || {
+    optimization: {
       splitChunks: splitChunks == false ? undefined : getSplitChunksConfig(rootDir),
       minimize: minify,
       minimizer: [
@@ -225,6 +226,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
           },
         }),
       ],
+      ...optimization,
     } as Configuration['optimization'],
     cache: {
       type: 'filesystem',

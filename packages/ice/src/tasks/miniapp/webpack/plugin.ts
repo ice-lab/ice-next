@@ -60,13 +60,12 @@ export class MiniWebpackPlugin {
   }
 
   getMainPlugin(definePluginOptions) {
-    const { rootDir, outputDir, nodeModulesPath, template, deviceRatio, fileType, getAppConfig, getRoutesConfig } = this.config;
+    const { rootDir, nodeModulesPath, template, deviceRatio, fileType, getAppConfig, getRoutesConfig } = this.config;
     const sourceDir = path.join(rootDir, 'src');
     const options = {
       /** paths */
       rootDir,
       sourceDir,
-      outputDir,
       nodeModulesPath,
       /** config & message */
       fileType,

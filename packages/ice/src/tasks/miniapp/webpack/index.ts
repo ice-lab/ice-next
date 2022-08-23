@@ -10,7 +10,6 @@ export default function getMiniappWebpackConfig(rawConfig: any): any {
   const {
     rootDir,
     entry,
-    outputDir,
     mode,
     globalObject,
   } = rawConfig;
@@ -23,7 +22,6 @@ export default function getMiniappWebpackConfig(rawConfig: any): any {
     entry,
     output: {
       chunkLoadingGlobal: 'webpackJsonp',
-      path: outputDir,
       publicPath: '/',
       filename: '[name].js',
       chunkFilename: '[name].js',
@@ -31,9 +29,6 @@ export default function getMiniappWebpackConfig(rawConfig: any): any {
       enabledLibraryTypes: [],
     },
     mode,
-    sourceMap: mode === 'development' ? 'cheap-module-source-map' : false,
-
-    devtool: 'cheap-module-source-map',
     target: ['web', 'es5'],
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs'],

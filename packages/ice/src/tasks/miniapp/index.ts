@@ -23,15 +23,12 @@ function getEntry(rootDir: string) {
 
 const getMiniappTask = ({ rootDir, command, platform, getAppConfig, getRoutesConfig }): Config => {
   const entry = getEntry(rootDir);
-  // TODO:不支持被用户修改
-  const outputDir = path.join(rootDir, 'build', platform);
   const mode = command === 'start' ? 'development' : 'production';
   const { template, globalObject, fileType } = getMiniappPlatformConfig(platform);
 
   const miniappWebpackConfig = getMiniappWebpackConfig({
     rootDir,
     entry,
-    outputDir,
     mode,
     template,
     globalObject,
@@ -42,11 +39,12 @@ const getMiniappTask = ({ rootDir, command, platform, getAppConfig, getRoutesCon
   return {
     mode,
     entry,
+    outputDir: 'build',
     output: miniappWebpackConfig.output,
-    sourceMap: mode === 'development' ? 'cheap-module-source-map' : false,
+    // TODO: 支持修改
+    sourceMap: command === 'start' ? 'cheap-module-source-map' : false,
     alias: miniappWebpackConfig.resolve.alias,
     cacheDir: path.join(rootDir, CACHE_DIR),
-    outputDir,
     plugins: miniappWebpackConfig.plugins,
     loaders: miniappWebpackConfig.module.rules,
     optimization: miniappWebpackConfig.optimization,
