@@ -61,7 +61,7 @@ function recurseRoutesStr(nestRouteManifest: NestedRouteManifest[], depth = 0) {
     const componentPath = id.startsWith('__') ? file : `@/pages/${file}`.replace(new RegExp(`${path.extname(file)}$`), '');
     const routeProperties: string[] = [
       `path: '${routePath || ''}',`,
-      `load: () => import(/* webpackChunkName: "${componentName}" */ '${componentPath}'),`,
+      `load: () => import(/* webpackChunkName: "${componentName}" */ '${formatPath(componentPath)}'),`,
       `componentName: '${componentName}',`,
       `index: ${index},`,
       `id: '${id}',`,

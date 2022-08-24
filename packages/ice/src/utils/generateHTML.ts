@@ -5,6 +5,7 @@ import consola from 'consola';
 import type { ServerContext, RenderMode } from '@ice/runtime';
 import { ROUTER_MANIFEST } from '../constant.js';
 import getRoutePaths from './getRoutePaths.js';
+import dynamicImport from './dynamicImport.js';
 
 interface Options {
   rootDir: string;
@@ -26,7 +27,7 @@ export default async function generateHTML(options: Options) {
   let serverEntry;
 
   try {
-    serverEntry = await import(entry);
+    serverEntry = await dynamicImport(entry);
   } catch (err) {
     // make error clearly, notice typeof err === 'string'
     throw new Error(`import ${entry} error: ${err}`);
