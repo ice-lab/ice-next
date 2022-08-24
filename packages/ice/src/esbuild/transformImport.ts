@@ -55,7 +55,7 @@ const transformImportPlugin = (metadata: DepsMetaData, serverDir: string): Unplu
         }
 
         const importExp = source.slice(expStart, expEnd);
-        const filePath = path.relative(formatPath(serverDir), formatPath(deps[specifier].file));
+        const filePath = formatPath(path.relative(formatPath(serverDir), formatPath(deps[specifier].file)));
         redirectDepIds.push(filePath);
         const rewritten = transformCjsImport(
           importExp,
