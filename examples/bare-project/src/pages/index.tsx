@@ -26,6 +26,7 @@ export default function Home() {
         <image src={url} />
         <Link to="/?hello=world">222</Link>
         <view onClick={() => { history.push('/?hello=computer'); }}>点我跳转</view>
+        <div>嘻嘻，我是 div 标签</div>
       </view>
     </>
   );

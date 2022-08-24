@@ -19,7 +19,7 @@ export default function (this: webpack.LoaderContext<any>) {
   const componentPath = this.request.split('!').slice(thisLoaderIndex + 1).join('!');
 
   let instantiatePage = `var inst = Page(createPageConfig(component, '${options.name}', {root:{cn:[]}}, { getData, getConfig }, config || {}))`;
-
+  // TODO: 加参数决定是否要传入 getData 及 getConfig
   return `import { createPageConfig } from '@ice/miniapp-runtime';
 import component from ${stringify(componentPath)};
 import { getData, getConfig } from ${stringify(componentPath)};

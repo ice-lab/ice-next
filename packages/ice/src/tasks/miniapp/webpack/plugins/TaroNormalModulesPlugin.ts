@@ -3,19 +3,13 @@ import type webpack from '@ice/bundles/compiled/webpack/index.js';
 import * as walk from 'acorn-walk';
 import TaroSingleEntryDependency from '../dependencies/TaroSingleEntryDependency.js';
 import { componentConfig } from '../template/component.js';
-import type { Func } from '../utils/types.js';
+import onParseCreateElement from '../../html/index.js';
 import TaroNormalModule from './TaroNormalModule.js';
 
 
 const PLUGIN_NAME = 'TaroNormalModulesPlugin';
 
 export default class TaroNormalModulesPlugin {
-  onParseCreateElement: Func | undefined;
-
-  constructor(onParseCreateElement: Func | undefined) {
-    this.onParseCreateElement = onParseCreateElement;
-  }
-
   apply(compiler: webpack.Compiler) {
     compiler.hooks.compilation.tap(PLUGIN_NAME, (_, { normalModuleFactory }) => {
       normalModuleFactory.hooks.createModule.tapPromise(PLUGIN_NAME, (data, { dependencies }) => {
@@ -50,7 +44,7 @@ export default class TaroNormalModulesPlugin {
               const [type, prop] = node.arguments;
               const componentName = type.name;
 
-              this.onParseCreateElement?.(type.value, componentConfig);
+              onParseCreateElement({ nodeName: type.value, componentConfig });
 
               if (componentName === 'CustomWrapper' && !componentConfig.thirdPartyComponents.get('custom-wrapper')) {
                 componentConfig.thirdPartyComponents.set('custom-wrapper', new Set());

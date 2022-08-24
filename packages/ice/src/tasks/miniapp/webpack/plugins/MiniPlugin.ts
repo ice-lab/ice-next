@@ -201,7 +201,7 @@ export default class TaroMiniPlugin {
       }),
     );
 
-    new TaroNormalModulesPlugin(this.options.onParseCreateElement).apply(compiler);
+    new TaroNormalModulesPlugin().apply(compiler);
   }
 
   /**

@@ -10,8 +10,9 @@ import { Current, getPageInstance,
 import { EMPTY_OBJ, hooks } from '@tarojs/shared';
 import type { AppConfig } from '@tarojs/taro';
 import React, { createElement } from 'react';
-
+import * as ReactDOM from 'react-dom';
 import { ConfigProvider, DataProvider } from '../RouteContext.js';
+import enableHtmlRuntime from './html/runtime.js';
 import { reactMeta } from './react-meta.js';
 import { ensureIsArray, HOOKS_APP_ID, isClassComponent, setDefaultDescriptor, setRouterParams } from './utils.js';
 
@@ -31,10 +32,9 @@ export function setReconciler() {
     event.type = event.type.replace(/-/g, '');
   });
 
-  // TODO: 了解一下 hooks 是干嘛的
-  // hooks.tap('batchedEventUpdates', (cb) => {
-  //   ReactDOM.unstable_batchedUpdates(cb);
-  // });
+  hooks.tap('batchedEventUpdates', (cb) => {
+    ReactDOM.unstable_batchedUpdates(cb);
+  });
 
   hooks.tap('mergePageInstance', (prev, next) => {
     if (!prev || !next) return;
@@ -57,8 +57,6 @@ export function connectReactPage(
   id: string,
 ) {
   return (Page: ReactPageComponent, { routeData, routeConfig }): React.ComponentClass<PageProps> => {
-    console.log('🚀 ~ file: connect.tsx ~ line 60 ~ return ~ routeConfig', routeConfig);
-    console.log('🚀 ~ file: connect.tsx ~ line 60 ~ return ~ routeData', routeData);
     // eslint-disable-next-line dot-notation
     const isReactComponent = isClassComponent(R, Page);
     const inject = (node?: Instance) => node && injectPageInstance(node, id);
@@ -173,7 +171,7 @@ export class AppWrapper extends React.Component {
   config: AppConfig,
 ) {
   setReconciler();
-
+  enableHtmlRuntime();
   function getAppInstance(): ReactAppInstance | null {
     return appInstanceRef.current;
   }
