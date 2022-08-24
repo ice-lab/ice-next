@@ -53,8 +53,8 @@ export default async function generateHTML(options: Options) {
       routePath,
       serverOnlyBasename: '/',
     });
-
-    const fileName = routePath === '/' ? 'index.html' : `${routePath}.html`;
+    // Win32 do not support file name with
+    const fileName = routePath === '/' ? 'index.html' : `${routePath.replace(/\/:/g, '/$')}.html`;
     if (fse.existsSync(path.join(rootDir, 'public', fileName))) {
       consola.warn(`${fileName} is overwrite by framework, rename file name if it is necessary`);
     }
