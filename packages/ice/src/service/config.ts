@@ -20,7 +20,7 @@ interface CompileConfig {
 
 class Config {
   private compileTasks: Record<string, Promise<string>>;
-  private compiler: (keepExports: string[]) => Promise<string>;
+  private compiler: (keepExports: string[]) => Promise<string | null>;
   private compileConfig: CompileConfig;
   private lastOptions: string[];
   private getOutfile: GetOutfile;
@@ -41,15 +41,17 @@ class Config {
       const { entry, transformInclude } = this.compileConfig;
       const outfile = this.getOutfile(entry, keepExports);
       this.status = 'PENDING';
-      await esbuildCompiler({
+      const { error } = await esbuildCompiler({
         entryPoints: [entry],
         format: 'esm',
         inject: [],
         outfile,
         plugins: [removeTopLevelCode(keepExports, transformInclude)],
       });
-      this.status = 'RESOLVED';
-      return outfile;
+      if (!error) {
+        this.status = 'RESOLVED';
+        return outfile;
+      }
     };
   }
 
@@ -81,7 +83,7 @@ class Config {
     if (!targetFile) {
       targetFile = await this.compileTasks[taskKey];
     }
-    return await dynamicImport(targetFile, true);
+    if (targetFile) return await dynamicImport(targetFile, true);
   };
 }
 
@@ -97,7 +99,7 @@ export const getAppExportConfig = (rootDir: string) => {
     getOutfile,
     needRecompile: async (entry, keepExports) => {
       let cached = null;
-      const cachedKey = `app_${keepExports.join('_')}`;
+      const cachedKey = `app_${keepExports.join('_')}_${process.env.__ICE_VERSION__}`;
       try {
         cached = await getCache(rootDir, cachedKey);
       } catch (err) {}
@@ -111,7 +113,7 @@ export const getAppExportConfig = (rootDir: string) => {
   });
 
   const getAppConfig = async (exportNames?: string[]) => {
-    return await appExportConfig.getConfig(exportNames || ['default', 'defineAppConfig']);
+    return (await appExportConfig.getConfig(exportNames || ['default', 'defineAppConfig'])) || {};
   };
 
   return {
@@ -131,7 +133,7 @@ export const getRouteExportConfig = (rootDir: string) => {
     transformInclude: (id) => id.includes('src/pages'),
     needRecompile: async (entry) => {
       let cached = false;
-      const cachedKey = 'route_config_file';
+      const cachedKey = `route_config_file_${process.env.__ICE_VERSION__}`;
       try {
         cached = await getCache(rootDir, cachedKey);
       } catch (err) {}
@@ -149,7 +151,7 @@ export const getRouteExportConfig = (rootDir: string) => {
     if (!fs.existsSync(routeConfigFile)) {
       return undefined;
     }
-    const routeConfig = (await routeExportConfig.getConfig(['getConfig'])).default;
+    const routeConfig = (await routeExportConfig.getConfig(['getConfig']) || {}).default;
     return specifyRoutId ? routeConfig[specifyRoutId] : routeConfig;
   };
   return {
