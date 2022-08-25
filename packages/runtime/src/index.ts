@@ -17,6 +17,7 @@ import {
   Links,
   Scripts,
   Main,
+  Data,
 } from './Document.js';
 import type {
   RuntimePlugin,
@@ -32,6 +33,7 @@ import type {
 } from './types.js';
 import dataLoader from './dataLoader.js';
 import getAppConfig, { defineAppConfig } from './appConfig.js';
+import { routerHistory as history } from './history.js';
 
 export {
   getAppConfig,
@@ -47,6 +49,7 @@ export {
   Title,
   Links,
   Scripts,
+  Data,
   Main,
   dataLoader,
   // react-router-dom API
@@ -55,6 +58,7 @@ export {
   useParams,
   useSearchParams,
   useLocation,
+  history,
 };
 
 export type {
