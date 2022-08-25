@@ -35,6 +35,7 @@ describe(`start ${example}`, () => {
     const res = await setupStartBrowser({ server: devServer, port });
     page = res.page;
     browser = res.browser;
+    await page.waitForFunction(`document.getElementsByTagName('span').length > 0`);
     expect((await page.$$text('span'))[0]).toStrictEqual('Welcome to Your Rax App');
   }, 120000);
 
