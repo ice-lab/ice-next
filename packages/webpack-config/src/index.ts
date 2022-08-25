@@ -1,6 +1,5 @@
 import * as path from 'path';
 import { createRequire } from 'module';
-import { fileURLToPath } from 'url';
 import fg from 'fast-glob';
 import consola from 'consola';
 // FIXME when prepack @pmmmwh/react-refresh-webpack-plugin
@@ -26,7 +25,6 @@ import compilationPlugin from './unPlugins/compilation.js';
 import compileExcludes from './compileExcludes.js';
 
 const require = createRequire(import.meta.url);
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const { merge } = lodash;
 const { BundleAnalyzerPlugin } = bundleAnalyzer;
 const watchIgnoredRegexp = ['**/.git/**', '**/node_modules/**'];
@@ -192,7 +190,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
         {
           test: compilation.transformInclude,
           use: {
-            loader: require.resolve('./webpackLoaders/compilationLoader.cjs', { paths: [__dirname] }),
+            loader: require.resolve('./webpackLoaders/compilationLoader.cjs'),
             options: {
               transform: compilation.transform,
             },
