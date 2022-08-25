@@ -40,8 +40,7 @@ function importIcon(iconPath: string, cssPrefix: string) {
         if (!entryFile && !id.match(/node_modules/) && id.match(/[js|jsx|ts|tsx]$/)) {
           entryFile = id;
         }
-        if (id !== entryFile) {
-          entryFile = id;
+        if (id === entryFile) {
           return `import '${iconPath}';\n${code}`;
         } else if (id === iconPath) {
           return `$css-prefix: '${cssPrefix}';\n${code}`;
