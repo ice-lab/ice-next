@@ -1,25 +1,23 @@
 import type { RuntimePlugin } from '@ice/types';
 import { createAxiosInstance, setAxiosInstance } from './request.js';
+import type { RequestConfig } from './types';
 
-const hasOwn = Object.prototype.hasOwnProperty;
 const runtime: RuntimePlugin = async ({ appContext }) => {
-  const { appConfig } = appContext;
-  if (appConfig && hasOwn.call(appConfig, 'request')) {
-    // @ts-ignore
-    const { request } = appConfig;
-    // Support multi configs.
-    if (Array.isArray(request)) {
-      request.forEach(requestItem => {
-        const instanceName = requestItem.instanceName ? requestItem.instanceName : 'default';
-        if (instanceName) {
-          const axiosInstance = createAxiosInstance(instanceName)[instanceName];
-          setAxiosInstance(requestItem, axiosInstance);
-        }
-      });
-    } else {
-      const axiosInstance = createAxiosInstance().default;
-      setAxiosInstance(request, axiosInstance);
-    }
+  const { appExport } = appContext;
+  const requestConfig: RequestConfig = (typeof appExport.request === 'function' ? await appExport.request() : appExport.request) || {};
+
+  // Support multi configs.
+  if (Array.isArray(requestConfig)) {
+    requestConfig.forEach(requestItem => {
+      const instanceName = requestItem.instanceName ? requestItem.instanceName : 'default';
+      if (instanceName) {
+        const axiosInstance = createAxiosInstance(instanceName)[instanceName];
+        setAxiosInstance(requestItem, axiosInstance);
+      }
+    });
+  } else {
+    const axiosInstance = createAxiosInstance().default;
+    setAxiosInstance(requestConfig, axiosInstance);
   }
 };
 

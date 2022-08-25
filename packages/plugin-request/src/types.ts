@@ -22,3 +22,11 @@ interface CustomRequest extends AxiosRequestConfig {
 }
 
 export type Request = CustomRequest | CustomRequest[];
+export type RequestConfig = Request | object;
+
+export function defineRequestConfig(configOrDefineConfig: RequestConfig | (() => RequestConfig)): RequestConfig {
+  if (typeof configOrDefineConfig === 'function') {
+    return configOrDefineConfig();
+  }
+  return configOrDefineConfig;
+}

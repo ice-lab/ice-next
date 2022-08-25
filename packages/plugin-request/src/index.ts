@@ -1,7 +1,7 @@
+import { fileURLToPath } from 'url';
+import path from 'path';
 import type { Plugin } from '@ice/types';
 import type { Request, Interceptors, InterceptorRequest, InterceptorResponse } from './types';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 interface PluginRequestOptions {}
 
