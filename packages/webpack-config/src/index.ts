@@ -93,7 +93,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
   // formate alias
   const aliasWithRoot = {};
   Object.keys(alias).forEach((key) => {
-    aliasWithRoot[key] = alias[key] && alias[key].startsWith('.') ? path.join(rootDir, alias[key]) : alias[key];
+    const aliasValue = alias[key];
+    aliasWithRoot[key] = (aliasValue && typeof aliasValue === 'string' && aliasValue.startsWith('.')) ? path.join(rootDir, aliasValue) : aliasValue;
   });
 
   // auto stringify define value
@@ -232,7 +233,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
       ...plugins,
       ...compilerWebpackPlugins,
       dev && fastRefresh && new ReactRefreshWebpackPlugin({
-        exclude: [/node_modules/, /bundles\/compiled/],
+        exclude: [/node_modules/, /bundles[\\\\/]compiled/],
         // use webpack-dev-server overlay instead
         overlay: false,
       }),
