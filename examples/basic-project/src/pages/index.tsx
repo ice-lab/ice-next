@@ -9,6 +9,7 @@ import styles from './index.module.css';
 const Bar = lazy(() => import('../components/bar'));
 
 export default function Home(props) {
+  debugger;
   const appContext = useAppContext();
   const appData = useAppData<AppData>();
   const data = useData();
