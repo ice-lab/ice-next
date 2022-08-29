@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "watch": "tsc -w",
-    "build": "esmo scripts/build.ts && tsc"
+    "build": "tsx scripts/build.ts && tsc"
   },
   "main": "./esm/index.js",
   "type": "module",
