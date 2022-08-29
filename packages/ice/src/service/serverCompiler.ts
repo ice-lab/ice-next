@@ -112,7 +112,7 @@ export function createServerCompiler(options: Options) {
       // enable JSX syntax in .js files by default for compatible with migrate project
       // while it is not recommended
       loader: { '.js': 'jsx' },
-      inject: [path.resolve(__dirname, '../polyfills/react.js')],
+      jsx: 'automatic',
       sourcemap: typeof sourceMap === 'boolean'
         // Transform sourceMap for esbuild.
         ? sourceMap : (sourceMap.includes('inline') ? 'inline' : !!sourceMap),
