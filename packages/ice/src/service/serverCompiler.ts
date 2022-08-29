@@ -1,5 +1,4 @@
 import * as path from 'path';
-import { fileURLToPath } from 'url';
 import { createHash } from 'crypto';
 import * as fs from 'fs';
 import consola from 'consola';
@@ -23,8 +22,6 @@ import type { DepScanData } from '../esbuild/scan.js';
 import { scanImports } from './analyze.js';
 import type { DepsMetaData } from './preBundleCJSDeps.js';
 import preBundleCJSDeps from './preBundleCJSDeps.js';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 interface Options {
   rootDir: string;
