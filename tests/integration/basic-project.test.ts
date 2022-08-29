@@ -50,8 +50,8 @@ describe(`build ${example}`, () => {
     page = res.page;
     browser = res.browser;
 
-    const indexBundleContent = fs.readFileSync(path.join(__dirname, `../../examples/${example}/build/js/index.js`), 'utf-8');
-    expect(indexBundleContent.includes('var react = ')).toBe(true);
+    const files = fs.readdirSync(path.join(__dirname, `../../examples/${example}/build/js`), 'utf-8');
+    expect(files.length).toBe(7);
   }, 120000);
 
   afterAll(async () => {
