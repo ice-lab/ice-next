@@ -1,4 +1,4 @@
-import { isString } from '@tarojs/shared';
+import { isString } from '@ice/shared';
 
 import { Events } from '../emitter/emitter.js';
 import env from '../env.js';

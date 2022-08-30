@@ -1,4 +1,4 @@
-import type { TaroNode } from '../../dom/node.js';
+import type { Node } from '../../dom/node.js';
 
 /**
  * A MutationRecord represents an individual DOM mutation.
@@ -7,11 +7,11 @@ import type { TaroNode } from '../../dom/node.js';
  * @see https://developer.mozilla.org/en-US/docs/Web/API/MutationRecord
 */
 export interface MutationRecord {
-  readonly target: TaroNode;
-  readonly addedNodes?: TaroNode[];
-  readonly removedNodes?: TaroNode[];
-  readonly previousSibling?: TaroNode | null;
-  readonly nextSibling?: TaroNode | null;
+  readonly target: Node;
+  readonly addedNodes?: Node[];
+  readonly removedNodes?: Node[];
+  readonly previousSibling?: Node | null;
+  readonly nextSibling?: Node | null;
   readonly attributeName?: string | null;
   readonly attributeNamespace?: string | null;
   oldValue?: string | null;

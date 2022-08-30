@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import type { TaroElement } from '@ice/miniapp-runtime';
-import { ensure, isFunction } from '@tarojs/shared';
+import type { Element } from '@ice/miniapp-runtime';
+import { ensure, isFunction } from '@ice/shared';
 import type { ReactNode } from 'react';
 
-import { TaroReconciler } from './reconciler.js';
+import { IceMiniappReconciler } from './reconciler.js';
 import { ContainerMap, createRoot, render } from './render.js';
 
-const unstable_batchedUpdates = TaroReconciler.batchedUpdates;
+const unstable_batchedUpdates = IceMiniappReconciler.batchedUpdates;
 
-function unmountComponentAtNode(dom: TaroElement) {
+function unmountComponentAtNode(dom: Element) {
   ensure(dom && [1, 8, 9, 11].includes(dom.nodeType), 'unmountComponentAtNode(...): Target container is not a DOM element.');
 
   const root = ContainerMap.get(dom);
@@ -24,17 +24,17 @@ function unmountComponentAtNode(dom: TaroElement) {
   return true;
 }
 
-function findDOMNode(comp?: TaroElement | ReactNode) {
+function findDOMNode(comp?: Element | ReactNode) {
   if (comp == null) {
     return null;
   }
 
-  const { nodeType } = comp as TaroElement;
+  const { nodeType } = comp as Element;
   if (nodeType === 1 || nodeType === 3) {
     return comp;
   }
 
-  return TaroReconciler.findHostInstance(comp as Record<string, any>);
+  return IceMiniappReconciler.findHostInstance(comp as Record<string, any>);
 }
 
 const portalType = isFunction(Symbol) && Symbol.for
@@ -43,7 +43,7 @@ const portalType = isFunction(Symbol) && Symbol.for
 
 function createPortal(
   children: ReactNode,
-  containerInfo: TaroElement,
+  containerInfo: Element,
   key?: string,
 ) {
   return {

@@ -1,4 +1,4 @@
-import { isFunction, isString, Shortcuts } from '@tarojs/shared';
+import { isFunction, isString, Shortcuts } from '@ice/shared';
 
 import type {
   SpecialMaps,

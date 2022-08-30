@@ -1,6 +1,6 @@
 import type { Component, ComponentClass } from 'react';
 
-import type { TaroElement } from '../dom/element.js';
+import type { Element } from '../dom/element.js';
 import type { Func, MpEvent } from '../interface/index.js';
 
 export interface Instance<T = Record<string, any>> extends Component<T>, Show, PageInstance {
@@ -41,7 +41,7 @@ export interface PageLifeCycle extends Show {
   onReady?: () => void;
   onResize?: (options: unknown) => void;
   onSaveExitState?: () => void;
-  onShareAppMessage?: (obj: { from: string; target?: TaroElement; webViewUrl: string }) => void;
+  onShareAppMessage?: (obj: { from: string; target?: Element; webViewUrl: string }) => void;
   onShareTimeline?: () => void;
   onTabItemTap?: (obj: { index: string; pagePath: string; text: string }) => void;
   onTitleClick?: () => void;
@@ -78,6 +78,5 @@ export interface AppInstance extends Show {
   onPageNotFound?: (res: any) => void;
   onShow?: (options?: Record<string, unknown>) => void;
   unmount?: (id: string, cb?: () => void) => void;
-  taroGlobalData?: Record<any, any>;
   config?: Record<any, any>;
 }

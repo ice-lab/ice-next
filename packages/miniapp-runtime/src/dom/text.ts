@@ -1,10 +1,10 @@
-import { Shortcuts } from '@tarojs/shared';
+import { Shortcuts } from '@ice/shared';
 
 import { MutationObserver, MutationRecordType } from '../dom-external/mutation-observer/index.js';
-import { TaroNode } from './node.js';
+import { Node } from './node.js';
 import { NodeType } from './node_types.js';
 
-export class TaroText extends TaroNode {
+export class Text extends Node {
   public _value: string;
   public nodeType = NodeType.TEXT_NODE;
   public nodeName = '#text';

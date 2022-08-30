@@ -6,12 +6,12 @@ import type {
 import { Current, getPageInstance,
   injectPageInstance,
 } from '@ice/miniapp-runtime';
-import { isArray, isFunction } from '@tarojs/shared';
+import { isArray, isFunction } from '@ice/shared';
 
 import { reactMeta } from './react-meta.js';
 import { HOOKS_APP_ID } from './utils.js';
 
-const createTaroHook = (lifecycle: keyof PageLifeCycle | keyof AppInstance) => {
+const createIceMiniappHook = (lifecycle: keyof PageLifeCycle | keyof AppInstance) => {
   return (fn: Func) => {
     const { R: React, PageContext } = reactMeta;
     const id = React.useContext(PageContext) || HOOKS_APP_ID;
@@ -59,37 +59,37 @@ const createTaroHook = (lifecycle: keyof PageLifeCycle | keyof AppInstance) => {
 };
 
 /** LifeCycle */
-export const useDidHide = createTaroHook('componentDidHide');
-export const useDidShow = createTaroHook('componentDidShow');
+export const useDidHide = createIceMiniappHook('componentDidHide');
+export const useDidShow = createIceMiniappHook('componentDidShow');
 
 /** App */
-export const useError = createTaroHook('onError');
-export const useLaunch = createTaroHook('onLaunch');
-export const usePageNotFound = createTaroHook('onPageNotFound');
+export const useError = createIceMiniappHook('onError');
+export const useLaunch = createIceMiniappHook('onLaunch');
+export const usePageNotFound = createIceMiniappHook('onPageNotFound');
 
 /** Page */
-export const useLoad = createTaroHook('onLoad');
-export const usePageScroll = createTaroHook('onPageScroll');
-export const usePullDownRefresh = createTaroHook('onPullDownRefresh');
-export const usePullIntercept = createTaroHook('onPullIntercept');
-export const useReachBottom = createTaroHook('onReachBottom');
-export const useResize = createTaroHook('onResize');
-export const useUnload = createTaroHook('onUnload');
+export const useLoad = createIceMiniappHook('onLoad');
+export const usePageScroll = createIceMiniappHook('onPageScroll');
+export const usePullDownRefresh = createIceMiniappHook('onPullDownRefresh');
+export const usePullIntercept = createIceMiniappHook('onPullIntercept');
+export const useReachBottom = createIceMiniappHook('onReachBottom');
+export const useResize = createIceMiniappHook('onResize');
+export const useUnload = createIceMiniappHook('onUnload');
 
 /** Mini-Program */
-export const useAddToFavorites = createTaroHook('onAddToFavorites');
-export const useOptionMenuClick = createTaroHook('onOptionMenuClick');
-export const useSaveExitState = createTaroHook('onSaveExitState');
-export const useShareAppMessage = createTaroHook('onShareAppMessage');
-export const useShareTimeline = createTaroHook('onShareTimeline');
-export const useTitleClick = createTaroHook('onTitleClick');
+export const useAddToFavorites = createIceMiniappHook('onAddToFavorites');
+export const useOptionMenuClick = createIceMiniappHook('onOptionMenuClick');
+export const useSaveExitState = createIceMiniappHook('onSaveExitState');
+export const useShareAppMessage = createIceMiniappHook('onShareAppMessage');
+export const useShareTimeline = createIceMiniappHook('onShareTimeline');
+export const useTitleClick = createIceMiniappHook('onTitleClick');
 
 /** Router */
-export const useReady = createTaroHook('onReady');
+export const useReady = createIceMiniappHook('onReady');
 export const useRouter: any = (dynamic = false) => {
   const React = reactMeta.R;
   return dynamic ? Current.router : React.useMemo(() => Current.router, []);
 };
-export const useTabItemTap = createTaroHook('onTabItemTap');
+export const useTabItemTap = createIceMiniappHook('onTabItemTap');
 
 export const useScope = () => undefined;

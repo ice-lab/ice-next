@@ -3,7 +3,7 @@ import {
   internalComponents,
   isFunction,
   Shortcuts,
-} from '@tarojs/shared';
+} from '@ice/shared';
 
 import {
   CLASS,
@@ -13,10 +13,10 @@ import {
   STYLE,
   UID,
 } from '../constants/index.js';
-import type { TaroElement } from '../dom/element.js';
-import type { TaroNode } from '../dom/node.js';
+import type { Element } from '../dom/element.js';
+import type { Node } from '../dom/node.js';
 import { NodeType } from '../dom/node_types.js';
-import type { TaroText } from '../dom/text.js';
+import type { Text } from '../dom/text.js';
 import type { Func } from '../interface/index.js';
 
 export const incrementId = () => {
@@ -53,19 +53,19 @@ export const incrementId = () => {
   };
 };
 
-export function isElement(node: TaroNode): node is TaroElement {
+export function isElement(node: Node): node is Element {
   return node.nodeType === NodeType.ELEMENT_NODE;
 }
 
-export function isText(node: TaroNode): node is TaroText {
+export function isText(node: Node): node is Text {
   return node.nodeType === NodeType.TEXT_NODE;
 }
 
-export function isComment(node: TaroNode): boolean {
+export function isComment(node: Node): boolean {
   return node.nodeName === COMMENT;
 }
 
-export function isHasExtractProp(el: TaroElement): boolean {
+export function isHasExtractProp(el: Element): boolean {
   const res = Object.keys(el.props).find(prop => {
     return !(/^(class|style|id)$/.test(prop) || prop.startsWith('data-'));
   });
@@ -77,7 +77,7 @@ export function isHasExtractProp(el: TaroElement): boolean {
  * @param node 当前组件
  * @param type 事件类型
  */
-export function isParentBinded(node: TaroElement | null, type: string): boolean {
+export function isParentBinded(node: Element | null, type: string): boolean {
   let res = false;
   while (node?.parentElement && node.parentElement._path !== ROOT_STR) {
     if (node.parentElement.__handlers[type]?.length) {

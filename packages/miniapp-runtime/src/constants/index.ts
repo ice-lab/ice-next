@@ -1,6 +1,5 @@
 export const PROPERTY_THRESHOLD = 2046;
-export const TARO_RUNTIME = 'Taro runtime';
-export const HOOKS_APP_ID = 'taro-app';
+export const HOOKS_APP_ID = 'ice-miniapp';
 export const SET_DATA = '小程序 setData';
 export const PAGE_INIT = '页面初始化';
 export const ROOT_STR = 'root';

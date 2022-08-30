@@ -1,9 +1,9 @@
-import type { TaroElement } from './element.js';
+import type { Element } from './element.js';
 
 export class ClassList extends Set<string> {
-  private el: TaroElement;
+  private el: Element;
 
-  constructor(className: string, el: TaroElement) {
+  constructor(className: string, el: Element) {
     super();
     className.trim().split(/\s+/).forEach(super.add.bind(this));
     this.el = el;

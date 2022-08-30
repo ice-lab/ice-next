@@ -11,14 +11,14 @@ describe('style', () => {
   });
 
   it('dom', () => {
-    expect(runtime.TaroElement).not.toBeUndefined();
-    expect(runtime.TaroNode).not.toBeUndefined();
-    expect(runtime.TaroText).not.toBeUndefined();
+    expect(runtime.Element).not.toBeUndefined();
+    expect(runtime.Node).not.toBeUndefined();
+    expect(runtime.Text).not.toBeUndefined();
   });
 
   it('event', () => {
     expect(runtime.createEvent).not.toBeUndefined();
-    expect(runtime.TaroEvent).not.toBeUndefined();
+    expect(runtime.Event).not.toBeUndefined();
   });
 
   it('dsl', () => {

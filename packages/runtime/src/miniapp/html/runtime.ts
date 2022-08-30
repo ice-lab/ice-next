@@ -1,5 +1,5 @@
-import type { TaroElement } from '@ice/miniapp-runtime';
-import { hooks, Shortcuts, warn } from '@tarojs/shared';
+import type { Element } from '@ice/miniapp-runtime';
+import { hooks, Shortcuts, warn } from '@ice/shared';
 
 import {
   defineMappedProp,
@@ -101,7 +101,7 @@ export default function enableHtmlRuntime() {
   });
 
   hooks.tap('onAddEvent', (type, _handler, _options, node) => {
-    node = node as TaroElement;
+    node = node as Element;
     if (!isHtmlTags(node.nodeName)) return;
     if (type === 'click') {
       defineMappedProp(node.__handlers, type, 'tap');
@@ -118,7 +118,7 @@ export default function enableHtmlRuntime() {
     }
   });
 
-  hooks.tap('modifyTaroEvent', (event, element) => {
+  hooks.tap('modifyIceEvent', (event, element) => {
     const { nodeName, props } = element;
     if (nodeName === 'input' && event.type === 'tap') {
       if (props.type === 'checkbox') {

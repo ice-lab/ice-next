@@ -1,4 +1,4 @@
-import { EMPTY_OBJ, hooks, isArray, isFunction, isObject, isString, isUndefined, Shortcuts, toCamelCase, warn } from '@tarojs/shared';
+import { EMPTY_OBJ, hooks, isArray, isFunction, isObject, isString, isUndefined, Shortcuts, toCamelCase, warn } from '@ice/shared';
 
 import {
   CATCH_VIEW,
@@ -16,14 +16,14 @@ import { MutationObserver, MutationRecordType } from '../dom-external/mutation-o
 import type { Attributes, Func } from '../interface/index.js';
 import { extend, getComponentsAlias, isElement, isHasExtractProp, shortcutAttr } from '../utils/index.js';
 import { ClassList } from './class-list.js';
-import type { TaroEvent } from './event.js';
+import type { Event } from './event.js';
 import { eventSource } from './event-source.js';
-import { TaroNode } from './node.js';
+import { Node } from './node.js';
 import { NodeType } from './node_types.js';
 import { Style } from './style.js';
 import { treeToArray } from './tree.js';
 
-export class TaroElement extends TaroNode {
+export class Element extends Node {
   public tagName: string;
   public props: Record<string, any> = {};
   public style: Style;
@@ -37,7 +37,7 @@ export class TaroElement extends TaroNode {
     hooks.call('patchElement', this);
   }
 
-  private _stopPropagation(event: TaroEvent) {
+  private _stopPropagation(event: Event) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     let target = this;
     // eslint-disable-next-line no-cond-assign
@@ -79,7 +79,7 @@ export class TaroElement extends TaroNode {
     return new ClassList(this.className, this);
   }
 
-  public get children(): TaroElement[] {
+  public get children(): Element[] {
     return this.childNodes.filter(isElement);
   }
 
@@ -290,13 +290,13 @@ export class TaroElement extends TaroNode {
     return attr ?? '';
   }
 
-  public getElementsByTagName(tagName: string): TaroElement[] {
+  public getElementsByTagName(tagName: string): Element[] {
     return treeToArray(this, (el) => {
       return el.nodeName === tagName || (tagName === '*' && this !== el);
     });
   }
 
-  public getElementsByClassName(className: string): TaroElement[] {
+  public getElementsByClassName(className: string): Element[] {
     return treeToArray(this, (el) => {
       const { classList } = el;
       const classNames = className.trim().split(/\s+/);
@@ -304,7 +304,7 @@ export class TaroElement extends TaroNode {
     });
   }
 
-  public dispatchEvent(event: TaroEvent): boolean {
+  public dispatchEvent(event: Event): boolean {
     const { cancelable } = event;
 
     const listeners = this.__handlers[event.type];
@@ -380,6 +380,6 @@ export class TaroElement extends TaroNode {
   }
 
   static extend(methodName: string, options: Func | Record<string, any>) {
-    extend(TaroElement, methodName, options);
+    extend(Element, methodName, options);
   }
 }

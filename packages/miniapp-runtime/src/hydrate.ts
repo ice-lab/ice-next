@@ -1,4 +1,4 @@
-import { hooks, Shortcuts, toCamelCase } from '@tarojs/shared';
+import { hooks, Shortcuts, toCamelCase } from '@ice/shared';
 
 import {
   CATCH_VIEW,
@@ -9,8 +9,8 @@ import {
   STYLE,
   VIEW,
 } from './constants/index.js';
-import type { TaroElement } from './dom/element.js';
-import type { TaroText } from './dom/text.js';
+import type { Element } from './dom/element.js';
+import type { Text } from './dom/text.js';
 import type { MiniData, MiniElementData } from './interface/index.js';
 import { getComponentsAlias, isComment, isHasExtractProp, isText } from './utils/index.js';
 
@@ -21,9 +21,9 @@ let componentsAlias;
  * React also has a fancy function's name for this: `hydrate()`.
  * You may have been heard `hydrate` as a SSR-related function,
  * actually, `hydrate` basicly do the `render()` thing, but ignore some properties,
- * it's a vnode traverser and modifier: that's exactly what Taro's doing in here.
+ * it's a vnode traverser and modifier: that's exactly what ICE's doing in here.
  */
-export function hydrate(node: TaroElement | TaroText): MiniData {
+export function hydrate(node: Element | Text): MiniData {
   if (!componentsAlias) {
     // 初始化 componentsAlias
     componentsAlias = getComponentsAlias();

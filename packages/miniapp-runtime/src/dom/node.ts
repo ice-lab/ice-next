@@ -1,4 +1,4 @@
-import { ensure, hooks, Shortcuts } from '@tarojs/shared';
+import { ensure, hooks, Shortcuts } from '@ice/shared';
 
 import { DOCUMENT_FRAGMENT } from '../constants/index.js';
 import { MutationObserver, MutationRecordType } from '../dom-external/mutation-observer/index.js';
@@ -6,12 +6,12 @@ import env from '../env.js';
 import { hydrate } from '../hydrate.js';
 import type { Func, UpdatePayload } from '../interface/index.js';
 import { extend, incrementId, isComment } from '../utils/index.js';
-import type { TaroDocument } from './document.js';
-import type { TaroElement } from './element.js';
+import type { Document } from './document.js';
+import type { Element } from './element.js';
 import { eventSource } from './event-source.js';
-import { TaroEventTarget } from './event-target.js';
+import { EventTarget } from './event-target.js';
 import { NodeType } from './node_types.js';
-import type { TaroRootElement } from './root.js';
+import type { RootElement } from './root.js';
 
 interface RemoveChildOptions {
   cleanRef?: boolean;
@@ -21,13 +21,13 @@ interface RemoveChildOptions {
 const CHILDNODES = Shortcuts.Childnodes;
 const nodeId = incrementId();
 
-export class TaroNode extends TaroEventTarget {
+export class Node extends EventTarget {
   public uid: string;
   public sid: string;
   public nodeType: NodeType;
   public nodeName: string;
-  public parentNode: TaroNode | null = null;
-  public childNodes: TaroNode[] = [];
+  public parentNode: Node | null = null;
+  public childNodes: Node[] = [];
 
   public constructor() {
     super();
@@ -36,7 +36,7 @@ export class TaroNode extends TaroEventTarget {
     eventSource.set(this.sid, this);
   }
 
-  private hydrate = (node: TaroNode) => () => hydrate(node as TaroElement);
+  private hydrate = (node: Node) => () => hydrate(node as Element);
 
   private updateChildNodes(isClean?: boolean) {
     const cleanChildNodes = () => [];
@@ -51,11 +51,11 @@ export class TaroNode extends TaroEventTarget {
     });
   }
 
-  public get _root(): TaroRootElement | null {
+  public get _root(): RootElement | null {
     return this.parentNode?._root || null;
   }
 
-  protected findIndex(refChild: TaroNode): number {
+  protected findIndex(refChild: Node): number {
     const index = this.childNodes.indexOf(refChild);
 
     ensure(index !== -1, 'The node to be replaced is not a child of this node.');
@@ -78,29 +78,29 @@ export class TaroNode extends TaroEventTarget {
     return '';
   }
 
-  public get nextSibling(): TaroNode | null {
+  public get nextSibling(): Node | null {
     const { parentNode } = this;
     return parentNode?.childNodes[parentNode.findIndex(this) + 1] || null;
   }
 
-  public get previousSibling(): TaroNode | null {
+  public get previousSibling(): Node | null {
     const { parentNode } = this;
     return parentNode?.childNodes[parentNode.findIndex(this) - 1] || null;
   }
 
-  public get parentElement(): TaroElement | null {
+  public get parentElement(): Element | null {
     const { parentNode } = this;
     if (parentNode?.nodeType === NodeType.ELEMENT_NODE) {
-      return parentNode as TaroElement;
+      return parentNode as Element;
     }
     return null;
   }
 
-  public get firstChild(): TaroNode | null {
+  public get firstChild(): Node | null {
     return this.childNodes[0] || null;
   }
 
-  public get lastChild(): TaroNode | null {
+  public get lastChild(): Node | null {
     const { childNodes } = this;
     return childNodes[childNodes.length - 1] || null;
   }
@@ -112,7 +112,7 @@ export class TaroNode extends TaroEventTarget {
   // eslint-disable-next-line accessor-pairs
   public set textContent(text: string) {
     const removedNodes = this.childNodes.slice();
-    const addedNodes: TaroNode[] = [];
+    const addedNodes: Node[] = [];
 
     // Handle old children' data structure & ref
     while (this.firstChild) {
@@ -145,7 +145,7 @@ export class TaroNode extends TaroEventTarget {
    *   2. insert D before C, D has the same parent of C
    *   3. insert D before C, D has the different parent of C
    */
-  public insertBefore<T extends TaroNode>(newChild: T, refChild?: TaroNode | null, isReplace?: boolean): T {
+  public insertBefore<T extends Node>(newChild: T, refChild?: Node | null, isReplace?: boolean): T {
     if (newChild.nodeName === DOCUMENT_FRAGMENT) {
       newChild.childNodes.reduceRight((previousValue, currentValue) => {
         this.insertBefore(currentValue, previousValue);
@@ -200,10 +200,10 @@ export class TaroNode extends TaroEventTarget {
       target: this,
       addedNodes: [newChild],
       removedNodes: isReplace
-        ? [refChild as TaroNode] /** replaceChild */
+        ? [refChild as Node] /** replaceChild */
         : [],
       nextSibling: isReplace
-        ? (refChild as TaroNode).nextSibling /** replaceChild */
+        ? (refChild as Node).nextSibling /** replaceChild */
         : (refChild || null), /** insertBefore & appendChild */
       previousSibling: newChild.previousSibling,
     });
@@ -219,7 +219,7 @@ export class TaroNode extends TaroEventTarget {
    *   2. append C, C has the same parent of B
    *   3. append C, C has the different parent of B
    */
-  public appendChild(newChild: TaroNode) {
+  public appendChild(newChild: Node) {
     return this.insertBefore(newChild);
   }
 
@@ -231,7 +231,7 @@ export class TaroNode extends TaroEventTarget {
    *   2. replace B with C, C has no parent, C has the same parent of B
    *   3. replace B with C, C has no parent, C has the different parent of B
    */
-  public replaceChild(newChild: TaroNode, oldChild: TaroNode) {
+  public replaceChild(newChild: Node, oldChild: Node) {
     if (oldChild.parentNode !== this) return;
 
     // Insert the newChild
@@ -252,7 +252,7 @@ export class TaroNode extends TaroEventTarget {
    *   1. remove A or B
    *   2. remove C
    */
-  public removeChild<T extends TaroNode>(child: T, options: RemoveChildOptions = {}): T {
+  public removeChild<T extends Node>(child: T, options: RemoveChildOptions = {}): T {
     const { cleanRef, doUpdate } = options;
 
     if (cleanRef !== false && doUpdate !== false) {
@@ -297,11 +297,11 @@ export class TaroNode extends TaroEventTarget {
     this._root?.enqueueUpdate(payload);
   }
 
-  public get ownerDocument(): TaroDocument {
+  public get ownerDocument(): Document {
     return env.document;
   }
 
   static extend(methodName: string, options: Func | Record<string, any>) {
-    extend(TaroNode, methodName, options);
+    extend(Node, methodName, options);
   }
 }

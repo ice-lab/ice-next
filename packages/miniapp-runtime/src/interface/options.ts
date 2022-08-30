@@ -1,5 +1,5 @@
-import type { TaroElement } from '../dom/element.js';
-import type { TaroText } from '../dom/text.js';
+import type { Element as IceElement } from '../dom/element.js';
+import type { Text as IceText } from '../dom/text.js';
 import type { Element, Text } from '../dom-external/inner-html/parser.js';
 
 export interface Options {
@@ -9,8 +9,8 @@ export interface Options {
     skipElements: Set<string>;
     voidElements: Set<string>;
     closingElements: Set<string>;
-    transformText?: (taroText: TaroText, text: Text) => TaroText;
-    transformElement?: (taroElement: TaroElement, element: Element) => TaroElement;
+    transformText?: (iceText: IceText, text: Text) => IceText;
+    transformElement?: (iceElement: IceElement, element: Element) => IceElement;
     renderHTMLTag: boolean;
   };
   miniGlobal?: any;

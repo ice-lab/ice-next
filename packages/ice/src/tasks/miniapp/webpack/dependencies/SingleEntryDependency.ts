@@ -1,6 +1,6 @@
 import webpack from '@ice/bundles/compiled/webpack/index.js';
 
-export default class TaroSingleEntryDependency extends webpack.dependencies.ModuleDependency {
+export default class SingleEntryDependency extends webpack.dependencies.ModuleDependency {
   name: string;
   miniType: any;
   loc: any;

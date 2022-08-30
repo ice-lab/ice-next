@@ -1,6 +1,6 @@
-import TaroSingleEntryDependency from '../dependencies/TaroSingleEntryDependency.js';
+import SingleEntryDependency from '../dependencies/SingleEntryDependency.js';
 
-export default class TaroSingleEntryPlugin {
+export default class SingleEntryPlugin {
   context: any;
   entry: string;
   name: string;
@@ -15,10 +15,10 @@ export default class TaroSingleEntryPlugin {
 
   apply(compiler) {
     compiler.hooks.compilation.tap(
-      'TaroSingleEntryDependency',
+      'SingleEntryDependency',
       (compilation, { normalModuleFactory }) => {
         compilation.dependencyFactories.set(
-          TaroSingleEntryDependency,
+          SingleEntryDependency,
           normalModuleFactory,
         );
       },
@@ -29,13 +29,13 @@ export default class TaroSingleEntryPlugin {
       (compilation, callback) => {
         const { entry, name, context, miniType } = this;
 
-        const dep = TaroSingleEntryPlugin.createDependency(entry, name, miniType);
+        const dep = SingleEntryPlugin.createDependency(entry, name, miniType);
         compilation.addEntry(context, dep, name, callback);
       },
     );
   }
 
   static createDependency(entry, name, miniType) {
-    return new TaroSingleEntryDependency(entry, name, { name }, miniType);
+    return new SingleEntryDependency(entry, name, { name }, miniType);
   }
 }

@@ -1,13 +1,13 @@
-import type { Shortcuts } from '@tarojs/shared';
-import type { PageConfig } from '@tarojs/taro';
+import type { Shortcuts } from '@ice/shared';
+import type { MiniappPageConfig } from '@ice/types';
 
 export interface MpInstance {
-  config: PageConfig;
+  config: MiniappPageConfig;
   setData: (data: unknown, cb: () => void) => void;
   route?: string;
   __route__: string;
-  $taroParams?: Record<string, unknown>;
-  $taroPath: string;
+  $iceParams?: Record<string, unknown>;
+  $icePath: string;
   __data__: any;
   data: any;
   exitState?: any;

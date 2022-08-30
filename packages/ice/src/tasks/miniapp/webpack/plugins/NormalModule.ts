@@ -1,6 +1,6 @@
 import webpack from '@ice/bundles/compiled/webpack/index.js';
 
-export default class TaroNormalModule extends webpack.NormalModule {
+export default class NormalModule extends webpack.NormalModule {
   name: string;
   miniType: any;
   constructor(data) {
@@ -24,12 +24,12 @@ export default class TaroNormalModule extends webpack.NormalModule {
   }
 }
 
-webpack.util.serialization.register(TaroNormalModule, '@tarojs/webpack5-runner/dist/plugins/TaroNormalModule', 'TaroNormalModule', {
+webpack.util.serialization.register(NormalModule, '@ice/app/esm/tasks/miniapp/webpack/plugins/NormalModule', 'NormalModule', {
   serialize(obj, context) {
     obj.serialize(context);
   },
   deserialize(context) {
-    const obj = new TaroNormalModule({
+    const obj = new NormalModule({
       // will be deserialized by Module
       layer: null,
       type: '',

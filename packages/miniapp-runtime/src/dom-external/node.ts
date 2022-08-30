@@ -1,11 +1,11 @@
-import type { TaroNode } from '../dom/node.js';
+import type { Node } from '../dom/node.js';
 
 import { DATASET, OBJECT, PROPS, STYLE } from '../constants/index.js';
 import { NodeType } from '../dom/node_types.js';
 
 export type IPosition = 'beforebegin' | 'afterbegin' | 'beforeend' | 'afterend';
 
-export function cloneNode(this: TaroNode, isDeep = false) {
+export function cloneNode(this: Node, isDeep = false) {
   const document = this.ownerDocument;
   let newNode;
 
@@ -34,7 +34,7 @@ export function cloneNode(this: TaroNode, isDeep = false) {
   return newNode;
 }
 
-export function contains(this: TaroNode, node: TaroNode & { id?: string }): boolean {
+export function contains(this: Node, node: Node & { id?: string }): boolean {
   let isContains = false;
   this.childNodes.some(childNode => {
     const { uid } = childNode;

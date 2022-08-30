@@ -1,6 +1,6 @@
-import type { TaroNode } from '../../dom/node.js';
+import type { Node } from '../../dom/node.js';
 import { NodeType } from '../../dom/node_types.js';
-import type { ParsedTaroElement } from './parser.js';
+import type { ParsedElement } from './parser.js';
 import { unquote } from './utils.js';
 
 const LEFT_BRACKET = '{';
@@ -134,7 +134,7 @@ export default class StyleTagParser {
     return selectors;
   }
 
-  matchStyle(tagName: string, el: ParsedTaroElement, list: number[]): string {
+  matchStyle(tagName: string, el: ParsedElement, list: number[]): string {
     const res = sortStyles(this.styles).reduce((str, { content, selectorList }, i) => {
       let idx = list[i];
       let selector = selectorList[idx];
@@ -149,7 +149,7 @@ export default class StyleTagParser {
       let isMatch = this.matchCurrent(tagName, el, selector);
 
       if (isMatch && selector.isGeneralSibling) {
-        let prev: ParsedTaroElement = getPreviousElement(el);
+        let prev: ParsedElement = getPreviousElement(el);
         while (prev) {
           if (prev.h5tagName && this.matchCurrent(prev.h5tagName, prev, selectorList[idx - 1])) {
             isMatch = true;
@@ -160,7 +160,7 @@ export default class StyleTagParser {
         }
       }
       if (isMatch && selector.isAdjacentSibling) {
-        const prev: ParsedTaroElement = getPreviousElement(el);
+        const prev: ParsedElement = getPreviousElement(el);
         if (!prev || !prev.h5tagName) {
           isMatch = false;
         } else {
@@ -192,7 +192,7 @@ export default class StyleTagParser {
     return res;
   }
 
-  matchCurrent(tagName: string, el: ParsedTaroElement, selector: ISelector): boolean {
+  matchCurrent(tagName: string, el: ParsedElement, selector: ISelector): boolean {
     // 标签选择器
     if (selector.tag && selector.tag !== tagName) return false;
 
@@ -229,7 +229,7 @@ export default class StyleTagParser {
   }
 }
 
-function getPreviousElement(el: TaroNode) {
+function getPreviousElement(el: Node) {
   const parent = el.parentElement;
   if (!parent) return null;
 

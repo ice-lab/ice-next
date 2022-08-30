@@ -1,11 +1,11 @@
 
-import { TaroElement } from '../dom/element.js';
-import { TaroNode } from '../dom/node.js';
+import { Element } from '../dom/element.js';
+import { Node } from '../dom/node.js';
 import { setInnerHTML } from '../dom-external/inner-html/html.js';
 import { getBoundingClientRectImpl, getTemplateContent } from './element.js';
 import { cloneNode, contains } from './node.js';
 
-TaroNode.extend('innerHTML', {
+Node.extend('innerHTML', {
   set(html: string) {
     setInnerHTML.call(this, this, html);
   },
@@ -13,10 +13,10 @@ TaroNode.extend('innerHTML', {
     return '';
   },
 });
-TaroNode.extend('cloneNode', cloneNode);
-TaroNode.extend('contains', contains);
-TaroElement.extend('getBoundingClientRect', getBoundingClientRectImpl);
-TaroElement.extend('content', {
+Node.extend('cloneNode', cloneNode);
+Node.extend('contains', contains);
+Element.extend('getBoundingClientRect', getBoundingClientRectImpl);
+Element.extend('content', {
   get() {
     return getTemplateContent(this);
   },

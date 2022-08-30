@@ -1,4 +1,4 @@
-import { Events, hooks } from '@tarojs/shared';
+import { Events, hooks } from '@ice/shared';
 
 const eventCenter = hooks.call('getEventCenter', Events)!;
 

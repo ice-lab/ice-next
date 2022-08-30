@@ -1,6 +1,6 @@
-import type { Style, TaroElement } from '@ice/miniapp-runtime';
+import type { Style, Element } from '@ice/miniapp-runtime';
 import { FormElement } from '@ice/miniapp-runtime';
-import { capitalize, internalComponents, isFunction, isNumber, isObject, isString, toCamelCase } from '@tarojs/shared';
+import { capitalize, internalComponents, isFunction, isNumber, isObject, isString, toCamelCase } from '@ice/shared';
 
 export type Props = Record<string, unknown>;
 
@@ -10,7 +10,7 @@ function isEventName(s: string) {
 
 const IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord/i;
 
-export function updateProps(dom: TaroElement, oldProps: Props, newProps: Props) {
+export function updateProps(dom: Element, oldProps: Props, newProps: Props) {
   let i: string;
 
   for (i in oldProps) {
@@ -32,7 +32,7 @@ export function updateProps(dom: TaroElement, oldProps: Props, newProps: Props) 
 //   handlers[0](e)
 // }
 
-function setEvent(dom: TaroElement, name: string, value: unknown, oldValue?: unknown) {
+function setEvent(dom: Element, name: string, value: unknown, oldValue?: unknown) {
   const isCapture = name.endsWith('Capture');
   let eventName = name.toLowerCase().slice(2);
   if (isCapture) {
@@ -75,7 +75,7 @@ interface DangerouslySetInnerHTML {
   __html?: string;
 }
 
-function setProperty(dom: TaroElement, name: string, value: unknown, oldValue?: unknown) {
+function setProperty(dom: Element, name: string, value: unknown, oldValue?: unknown) {
   name = name === 'className' ? 'class' : name;
 
   if (

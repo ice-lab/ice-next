@@ -1,27 +1,22 @@
-import taroHelper from '@tarojs/helper';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
 import webpackSources from 'webpack-sources';
-import type { AddPageChunks, IComponent } from '../utils/types.js';
+import type { IComponent } from '../../types.js';
 import { getChunkEntryModule, addRequireToSource, getChunkIdOrName } from '../utils/webpack.js';
-import type TaroNormalModule from './TaroNormalModule.js';
+import { META_TYPE } from '../../../../constant.js';
+import type NormalModule from './NormalModule.js';
 
 const { ConcatSource } = webpackSources;
-const {
-  META_TYPE,
-} = taroHelper;
-const PLUGIN_NAME = 'TaroLoadChunksPlugin';
+const PLUGIN_NAME = 'LoadChunksPlugin';
 
 interface IOptions {
   commonChunks: string[];
-  addChunkPages?: AddPageChunks;
   pages: Set<IComponent>;
   needAddCommon?: string[];
   isIndependentPackages?: boolean;
 }
 
-export default class TaroLoadChunksPlugin {
+export default class LoadChunksPlugin {
   commonChunks: string[];
-  addChunkPages?: AddPageChunks;
   pages: Set<IComponent>;
   isCompDepsFound: boolean;
   needAddCommon: string[];
@@ -29,15 +24,12 @@ export default class TaroLoadChunksPlugin {
 
   constructor(options: IOptions) {
     this.commonChunks = options.commonChunks;
-    this.addChunkPages = options.addChunkPages;
     this.pages = options.pages;
     this.needAddCommon = options.needAddCommon || [];
     this.isIndependentPackages = options.isIndependentPackages || false;
   }
 
   apply(compiler: webpack.Compiler) {
-    const pagesList = this.pages;
-    const addChunkPagesList = new Map<string, string[]>();
     compiler.hooks.thisCompilation.tap(PLUGIN_NAME, (compilation: webpack.Compilation) => {
       let commonChunks;
       const fileChunks = new Map<string, { name: string }[]>();
@@ -46,13 +38,12 @@ export default class TaroLoadChunksPlugin {
         // TODO:原先用于收集用到的组件，以减少 template 体积。ICE 中无法收集，需要提供可让用户手动配置的方法
         const chunksArray = Array.from(chunks);
         commonChunks = chunksArray.filter(chunk => this.commonChunks.includes(chunk.name) && chunkHasJs(chunk, compilation.chunkGraph)).reverse();
-        // TODO:收集开发者在 addChunkPages 中配置的页面及其需要引用的公共文件
       });
 
       webpack.javascript.JavascriptModulesPlugin.getCompilationHooks(compilation).render.tap(PLUGIN_NAME, (modules: typeof ConcatSource, { chunk }) => {
         const chunkEntryModule = getChunkEntryModule(compilation, chunk) as any;
         if (chunkEntryModule) {
-          const entryModule: TaroNormalModule = chunkEntryModule.rootModule ?? chunkEntryModule;
+          const entryModule: NormalModule = chunkEntryModule.rootModule ?? chunkEntryModule;
           if (entryModule.miniType === META_TYPE.EXPORTS) {
             const source = new ConcatSource();
             source.add('module.exports=');
@@ -72,7 +63,7 @@ export default class TaroLoadChunksPlugin {
       webpack.javascript.JavascriptModulesPlugin.getCompilationHooks(compilation).render.tap(PLUGIN_NAME, (modules: typeof ConcatSource, { chunk }) => {
         const chunkEntryModule = getChunkEntryModule(compilation, chunk) as any;
         if (chunkEntryModule) {
-          const entryModule: TaroNormalModule = chunkEntryModule.rootModule ?? chunkEntryModule;
+          const entryModule: NormalModule = chunkEntryModule.rootModule ?? chunkEntryModule;
           const { miniType } = entryModule;
           if (this.needAddCommon.length) {
             for (const item of this.needAddCommon) {

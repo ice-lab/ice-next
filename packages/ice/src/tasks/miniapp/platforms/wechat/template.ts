@@ -1,7 +1,11 @@
-import { UnRecursiveTemplate } from '@tarojs/shared/dist/template.js';
+import { UnRecursiveTemplate } from '@ice/shared';
+
+interface IOptions {
+  enablekeyboardAccessory?: boolean;
+}
 
 export default class Template extends UnRecursiveTemplate {
-  pluginOptions: any;
+  pluginOptions: IOptions;
   supportXS = true;
   Adapter = {
     if: 'wx:if',
@@ -15,9 +19,9 @@ export default class Template extends UnRecursiveTemplate {
     type: 'weapp',
   };
 
-  constructor() {
+  constructor(pluginOptions?: IOptions) {
     super();
-    this.pluginOptions = {};
+    this.pluginOptions = pluginOptions || {};
   }
 
   buildXsTemplate() {

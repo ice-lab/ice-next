@@ -1,6 +1,6 @@
-import { noop } from '@tarojs/shared';
+import { noop } from '@ice/shared';
 
-import type { TaroNode } from '../../dom/node.js';
+import type { Node } from '../../dom/node.js';
 import type { MutationCallback, MutationObserverInit, MutationObserverImpl } from './implements.js';
 import { recordMutation } from './implements.js';
 import type { MutationRecord } from './record.js';
@@ -17,7 +17,7 @@ export class MutationObserver {
     };
   }
 
-  public observe(...args: [TaroNode, MutationObserverInit?]) {
+  public observe(...args: [Node, MutationObserverInit?]) {
     this.core.observe(...args);
   }
 

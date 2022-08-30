@@ -1,4 +1,4 @@
-import { TaroDocument } from '../dom/document.js';
+import { Document } from '../dom/document.js';
 
 import {
   APP,
@@ -10,7 +10,7 @@ import {
 import env from '../env.js';
 
 /* eslint-disable no-inner-declarations */
-function createDocument(): TaroDocument {
+function createDocument(): Document {
   /**
      * <document>
      *   <html>
@@ -23,7 +23,7 @@ function createDocument(): TaroDocument {
      *   </html>
      * </document>
      */
-  const doc = new TaroDocument();
+  const doc = new Document();
   const documentCreateElement = doc.createElement.bind(doc);
   const html = documentCreateElement(HTML);
   const head = documentCreateElement(HEAD);

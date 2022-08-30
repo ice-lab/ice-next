@@ -1,4 +1,4 @@
-import type { TaroNode } from '../../dom/node.js';
+import type { Node } from '../../dom/node.js';
 import type { MutationRecord } from './record.js';
 import { MutationRecordType } from './record.js';
 
@@ -29,7 +29,7 @@ const observers: MutationObserverImpl[] = [];
  */
 export class MutationObserverImpl {
   public callback: MutationCallback;
-  public target: TaroNode | null;
+  public target: Node | null;
   public options: MutationObserverInit;
   public records: MutationRecord[] = [];
 
@@ -45,7 +45,7 @@ export class MutationObserverImpl {
    *
    * Options matching is to be implemented.
    */
-  observe(target: TaroNode, options?: MutationObserverInit): void {
+  observe(target: Node, options?: MutationObserverInit): void {
     this.disconnect();
     this.target = target;
     this.options = options || {};
@@ -77,10 +77,10 @@ export class MutationObserverImpl {
   }
 }
 
-/** Match two TaroNodes by sid. */
+/** Match two Nodes by sid. */
 const sidMatches = (
-  observerTarget: TaroNode | null,
-  target: TaroNode | null,
+  observerTarget: Node | null,
+  target: Node | null,
 ): boolean => {
   return !!observerTarget && observerTarget.sid === target?.sid;
 };
@@ -128,7 +128,7 @@ function logMutation(observer: MutationObserverImpl, record: MutationRecord) {
 export function recordMutation(record: MutationRecord) {
   observers.forEach(observer => {
     const { options } = observer;
-    for (let t: TaroNode | null = record.target; t; t = t.parentNode) {
+    for (let t: Node | null = record.target; t; t = t.parentNode) {
       if (sidMatches(observer.target, t) && isConcerned(record, options)) {
         logMutation(observer, record);
         break;

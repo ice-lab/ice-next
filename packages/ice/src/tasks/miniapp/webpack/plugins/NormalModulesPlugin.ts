@@ -1,21 +1,21 @@
 import type webpack from '@ice/bundles/compiled/webpack/index.js';
 
 import * as walk from 'acorn-walk';
-import TaroSingleEntryDependency from '../dependencies/TaroSingleEntryDependency.js';
+import SingleEntryDependency from '../dependencies/SingleEntryDependency.js';
 import { componentConfig } from '../template/component.js';
 import onParseCreateElement from '../../html/index.js';
-import TaroNormalModule from './TaroNormalModule.js';
+import NormalModule from './NormalModule.js';
 
 
-const PLUGIN_NAME = 'TaroNormalModulesPlugin';
+const PLUGIN_NAME = 'NormalModulesPlugin';
 
-export default class TaroNormalModulesPlugin {
+export default class NormalModulesPlugin {
   apply(compiler: webpack.Compiler) {
     compiler.hooks.compilation.tap(PLUGIN_NAME, (_, { normalModuleFactory }) => {
       normalModuleFactory.hooks.createModule.tapPromise(PLUGIN_NAME, (data, { dependencies }) => {
         const dependency = dependencies[0];
-        if (dependency instanceof TaroSingleEntryDependency) {
-          return Promise.resolve(new TaroNormalModule(Object.assign(data,
+        if (dependency instanceof SingleEntryDependency) {
+          return Promise.resolve(new NormalModule(Object.assign(data,
             { miniType: dependency.miniType, name: dependency.name },
           )));
         }

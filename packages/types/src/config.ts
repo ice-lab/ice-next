@@ -40,7 +40,6 @@ interface SwcOptions {
   keepPlatform?: 'node' | 'web' | 'weex' | 'miniapp' | 'wechat-miniprogram' | 'bytedance-microapp' | 'baidu-smartprogram' | 'kuaishou-miniprogram';
 }
 
-type Experimental = Pick<Configuration, 'experiments'>;
 type Output = Configuration['output'];
 type Optimization = Configuration['optimization'];
 type Performance = Configuration['performance'];
@@ -158,4 +157,8 @@ export interface Config {
   cssChunkFilename?: string;
 
   enableCopyPlugin?: boolean;
+
+  getAppConfig?: (exportNamse?: string[]) => Promise<any>;
+
+  getRoutesConfig?: (specifyRoutId?: string) => Promise<any>;
 }

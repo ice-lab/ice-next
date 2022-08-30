@@ -7,8 +7,8 @@ import type {
 import { Current, getPageInstance,
   incrementId, injectPageInstance,
 } from '@ice/miniapp-runtime';
-import { EMPTY_OBJ, hooks } from '@tarojs/shared';
-import type { AppConfig } from '@tarojs/taro';
+import { EMPTY_OBJ, hooks } from '@ice/shared';
+import type { MiniappAppConfig } from '@ice/types';
 import React, { createElement } from 'react';
 import * as ReactDOM from 'react-dom';
 import { ConfigProvider, DataProvider } from '../RouteContext.js';
@@ -168,7 +168,7 @@ export class AppWrapper extends React.Component {
  * @returns 传递给 App 构造器的对象 obj ：App(obj)
  */
  export function createMiniApp(
-  config: AppConfig,
+  config: MiniappAppConfig,
 ) {
   setReconciler();
   enableHtmlRuntime();
@@ -204,29 +204,7 @@ export class AppWrapper extends React.Component {
         const app = getAppInstance();
         this.$app = app;
 
-        if (app) {
-          // 把 App Class 上挂载的额外属性同步到全局 app 对象中
-          if (app.taroGlobalData) {
-            const globalData = app.taroGlobalData;
-            const keys = Object.keys(globalData);
-            const descriptors = Object.getOwnPropertyDescriptors(globalData);
-            keys.forEach(key => {
-              Object.defineProperty(this, key, {
-                configurable: true,
-                enumerable: true,
-                get() {
-                  return globalData[key];
-                },
-                set(value) {
-                  globalData[key] = value;
-                },
-              });
-            });
-            Object.defineProperties(this, descriptors);
-          }
-
-          app.onLaunch?.(options);
-        }
+        app?.onLaunch?.(options);
         triggerAppHook('onLaunch', options);
       },
     }),

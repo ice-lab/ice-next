@@ -1,4 +1,4 @@
-import { RecursiveTemplate } from '@tarojs/shared/dist/template.js';
+import { RecursiveTemplate } from '@ice/shared';
 
 export default class Template extends RecursiveTemplate {
   supportXS = false;

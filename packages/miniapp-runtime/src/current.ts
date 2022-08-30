@@ -3,7 +3,7 @@ import type { AppInstance, PageInstance } from './dsl/instance.js';
 export interface Router {
   params: Record<string, unknown>;
   path: string;
-  $taroPath: string;
+  $icePath: string;
   onReady: string;
   onHide: string;
   onShow: string;

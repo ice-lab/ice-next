@@ -1,5 +1,7 @@
 import { networkInterfaces } from 'os';
 import path from 'path';
+import fs from 'fs-extra';
+import { SCRIPT_EXT } from '../../../../constant.js';
 
 export const emptyObj = {};
 export const emptyTogglableObj = {
@@ -42,3 +44,40 @@ export const formatOpenHost = host => {
   }
   return result;
 };
+
+export function normalizePath(fpath: string) {
+  return fpath.replace(/\\/g, '/').replace(/\/{2,}/g, '/');
+}
+
+export function promoteRelativePath(fPath: string): string {
+  const fPathArr = fPath.split(path.sep);
+  let dotCount = 0;
+  fPathArr.forEach(item => {
+    if (item.indexOf('..') >= 0) {
+      dotCount++;
+    }
+  });
+  if (dotCount === 1) {
+    fPathArr.splice(0, 1, '.');
+    return fPathArr.join('/');
+  }
+  if (dotCount > 1) {
+    fPathArr.splice(0, 1);
+    return fPathArr.join('/');
+  }
+  return normalizePath(fPath);
+}
+
+export function resolveMainFilePath(p: string, extArrs = SCRIPT_EXT): string {
+  const realPath = p;
+  for (let i = 0; i < extArrs.length; i++) {
+    const item = extArrs[i];
+    if (fs.existsSync(`${p}${item}`)) {
+      return `${p}${item}`;
+    }
+    if (fs.existsSync(`${p}${path.sep}index${item}`)) {
+      return `${p}${path.sep}index${item}`;
+    }
+  }
+  return realPath;
+}

@@ -1,8 +1,8 @@
 import { Current } from '@ice/miniapp-runtime';
-import { isFunction } from '@tarojs/shared';
+import { isFunction } from '@ice/shared';
 import type React from 'react';
 
-export const HOOKS_APP_ID = 'taro-app';
+export const HOOKS_APP_ID = 'ice-miniapp';
 
 export function isClassComponent(R: typeof React, component): boolean {
   const { prototype } = component;

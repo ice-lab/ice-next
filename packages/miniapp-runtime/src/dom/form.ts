@@ -3,10 +3,10 @@ import {
   INPUT,
   VALUE,
 } from '../constants/index.js';
-import { TaroElement } from './element.js';
-import type { TaroEvent } from './event.js';
+import { Element } from './element.js';
+import type { Event } from './event.js';
 
-export class FormElement extends TaroElement {
+export class FormElement extends Element {
   public get value() {
     // eslint-disable-next-line dot-notation
     const val = this.props[VALUE];
@@ -17,7 +17,7 @@ export class FormElement extends TaroElement {
     this.setAttribute(VALUE, val);
   }
 
-  public dispatchEvent(event: TaroEvent) {
+  public dispatchEvent(event: Event) {
     if (event.mpEvent) {
       const val = event.mpEvent.detail.value;
       if (event.type === CHANGE) {

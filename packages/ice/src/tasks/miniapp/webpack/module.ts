@@ -1,7 +1,9 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'node:module';
-import taroHelper from '@tarojs/helper';
+import { REG_TEMPLATE } from '../../../constant.js';
+import type { IMiniappWebpackOptions } from '../types.js';
+
 
 interface IRule {
   test?: any;
@@ -28,21 +30,16 @@ interface IRule {
 const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const {
-  REG_SCRIPTS,
-  REG_TEMPLATE,
-} = taroHelper;
-
 export class MiniWebpackModule {
-  config: any;
+  config: IMiniappWebpackOptions;
   sourceRoot: string;
 
-  constructor(config: any) {
+  constructor(config: IMiniappWebpackOptions) {
     this.config = config;
     this.sourceRoot = 'src';
   }
 
-  getLoader(loaderName: string, options: Record<string, any>) {
+  getLoader(loaderName: string, options?: Record<string, any>) {
     return {
       loader: require.resolve(loaderName),
       options: options || {},
@@ -52,7 +49,6 @@ export class MiniWebpackModule {
   getModules() {
     const {
       fileType,
-      buildAdapter,
     } = this.config;
 
     const rules: Array<IRule> = [
@@ -66,42 +62,9 @@ export class MiniWebpackModule {
             return filename.replace(`${this.sourceRoot}/`, '').replace(extname, fileType.templ);
           },
         },
-        use: [this.getLoader(path.resolve(__dirname, './loaders/miniTemplateLoader'), {
-          buildAdapter,
-        })],
+        use: [this.getLoader(path.resolve(__dirname, './loaders/miniTemplateLoader'))],
       },
-      // script
-      // this.getScriptRule(),
     ];
     return { rules };
-  }
-
-  getScriptRule() {
-    const {
-      rootDir,
-      compile = {},
-    } = this.config;
-    const sourceDir = path.join(rootDir, 'src');
-    const rule: IRule = {
-      test: REG_SCRIPTS,
-      use: [this.getLoader('babel-loader', { compact: false })],
-    };
-
-    if (compile.exclude && compile.exclude.length) {
-      rule.exclude = [
-        ...compile.exclude,
-        filename => /css-loader/.test(filename) || (/node_modules/.test(filename) && !(/taro/.test(filename))),
-      ];
-    } else if (compile.include && compile.include.length) {
-      rule.include = [
-        ...compile.include,
-        sourceDir,
-        filename => /taro/.test(filename),
-      ];
-    } else {
-      rule.exclude = [filename => /css-loader/.test(filename) || (/node_modules/.test(filename) && !(/taro/.test(filename)))];
-    }
-
-    return rule;
   }
 }

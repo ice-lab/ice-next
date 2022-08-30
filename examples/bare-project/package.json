@@ -16,10 +16,6 @@
     "@ice/plugin-rax-compat": "workspace:*",
     "@ice/runtime": "workspace:*",
     "@ice/miniapp-loader": "workspace:*",
-    "@tarojs/plugin-framework-react": "3.5.0-beta.7",
-    "@tarojs/plugin-platform-weapp": "3.5.0-beta.7",
-    "@tarojs/runtime": "^3.4.12",
-    "@tarojs/taro": "^3.4.12",
     "ahooks": "^3.3.8",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"

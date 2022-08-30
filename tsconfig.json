@@ -11,6 +11,7 @@
     { "path": "packages/plugin-pha" },
     { "path": "packages/plugin-fusion" },
     { "path": "packages/miniapp-runtime" },
+    { "path": "packages/shared" },
     { "path": "packages/plugin-antd" },
     { "path": "packages/plugin-rax-compat" }
   ]

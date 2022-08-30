@@ -1,9 +1,9 @@
-import type { TaroElement } from '../dom/element.js';
+import type { Element } from '../dom/element.js';
 
 import { DOCUMENT_FRAGMENT } from '../constants/index.js';
 import { options } from '../options.js';
 
-export function getBoundingClientRectImpl(this: TaroElement): Promise<null> {
+export function getBoundingClientRectImpl(this: Element): Promise<null> {
   if (!options.miniGlobal) return Promise.resolve(null);
   return new Promise(resolve => {
     const query = options.miniGlobal.createSelectorQuery();
@@ -13,10 +13,10 @@ export function getBoundingClientRectImpl(this: TaroElement): Promise<null> {
   });
 }
 
-export function getTemplateContent(ctx: TaroElement): TaroElement | undefined {
+export function getTemplateContent(ctx: Element): Element | undefined {
   if (ctx.nodeName === 'template') {
     const document = ctx.ownerDocument;
-    const content: TaroElement = document.createElement(DOCUMENT_FRAGMENT);
+    const content: Element = document.createElement(DOCUMENT_FRAGMENT);
     content.childNodes = ctx.childNodes;
     ctx.childNodes = [content];
     content.parentNode = ctx;

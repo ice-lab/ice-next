@@ -2,7 +2,7 @@
   "name": "@ice/miniapp-loader",
   "version": "1.0.0",
   "description": "webpack loader for miniapps.",
-  "main": "./lib/app.js",
+  "main": "./lib/page.js",
   "files": [
     "lib",
     "!lib/**/*.map"
@@ -18,7 +18,6 @@
   },
   "sideEffects": false,
   "dependencies": {
-    "@tarojs/helper": "^3.5.0",
     "loader-utils": "^1.2.3"
   },
   "devDependencies": {

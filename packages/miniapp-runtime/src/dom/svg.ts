@@ -1,4 +1,4 @@
-import { TaroElement } from './element.js';
+import { Element } from './element.js';
 
 // for Vue3
-export class SVGElement extends TaroElement {}
+export class SVGElement extends Element {}

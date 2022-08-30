@@ -1,4 +1,4 @@
-import type { TaroNode } from '../../dom/node.js';
+import type { Node } from '../../dom/node.js';
 import { options } from '../../options.js';
 import { parser } from './parser.js';
 
@@ -16,7 +16,7 @@ options.html = {
   renderHTMLTag: false,
 };
 
-export function setInnerHTML(element: TaroNode, html: string) {
+export function setInnerHTML(element: Node, html: string) {
   while (element.firstChild) {
     element.removeChild(element.firstChild);
   }

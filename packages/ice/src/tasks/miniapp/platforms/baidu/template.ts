@@ -1,5 +1,4 @@
-import { indent, isArray, Shortcuts } from '@tarojs/shared';
-import { RecursiveTemplate } from '@tarojs/shared/dist/template.js';
+import { indent, isArray, Shortcuts, RecursiveTemplate } from '@ice/shared';
 
 const swanSpecialAttrs = {
   'scroll-view': ['scroll-top', 'scroll-left', 'scroll-into-view'],

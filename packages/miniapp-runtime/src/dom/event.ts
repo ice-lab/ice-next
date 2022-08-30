@@ -1,4 +1,4 @@
-import { EMPTY_OBJ, hooks } from '@tarojs/shared';
+import { EMPTY_OBJ, hooks } from '@ice/shared';
 
 import {
   CONFIRM,
@@ -13,10 +13,10 @@ import {
 import env from '../env.js';
 import type { EventOptions, MpEvent } from '../interface/index.js';
 import { isParentBinded } from '../utils/index.js';
-import type { TaroElement } from './element.js';
+import type { Element } from './element.js';
 
-// Taro 事件对象。以 Web 标准的事件对象为基础，加入小程序事件对象中携带的部分信息，并模拟实现事件冒泡。
-export class TaroEvent {
+// 事件对象。以 Web 标准的事件对象为基础，加入小程序事件对象中携带的部分信息，并模拟实现事件冒泡。
+export class Event {
   private cacheTarget;
   private cacheCurrentTarget;
 
@@ -107,13 +107,13 @@ export class TaroEvent {
   }
 }
 
-export function createEvent(event: MpEvent | string, node?: TaroElement) {
+export function createEvent(event: MpEvent | string, node?: Element) {
   if (typeof event === 'string') {
     // For Vue3 using document.createEvent
-    return new TaroEvent(event, { bubbles: true, cancelable: true });
+    return new Event(event, { bubbles: true, cancelable: true });
   }
 
-  const domEv = new TaroEvent(event.type, { bubbles: true, cancelable: true }, event);
+  const domEv = new Event(event.type, { bubbles: true, cancelable: true }, event);
 
   for (const key in event) {
     if (key === CURRENT_TARGET || key === TARGET || key === TYPE || key === TIME_STAMP) {
@@ -146,7 +146,7 @@ export function eventHandler(event: MpEvent) {
   if (node) {
     const dispatch = () => {
       const e = createEvent(event, node);
-      hooks.call('modifyTaroEvent', e, node);
+      hooks.call('modifyIceEvent', e, node);
       node.dispatchEvent(e);
     };
     if (hooks.isExist('batchedEventUpdates')) {

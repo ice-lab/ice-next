@@ -13,7 +13,7 @@ export const navigator = {
   onLine: true,
   platform: 'MacIntel',
   plugins: [],
-  product: 'Taro',
+  product: 'ICE',
   productSub: '20030107',
   userAgent: `Mozilla/5.0 ${msg}`,
   vendor: 'Joyent',

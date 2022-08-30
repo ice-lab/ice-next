@@ -1,17 +1,20 @@
 import * as path from 'path';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
+import type { IMiniappWebpackOptions } from '../types.js';
 import MiniPlugin from './plugins/MiniPlugin.js';
-export class MiniWebpackPlugin {
-  config: any;
 
-  constructor(config: any) {
+export class MiniWebpackPlugin {
+  config: IMiniappWebpackOptions;
+
+  constructor(config: IMiniappWebpackOptions) {
     this.config = config;
   }
 
   getPlugins() {
     const providerPlugin = this.getProviderPlugin();
     const definePlugin = this.getDefinePlugin();
-    const miniPlugin = this.getMainPlugin({});
+    const miniPlugin = this.getMainPlugin();
+    // TODO: any type
     const plugins: Array<any> = [
       providerPlugin,
       definePlugin,
@@ -27,7 +30,7 @@ export class MiniWebpackPlugin {
       navigator: ['@ice/miniapp-runtime', 'navigator'],
       requestAnimationFrame: ['@ice/miniapp-runtime', 'requestAnimationFrame'],
       cancelAnimationFrame: ['@ice/miniapp-runtime', 'cancelAnimationFrame'],
-      Element: ['@ice/miniapp-runtime', 'TaroElement'],
+      Element: ['@ice/miniapp-runtime', 'Element'],
       SVGElement: ['@ice/miniapp-runtime', 'SVGElement'],
       MutationObserver: ['@ice/miniapp-runtime', 'MutationObserver'],
     });
@@ -36,8 +39,6 @@ export class MiniWebpackPlugin {
   getDefinePlugin() {
     const {
       env = {},
-      runtime = {} as Record<string, boolean>,
-      defineConstants = {},
     } = this.config;
 
     const envConstants = Object.keys(env).reduce((target, key) => {
@@ -45,38 +46,21 @@ export class MiniWebpackPlugin {
       return target;
     }, {});
 
-    const runtimeConstants = {
-      ENABLE_INNER_HTML: runtime.enableInnerHTML ?? true,
-      ENABLE_ADJACENT_HTML: runtime.enableAdjacentHTML ?? false,
-      ENABLE_SIZE_APIS: runtime.enableSizeAPIs ?? false,
-      ENABLE_TEMPLATE_CONTENT: runtime.enableTemplateContent ?? false,
-      ENABLE_CLONE_NODE: runtime.enableCloneNode ?? false,
-      ENABLE_CONTAINS: runtime.enableContains ?? false,
-      ENABLE_MUTATION_OBSERVER: runtime.enableMutationObserver ?? false,
-    };
-    const definitionsList = [envConstants, defineConstants, runtimeConstants];
+    const definitionsList = [envConstants];
     const definitions = Object.assign({}, ...definitionsList);
     return new webpack.DefinePlugin(definitions);
   }
 
-  getMainPlugin(definePluginOptions) {
-    const { rootDir, nodeModulesPath, template, deviceRatio, fileType, getAppConfig, getRoutesConfig } = this.config;
+  getMainPlugin() {
+    const { rootDir, template, fileType, getAppConfig, getRoutesConfig } = this.config;
     const sourceDir = path.join(rootDir, 'src');
     const options = {
-      /** paths */
-      rootDir,
       sourceDir,
-      nodeModulesPath,
-      /** config & message */
       fileType,
       template,
-      commonChunks: ['runtime', 'vendors', 'taro', 'common', 'ice'],
-      designWidth: 750,
-      deviceRatio,
+      commonChunks: ['runtime', 'vendors', 'common', 'ice'],
       baseLevel: 16,
       minifyXML: {},
-      alias: {},
-      constantsReplaceList: definePluginOptions,
       getAppConfig,
       getRoutesConfig,
     };

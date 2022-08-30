@@ -1,4 +1,4 @@
-import { internalComponents } from '@tarojs/shared';
+import { internalComponents } from '@ice/shared';
 
 export function makeMap(
   str: string,

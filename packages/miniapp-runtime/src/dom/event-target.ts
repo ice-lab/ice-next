@@ -1,8 +1,8 @@
-import { hooks, isArray, isObject, warn } from '@tarojs/shared';
+import { hooks, isArray, isObject, warn } from '@ice/shared';
 
 import type { AddEventListenerOptions, EventHandler } from '../interface/index.js';
 
-export class TaroEventTarget {
+export class EventTarget {
   public __handlers: Record<string, EventHandler[]> = {};
 
   public addEventListener(type: string, handler: EventHandler, options?: boolean | AddEventListenerOptions) {
@@ -36,7 +36,7 @@ export class TaroEventTarget {
       return;
     }
 
-    process.env.NODE_ENV !== 'production' && warn(isCapture, 'Taro 暂未实现 event 的 capture 特性。');
+    process.env.NODE_ENV !== 'production' && warn(isCapture, 'ICE Miniapp 暂未实现 event 的 capture 特性。');
 
     // 某些框架，如 PReact 有委托的机制，handler 始终是同一个函数
     // 这会导致多层停止冒泡失败：view -> view(handler.stop = false) -> view(handler.stop = true)

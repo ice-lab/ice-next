@@ -1,9 +1,8 @@
 import { fileURLToPath } from 'url';
 import path from 'path';
-import taroHelper from '@tarojs/helper';
 
-import type { UnRecursiveTemplate } from '@tarojs/shared/dist/template';
-import type { AppConfig, Config } from '@tarojs/taro';
+import type { RecursiveTemplate, UnRecursiveTemplate } from '@ice/shared';
+import type { Config, MiniappAppConfig, MiniappConfig } from '@ice/types';
 import fs from 'fs-extra';
 import { minify } from 'html-minifier';
 import { urlToRequest } from 'loader-utils';
@@ -11,36 +10,37 @@ import webpack from '@ice/bundles/compiled/webpack/index.js';
 import EntryDependency from 'webpack/lib/dependencies/EntryDependency.js';
 import webpackSources from 'webpack-sources';
 
-import TaroSingleEntryDependency from '../dependencies/TaroSingleEntryDependency.js';
+import SingleEntryDependency from '../dependencies/SingleEntryDependency.js';
 import { componentConfig } from '../template/component.js';
-import type { IComponent } from '../utils/types.js';
-import TaroLoadChunksPlugin from './TaroLoadChunksPlugin.js';
-import TaroNormalModulesPlugin from './TaroNormalModulesPlugin.js';
+import type { IComponent, IFileType } from '../../types.js';
+import { META_TYPE, NODE_MODULES_REG, REG_STYLE, SCRIPT_EXT } from '../../../../constant.js';
+import { promoteRelativePath, resolveMainFilePath } from '../utils/index.js';
+import LoadChunksPlugin from './LoadChunksPlugin.js';
+import NormalModulesPlugin from './NormalModulesPlugin.js';
 
 const { ConcatSource, RawSource } = webpackSources;
-const {
-  isEmptyObject,
-  META_TYPE,
-  NODE_MODULES_REG,
-  promoteRelativePath,
-  REG_STYLE,
-  resolveMainFilePath,
-  SCRIPT_EXT,
-} = taroHelper;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PLUGIN_NAME = 'TaroMiniPlugin';
+const PLUGIN_NAME = 'MiniPlugin';
 const APP_CONFIG_FILE = 'app.json';
 
-export interface IComponentObj {
-  name?: string;
-  path: string | null;
-  type?: string;
+interface MiniPluginOptions {
+  sourceDir: string;
+  commonChunks: string[];
+  baseLevel: number;
+  minifyXML?: {
+    collapseWhitespace?: boolean;
+  };
+  fileType: IFileType;
+  template: RecursiveTemplate | UnRecursiveTemplate;
+  loaderMeta?: Record<string, string>;
+  getAppConfig: Config['getAppConfig'];
+  getRoutesConfig: Config['getRoutesConfig'];
 }
 
 interface FilesConfig {
   [configName: string]: {
-    content: Config;
+    content: MiniappConfig;
     path: string;
   };
 }
@@ -49,14 +49,26 @@ function isLoaderExist(loaders, loaderName: string) {
   return loaders.some(item => item.loader === loaderName);
 }
 
-export default class TaroMiniPlugin {
+function isEmptyObject(obj: any): boolean {
+  if (obj == null) {
+    return true;
+  }
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export default class MiniPlugin {
   /** 插件配置选项 */
-  options: any;
+  options: MiniPluginOptions;
   context: string;
   /** app 入口文件路径 */
   appEntry: string;
   /** app config 配置内容 */
-  appConfig: AppConfig;
+  appConfig: MiniappAppConfig;
   /** app、页面、组件的配置集合 */
   filesConfig: FilesConfig = {};
   isWatch = false;
@@ -64,13 +76,13 @@ export default class TaroMiniPlugin {
   pages = new Set<IComponent>();
   /** tabbar icon 图片路径列表 */
   tabBarIcons = new Set<string>();
-  dependencies = new Map<string, TaroSingleEntryDependency>();
-  loadChunksPlugin: TaroLoadChunksPlugin;
+  dependencies = new Map<string, SingleEntryDependency>();
+  loadChunksPlugin: LoadChunksPlugin;
   themeLocation: string;
   pageLoaderName = '@ice/miniapp-loader/lib/page.js';
   independentPackages = new Map<string, string[]>();
 
-  constructor(options = {}) {
+  constructor(options = {} as MiniPluginOptions) {
     this.options = options;
 
     const { template, baseLevel } = this.options;
@@ -94,23 +106,21 @@ export default class TaroMiniPlugin {
   }
 
   /**
-   * 插件入口
+   * entry of the plugin
    */
   apply(compiler: webpack.Compiler) {
     this.context = compiler.context;
     this.appEntry = this.getAppEntry(compiler);
     const {
       commonChunks,
-      addChunkPages,
     } = this.options;
     /** build mode */
     compiler.hooks.run.tapAsync(
       PLUGIN_NAME,
       this.tryAsync<webpack.Compiler>(async compiler => {
         await this.run(compiler);
-        new TaroLoadChunksPlugin({
+        new LoadChunksPlugin({
           commonChunks: commonChunks,
-          addChunkPages: addChunkPages,
           pages: this.pages,
         }).apply(compiler);
       }),
@@ -126,9 +136,8 @@ export default class TaroMiniPlugin {
         }
         await this.run(compiler);
         if (!this.loadChunksPlugin) {
-          this.loadChunksPlugin = new TaroLoadChunksPlugin({
+          this.loadChunksPlugin = new LoadChunksPlugin({
             commonChunks: commonChunks,
-            addChunkPages: addChunkPages,
             pages: this.pages,
           });
           this.loadChunksPlugin.apply(compiler);
@@ -157,13 +166,13 @@ export default class TaroMiniPlugin {
     compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation, { normalModuleFactory }) => {
       /** For Webpack compilation get factory from compilation.dependencyFactories by denpendence's constructor */
       compilation.dependencyFactories.set(EntryDependency, normalModuleFactory);
-      compilation.dependencyFactories.set(TaroSingleEntryDependency as any, normalModuleFactory);
+      compilation.dependencyFactories.set(SingleEntryDependency as any, normalModuleFactory);
 
       /**
        * webpack NormalModule 在 runLoaders 真正解析资源的前一刻，
-       * 往 NormalModule.loaders 中插入对应的 Taro Loader
+       * 往 NormalModule.loaders 中插入对应的 miniapp Loader
        */
-      webpack.NormalModule.getCompilationHooks(compilation).loader.tap(PLUGIN_NAME, (_loaderContext, module:/** TaroNormalModule */ any) => {
+      webpack.NormalModule.getCompilationHooks(compilation).loader.tap(PLUGIN_NAME, (_loaderContext, module:/** NormalModule */ any) => {
         const { loaderMeta = {} } = this.options;
         if (module.miniType === META_TYPE.PAGE) {
           const loaderName = this.pageLoaderName;
@@ -201,7 +210,7 @@ export default class TaroMiniPlugin {
       }),
     );
 
-    new TaroNormalModulesPlugin().apply(compiler);
+    new NormalModulesPlugin().apply(compiler);
   }
 
   /**
@@ -244,7 +253,7 @@ export default class TaroMiniPlugin {
    * 获取 app config 配置内容
    * @returns app config 配置内容
    */
-  async getAppConfig(): Promise<AppConfig> {
+  async getAppConfig(): Promise<MiniappAppConfig> {
     const { getAppConfig } = this.options;
     const { miniappManifest } = await getAppConfig(['miniappManifest']);
     const appConfig = {
@@ -257,7 +266,7 @@ export default class TaroMiniPlugin {
       content: appConfig,
       path: APP_CONFIG_FILE,
     };
-    return appConfig as AppConfig;
+    return appConfig as MiniappAppConfig;
   }
 
   /**
@@ -306,7 +315,7 @@ export default class TaroMiniPlugin {
    * 在 this.dependencies 中新增或修改模块
    */
   addEntry(entryPath: string, entryName: string, entryType: any, options = {}) {
-    let dep: TaroSingleEntryDependency;
+    let dep: SingleEntryDependency;
     if (this.dependencies.has(entryPath)) {
       dep = this.dependencies.get(entryPath)!;
       dep.name = entryName;
@@ -316,7 +325,7 @@ export default class TaroMiniPlugin {
       dep.miniType = entryType;
       dep.options = options;
     } else {
-      dep = new TaroSingleEntryDependency(entryPath, entryName, { name: entryName }, entryType, options);
+      dep = new SingleEntryDependency(entryPath, entryName, { name: entryName }, entryType, options);
     }
     this.dependencies.set(entryPath, dep);
   }
@@ -384,7 +393,7 @@ export default class TaroMiniPlugin {
    * 搜集 tabbar icon 图标路径
    * 收集自定义 tabbar 组件
    */
-  getTabBarFiles(appConfig: AppConfig) {
+  getTabBarFiles(appConfig: MiniappAppConfig) {
     const { tabBar } = appConfig;
     if (tabBar && typeof tabBar === 'object' && !isEmptyObject(tabBar)) {
       // eslint-disable-next-line dot-notation
@@ -474,7 +483,7 @@ export default class TaroMiniPlugin {
     }
   }
 
-  generateConfigFile(compilation: webpack.Compilation, filePath: string, config: Config & { component?: boolean }) {
+  generateConfigFile(compilation: webpack.Compilation, filePath: string, config: MiniappConfig & { component?: boolean }) {
     const fileConfigName = this.getConfigPath(this.getComponentName(filePath));
     const unOfficalConfigs = ['enableShareAppMessage', 'enableShareTimeline', 'components'];
     unOfficalConfigs.forEach(item => {

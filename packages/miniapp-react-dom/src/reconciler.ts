@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/indent */
-import type { TaroElement, TaroText } from '@ice/miniapp-runtime';
+import type { Element, Text } from '@ice/miniapp-runtime';
 import { document } from '@ice/miniapp-runtime';
-import { EMPTY_ARR, isBoolean, isUndefined, noop } from '@tarojs/shared';
+import { EMPTY_ARR, isBoolean, isUndefined, noop } from '@ice/shared';
 import type { HostConfig } from 'react-reconciler';
 import Reconciler from 'react-reconciler';
 import * as scheduler from 'scheduler';
@@ -20,20 +20,20 @@ function returnFalse() {
 const hostConfig: HostConfig<
   string, // Type
   Props, // Props
-  TaroElement, // Container
-  TaroElement, // Instance
-  TaroText, // TextInstance
-  TaroElement, // SuspenseInstance
-  TaroElement, // HydratableInstance
-  TaroElement, // PublicInstance
+  Element, // Container
+  Element, // Instance
+  Text, // TextInstance
+  Element, // SuspenseInstance
+  Element, // HydratableInstance
+  Element, // PublicInstance
   Record<string, any>, // HostContext
   string[], // UpdatePayload
   unknown, // ChildSet
   unknown, // TimeoutHandle
   unknown // NoTimeout
 > & {
-  hideInstance: (instance: TaroElement) => void;
-  unhideInstance: (instance: TaroElement, props) => void;
+  hideInstance: (instance: Element) => void;
+  unhideInstance: (instance: Element, props) => void;
   getCurrentEventPriority: () => number;
   detachDeletedInstance: () => void;
 } = {
@@ -45,7 +45,7 @@ const hostConfig: HostConfig<
     return document.createTextNode(text);
   },
 
-  getPublicInstance(inst: TaroElement) {
+  getPublicInstance(inst: Element) {
     return inst;
   },
 
@@ -156,13 +156,13 @@ const hostConfig: HostConfig<
   supportsHydration: false,
 };
 
-const TaroReconciler = Reconciler(hostConfig);
+const IceMiniappReconciler = Reconciler(hostConfig);
 
 if (process.env.NODE_ENV !== 'production') {
-  const foundDevTools = TaroReconciler.injectIntoDevTools({
+  const foundDevTools = IceMiniappReconciler.injectIntoDevTools({
     bundleType: 1,
     version: '18.0.0',
-    rendererPackageName: 'taro-react',
+    rendererPackageName: '@ice/miniapp-react-dom',
   });
   if (!foundDevTools) {
     // eslint-disable-next-line no-console
@@ -171,5 +171,5 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export {
-  TaroReconciler,
+  IceMiniappReconciler,
 };

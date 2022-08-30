@@ -1,10 +1,10 @@
-import { EMPTY_OBJ } from '@tarojs/shared';
+import { EMPTY_OBJ } from '@ice/shared';
 
-import type { TaroDocument } from './dom/document.js';
+import type { Document } from './dom/document.js';
 
 interface Env {
   window;
-  document: TaroDocument;
+  document: Document;
 }
 
 const env: Env = {

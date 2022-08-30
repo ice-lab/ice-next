@@ -21,7 +21,7 @@ export default function (this: webpack.LoaderContext<any>) {
 if (typeof PRERENDER !== 'undefined') {
   ${globalObject}._prerender = inst
 }`;
-  return `import { createComponentConfig } from '@tarojs/runtime'
+  return `import { createComponentConfig } from '@ice/miniapp-runtime'
 import component from ${stringify(componentPath)}
 var inst = Component(createComponentConfig(component, '${options.name}'))
 ${options.prerender ? prerender : ''}

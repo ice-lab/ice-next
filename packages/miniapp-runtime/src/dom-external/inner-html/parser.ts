@@ -1,7 +1,7 @@
-import { isFunction } from '@tarojs/shared';
+import { isFunction } from '@ice/shared';
 
-import type { TaroDocument } from '../../dom/document.js';
-import type { TaroElement } from '../../dom/element.js';
+import type { Document as IceDocument } from '../../dom/document.js';
+import type { Element as IceElement } from '../../dom/element.js';
 import { options } from '../../options.js';
 import type { Token } from './scaner.js';
 import { Scaner } from './scaner.js';
@@ -47,7 +47,7 @@ export interface Element extends Node {
   attributes: string[];
 }
 
-export interface ParsedTaroElement extends TaroElement{
+export interface ParsedElement extends IceElement{
   h5tagName?: string;
 }
 
@@ -100,12 +100,12 @@ function splitEqual(str: string) {
 
 function format(
   children: ChildNode[],
-  document: TaroDocument,
+  document: IceDocument,
   styleOptions: {
     styleTagParser: StyleTagParser;
     descendantList: number[];
   },
-  parent?: TaroElement,
+  parent?: IceElement,
 ) {
   return children
     .filter(child => {
@@ -128,7 +128,7 @@ function format(
         return text;
       }
 
-      const el: ParsedTaroElement = document.createElement(getTagName(child.tagName));
+      const el: ParsedElement = document.createElement(getTagName(child.tagName));
       el.h5tagName = child.tagName;
 
       parent?.appendChild(el);
@@ -169,7 +169,7 @@ function format(
     });
 }
 
-export function parser(html: string, document: TaroDocument) {
+export function parser(html: string, document: IceDocument) {
   const styleTagParser = new StyleTagParser();
   html = styleTagParser.extractStyle(html);
 

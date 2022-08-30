@@ -380,9 +380,9 @@ describe('sort style', () => {
 
   describe('html with transformText', () => {
     it('transformText function works', () => {
-      options.html.transformText = taroText => {
-        taroText._value = 'c';
-        return taroText;
+      options.html.transformText = text => {
+        text._value = 'c';
+        return text;
       };
       const html = '<span>a</span>';
       const res = parser(html, document);

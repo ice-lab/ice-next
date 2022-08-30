@@ -1,12 +1,13 @@
 /* eslint-disable dot-notation */
-import { EMPTY_OBJ, ensure, hooks, isArray, isFunction, isString, isUndefined, Shortcuts } from '@tarojs/shared';
-import type { PageConfig } from '@tarojs/taro';
+import { EMPTY_OBJ, ensure, hooks, isArray, isFunction, isString, isUndefined, Shortcuts } from '@ice/shared';
+import type { MiniappPageConfig } from '@ice/types';
+import type * as React from 'react';
 
 import { raf } from '../bom/raf.js';
 import { BEHAVIORS, CUSTOM_WRAPPER, EXTERNAL_CLASSES, ON_HIDE, ON_LOAD, ON_READY, ON_SHOW, OPTIONS, PAGE_INIT, VIEW } from '../constants/index.js';
 import { Current } from '../current.js';
 import { eventHandler } from '../dom/event.js';
-import type { TaroRootElement } from '../dom/root.js';
+import type { RootElement } from '../dom/root.js';
 import { eventCenter } from '../emitter/emitter.js';
 import env from '../env.js';
 import type { Func, MpInstance } from '../interface/index.js';
@@ -86,9 +87,9 @@ export function createPageConfig(
   pageName: string,
   data: Record<string, unknown>,
   { getData, getConfig },
-  pageConfig?: PageConfig) {
+  pageConfig?: MiniappPageConfig) {
   // 小程序 Page 构造器是一个傲娇小公主，不能把复杂的对象挂载到参数上
-  const id = pageName ?? `taro_page_${pageId()}`;
+  const id = pageName ?? `ice_page_${pageId()}`;
   const [
     ONLOAD,
     ONUNLOAD,
@@ -97,16 +98,16 @@ export function createPageConfig(
     ONHIDE,
     LIFECYCLES,
   ] = hooks.call('getMiniLifecycleImpl')!.page;
-  let pageElement: TaroRootElement | null = null;
+  let pageElement: RootElement | null = null;
   let unmounting = false;
   let prepareMountList: (() => void)[] = [];
 
   function setCurrentRouter(page: MpInstance) {
-    const router = page.route || page.__route__ || page.$taroPath;
+    const router = page.route || page.__route__ || page.$icePath;
     Current.router = {
-      params: page.$taroParams!,
+      params: page.$iceParams!,
       path: addLeadingSlash(router),
-      $taroPath: page.$taroPath,
+      $icePath: page.$icePath,
       onReady: getOnReadyEventKey(id),
       onShow: getOnShowEventKey(id),
       onHide: getOnHideEventKey(id),
@@ -126,12 +127,12 @@ export function createPageConfig(
       Current.page = this as any;
       this.config = pageConfig || {};
 
-      // this.$taroPath 是页面唯一标识
+      // this.$icePath 是页面唯一标识
       const uniqueOptions = Object.assign({}, options);
-      const $taroPath = this.$taroPath = getPath(id, uniqueOptions);
-      // this.$taroParams 作为暴露给开发者的页面参数对象，可以被随意修改
-      if (this.$taroParams == null) {
-        this.$taroParams = uniqueOptions;
+      const $icePath = this.$icePath = getPath(id, uniqueOptions);
+      // this.$iceParams 作为暴露给开发者的页面参数对象，可以被随意修改
+      if (this.$iceParams == null) {
+        this.$iceParams = uniqueOptions;
       }
 
       setCurrentRouter(this);
@@ -140,12 +141,12 @@ export function createPageConfig(
         getData = () => new Promise<void>(resolve => resolve());
       }
       const mount = () => {
-        getData(this.$taroParams!).then(routeData => {
-          Current.app!.mount!(component, { id: $taroPath, routeData, routeConfig }, () => {
-            pageElement = env.document.getElementById<TaroRootElement>($taroPath);
+        getData(this.$iceParams!).then(routeData => {
+          Current.app!.mount!(component, { id: $icePath, routeData, routeConfig }, () => {
+            pageElement = env.document.getElementById<RootElement>($icePath);
 
             ensure(pageElement !== null, '没有找到页面实例。');
-            safeExecute($taroPath, ON_LOAD, this.$taroParams);
+            safeExecute($icePath, ON_LOAD, this.$iceParams);
             loadResolver();
             pageElement.ctx = this;
             pageElement.performUpdate(true, cb);
@@ -160,13 +161,13 @@ export function createPageConfig(
       }
     },
     [ONUNLOAD]() {
-      const { $taroPath } = this;
+      const { $icePath } = this;
       // 触发onUnload生命周期
-      safeExecute($taroPath, ONUNLOAD);
+      safeExecute($icePath, ONUNLOAD);
       unmounting = true;
-      Current.app!.unmount!($taroPath, () => {
+      Current.app!.unmount!($icePath, () => {
         unmounting = false;
-        instances.delete($taroPath);
+        instances.delete($icePath);
         if (pageElement) {
           pageElement.ctx = null;
           pageElement = null;
@@ -179,7 +180,7 @@ export function createPageConfig(
     },
     [ONREADY]() {
       // 触发生命周期
-      safeExecute(this.$taroPath, ON_READY);
+      safeExecute(this.$icePath, ON_READY);
       // 通过事件触发子组件的生命周期
       raf(() => eventCenter.trigger(getOnReadyEventKey(id)));
       this.onReady.called = true;
@@ -190,7 +191,7 @@ export function createPageConfig(
         Current.page = this as any;
         setCurrentRouter(this);
         // 触发生命周期
-        safeExecute(this.$taroPath, ON_SHOW, options);
+        safeExecute(this.$icePath, ON_SHOW, options);
         // 通过事件触发子组件的生命周期
         raf(() => eventCenter.trigger(getOnShowEventKey(id)));
       });
@@ -202,7 +203,7 @@ export function createPageConfig(
         Current.router = null;
       }
       // 触发生命周期
-      safeExecute(this.$taroPath, ON_HIDE);
+      safeExecute(this.$icePath, ON_HIDE);
       // 通过事件触发子组件的生命周期
       eventCenter.trigger(getOnHideEventKey(id));
     },
@@ -210,7 +211,7 @@ export function createPageConfig(
 
   LIFECYCLES.forEach((lifecycle) => {
     config[lifecycle] = function () {
-      return safeExecute(this.$taroPath, lifecycle, ...arguments);
+      return safeExecute(this.$icePath, lifecycle, ...arguments);
     };
   });
 
@@ -227,14 +228,14 @@ export function createPageConfig(
           target!.dataset = element.dataset;
         }
       }
-      return safeExecute(this.$taroPath, 'onShareAppMessage', options);
+      return safeExecute(this.$icePath, 'onShareAppMessage', options);
     };
   }
   if (component.onShareTimeline ||
       component.prototype?.onShareTimeline ||
       component.enableShareTimeline) {
     config.onShareTimeline = function () {
-      return safeExecute(this.$taroPath, 'onShareTimeline');
+      return safeExecute(this.$icePath, 'onShareTimeline');
     };
   }
 
@@ -250,17 +251,17 @@ export function createPageConfig(
 }
 
 export function createComponentConfig(component: React.ComponentClass, componentName?: string, data?: Record<string, unknown>) {
-  const id = componentName ?? `taro_component_${pageId()}`;
-  let componentElement: TaroRootElement | null = null;
+  const id = componentName ?? `ice_component_${pageId()}`;
+  let componentElement: RootElement | null = null;
 
   const config: any = {
     attached() {
       perf.start(PAGE_INIT);
       const path = getPath(id, { id: this.getPageId?.() || pageId() });
       Current.app!.mount!(component, { id: path }, () => {
-        componentElement = env.document.getElementById<TaroRootElement>(path);
+        componentElement = env.document.getElementById<RootElement>(path);
         ensure(componentElement !== null, '没有找到组件实例。');
-        this.$taroInstances = instances.get(path);
+        this.$iceInstances = instances.get(path);
         safeExecute(path, ON_LOAD);
         if (componentElement) {
           componentElement.ctx = this;

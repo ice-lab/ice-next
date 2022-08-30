@@ -1,4 +1,4 @@
-import { isString } from '@tarojs/shared';
+import { isString } from '@ice/shared';
 
 interface SpecialMaps {
   mapName: string | SpecialMaps.MapNameFn;

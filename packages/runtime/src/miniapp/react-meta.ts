@@ -1,4 +1,4 @@
-import { EMPTY_OBJ } from '@tarojs/shared';
+import { EMPTY_OBJ } from '@ice/shared';
 import React from 'react';
 
 interface ReactMeta {

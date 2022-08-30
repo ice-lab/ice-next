@@ -1,4 +1,4 @@
-import { isFunction, isUndefined, Shortcuts } from '@tarojs/shared';
+import { isFunction, isUndefined, Shortcuts } from '@ice/shared';
 
 import {
   CUSTOM_WRAPPER,
@@ -10,9 +10,9 @@ import type { Func, HydratedData, MpInstance, UpdatePayload, UpdatePayloadValue 
 import { options } from '../options.js';
 import { perf } from '../perf.js';
 import { customWrapperCache } from '../utils/index.js';
-import { TaroElement } from './element.js';
+import { Element } from './element.js';
 
-function findCustomWrapper(root: TaroRootElement, dataPathArr: string[]) {
+function findCustomWrapper(root: RootElement, dataPathArr: string[]) {
   // ['root', 'cn', '[0]'] remove 'root' => ['cn', '[0]']
   const list = dataPathArr.slice(1);
   let currentData: any = root;
@@ -47,7 +47,7 @@ function findCustomWrapper(root: TaroRootElement, dataPathArr: string[]) {
   }
 }
 
-export class TaroRootElement extends TaroElement {
+export class RootElement extends Element {
   private updatePayloads: UpdatePayload[] = [];
 
   private updateCallbacks: Func[] = [];
@@ -66,7 +66,7 @@ export class TaroRootElement extends TaroElement {
     return ROOT_STR;
   }
 
-  public get _root(): TaroRootElement {
+  public get _root(): RootElement {
     return this;
   }
 

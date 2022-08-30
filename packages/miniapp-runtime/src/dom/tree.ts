@@ -1,17 +1,17 @@
-import type { TaroElement } from './element.js';
+import type { Element } from './element.js';
 import { NodeType } from './node_types.js';
 
-type Filter = (element: TaroElement) => boolean;
+type Filter = (element: Element) => boolean;
 
 function returnTrue() {
   return true;
 }
 
-export function treeToArray(root: TaroElement, predict?: Filter): TaroElement[] {
-  const array: TaroElement[] = [];
+export function treeToArray(root: Element, predict?: Filter): Element[] {
+  const array: Element[] = [];
   const filter = predict ?? returnTrue;
 
-  let object: TaroElement | null = root;
+  let object: Element | null = root;
 
   while (object) {
     if (object.nodeType === NodeType.ELEMENT_NODE && filter(object)) {
@@ -24,14 +24,14 @@ export function treeToArray(root: TaroElement, predict?: Filter): TaroElement[] 
   return array;
 }
 
-function following(el: TaroElement, root: TaroElement): TaroElement | null {
+function following(el: Element, root: Element): Element | null {
   const { firstChild } = el;
 
   if (firstChild) {
-    return firstChild as TaroElement;
+    return firstChild as Element;
   }
 
-  let current: TaroElement | null = el;
+  let current: Element | null = el;
 
   do {
     if (current === root) {
@@ -41,7 +41,7 @@ function following(el: TaroElement, root: TaroElement): TaroElement | null {
     const { nextSibling } = current;
 
     if (nextSibling) {
-      return nextSibling as TaroElement;
+      return nextSibling as Element;
     }
     current = current.parentElement;
   } while (current);

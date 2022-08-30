@@ -1,12 +1,10 @@
 import path from 'path';
 import type webpack from '@ice/bundles/compiled/webpack/index.js';
-import taroHelper from '@tarojs/helper';
 import webpackSources from 'webpack-sources';
+import { promoteRelativePath } from './index.js';
 
 const { ConcatSource } = webpackSources;
-const {
-  promoteRelativePath,
-} = taroHelper;
+
 export function getChunkEntryModule(compilation: webpack.Compilation, chunk: webpack.Chunk) {
   const { chunkGraph } = compilation;
   const entryModules = Array.from(chunkGraph.getChunkEntryModulesIterable(chunk));

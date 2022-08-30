@@ -1,8 +1,8 @@
-import { isNull, isString, isUndefined, Shortcuts, toCamelCase, toDashed, warn } from '@tarojs/shared';
+import { isNull, isString, isUndefined, Shortcuts, toCamelCase, toDashed, warn } from '@ice/shared';
 
 import { PROPERTY_THRESHOLD } from '../constants/index.js';
 import { MutationObserver, MutationRecordType } from '../dom-external/mutation-observer/index.js';
-import type { TaroElement } from './element.js';
+import type { Element } from './element.js';
 import { styleProperties } from './style_properties.js';
 
 function recordCss(obj: Style) {
@@ -77,9 +77,9 @@ export class Style {
 
   public _value: Partial<CSSStyleDeclaration>;
 
-  public _element: TaroElement;
+  public _element: Element;
 
-  public constructor(element: TaroElement) {
+  public constructor(element: Element) {
     this._element = element;
     this._usedStyleProp = new Set();
     this._value = {};
