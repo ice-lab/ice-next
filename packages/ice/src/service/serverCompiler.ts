@@ -1,5 +1,4 @@
 import * as path from 'path';
-import { fileURLToPath } from 'url';
 import { createHash } from 'crypto';
 import * as fs from 'fs';
 import consola from 'consola';
@@ -23,8 +22,6 @@ import type { DepScanData } from '../esbuild/scan.js';
 import { scanImports } from './analyze.js';
 import type { DepsMetaData } from './preBundleCJSDeps.js';
 import preBundleCJSDeps from './preBundleCJSDeps.js';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 interface Options {
   rootDir: string;
@@ -112,7 +109,7 @@ export function createServerCompiler(options: Options) {
       // enable JSX syntax in .js files by default for compatible with migrate project
       // while it is not recommended
       loader: { '.js': 'jsx' },
-      inject: [path.resolve(__dirname, '../polyfills/react.js')],
+      jsx: 'automatic',
       sourcemap: typeof sourceMap === 'boolean'
         // Transform sourceMap for esbuild.
         ? sourceMap : (sourceMap.includes('inline') ? 'inline' : !!sourceMap),
@@ -140,7 +137,10 @@ export function createServerCompiler(options: Options) {
           plugins: [
             ...transformPlugins,
             // Plugin transformImportPlugin need after transformPlugins in case of it has onLoad lifecycle.
-            dev && preBundle && transformImportPlugin(depsMetadata),
+            dev && preBundle && transformImportPlugin(
+              depsMetadata,
+              path.join(rootDir, task.config.outputDir, SERVER_OUTPUT_DIR),
+            ),
           ].filter(Boolean),
         }),
       ].filter(Boolean),
@@ -188,10 +188,10 @@ interface CreateDepsMetadataOptions {
  */
 async function createDepsMetadata({ rootDir, task, plugins }: CreateDepsMetadataOptions) {
   const serverEntry = getServerEntry(rootDir, task.config?.server?.entry);
-
+  const alias = (task.config?.alias || {}) as TaskConfig<Config>['config']['alias'];
   const deps = await scanImports([serverEntry], {
     rootDir,
-    alias: (task.config?.alias || {}) as Record<string, string | false>,
+    alias,
     plugins,
   });
 
@@ -212,6 +212,7 @@ async function createDepsMetadata({ rootDir, task, plugins }: CreateDepsMetadata
     depsInfo: preBundleDepsInfo,
     cacheDir,
     taskConfig: task.config,
+    alias,
     plugins,
   });
 
