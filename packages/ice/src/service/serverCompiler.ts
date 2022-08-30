@@ -188,10 +188,10 @@ interface CreateDepsMetadataOptions {
  */
 async function createDepsMetadata({ rootDir, task, plugins }: CreateDepsMetadataOptions) {
   const serverEntry = getServerEntry(rootDir, task.config?.server?.entry);
-
+  const alias = (task.config?.alias || {}) as TaskConfig<Config>['config']['alias'];
   const deps = await scanImports([serverEntry], {
     rootDir,
-    alias: (task.config?.alias || {}) as Record<string, string | false>,
+    alias,
     plugins,
   });
 
@@ -212,6 +212,7 @@ async function createDepsMetadata({ rootDir, task, plugins }: CreateDepsMetadata
     depsInfo: preBundleDepsInfo,
     cacheDir,
     taskConfig: task.config,
+    alias,
     plugins,
   });
 
