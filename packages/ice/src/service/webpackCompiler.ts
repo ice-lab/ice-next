@@ -100,6 +100,8 @@ async function webpackCompiler(options: {
       consola.warn(messages.warnings.join('\n'));
     }
     if (command === 'start') {
+      const appConfig = (await hooksAPI.getAppConfig()).default;
+      const hashChar = appConfig?.router?.type === 'hash' ? '#/' : '';
       if (isSuccessful && isFirstCompile) {
         if (platform === WEB) {
           let logoutMessage = '\n';
