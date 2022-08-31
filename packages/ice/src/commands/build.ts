@@ -94,8 +94,7 @@ const build = async (
           {
             preBundle: format === 'esm' && (ssr || ssg),
             swc: {
-              // Remove components and getData when ssg and ssr both `false`.
-              removeExportExprs: (!ssg && !ssr) ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
+              keepExports: (!ssg && !ssr) ? ['getConfig'] : null,
               keepPlatform: 'node',
             },
           },

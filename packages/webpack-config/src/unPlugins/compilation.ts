@@ -57,7 +57,7 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
 
       merge(programmaticOptions, commonOptions);
 
-      const { removeExportExprs, compilationConfig, keepPlatform } = swcOptions;
+      const { removeExportExprs, compilationConfig, keepPlatform, keepExports } = swcOptions;
 
       if (compilationConfig) {
         merge(programmaticOptions, compilationConfig);
@@ -66,26 +66,33 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
       const swcPlugins = [];
       // handle app.tsx and page entries only
       if (removeExportExprs) {
-        if (/(.*)pages(.*)\.(jsx?|tsx?|mjs)$/.test(id)) {
+        if (/(.*)pages(.*)\.(jsx?|tsx?|mjs)$/.test(id) || /(.*)src\/app/.test(id)) {
           swcPlugins.push([
             require.resolve('@ice/swc-plugin-remove-export'),
             removeExportExprs,
           ]);
-        } else if (/(.*)src\/app/.test(id)) {
-          let removeList;
+        }
+      }
 
-          // FIXME: https://github.com/ice-lab/ice-next/issues/487
-          if (removeExportExprs.indexOf('getConfig') === -1) {
+      if (keepExports) {
+        if (/(.*)pages(.*)\.(jsx?|tsx?|mjs)$/.test(id)) {
+          swcPlugins.push([
+            require.resolve('@ice/swc-plugin-keep-export'),
+            keepExports,
+          ]);
+        } else if (/(.*)src\/app/.test(id)) {
+          let keepList;
+
+          if (keepExports.indexOf('getConfig') > -1) {
             // when build for getConfig, should keep default, it equals to getAppConfig
-            removeList = removeExportExprs.filter(key => key !== 'default');
+            keepList = keepExports.concat(['default']);
           } else {
-            // when build for getData, should remove all other exports
-            removeList = removeExportExprs;
+            keepList = keepExports;
           }
 
           swcPlugins.push([
-            require.resolve('@ice/swc-plugin-remove-export'),
-            removeList,
+            require.resolve('@ice/swc-plugin-keep-export'),
+            keepList,
           ]);
         }
       }

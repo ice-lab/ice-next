@@ -77,8 +77,7 @@ const start = async (
         {
           preBundle: format === 'esm' && (ssr || ssg),
           swc: {
-            // Remove components and getData when document only.
-            removeExportExprs: (!ssg && !ssr) ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
+            keepExports: (!ssg && !ssr) ? ['getConfig'] : null,
             keepPlatform: 'node',
           },
         },

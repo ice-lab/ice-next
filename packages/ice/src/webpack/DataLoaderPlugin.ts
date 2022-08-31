@@ -36,7 +36,7 @@ export default class DataLoaderPlugin {
             write: false,
           }, {
             swc: {
-              removeExportExprs: ['default', 'getConfig', 'getServerData', 'getStaticData'],
+              keepExports: ['getData', 'getAppData'],
               keepPlatform: 'web',
             },
             preBundle: false,
