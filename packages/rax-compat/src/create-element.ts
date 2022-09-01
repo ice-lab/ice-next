@@ -10,6 +10,7 @@ import { createElement as _createElement, useEffect, useCallback, useRef, useSta
 import { cached, convertUnit } from 'style-unit';
 import { observerElement } from './visibility';
 import { isFunction, isObject, isNumber } from './type';
+import transformPrototypes from './prototypes';
 
 
 // https://github.com/alibaba/rax/blob/master/packages/driver-dom/src/index.js
@@ -99,6 +100,8 @@ export function createElement<P extends {
     // So we should compat input to InputCompat, the same as textarea.
     type = createInputCompat(type);
   }
+
+  transformPrototypes(rest);
 
   // Compat for visibility events.
   if (isFunction(onAppear) || isFunction(onDisappear)) {
