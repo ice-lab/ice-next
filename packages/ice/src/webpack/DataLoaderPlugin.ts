@@ -4,6 +4,7 @@ import type { ServerCompiler } from '@ice/types/esm/plugin.js';
 import type { Compiler } from 'webpack';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
 import { RUNTIME_TMP_DIR } from '../constant.js';
+import { getRoutePathsFromCache } from '../utils/getRoutePaths.js';
 
 const pluginName = 'DataLoaderPlugin';
 const { RawSource } = webpack.sources;
@@ -11,13 +12,17 @@ const { RawSource } = webpack.sources;
 export default class DataLoaderPlugin {
   private serverCompiler: ServerCompiler;
   private rootDir: string;
+  private dataCache: Map<string, string>;
+
   public constructor(options: {
     serverCompiler: ServerCompiler;
     rootDir: string;
+    dataCache: Map<string, string>;
   }) {
-    const { serverCompiler, rootDir } = options;
+    const { serverCompiler, rootDir, dataCache } = options;
     this.serverCompiler = serverCompiler;
     this.rootDir = rootDir;
+    this.dataCache = dataCache;
   }
 
   public apply(compiler: Compiler) {
@@ -38,6 +43,9 @@ export default class DataLoaderPlugin {
             swc: {
               keepExports: ['getData', 'getAppData'],
               keepPlatform: 'web',
+              getRoutePaths: () => {
+                return getRoutePathsFromCache(this.dataCache);
+              },
             },
             preBundle: false,
             externalDependencies: false,
