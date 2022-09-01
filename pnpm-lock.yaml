@@ -789,7 +789,7 @@ importers:
   packages/webpack-config:
     specifiers:
       '@ice/bundles': ^0.1.0
-      '@ice/swc-plugin-keep-export': 0.1.0-beta.1
+      '@ice/swc-plugin-keep-export': 0.1.0-beta.2
       '@ice/swc-plugin-keep-platform': ^0.1.0
       '@ice/swc-plugin-remove-export': ^0.1.0
       '@ice/types': ^1.0.0
@@ -805,7 +805,7 @@ importers:
       webpack-dev-server: ^4.7.4
     dependencies:
       '@ice/bundles': link:../bundles
-      '@ice/swc-plugin-keep-export': registry.npmjs.org/@ice/swc-plugin-keep-export/0.1.0-beta.1
+      '@ice/swc-plugin-keep-export': registry.npmjs.org/@ice/swc-plugin-keep-export/0.1.0-beta.2
       '@ice/swc-plugin-keep-platform': 0.1.0
       '@ice/swc-plugin-remove-export': 0.1.0
       '@rollup/pluginutils': 4.2.1
@@ -18427,10 +18427,10 @@ packages:
     dev: true
     optional: true
 
-  registry.npmjs.org/@ice/swc-plugin-keep-export/0.1.0-beta.1:
-    resolution: {integrity: sha512-mG6+0yabtoEJcgJr0HsCRKj+Qc1jMDSth6pVwELPloObQvb2eyOkpGjZXXMwv+CeOxKejmaEUgh3m7NpQ86Yqg==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@ice/swc-plugin-keep-export/-/swc-plugin-keep-export-0.1.0-beta.1.tgz}
+  registry.npmjs.org/@ice/swc-plugin-keep-export/0.1.0-beta.2:
+    resolution: {integrity: sha512-ItkMDJNi/hErHCA9WxI9gBhWvW5T4MWv1AmiSUPBB64uZl9R9fTgEPTiwFF8xRvSjX86Uu1ZzsBaJwehGZIIdQ==, registry: https://registry.npmjs.com/, tarball: https://registry.npmjs.org/@ice/swc-plugin-keep-export/-/swc-plugin-keep-export-0.1.0-beta.2.tgz}
     name: '@ice/swc-plugin-keep-export'
-    version: 0.1.0-beta.1
+    version: 0.1.0-beta.2
     dev: false
 
   registry.npmjs.org/@node-rs/jieba-android-arm-eabi/1.6.1:
