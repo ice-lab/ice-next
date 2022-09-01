@@ -9,11 +9,5 @@ describe('openBrowser in node', () => {
     expect(result).toBe(false);
   });
 
-  it('open scripts', () => {
-    process.env.BROWSER = 'js';
-    const result = openBrowser('a.js');
-    expect(result).toBe(true);
-  });
-
   // TODO simulate open browser in node
 });
