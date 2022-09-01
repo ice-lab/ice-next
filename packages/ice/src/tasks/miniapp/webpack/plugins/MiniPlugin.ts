@@ -120,7 +120,6 @@ export default class MiniPlugin {
     compiler.hooks.run.tapAsync(
       PLUGIN_NAME,
       this.tryAsync<webpack.Compiler>(async compiler => {
-        debugger;
         await this.run(compiler);
         new LoadChunksPlugin({
           commonChunks: commonChunks,
@@ -178,10 +177,10 @@ export default class MiniPlugin {
       webpack.NormalModule.getCompilationHooks(compilation).loader.tap(PLUGIN_NAME, (_loaderContext, module:/** NormalModule */ any) => {
         const { loaderMeta = {} } = this.options;
         if (module.miniType === META_TYPE.PAGE) {
-          const loaderName = this.pageLoaderName;
+          const loaderName = require.resolve(this.pageLoaderName);
           if (!isLoaderExist(module.loaders, loaderName)) {
             module.loaders.unshift({
-              loader: require.resolve(loaderName),
+              loader: loaderName,
               options: {
                 loaderMeta,
                 name: module.name,
