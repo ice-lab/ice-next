@@ -62,22 +62,47 @@ describe(`build ${example}`, () => {
 describe(`start ${example}`, () => {
   let page: Page;
   let browser: Browser;
+  const rootDir = path.join(__dirname, `../../examples/${example}`);
 
   test('setup devServer', async () => {
-    const { devServer, port } = await startFixture(example);
+    const { devServer, port } = await startFixture(example, { mock: true });
     const res = await setupStartBrowser({ server: devServer, port });
     page = res.page;
     browser = res.browser;
     expect(await page.$$text('h2')).toStrictEqual(['Home Page']);
     expect(await page.$$text('#data-from')).toStrictEqual(['getServerData']);
   }, 120000);
-  // TODO: fix waitForNetworkIdle not resolved
-  test.skip('should update config during client routing', async () => {
-    const { devServer, port } = await startFixture(example);
-    const res = await setupStartBrowser({ server: devServer, port });
-    page = res.page;
-    browser = res.browser;
 
+  test('update route', async () => {
+    const targetPath = path.join(rootDir, 'src/pages/blog.tsx');
+    const routeContent = fs.readFileSync(targetPath, 'utf-8');
+    fs.unlinkSync(targetPath);
+    await page.reload();
+    let routeManifest = fs.readFileSync(path.join(rootDir, '.ice/route-manifest.json'), 'utf-8');
+    fs.writeFileSync(targetPath, routeContent);
+    expect(JSON.parse(routeManifest)[0].children.length).toBe(2);
+    await page.reload();
+    routeManifest = fs.readFileSync(path.join(rootDir, '.ice/route-manifest.json'), 'utf-8');
+    expect(JSON.parse(routeManifest)[0].children.length).toBe(3);
+  }, 120000);
+
+  test('update watched file: global.css', async () => {
+    const targetPath = path.join(rootDir, 'src/global.css');
+    const cssContent = fs.readFileSync(targetPath, 'utf-8');
+    fs.unlinkSync(targetPath);
+    await page.reload();
+    fs.writeFileSync(targetPath, cssContent);
+    await page.reload();
+  });
+
+  test('update watched file: app.ts', async () => {
+    const targetPath = path.join(rootDir, 'src/app.tsx');
+    const appContent = fs.readFileSync(targetPath, 'utf-8');
+    fs.writeFileSync(targetPath, appContent);
+    await page.reload();
+  });
+
+  test('should update config during client routing', async () => {
     expect(
       await page.title()
     ).toBe('Home');
@@ -86,7 +111,7 @@ describe(`start ${example}`, () => {
       await page.$$attr('meta[name="theme-color"]', 'content')
     ).toStrictEqual(['#000']);
 
-    await page.click('a[href="/about"]');
+    await page.push('about');
     await page.waitForNetworkIdle();
 
     expect(

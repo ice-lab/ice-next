@@ -17,7 +17,7 @@ interface ReturnValue {
 }
 
 // get builtIn plugins
-export const startFixture = async function (example: string) {
+export const startFixture = async function (example: string, commandArgs?: Record<string, any>) {
   const port = await getPort();
   const rootDir = path.join(__dirname, `../../examples/${example}`);
   process.env.DISABLE_FS_CACHE = 'true';
@@ -25,6 +25,7 @@ export const startFixture = async function (example: string) {
     host: '0.0.0.0',
     port,
     open: false,
+    ...commandArgs,
   }});
 
   // @ts-ignore
