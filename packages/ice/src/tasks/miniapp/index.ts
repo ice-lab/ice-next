@@ -36,7 +36,7 @@ const getMiniappTask = ({ rootDir, command, platform, getAppConfig, getRoutesCon
     getAppConfig,
     getRoutesConfig,
   });
-
+  const defaultLogging = command === 'start' ? 'summary' : 'summary assets';
   return {
     mode,
     entry,
@@ -49,7 +49,6 @@ const getMiniappTask = ({ rootDir, command, platform, getAppConfig, getRoutesCon
       globalObject,
       enabledLibraryTypes: [],
     },
-    // TODO: 支持修改
     sourceMap: command === 'start' ? 'cheap-module-source-map' : false,
     alias: {
       ice: path.join(rootDir, RUNTIME_TMP_DIR, 'index.ts'),
@@ -104,11 +103,11 @@ const getMiniappTask = ({ rootDir, command, platform, getAppConfig, getRoutesCon
     swcOptions: {
       // compatible with former design that miniapp represents ali miniapp
       keepPlatform: platform === 'ali-miniapp' ? 'miniapp' : platform,
-      // getData is built by data-loader
       removeExportExprs: ['getServerData', 'getStaticData'],
     },
     cssFilename: `[name]${fileType.style}`,
     cssChunkFilename: `[name]${fileType.style}`,
+    logging: process.env.WEBPACK_LOGGING || defaultLogging,
   };
 };
 

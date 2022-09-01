@@ -128,6 +128,13 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const hasExportAppData = (await getFileExports({ rootDir, file: 'src/app' })).includes('getAppData');
   const csr = !userConfig.ssr && !userConfig.ssg;
 
+  const disableRouter = userConfig?.optimization?.router && routesInfo.routesCount <= 1;
+  let taskAlias = {};
+  if (disableRouter) {
+    consola.info('[ice]', 'optimization.router is enabled and only have one route, ice build will remove react-router and history which is unnecessary.');
+    taskAlias['@ice/runtime/router'] = path.join(require.resolve('@ice/runtime'), '../single-router.js');
+  }
+
   // add render data
   generator.setRenderData({
     ...routesInfo,

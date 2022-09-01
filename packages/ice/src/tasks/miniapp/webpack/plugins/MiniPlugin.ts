@@ -1,5 +1,6 @@
 import { fileURLToPath } from 'url';
 import path from 'path';
+import { createRequire } from 'module';
 
 import type { RecursiveTemplate, UnRecursiveTemplate } from '@ice/shared';
 import type { Config, MiniappAppConfig, MiniappConfig } from '@ice/types';
@@ -21,6 +22,7 @@ import NormalModulesPlugin from './NormalModulesPlugin.js';
 const { ConcatSource, RawSource } = webpackSources;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const require = createRequire(import.meta.url);
 const PLUGIN_NAME = 'MiniPlugin';
 const APP_CONFIG_FILE = 'app.json';
 
@@ -118,6 +120,7 @@ export default class MiniPlugin {
     compiler.hooks.run.tapAsync(
       PLUGIN_NAME,
       this.tryAsync<webpack.Compiler>(async compiler => {
+        debugger;
         await this.run(compiler);
         new LoadChunksPlugin({
           commonChunks: commonChunks,
@@ -178,7 +181,7 @@ export default class MiniPlugin {
           const loaderName = this.pageLoaderName;
           if (!isLoaderExist(module.loaders, loaderName)) {
             module.loaders.unshift({
-              loader: loaderName,
+              loader: require.resolve(loaderName),
               options: {
                 loaderMeta,
                 name: module.name,
