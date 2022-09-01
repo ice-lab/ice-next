@@ -23,5 +23,4 @@ export default defineConfig({
   dropLogLevel: 'warn',
   plugins: [auth()],
   eslint: true,
-  minify: 'swc',
 });
