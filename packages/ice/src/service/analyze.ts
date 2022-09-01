@@ -6,19 +6,20 @@ import moduleLexer from '@ice/bundles/compiled/es-module-lexer/index.js';
 import { transform, build } from 'esbuild';
 import type { Loader, Plugin } from 'esbuild';
 import consola from 'consola';
+import type { TaskConfig } from 'build-scripts';
+import type { Config } from '@ice/types';
 import { getCache, setCache } from '../utils/persistentCache.js';
 import { getFileHash } from '../utils/hash.js';
 import scanPlugin from '../esbuild/scan.js';
 import type { DepScanData } from '../esbuild/scan.js';
+import formatPath from '../utils/formatPath.js';
+
+type Alias = TaskConfig<Config>['config']['alias'];
 
 interface Options {
   parallel?: number;
   analyzeRelativeImport?: boolean;
   alias?: Alias;
-}
-
-export interface Alias {
-  [x: string]: string | false;
 }
 
 const { init, parse } = moduleLexer;
@@ -68,7 +69,7 @@ export function getImportPath(
   let aliasedPath = resolveId(id, alias) || '';
   if (!path.isAbsolute(aliasedPath)) {
     if (aliasedPath.startsWith('.')) {
-      aliasedPath = path.resolve(path.dirname(importer), aliasedPath);
+      aliasedPath = formatPath(path.resolve(path.dirname(importer), aliasedPath));
     } else {
       // node_modules dependencies
       aliasedPath = '';
@@ -168,28 +169,34 @@ export async function scanImports(entries: string[], options?: ScanOptions) {
   const { alias = {}, depImports = {}, exclude = [], rootDir, plugins } = options;
   const deps = { ...depImports };
 
-  await Promise.all(
-    entries.map((entry) =>
-      build({
-        absWorkingDir: rootDir,
-        write: false,
-        entryPoints: [entry],
-        bundle: true,
-        format: 'esm',
-        logLevel: 'silent',
-        loader: { '.js': 'jsx' },
-        plugins: [
-          scanPlugin({
-            rootDir,
-            deps,
-            alias,
-            exclude,
-          }),
-          ...(plugins || []),
-        ],
-      }),
-    ));
-  consola.debug(`Scan completed in ${(performance.now() - start).toFixed(2)}ms:`, deps);
+  try {
+    await Promise.all(
+      entries.map((entry) =>
+        build({
+          absWorkingDir: rootDir,
+          write: false,
+          entryPoints: [entry],
+          bundle: true,
+          format: 'esm',
+          logLevel: 'silent',
+          loader: { '.js': 'jsx' },
+          plugins: [
+            scanPlugin({
+              rootDir,
+              deps,
+              alias,
+              exclude,
+            }),
+            ...(plugins || []),
+          ],
+        }),
+      ),
+    );
+    consola.debug(`Scan completed in ${(performance.now() - start).toFixed(2)}ms:`, deps);
+  } catch (error) {
+    consola.error('Failed to scan imports.');
+    consola.debug(error);
+  }
   return orderedDependencies(deps);
 }
 
@@ -218,27 +225,33 @@ export async function getFileExports(options: FileOptions): Promise<CachedRouteE
   }
   const fileHash = await getFileHash(filePath);
   if (!cached || cached.hash !== fileHash) {
-    // get route export by esbuild
-    const result = await build({
-      loader: { '.js': 'jsx' },
-      entryPoints: [filePath],
-      platform: 'neutral',
-      format: 'esm',
-      metafile: true,
-      write: false,
-      logLevel: 'silent',
-    });
-    for (let key in result.metafile.outputs) {
-      let output = result.metafile.outputs[key];
-      if (output.entryPoint) {
-        cached = {
-          exports: output.exports,
-          hash: fileHash,
-        };
-        // write cached
-        setCache(rootDir, filePath, cached);
-        break;
+    try {
+      // get route export by esbuild
+      const result = await build({
+        loader: { '.js': 'jsx' },
+        entryPoints: [filePath],
+        platform: 'neutral',
+        format: 'esm',
+        metafile: true,
+        write: false,
+        logLevel: 'silent',
+      });
+
+      for (let key in result.metafile.outputs) {
+        let output = result.metafile.outputs[key];
+        if (output.entryPoint) {
+          cached = {
+            exports: output.exports,
+            hash: fileHash,
+          };
+          // write cached
+          setCache(rootDir, filePath, cached);
+          break;
+        }
       }
+    } catch (error) {
+      consola.error(`Failed to get route ${filePath} exports.`);
+      consola.debug(error);
     }
   }
   return cached.exports;

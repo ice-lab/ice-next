@@ -1,21 +1,14 @@
 import type { Config } from '@ice/types';
 import type { BuildOptions } from 'esbuild';
-import { createUnplugin } from 'unplugin';
-import type { UnpluginOptions } from 'unplugin';
+import unplugin from '@ice/bundles/compiled/unplugin/index.js';
+import type { UnpluginOptions } from '@ice/bundles/compiled/unplugin/index.js';
+import type { Configuration } from 'webpack';
 import compilationPlugin from './unPlugins/compilation.js';
-import type { WebpackConfig } from './index.js';
+import compileExcludes from './compileExcludes.js';
 
 type Compiler = 'webpack' | 'esbuild';
 
-const SKIP_COMPILE = [
-  // polyfill and helpers
-  'core-js', 'core-js-pure', '@swc/helpers', '@babel/runtime',
-  // built-in runtime
-  'react', 'react-dom',
-  // dev dependencies
-  '@pmmmwh/react-refresh-webpack-plugin', 'webpack', 'webpack-dev-server', 'react-refresh',
-];
-
+const { createUnplugin } = unplugin;
 function getPluginTransform(plugin: UnpluginOptions, type: 'esbuild' | 'webpack') {
   const { transform } = plugin;
   if (transform) {
@@ -32,7 +25,7 @@ function getPluginTransform(plugin: UnpluginOptions, type: 'esbuild' | 'webpack'
   return plugin;
 }
 
-function getCompilerPlugins(config: Config, compiler: 'webpack'): WebpackConfig['plugins'];
+function getCompilerPlugins(config: Config, compiler: 'webpack'): Configuration['plugins'];
 function getCompilerPlugins(config: Config, compiler: 'esbuild'): BuildOptions['plugins'];
 function getCompilerPlugins(config: Config, compiler: Compiler) {
   const {
@@ -46,17 +39,15 @@ function getCompilerPlugins(config: Config, compiler: Compiler) {
     cacheDir,
   } = config;
   const compilerPlugins = [];
-  const compileExcludes = [
-    new RegExp(SKIP_COMPILE.map((dep) => `node_modules/?.+${dep}/`).join('|')),
-    /bundles\/compiled/,
-  ];
+
   // Add custom transform before swc compilation so the source code can be got before transformed.
   compilerPlugins.push(
     ...(transformPlugins.filter(({ enforce }) => !enforce || enforce === 'pre') || []),
     ...transforms.map((transform, index) => ({ name: `transform_${index}`, transform })),
   );
-
-  if (swcOptions) {
+  // Use webpack loader instead of webpack plugin to do the compilation.
+  // Reason: https://github.com/unjs/unplugin/issues/154
+  if (swcOptions && compiler !== 'webpack') {
     compilerPlugins.push(compilationPlugin({
       cacheDir,
       sourceMap,

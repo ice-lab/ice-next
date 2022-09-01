@@ -1,5 +1,5 @@
 import * as path from 'path';
-import WebpackDevServer from 'webpack-dev-server';
+import WebpackDevServer from '@ice/bundles/compiled/webpack-dev-server/lib/Server.js';
 import type { Configuration } from 'webpack-dev-server';
 import type { Context, TaskConfig } from 'build-scripts';
 import lodash from '@ice/bundles/compiled/lodash/index.js';
@@ -78,7 +78,7 @@ const start = async (
           preBundle: format === 'esm' && (ssr || ssg),
           swc: {
             // Remove components and getData when document only.
-            removeExportExprs: false ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
+            removeExportExprs: (!ssg && !ssr) ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
             keepPlatform: 'node',
           },
         },

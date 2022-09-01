@@ -13,12 +13,10 @@
     "@ice/plugin-request": "workspace:*",
     "@ice/runtime": "workspace:*",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "regenerator-runtime": "^0.13.9"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.17",
-    "@types/react-dom": "^18.0.6",
-    "browserslist": "^4.21.3"
+    "@types/react-dom": "^18.0.6"
   }
 }
