@@ -144,7 +144,7 @@ const userConfig = [
     setConfig: (config: Config, minify: UserConfig['minify'], context: UserConfigContext<Config>) => {
       if (typeof minify === 'boolean' || typeof minify === 'string') {
         config.minify = minify;
-      } else if (typeof minify === 'object') {
+      } else if (minify && typeof minify === 'object') {
         config.minify = minify.type;
         config.minimizerOptions = minify.options;
       } else {
