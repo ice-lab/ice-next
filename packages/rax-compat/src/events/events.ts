@@ -1,6 +1,6 @@
 
 // Fork from https://github.com/facebook/react/blob/main/packages/react-dom/src/events/DOMEventProperties.js#L36
-const simpleEvents = [
+const events = [
   'abort',
   'auxClick',
   'animationEnd',
@@ -81,6 +81,15 @@ const simpleEvents = [
   'mouseLeave',
   'pointerEnter',
   'pointerLeave',
+  // https://github.com/facebook/react/blob/main/packages/react-dom/src/events/plugins/ChangeEventPlugin.js#L37
+  'change',
+  // https://github.com/facebook/react/blob/main/packages/react-dom/src/events/plugins/SelectEventPlugin.js
+  'select',
+  // https://github.com/facebook/react/blob/main/packages/react-dom/src/events/plugins/BeforeInputEventPlugin.js
+  'beforeInput',
+  'compositionEnd',
+  'compositionStart',
+  'compositionUpdate',
 ];
 
 // A map for transform event to react event.
@@ -94,9 +103,9 @@ export function registerDirectEvent(
   registrationNameToReactEvent[`on${registrationName}`] = reactEventName;
 }
 
-export function registerSimpleEvents() {
-  for (let i = 0; i < simpleEvents.length; i++) {
-    const eventName: string = simpleEvents[i];
+export function registerEvents() {
+  for (let i = 0; i < events.length; i++) {
+    const eventName: string = events[i];
     const domEventName: string = eventName.toLowerCase();
     const capitalizedEvent = eventName[0].toUpperCase() + eventName.slice(1);
     registerDirectEvent(domEventName, `on${capitalizedEvent}`);
