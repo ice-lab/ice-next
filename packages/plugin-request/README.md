@@ -39,7 +39,7 @@ export async function getUser(id) {
 import { useEffect } from 'react';
 import { useRequest } from 'ice';
 
-export default function home() {
+export default function Home() {
   const {
     data,
     error,

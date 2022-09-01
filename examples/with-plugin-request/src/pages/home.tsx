@@ -3,7 +3,7 @@ import { useRequest } from 'ice';
 import service from '../service';
 import styles from './index.module.css';
 
-export default function home() {
+export default function Home() {
   const { data, error, loading, request } = useRequest(service.getUser);
 
   useEffect(() => {

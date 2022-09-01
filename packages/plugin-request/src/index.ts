@@ -3,11 +3,12 @@ import path from 'path';
 import type { Plugin } from '@ice/types';
 import type { Request, Interceptors, InterceptorRequest, InterceptorResponse } from './types';
 
+// @ts-ignore
 interface PluginRequestOptions {}
 
 const plugin: Plugin<PluginRequestOptions | void> = () => ({
   name: 'plugin-request',
-  setup: ({ onGetConfig, context, generator }) => {
+  setup: ({ generator }) => {
     // Add useRequest export for 'ice'.
     //   import { useRequest } from 'ice';
     generator.addExport({
