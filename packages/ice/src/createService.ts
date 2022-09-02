@@ -97,12 +97,17 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
 
   // register config
   ['userConfig', 'cliOption'].forEach((configType) => {
-    const configData = config[configType];
     // Support getDefaultValue for config, make easier for get default value in different mode.
-    if (typeof configData?.getDefaultValue === 'function') {
-      configData.defaultValue = configData.getDefaultValue();
-      delete configData.getDefaultValue;
-    }
+    const configData = config[configType].map(({ getDefaultValue, ...resetConfig }) => {
+      if (getDefaultValue && typeof getDefaultValue === 'function') {
+        return {
+          ...resetConfig,
+          defaultValue: getDefaultValue(),
+        };
+      }
+      return resetConfig;
+    });
+
     ctx.registerConfig(configType, configData);
   });
 
