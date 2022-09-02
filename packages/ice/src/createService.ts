@@ -96,7 +96,15 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   ctx.registerTask('web', getWebTask({ rootDir, command }));
 
   // register config
-  ['userConfig', 'cliOption'].forEach((configType) => ctx.registerConfig(configType, config[configType]));
+  ['userConfig', 'cliOption'].forEach((configType) => {
+    const configData = config[configType];
+    // Support getDefaultValue for config, make easier for get default value in different mode.
+    if (typeof configData?.getDefaultValue === 'function') {
+      configData.defaultValue = configData.getDefaultValue();
+      delete configData.getDefaultValue;
+    }
+    ctx.registerConfig(configType, configData);
+  });
 
   let taskConfigs = await ctx.setup();
 
