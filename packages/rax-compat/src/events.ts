@@ -94,7 +94,7 @@ const events = [
 
 // A map for transform event to react event.
 // Such as ontouchstart transform to onTouchStart.
-export const registrationNameToReactEvent = {};
+export const registrationNameToReactEvent: Map<string, string> = new Map();
 
 registerEvents();
 
@@ -102,7 +102,7 @@ function registerDirectEvent(
   registrationName: string,
   reactEventName: string,
 ) {
-  registrationNameToReactEvent[`on${registrationName}`] = reactEventName;
+  registrationNameToReactEvent.set(`on${registrationName}`, reactEventName);
 }
 
 export function registerEvents() {

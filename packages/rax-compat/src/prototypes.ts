@@ -1,7 +1,10 @@
 import { registrationNameToReactEvent } from './events';
 
-export default function transformPrototypes(props: Object): void {
+export default function transformPrototypes(props: Object): Object {
+  const resProps: Object = {};
   Object.keys(props).forEach((propKey: string) => {
+    let resKey: string = propKey;
+    let resValue: string = props[propKey];
     // Transform the event so that it works properly in React.
     // ontouchstart can work in rax, but react will check event in event plugin.
     // Rax compat should transform event which can work in rax runtime.
@@ -9,13 +12,16 @@ export default function transformPrototypes(props: Object): void {
     // etc...
     if (propKey.startsWith('on')) {
       const lowerCasedPropkey: string = propKey.toLowerCase();
-      if (registrationNameToReactEvent.hasOwnProperty(lowerCasedPropkey)) {
-        const reactEvent: string = registrationNameToReactEvent[lowerCasedPropkey];
+      if (registrationNameToReactEvent.has(lowerCasedPropkey)) {
+        const reactEvent: string = registrationNameToReactEvent.get(lowerCasedPropkey);
         if (reactEvent !== propKey) {
-          props[reactEvent] = props[propKey];
-          delete props[propKey];
+          resKey = reactEvent;
         }
       }
     }
+
+    resProps[resKey] = resValue;
   });
+
+  return resProps;
 }

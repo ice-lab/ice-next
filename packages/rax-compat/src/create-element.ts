@@ -79,7 +79,7 @@ export function createElement<P extends {
   props?: Attributes & P | null,
   ...children: ReactNode[]): ReactElement {
   // Get a shallow copy of props, to avoid mutating the original object.
-  const rest = Object.assign({}, props);
+  let rest: Attributes & P = Object.assign({}, props);
   const { onAppear, onDisappear } = rest;
 
   // Delete props that are not allowed in react.
@@ -101,7 +101,7 @@ export function createElement<P extends {
     type = createInputCompat(type);
   }
 
-  transformPrototypes(rest);
+  rest = transformPrototypes(rest);
 
   // Compat for visibility events.
   if (isFunction(onAppear) || isFunction(onDisappear)) {
