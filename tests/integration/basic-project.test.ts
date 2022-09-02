@@ -65,7 +65,14 @@ describe(`start ${example}`, () => {
   const rootDir = path.join(__dirname, `../../examples/${example}`);
 
   test('setup devServer', async () => {
-    const { devServer, port } = await startFixture(example, { mock: true });
+    const { devServer, port } = await startFixture(example, {
+      mock: true,
+      force: true,
+      https: false,
+      analyzer: false,
+      open: false,
+      mode: 'start',
+    });
     const res = await setupStartBrowser({ server: devServer, port });
     page = res.page;
     browser = res.browser;
