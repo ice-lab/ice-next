@@ -15,7 +15,7 @@ export default function (this: webpack.LoaderContext<any>) {
   const configString = JSON.stringify(config);
   const stringify = (s: string): string => stringifyRequest(this, s);
   const { loaders } = this;
-  const thisLoaderIndex = loaders.findIndex(item => normalizePath(item.path).indexOf('@ice/miniapp-loader/lib/page') >= 0);
+  const thisLoaderIndex = loaders.findIndex(item => normalizePath(item.path).indexOf('miniapp-loader/lib/page') >= 0);
   const componentPath = this.request.split('!').slice(thisLoaderIndex + 1).join('!');
 
   let instantiatePage = `var inst = Page(createPageConfig(component, '${options.name}', {root:{cn:[]}}, { getData, getConfig }, config || {}))`;
