@@ -93,7 +93,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const plugins = await ctx.resolvePlugins();
   const runtimeModules = getRuntimeModules(plugins);
 
-  const { platform } = commandArgs;
+  const { platform = WEB } = commandArgs;
   const isMiniappPlatform = MINIAPP_PLATFORMS.includes(platform);
 
   const { getAppConfig, init: initAppConfigCompiler } = getAppExportConfig(rootDir);
@@ -114,9 +114,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   ['userConfig', 'cliOption'].forEach((configType) => ctx.registerConfig(configType, config[configType]));
 
   let taskConfigs = await ctx.setup();
-  // merge task config with built-in config
-  taskConfigs = mergeTaskConfig(taskConfigs, { port: commandArgs.port });
-  const platformTaskConfig = taskConfigs.find(({ name }) => ALL_PLATFORMS.includes(name));
 
   // get userConfig after setup because of userConfig maybe modified by plugins
   const { userConfig } = ctx;
@@ -135,7 +132,9 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     consola.info('[ice]', 'optimization.router is enabled and only have one route, ice build will remove react-router and history which is unnecessary.');
     taskAlias['@ice/runtime/router'] = path.join(require.resolve('@ice/runtime'), '../single-router.js');
   }
-
+  // merge task config with built-in config
+  taskConfigs = mergeTaskConfig(taskConfigs, { port: commandArgs.port });
+  const platformTaskConfig = taskConfigs.find(({ name }) => ALL_PLATFORMS.includes(name));
 
   const iceRuntimePath = isMiniappPlatform ? '@ice/runtime/miniapp' : '@ice/runtime';
   const needRoutes = platform === WEB;
