@@ -94,6 +94,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const runtimeModules = getRuntimeModules(plugins);
 
   const { platform } = commandArgs;
+  const isMiniappPlatform = MINIAPP_PLATFORMS.includes(platform);
 
   const { getAppConfig, init: initAppConfigCompiler } = getAppExportConfig(rootDir);
   const {
@@ -105,7 +106,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   if (platform === WEB) {
     // register web
     ctx.registerTask(WEB, getWebTask({ rootDir, command }));
-  } else if (MINIAPP_PLATFORMS.includes(platform)) {
+  } else if (isMiniappPlatform) {
     ctx.registerTask(platform, getMiniappTask({ rootDir, command, platform, getAppConfig, getRoutesConfig }));
   }
 
@@ -135,13 +136,17 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     taskAlias['@ice/runtime/router'] = path.join(require.resolve('@ice/runtime'), '../single-router.js');
   }
 
+
+  const iceRuntimePath = isMiniappPlatform ? '@ice/runtime/miniapp' : '@ice/runtime';
+  const needRoutes = platform === WEB;
+  const needDocument = platform === WEB;
   // add render data
   generator.setRenderData({
     ...routesInfo,
     platform,
-    iceRuntimePath: platform === WEB ? '@ice/runtime' : '@ice/runtime/miniapp',
-    needRoutes: platform === WEB,
-    needDocument: platform === WEB,
+    iceRuntimePath,
+    needRoutes,
+    needDocument,
     hasExportAppData,
     runtimeModules,
     coreEnvKeys,
@@ -187,7 +192,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
       cache: dataCache,
       ctx,
       serverCompiler,
-      platform,
     }),
   );
 

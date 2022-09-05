@@ -67,10 +67,18 @@ const start = async (
     getRoutesConfig,
   };
 
-  if (platform === WEB) {
+  const outputDir = webpackConfigs[0].output.path;
+  await emptyDir(outputDir);
+
+  const shouldCompileServerEntry = platform === WEB;
+  const useDevServer = platform === WEB;
+
+  const { ssg, ssr, server: { format } } = userConfig;
+
+  let compiler;
+
+  if (shouldCompileServerEntry) {
     // Compile server entry after the webpack compilation.
-    const outputDir = webpackConfigs[0].output.path;
-    const { ssg, ssr, server: { format } } = userConfig;
     const entryPoint = getServerEntry(rootDir, taskConfigs[0].config?.server?.entry);
     const esm = format === 'esm';
     const outJSExtension = esm ? '.mjs' : '.cjs';
@@ -107,7 +115,8 @@ const start = async (
         return files.some((filePath) => routeFiles.some(routeFile => filePath.includes(routeFile)));
       }),
     );
-
+  }
+  if (useDevServer) {
     const customMiddlewares = webpackConfigs[0].devServer?.setupMiddlewares;
     let devServerConfig: Configuration = {
       port,
@@ -157,7 +166,7 @@ const start = async (
       devServerConfig.port as number,
       urlPathname.endsWith('/') ? urlPathname : `${urlPathname}/`,
     );
-    const compiler = await webpackCompiler({
+    compiler = await webpackCompiler({
       rootDir,
       webpackConfigs,
       taskConfigs,
@@ -177,10 +186,8 @@ const start = async (
       });
     });
     return { compiler, devServer };
-  } else if (MINIAPP_PLATFORMS.includes(platform)) {
-    const outputDir = webpackConfigs[0].output.path;
-    await emptyDir(outputDir);
-    const compiler = await webpackCompiler({
+  } else {
+    compiler = await webpackCompiler({
       rootDir,
       webpackConfigs,
       taskConfigs,

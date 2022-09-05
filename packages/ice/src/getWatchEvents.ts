@@ -18,11 +18,10 @@ interface Options {
   cache: Map<string, string>;
   ctx: Context<Config>;
   serverCompiler: ServerCompiler;
-  platform: string;
 }
 
 const getWatchEvents = (options: Options): WatchEvent[] => {
-  const { generator, targetDir, templateDir, cache, ctx, platform } = options;
+  const { generator, targetDir, templateDir, cache, ctx } = options;
   const { userConfig: { routes: routesConfig }, configFile, rootDir } = ctx;
   const watchRoutes: WatchEvent = [
     /src\/pages\/?[\w*-:.$]+$/,

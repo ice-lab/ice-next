@@ -13,6 +13,31 @@ import { WEB, MINIAPP_PLATFORMS } from '../constant.js';
 import DataLoaderPlugin from '../webpack/DataLoaderPlugin.js';
 
 type WebpackConfig = Configuration & { devServer?: DevServerConfiguration };
+
+function logMessage(platform: string, { urls, hashChar, devPath, commandArgs, rootDir }): void {
+  if (MINIAPP_PLATFORMS.includes(platform)) {
+    let logoutMessage = '\n';
+    logoutMessage += chalk.green(`Use ${platform} developer tools to open the following folder:`);
+    logoutMessage += `\n${chalk.underline.white(rootDir)}`;
+    consola.log(`${logoutMessage}\n`);
+  } else if (platform === WEB) {
+    // Default web
+    let logoutMessage = '\n';
+    logoutMessage += chalk.green(' Starting the development server at:');
+    if (process.env.CLOUDIDE_ENV) {
+      logoutMessage += `\n   - IDE server: https://${process.env.WORKSPACE_UUID}-${commandArgs.port}.${process.env.WORKSPACE_HOST}${hashChar}${devPath}`;
+    } else {
+      logoutMessage += `\n
+- Local  : ${chalk.underline.white(`${urls.localUrlForBrowser}${hashChar}${devPath}`)}
+- Network:  ${chalk.underline.white(`${urls.lanUrlForTerminal}${hashChar}${devPath}`)}`;
+    }
+    consola.log(`${logoutMessage}\n`);
+
+    if (commandArgs.open) {
+      openBrowser(`${urls.localUrlForBrowser}${hashChar}${devPath}`);
+    }
+  }
+}
 async function webpackCompiler(options: {
   webpackConfigs: WebpackConfig | WebpackConfig[];
   taskConfigs: TaskConfig<Config>[];
@@ -103,27 +128,7 @@ async function webpackCompiler(options: {
       const appConfig = (await hooksAPI.getAppConfig()).default;
       const hashChar = appConfig?.router?.type === 'hash' ? '#/' : '';
       if (isSuccessful && isFirstCompile) {
-        if (platform === WEB) {
-          let logoutMessage = '\n';
-          logoutMessage += chalk.green(' Starting the development server at:');
-          if (process.env.CLOUDIDE_ENV) {
-            logoutMessage += `\n   - IDE server: https://${process.env.WORKSPACE_UUID}-${commandArgs.port}.${process.env.WORKSPACE_HOST}${devPath}`;
-          } else {
-            logoutMessage += `\n
-     - Local  : ${chalk.underline.white(`${urls.localUrlForBrowser}${devPath}`)}
-     - Network:  ${chalk.underline.white(`${urls.lanUrlForTerminal}${devPath}`)}`;
-          }
-          consola.log(`${logoutMessage}\n`);
-
-          if (commandArgs.open) {
-            openBrowser(`${urls.localUrlForBrowser}${devPath}`);
-          }
-        } else if (MINIAPP_PLATFORMS.includes(platform)) {
-          let logoutMessage = '\n';
-          logoutMessage += chalk.green(`Use ${platform} developer tools to open the following folder:`);
-          logoutMessage += `\n${chalk.underline.white(rootDir)}`;
-          consola.log(`${logoutMessage}\n`);
-        }
+        logMessage(platform, { urls, hashChar, devPath, commandArgs, rootDir });
       }
       // compiler.hooks.done is AsyncSeriesHook which does not support async function
       await applyHook('after.start.compile', {
