@@ -12,7 +12,7 @@
     "@ice/runtime": "workspace:*"
   },
   "devDependencies": {
-    "@ice/plugin-hook-store": "workspace:*",
+    "@ice/plugin-hooks-store": "workspace:*",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "browserslist": "^4.19.3",

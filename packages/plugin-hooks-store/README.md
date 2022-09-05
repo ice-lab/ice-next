@@ -1,4 +1,4 @@
-# @ice/plugin-hook-store
+# @ice/plugin-hooks-store
 
 A plugin of lightweight React Hooks state management used in framework `ICE`.
 
@@ -6,7 +6,7 @@ A plugin of lightweight React Hooks state management used in framework `ICE`.
 
 ```ts
 import { defineConfig } from '@ice/app';
-import store from '@ice/plugin-hook-store';
+import store from '@ice/plugin-hooks-store';
 
 export default defineConfig({
   plugins: [

@@ -1,5 +1,5 @@
 {
-  "name": "@ice/plugin-hook-store",
+  "name": "@ice/plugin-hooks-store",
   "version": "1.0.0",
   "description": "A plugin of lightweight React Hooks state management based on @ice/hooks-store.",
   "license": "MIT",
@@ -15,10 +15,10 @@
       "import": "./esm/runtime.js",
       "default": "./esm/runtime.js"
     },
-    "./esm/runtime": {
-      "types": "./esm/runtime.d.ts",
-      "import": "./esm/runtime.js",
-      "default": "./esm/runtime.js"
+    "./api": {
+      "types": "./esm/api.d.ts",
+      "import": "./esm/api.js",
+      "default": "./esm/api.js"
     }
   },
   "main": "./esm/index.js",
@@ -28,7 +28,7 @@
     "!esm/**/*.map"
   ],
   "dependencies": {
-    "@ice/hooks-store": "^0.1.1",
+    "@ice/hooks-store": "^1.0.0-alpha.0",
     "fast-glob": "^3.2.11",
     "micromatch": "^4.0.5"
   },

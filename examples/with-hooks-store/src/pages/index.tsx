@@ -3,8 +3,8 @@ import pageStore from './store';
 import appStore from '@/store';
 
 function Home() {
-  const { todos } = appStore.useHooks('useTodo');
-  const { count, increment, decrement } = pageStore.useHooks('useCounter');
+  const { todos } = appStore.useHook('useTodo');
+  const { count, increment, decrement } = pageStore.useHook('useCounter');
 
   return (
     <>

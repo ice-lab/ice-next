@@ -1,4 +1,4 @@
-import { createStore } from '@ice/plugin-hook-store/esm/runtime';
+import { createStore } from 'ice';
 import useUser from './models/useUser';
 
 export default createStore({ useUser });

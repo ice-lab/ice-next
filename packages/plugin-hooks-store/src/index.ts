@@ -5,17 +5,12 @@ import type { Config, Plugin } from '@ice/types';
 import micromatch from 'micromatch';
 import { PAGE_STORE_MODULE, PAGE_STORE_PROVIDER } from './constants.js';
 
-interface Options {
-  // TODO: https://github.com/ice-lab/ice-next/issues/395#issuecomment-1210552931
-  // disableResetPageState?: boolean;
-}
-
 const storeFilePattern = '**/store.{js,ts}';
 const ignoreStoreFilePatterns = ['**/models/**', storeFilePattern];
 
-const plugin: Plugin<Options> = () => ({
+const plugin: Plugin = () => ({
   name: '@ice/plugin-hook-store',
-  setup: ({ onGetConfig, modifyUserConfig, context: { rootDir, userConfig } }) => {
+  setup: ({ onGetConfig, modifyUserConfig, generator, context: { rootDir, userConfig } }) => {
     const srcDir = path.join(rootDir, 'src');
     const pageDir = path.join(srcDir, 'pages');
 
@@ -38,6 +33,13 @@ const plugin: Plugin<Options> = () => ({
         exportStoreProviderPlugin({ pageDir }),
       ];
       return config;
+    });
+
+    // Export store api: createStore, createModel from `.ice/index.ts`.
+    generator.addExport({
+      specifier: ['createStore'],
+      source: '@ice/plugin-hooks-store/api',
+      type: false,
     });
   },
   runtime: path.join(path.dirname(fileURLToPath(import.meta.url)), 'runtime.js'),
