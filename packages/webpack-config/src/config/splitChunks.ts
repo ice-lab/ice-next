@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import type webpack from 'webpack';
+import type { PathData } from 'webpack';
 
 interface TestModule {
   size: Function;
@@ -60,6 +61,19 @@ const getSplitChunksConfig = (rootDir: string): webpack.Configuration['optimizat
             hash.update(module.libIdent({ context: rootDir }));
           }
           return hash.digest('hex').substring(0, 8);
+        },
+      },
+      // `defaultVendors` is a built-in cache group that created by webpack, all vendors
+      // that are not matched by other cache groups will be fallback into this cache group.
+      defaultVendors: {
+        filename(pathData: PathData) {
+          // @NOTE: To solve the dev server entry request contains port that cause hash difference.
+          // Maybe there is a better way to solve this problem.
+          if (/ice_bundles_compiled_webpack_hot_dev-server_js/.test(String(pathData.chunk.id))) {
+            return 'ice-auto-refresh.js';
+          } else {
+            return '[id].js';
+          }
         },
       },
     },
