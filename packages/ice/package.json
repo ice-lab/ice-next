@@ -71,7 +71,7 @@
     "open": "^8.4.0",
     "path-to-regexp": "^6.2.0",
     "react-router": "^6.3.0",
-    "regenerator-runtime": "^0.13.9",
+    "regenerator-runtime": "^0.11",
     "resolve.exports": "^1.1.0",
     "sass": "^1.49.9",
     "sax": "^1.2.4",

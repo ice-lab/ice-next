@@ -553,7 +553,7 @@ importers:
       path-to-regexp: ^6.2.0
       react: ^18.0.0
       react-router: ^6.3.0
-      regenerator-runtime: ^0.13.9
+      regenerator-runtime: ^0.11
       resolve.exports: ^1.1.0
       sass: ^1.49.9
       sax: ^1.2.4
@@ -607,7 +607,7 @@ importers:
       open: 8.4.0
       path-to-regexp: 6.2.1
       react-router: 6.3.0_react@18.2.0
-      regenerator-runtime: 0.13.9
+      regenerator-runtime: 0.11.1
       resolve.exports: 1.1.0
       sass: 1.50.1
       sax: 1.2.4
