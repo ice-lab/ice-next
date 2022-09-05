@@ -1,11 +1,8 @@
 import * as React from 'react';
 import type { RuntimePlugin, AppProvider, RouteWrapper } from '@ice/types';
 import { PAGE_STORE_INITIAL_STATES, PAGE_STORE_PROVIDER } from './constants.js';
+import type { StoreConfig } from './types.js';
 import appStore from '$store';
-
-interface StoreConfig {
-  initialStates: Record<string, any>;
-}
 
 const runtime: RuntimePlugin = async ({ appContext, addWrapper, addProvider, useAppContext }) => {
   const { appExport } = appContext;

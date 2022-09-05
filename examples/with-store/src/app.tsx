@@ -1,5 +1,5 @@
 import { defineAppConfig } from 'ice';
-import { defineStoreConfig } from '@ice/plugin-store/esm/runtime';
+import { defineStoreConfig } from '@ice/plugin-store/esm/types';
 
 export const store = defineStoreConfig(async () => {
   // fetch Data
