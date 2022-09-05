@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { AppContextProvider } from '../AppContext.js';
-import { AppDataProvider, getAppData } from '../AppData.js';
 import type {
   AppContext, AppExport, RouteWrapperConfig, RuntimeModules,
-} from '../types.js';
+} from '@ice/types';
+import { AppContextProvider } from '../AppContext.js';
+import { AppDataProvider, getAppData } from '../AppData.js';
 
 import getAppConfig from '../appConfig.js';
 import Runtime from './runtime.js';

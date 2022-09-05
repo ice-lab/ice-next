@@ -11,7 +11,7 @@ import type {
   RouteWrapperConfig,
   SetRender,
   ComponentWithChildren,
-} from '../types.js';
+} from '@ice/types';
 import { useData, useConfig } from '../RouteContext.js';
 import { useAppContext } from '../AppContext.js';
 
