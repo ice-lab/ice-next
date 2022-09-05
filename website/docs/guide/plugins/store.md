@@ -7,7 +7,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 <details>
-  <summary>例子</summary>
+  <summary>示例</summary>
   <ul>
     <li>
       <a href="https://github.com/ice-lab/ice-next/tree/master/examples/with-store" target="_blank" rel="noopener noreferrer">
