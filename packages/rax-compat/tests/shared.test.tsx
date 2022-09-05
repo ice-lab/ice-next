@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type ReactElement } from 'react';
 import { expect, it, describe } from 'vitest';
 import { shared } from '../src/index';
 
@@ -9,5 +9,27 @@ describe('render', () => {
     expect(shared.Host).toBe(null);
     expect(shared.Instance).toBe(null);
     expect(shared.flattenChildren).instanceOf(Function);
+  });
+
+  it('flattenChildren null', () => {
+    // @ts-ignore e
+    expect(shared.flattenChildren(null)).toBe(null);
+  });
+
+  it('flattenChildren common', () => {
+    expect(shared.flattenChildren({
+      key: '1',
+      type: 'h2',
+      props: {},
+    })).toBe({
+      key: '1',
+      type: 'h2',
+      props: {},
+    });
+  });
+
+  it('flattenChildren array', () => {
+    const children = [[[<>div</>]]];
+    expect(shared.flattenChildren(children)).toBe((<React.Fragment>div</React.Fragment>));
   });
 });
