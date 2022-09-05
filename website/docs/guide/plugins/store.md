@@ -6,6 +6,17 @@ order: 2
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
+<details>
+  <summary>例子</summary>
+  <ul>
+    <li>
+      <a href="https://github.com/ice-lab/ice-next/tree/master/examples/with-store" target="_blank" rel="noopener noreferrer">
+        with-store
+      </a>
+    </li>
+  </ul>
+</details>
+
 ## 开启状态管理
 
 安装插件：
