@@ -1,15 +1,18 @@
 import path from 'path';
 import { createHash } from 'crypto';
+import consola from 'consola';
 import fse from 'fs-extra';
 import { build } from 'esbuild';
 import type { Plugin } from 'esbuild';
 import { resolve as resolveExports } from 'resolve.exports';
 import moduleLexer from '@ice/bundles/compiled/es-module-lexer/index.js';
 import type { Config } from '@ice/types';
+import type { TaskConfig } from 'build-scripts';
 import flattenId from '../utils/flattenId.js';
 import formatPath from '../utils/formatPath.js';
 import { BUILDIN_CJS_DEPS, BUILDIN_ESM_DEPS } from '../constant.js';
 import type { DepScanData } from '../esbuild/scan.js';
+import aliasPlugin from '../esbuild/alias.js';
 
 interface DepInfo {
   file: string;
@@ -29,6 +32,7 @@ interface PreBundleDepsOptions {
   depsInfo: Record<string, DepScanData>;
   cacheDir: string;
   taskConfig: Config;
+  alias: TaskConfig<Config>['config']['alias'];
   plugins?: Plugin[];
 }
 
@@ -36,7 +40,7 @@ interface PreBundleDepsOptions {
  * Pre bundle dependencies from esm to cjs.
  */
 export default async function preBundleCJSDeps(options: PreBundleDepsOptions): Promise<PreBundleDepsResult> {
-  const { depsInfo, cacheDir, taskConfig, plugins = [] } = options;
+  const { depsInfo, cacheDir, taskConfig, plugins = [], alias } = options;
   const metadata = createDepsMetadata(depsInfo, taskConfig);
 
   if (!Object.keys(depsInfo)) {
@@ -63,7 +67,7 @@ export default async function preBundleCJSDeps(options: PreBundleDepsOptions): P
 
   await moduleLexer.init;
   for (const depId in depsInfo) {
-    const packageEntry = resolvePackageEntry(depId, depsInfo[depId].pkgPath);
+    const packageEntry = resolvePackageEntry(depId, depsInfo[depId].pkgPath, alias);
     const flatId = flattenId(depId);
     flatIdDeps[flatId] = packageEntry;
 
@@ -75,19 +79,27 @@ export default async function preBundleCJSDeps(options: PreBundleDepsOptions): P
     };
   }
 
-  await build({
-    absWorkingDir: process.cwd(),
-    entryPoints: flatIdDeps,
-    bundle: true,
-    logLevel: 'error',
-    outdir: depsCacheDir,
-    format: 'cjs',
-    platform: 'node',
-    loader: { '.js': 'jsx' },
-    ignoreAnnotations: true,
-    plugins,
-    external: [...BUILDIN_CJS_DEPS, ...BUILDIN_ESM_DEPS],
-  });
+  try {
+    await build({
+      absWorkingDir: process.cwd(),
+      entryPoints: flatIdDeps,
+      bundle: true,
+      logLevel: 'error',
+      outdir: depsCacheDir,
+      format: 'cjs',
+      platform: 'node',
+      loader: { '.js': 'jsx' },
+      ignoreAnnotations: true,
+      plugins: [
+        aliasPlugin({ alias, format: 'cjs', externalDependencies: false }),
+        ...plugins,
+      ],
+      external: [...BUILDIN_CJS_DEPS, ...BUILDIN_ESM_DEPS],
+    });
+  } catch (error) {
+    consola.error('Failed to bundle dependencies.');
+    consola.debug(error);
+  }
 
   await fse.writeJSON(metadataJSONPath, metadata, { spaces: 2 });
 
@@ -96,15 +108,20 @@ export default async function preBundleCJSDeps(options: PreBundleDepsOptions): P
   };
 }
 
-function resolvePackageEntry(depId: string, pkgPath: string) {
+function resolvePackageEntry(depId: string, pkgPath: string, alias: TaskConfig<Config>['config']['alias']) {
   const pkgJSON = fse.readJSONSync(pkgPath);
   const pkgDir = path.dirname(pkgPath);
+  const aliasKey = Object.keys(alias).find(key => depId === key || depId.startsWith(`${depId}/`));
+  // alias: { rax: 'rax-compat' }
+  // rax -> .
+  // rax/element -> ./element
+  const entry = aliasKey ? depId.replace(new RegExp(`^${aliasKey}`), '.') : depId;
   // resolve exports cjs field
-  let entryPoint = resolveExports(pkgJSON, depId, { require: true }) || '';
-  if (!entryPoint) {
-    entryPoint = pkgJSON['main'] || 'index.js';
+  let resolvedEntryPoint = resolveExports(pkgJSON, entry, { require: true }) || '';
+  if (!resolvedEntryPoint) {
+    resolvedEntryPoint = pkgJSON['main'] || 'index.js';
   }
-  const entryPointPath = path.join(pkgDir, entryPoint);
+  const entryPointPath = path.join(pkgDir, resolvedEntryPoint);
   return entryPointPath;
 }
 

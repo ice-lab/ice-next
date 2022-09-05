@@ -1,6 +1,5 @@
 import * as React from 'react';
 import type { RuntimePlugin, AppProvider, RouteWrapper } from '@ice/types';
-import { createStore, createModel } from '@ice/store';
 import { PAGE_STORE_INITIAL_STATES, PAGE_STORE_PROVIDER } from './constants.js';
 import appStore from '$store';
 
@@ -40,20 +39,6 @@ const runtime: RuntimePlugin = async ({ appContext, addWrapper, addProvider, use
   };
 
   addWrapper(StoreProviderWrapper, true);
-};
-
-
-type Store = (() => Promise<StoreConfig>) | StoreConfig;
-
-function defineStoreConfig(fn: Store) {
-  return fn;
-}
-
-export {
-  createStore,
-  createModel,
-
-  defineStoreConfig,
 };
 
 export default runtime;

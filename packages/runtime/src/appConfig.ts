@@ -1,4 +1,4 @@
-import type { AppConfig, AppExport } from './types.js';
+import type { AppConfig, AppExport } from '@ice/types';
 
 const defaultAppConfig: AppConfig = {
   app: {
@@ -28,6 +28,10 @@ export default function getAppConfig(appExport: AppExport): AppConfig {
   };
 }
 
-export function defineAppConfig(appConfig: AppConfig) {
-  return appConfig;
+export function defineAppConfig(appConfigOrDefineAppConfig: AppConfig | (() => AppConfig)): AppConfig {
+  if (typeof appConfigOrDefineAppConfig === 'function') {
+    return appConfigOrDefineAppConfig();
+  } else {
+    return appConfigOrDefineAppConfig;
+  }
 }
