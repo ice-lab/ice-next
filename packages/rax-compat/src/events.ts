@@ -105,7 +105,7 @@ function registerDirectEvent(
   registrationNameToReactEvent.set(`on${registrationName}`, reactEventName);
 }
 
-export function registerEvents() {
+function registerEvents() {
   for (let i = 0; i < events.length; i++) {
     const eventName: string = events[i];
     const domEventName: string = eventName.toLowerCase();
