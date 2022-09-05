@@ -307,8 +307,6 @@ importers:
       '@ice/runtime': workspace:*
       '@types/react': ^18.0.0
       '@types/react-dom': ^18.0.0
-      browserslist: ^4.19.3
-      regenerator-runtime: ^0.13.9
       tslib: ^2.4.0
     dependencies:
       '@ice/app': link:../../packages/ice
@@ -317,8 +315,6 @@ importers:
       '@ice/plugin-store': link:../../packages/plugin-store
       '@types/react': 18.0.15
       '@types/react-dom': 18.0.6
-      browserslist: 4.21.3
-      regenerator-runtime: 0.13.9
       tslib: 2.4.0
 
   packages/bundles:
@@ -678,16 +674,18 @@ importers:
 
   packages/plugin-store:
     specifiers:
-      '@ice/store': ^2.0.1
+      '@ice/store': ^2.0.3
       '@ice/types': ^1.0.0
       '@types/micromatch': ^4.0.2
       '@types/react': ^18.0.0
       '@types/react-dom': ^18.0.0
       fast-glob: ^3.2.11
       micromatch: ^4.0.5
+      react: ^18.2.0
+      react-dom: ^18.2.0
       regenerator-runtime: ^0.13.9
     dependencies:
-      '@ice/store': 2.0.2
+      '@ice/store': 2.0.3_biqbaboplfbrettd7655fr4n2y
       fast-glob: 3.2.11
       micromatch: 4.0.5
     devDependencies:
@@ -695,6 +693,8 @@ importers:
       '@types/micromatch': 4.0.2
       '@types/react': 18.0.15
       '@types/react-dom': 18.0.6
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       regenerator-runtime: 0.13.9
 
   packages/rax-compat:
@@ -5332,14 +5332,15 @@ packages:
       - ts-node
     dev: true
 
-  /@ice/store/2.0.2:
-    resolution: {integrity: sha512-1c+y5VVmq9ZX2LV/EkBc/wXPgTNoDAKbdtqlSdo07RAJrAbvf/X8Mph7Cz8z1GMR69rWXUGEHwENd6O1URfgog==}
+  /@ice/store/2.0.3_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-U1YcY380bejqc3+WtkEqIwE6HnjBjSKd4IWFyq8gakPeAvA6fEJ58Qx9hzscYxlogWbiCb0Wm9kqkcDU+njx7g==}
     peerDependencies:
-      react: ^16.8.3 || ^17
+      react: ^16.8 || ^17 || ^18
     dependencies:
       immer: 9.0.14
       lodash.isfunction: 3.0.9
-      react-redux: 7.2.8
+      react: 18.2.0
+      react-redux: 7.2.8_biqbaboplfbrettd7655fr4n2y
       redux: 4.2.0
       redux-thunk: 2.4.1_redux@4.2.0
     transitivePeerDependencies:
@@ -6392,7 +6393,7 @@ packages:
   /@types/hoist-non-react-statics/3.3.1:
     resolution: {integrity: sha512-iMIqiko6ooLrTh1joXodJK5X9xeEALT1kM5G3ZLhD3hszxBdIEd5C75U834D9mLcINgD4OyZf5uQXjkuYydWvA==}
     dependencies:
-      '@types/react': 18.0.15
+      '@types/react': 18.0.17
       hoist-non-react-statics: 3.3.2
     dev: false
 
@@ -6526,7 +6527,7 @@ packages:
     resolution: {integrity: sha512-7FkurKcS1k0FHZEtdbbgN8Oc6b+stGSfZYjQGicofJ0j4U0qIn/jaSvnP2pLwZKiai3/17xqqxkkrxTgN8UNbQ==}
     dependencies:
       '@types/hoist-non-react-statics': 3.3.1
-      '@types/react': 18.0.15
+      '@types/react': 18.0.17
       hoist-non-react-statics: 3.3.2
       redux: 4.2.0
     dev: false
@@ -15875,7 +15876,7 @@ packages:
       react-loadable: /@docusaurus/react-loadable/5.5.2_react@17.0.2
       webpack: 5.74.0
 
-  /react-redux/7.2.8:
+  /react-redux/7.2.8_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-6+uDjhs3PSIclqoCk0kd6iX74gzrGc3W5zcAjbrFgEdIjRSQObdIwfx80unTkVUYvbQ95Y8Av3OvFHq1w5EOUw==}
     peerDependencies:
       react: ^16.8.3 || ^17 || ^18
@@ -15892,6 +15893,8 @@ packages:
       hoist-non-react-statics: 3.3.2
       loose-envify: 1.4.0
       prop-types: 15.8.1
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
       react-is: 17.0.2
     dev: false
 
