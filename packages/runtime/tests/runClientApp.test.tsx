@@ -33,6 +33,7 @@ describe('run client app', () => {
   });
   afterEach(() => {
     windowSpy.mockRestore();
+    documentSpy.mockRestore();
   });
 
   let domstring = '';
