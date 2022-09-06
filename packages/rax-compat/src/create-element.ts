@@ -118,7 +118,7 @@ export function createElement<P extends {
     // User can modify value of props to modify native input value
     // and native input can also modify the value of self in Rax.
     // So we should compat input to InputCompat, the same as textarea.
-    type = createInputCompat(type);
+    type = useCallback(createInputCompat(type), [type]);
   }
 
   // Compat for visibility events.
