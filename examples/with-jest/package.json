@@ -1,0 +1,23 @@
+{
+  "name": "with-jest",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "ice start",
+    "build": "ice build",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@ice/runtime": "workspace:*",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@ice/app": "workspace:*",
+    "@types/jest": "^29.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.2",
+    "jest": "^29.0.2",
+    "ts-jest": "^28.0.8",
+    "typescript": "^4.8.2"
+  }
+}
