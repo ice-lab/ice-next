@@ -24,7 +24,10 @@
   },
   "devDependencies": {
     "@ice/types": "^1.0.0",
-    "@types/webpack": "^5.28.0"
+    "@types/webpack": "^5.28.0",
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-proposal-export-default-from": "^7.18.9",
+    "babel-plugin-transform-jsx-stylesheet": "1.0.6"
   },
   "repository": {
     "type": "http",

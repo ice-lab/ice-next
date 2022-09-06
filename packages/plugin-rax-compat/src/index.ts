@@ -3,8 +3,11 @@ import type { Plugin } from '@ice/types';
 import type { RuleSetRule } from 'webpack';
 import consola from 'consola';
 import merge from 'lodash.merge';
+import { transformSync } from '@babel/core';
 
 const require = createRequire(import.meta.url);
+
+const jsRegex = /\.(jsx?|tsx?|mjs)$/;
 
 const alias = {
   // Add rax compat packages.
@@ -69,6 +72,7 @@ const plugin: Plugin<CompatRaxOptions> = (options = {}) => ({
           },
         },
       });
+
       if (!config.server) {
         config.server = {};
       }
@@ -80,45 +84,102 @@ const plugin: Plugin<CompatRaxOptions> = (options = {}) => ({
         jsxFragment: 'Fragment',
       });
       Object.assign(config.alias, alias);
+
       if (options.inlineStyle) {
         if (!warnOnce) {
           consola.warn('Enabling inline style is not recommended.\n       It is recommended to use CSS modules (as default). Only allow old projects to migrate and use.');
           warnOnce = true;
         }
-        config.configureWebpack ??= [];
-        config.configureWebpack.unshift((config) => {
-          const { rules } = config.module || {};
-          if (Array.isArray(rules)) {
-            for (let i = 0, l = rules.length; i < l; i++) {
-              const rule: RuleSetRule | any = rules[i];
-              // Find the css rule, that default to CSS Modules.
-              if (rule.test && rule.test.source && rule.test.source.indexOf('.css') > -1) {
-                rule.test = /\.module\.css$/i;
-                rules[i] = {
-                  test: /\.css$/i,
-                  oneOf: [
-                    rule,
-                    ruleSetStylesheet,
-                  ],
-                };
-              }
 
-              // Find and replace the less rule
-              if (rule.test && rule.test.source && rule.test.source.indexOf('.less') > -1) {
-                rules[i] = {
-                  test: /\.less$/i,
-                  oneOf: [
-                    ruleSetStylesheetForLess,
-                  ],
-                };
-              }
-            }
-          }
-          return config;
-        });
+        applyStylesheetLoader(config);
+        transformClassNameToStyle(config);
       }
     });
   },
 });
+
+function applyStylesheetLoader(config) {
+  config.configureWebpack ??= [];
+  config.configureWebpack.unshift((config) => {
+    const { rules } = config.module || {};
+    if (Array.isArray(rules)) {
+      for (let i = 0, l = rules.length; i < l; i++) {
+        const rule: RuleSetRule | any = rules[i];
+        // Find the css rule, that default to CSS Modules.
+        if (rule.test && rule.test.source && rule.test.source.indexOf('.css') > -1) {
+          rule.test = /\.module\.css$/i;
+          rules[i] = {
+            test: /\.css$/i,
+            oneOf: [
+              rule,
+              ruleSetStylesheet,
+            ],
+          };
+        }
+
+        // Find and replace the less rule
+        if (rule.test && rule.test.source && rule.test.source.indexOf('.less') > -1) {
+          rules[i] = {
+            test: /\.less$/i,
+            oneOf: [
+              ruleSetStylesheetForLess,
+            ],
+          };
+        }
+      }
+    }
+    return config;
+  });
+}
+
+function transformClassNameToStyle(config) {
+  config.transforms = [...(config.transforms || []), async (sourceCode, id) => {
+    // js file transform with rax-platform-loader and babel-plugin-transform-jsx-stylesheet
+    if (id.includes('node_modules') && id.includes('react')) {
+      return;
+    }
+
+    if (jsRegex.test(id)) {
+      const parserPlugins = [
+        'jsx',
+        'importMeta',
+        'topLevelAwait',
+        'classProperties',
+        'classPrivateMethods',
+      ];
+      if (/\.tsx?$/.test(id)) {
+        // when routes file is a typescript file,
+        // add ts parser plugins
+        parserPlugins.push('typescript');
+        parserPlugins.push('decorators-legacy'); // allowing decorators by default
+      }
+      const { code, map } = transformSync(sourceCode, {
+        babelrc: false,
+        configFile: false,
+        filename: id,
+        parserOpts: {
+          sourceType: 'module',
+          allowAwaitOutsideFunction: true,
+          // ts syntax had already been transformed by swc plugin.
+          plugins: parserPlugins,
+        },
+        generatorOpts: {
+          decoratorsBeforeExport: true,
+        },
+        sourceFileName: id,
+        plugins: [
+          [require.resolve('babel-plugin-transform-jsx-stylesheet'), {
+            retainClassName: true,
+          }],
+          require.resolve('@babel/plugin-proposal-export-default-from'),
+        ],
+      });
+      return {
+        code,
+        map,
+      };
+    }
+  }];
+}
 
 export default plugin;
