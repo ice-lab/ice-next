@@ -31,10 +31,6 @@ import transformPrototypes from './prototypes';
 const NON_DIMENSIONAL_REG = /opa|ntw|ne[ch]|ex(?:s|g|n|p|$)|^ord|zoo|grid|orp|ows|mnc|^columns$|bs|erim|onit/i;
 
 function createInputCompat(type: string): Function {
-  if (type !== 'input' && type !== 'textarea') {
-    return () => { };
-  }
-
   function InputCompat(props: any, ref: RefObject<any>) {
     const { value, onInput, onChange, ...rest } = props;
     const [v, setV] = useState(value);
@@ -83,7 +79,9 @@ function createInputCompat(type: string): Function {
     });
   }
 
-  return _forwardRef(InputCompat);
+  const instance = useCallback(InputCompat, [type]);
+
+  return _forwardRef(instance);
 }
 
 /**
@@ -125,10 +123,8 @@ export function createElement<P extends {
   // User can modify value of props to modify native input value
   // and native input can also modify the value of self in Rax.
   // So we should compat input to InputCompat, the same as textarea.
-  const inputCompatInstance = useCallback(createInputCompat(type), [type]);
-
   if (type === 'input' || type === 'textarea') {
-    type = inputCompatInstance;
+    type = createInputCompat(type);
   }
 
   // Compat for visibility events.
