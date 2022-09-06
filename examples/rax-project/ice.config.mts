@@ -3,5 +3,5 @@ import compatRax from '@ice/plugin-rax-compat';
 
 export default defineConfig({
   publicPath: '/',
-  plugins: [compatRax({ inlineStyle: true })],
+  plugins: [compatRax()],
 });
