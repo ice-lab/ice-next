@@ -1,5 +1,5 @@
 export default function Home() {
   return (
-    <div>Jest Test</div>
+    <div>Vitest Test</div>
   );
 }

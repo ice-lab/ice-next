@@ -1,32 +1,50 @@
-import type { Config } from 'jest';
+import type { Config as JestConfig } from 'jest';
 import * as path from 'path';
 import fse from 'fs-extra';
-import createService from '../createService.js';
-import test from '../commands/test.js';
+import getTaskConfig from './getTaskConfig.js';
+import type { Config } from '@ice/types';
+import lodash from '@ice/bundles/compiled/lodash/index.js';
 
-export default function defineJestConfig(customConfig: Config = {}): () => Promise<Config> {
+const { merge } = lodash;
+
+type UserConfig = JestConfig | (() => Promise<JestConfig>);
+
+export default function defineJestConfig(userConfig: UserConfig): () => Promise<JestConfig> {
   return async () => {
-    const rootDir = process.cwd();
-    const { run } = await createService({
-      rootDir,
-      command: 'test',
-      commandArgs: {},
-    });
-    const { taskConfigs } = (await run()) as ReturnType<typeof test>;
-    const webTaskConfig = taskConfigs.find((taskConfig) => taskConfig.name === 'web');
-    const moduleNameMapper = {};
-    const { config: { alias = {} } } = webTaskConfig;
-    for (const key in alias) {
-      const aliasPath = alias[key];
-      if (aliasPath === false) {
-        continue
-      }
-      const isDir = path.isAbsolute(aliasPath) && fse.lstatSync(aliasPath).isDirectory();
-      moduleNameMapper[`^${key}${isDir ? '/(.*)' : ''}`] = `${aliasPath}${isDir ? '/$1' : ''}`;
+    let customConfig: JestConfig;
+    if (typeof userConfig === 'function') {
+      customConfig = await userConfig();
+    } else {
+      customConfig = userConfig;
     }
-    return {
-      moduleNameMapper,
-      ...customConfig,
-    }
+
+    const defaultConfig = await getDefaultConfig();
+
+    return merge(defaultConfig, customConfig);
   }
+}
+
+async function getDefaultConfig(): JestConfig {
+  const taskConfig = await getTaskConfig();
+  const { config: { alias = {} } } = taskConfig;
+
+  const moduleNameMapper = generateModuleNameMapper(alias);
+
+  return {
+    moduleNameMapper,
+  }
+}
+
+function generateModuleNameMapper(alias: Config['alias']) {
+  const moduleNameMapper = {};
+  for (const key in alias) {
+    const aliasPath = alias[key];
+    if (aliasPath === false) {
+      continue
+    }
+    const isDir = path.isAbsolute(aliasPath) && fse.lstatSync(aliasPath).isDirectory();
+    moduleNameMapper[`^${key}${isDir ? '/(.*)' : ''}`] = `${aliasPath}${isDir ? '/$1' : ''}`;
+  }
+
+  return moduleNameMapper;
 }
