@@ -62,8 +62,6 @@ describe('run client app', () => {
     addProvider(Provider);
   }
 
-  const Document = () => <html><div id="ice-container"></div></html>;
-
   const basicRoutes = [
     {
       id: 'home',
@@ -91,7 +89,6 @@ describe('run client app', () => {
     await runClientApp({
       app: {},
       routes: basicRoutes,
-      Document,
       runtimeModules: [serverRuntime],
       hydrate: false,
     });
@@ -103,7 +100,6 @@ describe('run client app', () => {
     await runClientApp({
       app: {},
       routes: basicRoutes,
-      Document,
       runtimeModules: [serverRuntime],
       hydrate: false,
     });
@@ -115,7 +111,6 @@ describe('run client app', () => {
     await runClientApp({
       app: {},
       routes: basicRoutes,
-      Document,
       runtimeModules: [serverRuntime, wrapperRuntime],
       hydrate: true,
     });
@@ -126,7 +121,6 @@ describe('run client app', () => {
     await runClientApp({
       app: {},
       routes: basicRoutes,
-      Document,
       runtimeModules: [serverRuntime, providerRuntmie],
       hydrate: true,
     });
@@ -137,7 +131,6 @@ describe('run client app', () => {
     await runClientApp({
       app: {},
       routes: [],
-      Document,
       runtimeModules: [serverRuntime],
       hydrate: false,
     });
@@ -166,7 +159,6 @@ describe('run client app', () => {
         }
       },
       routes,
-      Document,
       runtimeModules: [serverRuntime],
       hydrate: true,
     });
@@ -178,7 +170,6 @@ describe('run client app', () => {
         }
       },
       routes,
-      Document,
       runtimeModules: [serverRuntime],
       hydrate: true,
     });
@@ -207,7 +198,6 @@ describe('run client app', () => {
       app: {
       },
       routes,
-      Document,
       runtimeModules: [serverRuntime],
       hydrate: true,
       memoryRouter: true,
@@ -226,7 +216,6 @@ describe('run client app', () => {
         }
       },
       routes: basicRoutes,
-      Document,
       runtimeModules: [serverRuntime],
       hydrate: true,
     });
@@ -243,7 +232,6 @@ describe('run client app', () => {
         },
       },
       routes: basicRoutes,
-      Document,
       runtimeModules: [serverRuntime],
       hydrate: false,
     });
@@ -270,7 +258,6 @@ describe('run client app', () => {
         },
       },
       routes: basicRoutes,
-      Document,
       runtimeModules: [serverRuntime],
       hydrate: false,
     });
@@ -304,7 +291,6 @@ describe('run client app', () => {
           getData: async () => ({ data: 'test'}),
         }),
       }],
-      Document,
       runtimeModules: [serverRuntime],
       hydrate: false,
     });
