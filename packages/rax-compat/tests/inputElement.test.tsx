@@ -1,5 +1,5 @@
 import React from 'react';
-import { expect, it, describe } from 'vitest';
+import { expect, it, describe, vi } from 'vitest';
 import { Component, useState } from '../src/index';
 import { createElement } from '../src/create-element';
 import { render } from '@testing-library/react';
@@ -65,6 +65,35 @@ describe('inputElement', () => {
     setTimeout(() => {
       // Wait for click handler.
       expect(node?.getAttribute('date-value')).toBe('val');
+    }, 0);
+  });
+
+  it('should work with onChange', () => {
+    const obj = {
+      handleChange: () => console.log('change'),
+    }
+    const change = vi.spyOn(obj, 'handleChange');
+
+    function TestInput() {
+      const [val, setVal] = useState('input value');
+
+      return <div>
+        <input
+          data-testid="changeInput"
+          value={val}
+          onChange={obj.handleChange}
+        />
+      </div>;
+    }
+
+    const wrapper = render(createElement(TestInput));
+
+    const node = wrapper.queryByTestId('changeInput');
+    node?.dispatchEvent('change');
+
+    setTimeout(() => {
+      // Wait for click handler.
+      expect(change).toHaveBeenCalled()
     }, 0);
   });
 });
