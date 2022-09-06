@@ -1,5 +1,6 @@
 import type {
   Attributes,
+  ChangeEvent,
   FunctionComponent,
   ReactElement,
   ReactNode,
@@ -38,7 +39,6 @@ function createInputCompat(type: string) {
 
       // Event of onInput should be native event.
       onInput && onInput(event.nativeEvent);
-      onChange && onChange(event);
     }, [onInput]);
 
     // Compat maxlength in rax-textinput, because maxlength is invalid props in web,it will be set attributes to element
@@ -49,6 +49,23 @@ function createInputCompat(type: string) {
       rest.maxLength = rest.maxlength;
       delete rest.maxlength;
     }
+
+    // The onChange event is SyntheticEvent in React but it is dom event in Rax, so it need compat onChange.
+    useEffect(() => {
+      function changeEventListener(event: ChangeEvent) {
+        onChange(event);
+      }
+
+      if (ref && ref.current && onChange) {
+        ref.current.addEventListener('change', changeEventListener);
+      }
+
+      return () => {
+        if (ref && ref.current && onChange) {
+          ref.current.removeEventListener('change', changeEventListener);
+        }
+      };
+    }, [ref, onChange]);
 
     return _createElement(type, {
       ...rest,
