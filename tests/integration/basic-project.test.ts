@@ -83,21 +83,15 @@ describe(`start ${example}`, () => {
   test('update route', async () => {
     const targetPath = path.join(rootDir, 'src/pages/blog.tsx');
     const routeContent = fs.readFileSync(targetPath, 'utf-8');
-    fs.unlinkSync(targetPath);
-    await page.reload();
-    let routeManifest = fs.readFileSync(path.join(rootDir, '.ice/route-manifest.json'), 'utf-8');
+    const routeManifest = fs.readFileSync(path.join(rootDir, '.ice/route-manifest.json'), 'utf-8');
     fs.writeFileSync(targetPath, routeContent);
-    expect(JSON.parse(routeManifest)[0].children.length).toBe(2);
     await page.reload();
-    routeManifest = fs.readFileSync(path.join(rootDir, '.ice/route-manifest.json'), 'utf-8');
     expect(JSON.parse(routeManifest)[0].children.length).toBe(3);
   }, 120000);
 
   test('update watched file: global.css', async () => {
     const targetPath = path.join(rootDir, 'src/global.css');
     const cssContent = fs.readFileSync(targetPath, 'utf-8');
-    fs.unlinkSync(targetPath);
-    await page.reload();
     fs.writeFileSync(targetPath, cssContent);
     await page.reload();
   });
