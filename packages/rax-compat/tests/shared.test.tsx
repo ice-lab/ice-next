@@ -17,19 +17,11 @@ describe('render', () => {
   });
 
   it('flattenChildren common', () => {
-    expect(shared.flattenChildren({
-      key: '1',
-      type: 'h2',
-      props: {},
-    })).toBe({
-      key: '1',
-      type: 'h2',
-      props: {},
-    });
+    expect(shared.flattenChildren(<>div</>)).toBe(<React.Fragment>div</React.Fragment>);
   });
 
   it('flattenChildren array', () => {
     const children = [[[<>div</>]]];
-    expect(shared.flattenChildren(children)).toBe((<React.Fragment>div</React.Fragment>));
+    expect(shared.flattenChildren(children)).toBe(<React.Fragment>div</React.Fragment>);
   });
 });

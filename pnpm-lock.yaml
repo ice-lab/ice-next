@@ -76,6 +76,35 @@ importers:
       typescript: 4.7.4
       vitest: 0.15.2_c8@7.12.0+jsdom@20.0.0
 
+  examples/app-config:
+    specifiers:
+      '@ice/app': workspace:*
+      '@ice/plugin-auth': workspace:*
+      '@ice/plugin-rax-compat': workspace:*
+      '@ice/runtime': workspace:*
+      '@types/react': ^18.0.0
+      '@types/react-dom': ^18.0.2
+      '@uni/env': ^1.1.0
+      ahooks: ^3.3.8
+      react: ^18.0.0
+      react-dom: ^18.0.0
+      speed-measure-webpack-plugin: ^1.5.0
+      webpack: ^5.73.0
+    dependencies:
+      '@ice/app': link:../../packages/ice
+      '@ice/plugin-auth': link:../../packages/plugin-auth
+      '@ice/plugin-rax-compat': link:../../packages/plugin-rax-compat
+      '@ice/runtime': link:../../packages/runtime
+      '@uni/env': 1.1.0
+      ahooks: 3.4.1_react@18.2.0
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    devDependencies:
+      '@types/react': 18.0.17
+      '@types/react-dom': 18.0.6
+      speed-measure-webpack-plugin: 1.5.0_webpack@5.74.0
+      webpack: 5.74.0
+
   examples/basic-project:
     specifiers:
       '@ice/app': workspace:*
