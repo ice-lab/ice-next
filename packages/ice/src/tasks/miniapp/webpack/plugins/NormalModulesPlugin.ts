@@ -4,12 +4,15 @@ import * as walk from 'acorn-walk';
 import SingleEntryDependency from '../dependencies/SingleEntryDependency.js';
 import { componentConfig } from '../template/component.js';
 import onParseCreateElement from '../../html/index.js';
-import NormalModule from './NormalModule.js';
+import NormalModule, { registerSerialization } from './NormalModule.js';
 
 
 const PLUGIN_NAME = 'NormalModulesPlugin';
 
 export default class NormalModulesPlugin {
+  constructor() {
+    registerSerialization();
+  }
   apply(compiler: webpack.Compiler) {
     compiler.hooks.compilation.tap(PLUGIN_NAME, (_, { normalModuleFactory }) => {
       normalModuleFactory.hooks.createModule.tapPromise(PLUGIN_NAME, (data, { dependencies }) => {

@@ -24,30 +24,33 @@ export default class NormalModule extends webpack.NormalModule {
   }
 }
 
-webpack.util.serialization.register(NormalModule, '@ice/app/esm/tasks/miniapp/webpack/plugins/NormalModule', 'NormalModule', {
-  serialize(obj, context) {
-    obj.serialize(context);
-  },
-  deserialize(context) {
-    const obj = new NormalModule({
-      // will be deserialized by Module
-      layer: null,
-      type: '',
-      // will be filled by updateCacheModule
-      resource: '',
-      context: '',
-      request: null,
-      userRequest: null,
-      rawRequest: null,
-      loaders: null,
-      matchResource: null,
-      parser: null,
-      parserOptions: null,
-      generator: null,
-      generatorOptions: null,
-      resolveOptions: null,
-    });
-    obj.deserialize(context);
-    return obj;
-  },
-});
+export function registerSerialization() {
+  webpack.util.serialization.register(NormalModule, '@ice/app/esm/tasks/miniapp/webpack/plugins/NormalModule', 'NormalModule', {
+    serialize(obj, context) {
+      obj.serialize(context);
+    },
+    deserialize(context) {
+      const obj = new NormalModule({
+        // will be deserialized by Module
+        layer: null,
+        type: '',
+        // will be filled by updateCacheModule
+        resource: '',
+        context: '',
+        request: null,
+        userRequest: null,
+        rawRequest: null,
+        loaders: null,
+        matchResource: null,
+        parser: null,
+        parserOptions: null,
+        generator: null,
+        generatorOptions: null,
+        resolveOptions: null,
+      });
+      obj.deserialize(context);
+      return obj;
+    },
+  });
+}
+
