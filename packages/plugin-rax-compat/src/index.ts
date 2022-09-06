@@ -29,6 +29,22 @@ const ruleSetStylesheet = {
   ],
 };
 
+const ruleSetStylesheetForLess = {
+  test: /\.less$/i,
+  use: [
+    {
+      loader: require.resolve('stylesheet-loader'),
+      options: {},
+    },
+    {
+      loader: require.resolve('@ice/bundles/compiled/less-loader'),
+      options: {
+        lessOptions: { javascriptEnabled: true },
+      },
+    },
+  ],
+};
+
 let warnOnce = false;
 
 export interface CompatRaxOptions {
@@ -76,13 +92,23 @@ const plugin: Plugin<CompatRaxOptions> = (options = {}) => ({
             for (let i = 0, l = rules.length; i < l; i++) {
               const rule: RuleSetRule | any = rules[i];
               // Find the css rule, that default to CSS Modules.
-              if (rule.test && rule.test.source.indexOf('.css') > -1) {
+              if (rule.test && rule.test.source && rule.test.source.indexOf('.css') > -1) {
                 rule.test = /\.module\.css$/i;
                 rules[i] = {
                   test: /\.css$/i,
                   oneOf: [
                     rule,
                     ruleSetStylesheet,
+                  ],
+                };
+              }
+
+              // Find and replace the less rule
+              if (rule.test && rule.test.source && rule.test.source.indexOf('.less') > -1) {
+                rules[i] = {
+                  test: /\.less$/i,
+                  oneOf: [
+                    ruleSetStylesheetForLess,
                   ],
                 };
               }
