@@ -51,6 +51,15 @@ describe('run client app', () => {
       return <div>{children}</div>;
     };
     addWrapper(RouteWrapper, true);
+  };
+
+  const providerRuntmie = async ({ addProvider }) => {
+    const Provider = ({children}) => {
+      return <div>{children}</div>;
+    };
+    addProvider(Provider);
+    // Add twice.
+    addProvider(Provider);
   }
 
   const Document = () => <html><div id="ice-container"></div></html>;
@@ -111,6 +120,17 @@ describe('run client app', () => {
       hydrate: true,
     });
     expect(domstring).toBe('<div><div>home</div></div>');
+  });
+
+  it('run client with app provider', async () => {
+    await runClientApp({
+      app: {},
+      routes: basicRoutes,
+      Document,
+      runtimeModules: [serverRuntime, providerRuntmie],
+      hydrate: true,
+    });
+    expect(domstring).toBe('<div><div><div>home</div></div></div>');
   });
 
   it('run client with empty route', async () => {

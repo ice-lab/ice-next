@@ -41,7 +41,7 @@ export default function App(props: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
-
+  console.log('routes', routes, basename);
   const ErrorBoundary = errorBoundary ? AppErrorBoundary : React.Fragment;
 
   let element: React.ReactNode = (
