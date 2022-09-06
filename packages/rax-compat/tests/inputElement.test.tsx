@@ -10,14 +10,13 @@ describe('inputElement', () => {
       const [val, setVal] = useState('input value');
       return <div>
         <input
-          data-testid="TextComponent"
+          data-testid="inputValue"
           value={val}
         />
 
         <div
-          data-testid="clickDiv"
+          data-testid="inputValueDiv"
           onClick={() => {
-            console.log('click')
             setVal('111');
           }}
         >
@@ -27,12 +26,45 @@ describe('inputElement', () => {
     }
 
     const wrapper = render(createElement(TestInput));
-    wrapper.queryByTestId('clickDiv')?.click();
-    const node = wrapper.queryByTestId('TextComponent');
+    wrapper.queryByTestId('inputValueDiv')?.click();
+    const node = wrapper.queryByTestId('inputValue');
 
     setTimeout(() => {
       // Wait for click handler.
       expect(node.value).toBe('111');
+    }, 0);
+  });
+
+  it('inputElement should not recreate when update props', () => {
+    function TestInput() {
+      const [val, setVal] = useState('input value');
+      return <div>
+        <input
+          data-testid="sameInput"
+          value={val}
+        />
+
+        <div
+          data-testid="sameInputDiv"
+          onClick={() => {
+            setVal('111');
+          }}
+        >
+          click me...
+        </div>
+      </div>;
+    }
+
+    const wrapper = render(createElement(TestInput));
+
+    const node = wrapper.queryByTestId('sameInput');
+    node?.setAttribute('date-value', 'val');
+
+    wrapper.queryByTestId('sameInputDiv')?.click();
+
+    setTimeout(() => {
+      // Wait for click handler.
+      expect(node?.getAttribute('date-value')).toBe('val');
     }, 0);
   });
 });
