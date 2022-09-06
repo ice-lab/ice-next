@@ -193,7 +193,6 @@ describe('routes', () => {
       path: '/',
       id: 'home',
       componentName: 'home',
-      index: 0,
     }]);
     expect(routeElement).toEqual([{
       componentName: 'home',
@@ -206,7 +205,6 @@ describe('routes', () => {
       ),
       id: 'home',
       path: '/',
-      index: 0,
     }]);
   });
 
@@ -215,13 +213,11 @@ describe('routes', () => {
       path: '/',
       id: 'home',
       componentName: 'home',
-      index: 0,
       children: [{
         path: '/about',
         id: 'about',
         componentName: 'about',
-        index: 1,
-      }]
+      }],
     }]);
     expect(routeElement).toEqual([{
       componentName: 'home',
@@ -243,11 +239,9 @@ describe('routes', () => {
         ),
         id: 'about',
         path: '/about',
-        index: 1,
       }],
       id: 'home',
       path: '/',
-      index: 0,
     }]);
   });
 
