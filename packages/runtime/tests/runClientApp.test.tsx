@@ -69,6 +69,7 @@ describe('run client app', () => {
       componentName: 'Home',
       load: async () => ({
         default: () => {
+          // eslint-disable-next-line react-hooks/rules-of-hooks
           const appData = useAppData();
           return (
             <div>home{appData?.msg || ''}</div>
@@ -281,7 +282,9 @@ describe('run client app', () => {
         componentName: 'Home',
         load: async () => ({
           default: () => {
+            // eslint-disable-next-line react-hooks/rules-of-hooks
             const config = useConfig();
+            // eslint-disable-next-line react-hooks/rules-of-hooks
             const data = useData();
             return (
               <div>home{data?.data}{config.title}</div>

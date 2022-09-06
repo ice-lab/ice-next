@@ -1,4 +1,4 @@
-import React, { type ReactElement } from 'react';
+import React from 'react';
 import { expect, it, describe } from 'vitest';
 import { shared } from '../src/index';
 

@@ -1,5 +1,5 @@
 import { expect, it, describe, vi } from 'vitest';
-import React, { Children } from 'react';
+import React from 'react';
 import { render } from '@testing-library/react';
 import { useRef, useEffect } from '../src/index';
 import { createElement } from '../src/create-element';

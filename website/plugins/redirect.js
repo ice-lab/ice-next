@@ -1,7 +1,7 @@
-module.exports = function (context, options) {
+module.exports = function () {
   return {
     name: 'docusaurus-redirect-plugin',
-    async contentLoaded({ content, actions }) {
+    async contentLoaded({ actions }) {
       const { createData, addRoute } = actions;
 
       const routes = [

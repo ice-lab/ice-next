@@ -13,7 +13,7 @@ import {
 describe('hooks', () => {
   it('useState', () => {
     function App() {
-      const [state, setState] = useState({ text: 'text' });
+      const [state] = useState({ text: 'text' });
       expect(state.text).toBe('text');
       return <div>{state.text}</div>;
     }
@@ -30,7 +30,7 @@ describe('hooks', () => {
           setLoading(false);
           expect(loading).toBe(false);
         }, 1);
-      }, []);
+      }, [loading]);
       return <div>{loading ? 'loading...' : 'load end'}</div>;
     }
 
