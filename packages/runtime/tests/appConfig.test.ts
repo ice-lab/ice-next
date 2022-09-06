@@ -11,7 +11,7 @@ describe('AppConfig', () => {
       },
       auth: {},
     })
-    expect(appConfig).toBe({
+    expect(appConfig).toStrictEqual({
       app: {
         rootId: 'app',
         strict: false,
@@ -19,7 +19,6 @@ describe('AppConfig', () => {
       router: {
         type: 'browser',
       },
-      auth: {},
     });
   })
 
