@@ -71,7 +71,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
     routesData = await loadRoutesData(matches, requestContext, routeModules);
   }
   if (!routesConfig) {
-    routesConfig = getRoutesConfig(matches, routesConfig, routeModules);
+    routesConfig = getRoutesConfig(matches, routesData, routeModules);
   }
 
   const appContext: AppContext = {
@@ -113,7 +113,6 @@ async function render({ history, runtime, Document }: RenderOptions) {
   const AppProvider = runtime.composeAppProvider() || React.Fragment;
   const RouteWrappers = runtime.getWrappers();
   const AppRouter = runtime.getAppRouter();
-
 
   render(
     document.getElementById(appConfig.app.rootId),
@@ -232,7 +231,7 @@ function BrowserEntry({
  * Prepare for the next pages.
  * Load modules、getPageData and preLoad the custom assets.
  */
-async function loadNextPage(
+export async function loadNextPage(
   currentMatches: RouteMatch[],
   preRouteState: RouteState,
 ) {
