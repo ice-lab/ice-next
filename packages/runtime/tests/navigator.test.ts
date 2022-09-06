@@ -8,50 +8,26 @@ describe('mock server navigator', () => {
   });
 
   it('push', () => {
-    try {
-      staticNavigator.push('/');
-    } catch(err) {
-      expect(true).toBe(true);
-    }
+    expect(() => staticNavigator.push('/')).toThrow();
   });
 
   it('replace', () => {
-    try {
-      staticNavigator.replace('/');
-    } catch(err) {
-      expect(true).toBe(true);
-    }
+    expect(() => staticNavigator.replace('/')).toThrow();
   });
 
   it('go', () => {
-    try {
-      staticNavigator.go(1);
-    } catch(err) {
-      expect(true).toBe(true);
-    }
+    expect(() => staticNavigator.go(1)).toThrow();
   });
 
   it('back', () => {
-    try {
-      staticNavigator.back();
-    } catch(err) {
-      expect(true).toBe(true);
-    }
+    expect(() => staticNavigator.back()).toThrow();
   });
 
   it('forward', () => {
-    try {
-      staticNavigator.forward();
-    } catch(err) {
-      expect(true).toBe(true);
-    }
+    expect(() => staticNavigator.forward()).toThrow();
   });
 
   it('block', () => {
-    try {
-      staticNavigator.block();
-    } catch(err) {
-      expect(true).toBe(true);
-    }
+    expect(() => staticNavigator.block()).toThrow();
   });
 });

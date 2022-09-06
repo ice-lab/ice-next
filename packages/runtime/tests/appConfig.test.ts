@@ -7,10 +7,10 @@ describe('AppConfig', () => {
       default: {
         app: {
           rootId: 'app',
-        }
+        },
       },
       auth: {},
-    })
+    });
     expect(appConfig).toStrictEqual({
       app: {
         rootId: 'app',
@@ -20,7 +20,7 @@ describe('AppConfig', () => {
         type: 'browser',
       },
     });
-  })
+  });
 
   it('defineAppConfig', () => {
     const appConfig = {};

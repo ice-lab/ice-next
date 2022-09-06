@@ -1,10 +1,11 @@
-import { expect, test, describe, afterAll } from 'vitest';
 import * as path from 'path';
 import * as fs from 'fs';
 import { fileURLToPath } from 'url';
+import { expect, test, describe, afterAll } from 'vitest';
 import { buildFixture, setupBrowser } from '../utils/build';
 import { startFixture, setupStartBrowser } from '../utils/start';
-import Browser, { Page } from '../utils/browser';
+import type { Page } from '../utils/browser';
+import type Browser from '../utils/browser';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -44,7 +45,7 @@ describe(`build ${example}`, () => {
 
   test('disable splitChunks', async () => {
     await buildFixture(example, {
-      config: 'splitChunks.config.mts'
+      config: 'splitChunks.config.mts',
     });
     const res = await setupBrowser({ example });
     page = res.page;
@@ -105,30 +106,30 @@ describe(`start ${example}`, () => {
 
   test('should update config during client routing', async () => {
     expect(
-      await page.title()
+      await page.title(),
     ).toBe('Home');
 
     expect(
-      await page.$$attr('meta[name="theme-color"]', 'content')
+      await page.$$attr('meta[name="theme-color"]', 'content'),
     ).toStrictEqual(['#000']);
 
     await page.push('about');
     await page.waitForNetworkIdle();
 
     expect(
-      await page.title()
+      await page.title(),
     ).toBe('About');
 
     expect(
-      await page.$$attr('meta[name="theme-color"]', 'content')
+      await page.$$attr('meta[name="theme-color"]', 'content'),
     ).toStrictEqual(['#eee']);
 
     expect(
-      await page.$$eval('link[href*="bootstrap"]', (els) => els.length)
+      await page.$$eval('link[href*="bootstrap"]', (els) => els.length),
     ).toBe(1);
 
     expect(
-      await page.$$eval('script[src*="lodash"]', (els) => els.length)
+      await page.$$eval('script[src*="lodash"]', (els) => els.length),
     ).toBe(1);
   }, 120000);
 

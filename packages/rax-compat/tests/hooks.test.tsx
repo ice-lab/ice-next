@@ -1,5 +1,6 @@
 import { expect, it, describe, vi } from 'vitest';
 import React from 'react';
+import { render } from '@testing-library/react';
 import {
   useState,
   useEffect,
@@ -8,7 +9,6 @@ import {
   useContext,
   useRef,
 } from '../src/hooks';
-import { render } from '@testing-library/react';
 
 describe('hooks', () => {
   it('useState', () => {
@@ -41,11 +41,11 @@ describe('hooks', () => {
     let useEffectFunc = vi.spyOn({
       func: () => {
         expect(useEffectFunc).toHaveBeenCalled();
-      }
-    }, 'func')
+      },
+    }, 'func');
     function App() {
       useEffect(useEffectFunc, []);
-      
+
       return <div>useEffect</div>;
     }
 
@@ -56,11 +56,11 @@ describe('hooks', () => {
     let useEffectFunc = vi.spyOn({
       func: () => {
         expect(useEffectFunc).toHaveBeenCalled();
-      }
-    }, 'func')
+      },
+    }, 'func');
     function App() {
       useLayoutEffect(useEffectFunc, []);
-      
+
       return <div>useEffect</div>;
     }
 
@@ -69,7 +69,7 @@ describe('hooks', () => {
 
   it('useContext', () => {
     const Context = createContext({
-      theme: 'dark'
+      theme: 'dark',
     });
     function App() {
       const context = useContext(Context);
@@ -79,7 +79,7 @@ describe('hooks', () => {
     const wrapper = render(<App />);
     wrapper.findAllByText('dark').then((res) => {
       expect(res.length).toBe(1);
-    });    
+    });
   });
 
   it('useRef', () => {
@@ -87,15 +87,14 @@ describe('hooks', () => {
       const inputEl = useRef(null);
       useEffect(() => {
         expect(inputEl.current).instanceOf(Element);
-      })
+      });
       return (
-      <>
-        <input ref={inputEl} type="text" />
-      </>
+        <>
+          <input ref={inputEl} type="text" />
+        </>
       );
     }
 
     render(<TextInputWithFocusButton />);
   });
-
 });

@@ -17,15 +17,15 @@ import {
 describe('single route api', () => {
   it('useRoutes', () => {
     expect(useRoutes([{ element: <div>test</div> }])).toStrictEqual(
-    <React.Fragment>
-      <div>
-        test
-      </div>
-    </React.Fragment>);
+      <React.Fragment>
+        <div>
+          test
+        </div>
+      </React.Fragment>);
   });
 
   it('Router', () => {
-    expect(Router({ children: <div>test</div>})).toStrictEqual(
+    expect(Router({ children: <div>test</div> })).toStrictEqual(
       <React.Fragment>
         <div>
           test
@@ -46,7 +46,7 @@ describe('single route api', () => {
   });
 
   it('Outlet', () => {
-    expect(Outlet()).toStrictEqual(<React.Fragment></React.Fragment>);
+    expect(Outlet()).toStrictEqual(<React.Fragment />);
   });
 
   it('useParams', () => {

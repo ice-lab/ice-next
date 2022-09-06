@@ -1,7 +1,8 @@
 import { expect, test, describe, afterAll } from 'vitest';
 import { buildFixture, setupBrowser } from '../utils/build';
 import { startFixture, setupStartBrowser } from '../utils/start';
-import Browser, { Page } from '../utils/browser';
+import type { Page } from '../utils/browser';
+import type Browser from '../utils/browser';
 
 const example = 'app-config';
 

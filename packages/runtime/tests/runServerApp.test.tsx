@@ -17,9 +17,9 @@ describe('run server app', () => {
           );
         },
         getConfig: () => ({ title: 'home' }),
-        getData: async () => ({ data: 'test'}),
+        getData: async () => ({ data: 'test' }),
       }),
-    }
+    },
   ];
 
   const assetsManifest = {
@@ -53,7 +53,7 @@ describe('run server app', () => {
       // @ts-ignore
       req: {
         url: '/home',
-      }
+      },
     }, {
       app: {},
       assetsManifest,
@@ -73,7 +73,7 @@ describe('run server app', () => {
       // @ts-ignore
       req: {
         url: '/home',
-      }
+      },
     }, {
       app: {},
       assetsManifest,
@@ -81,7 +81,7 @@ describe('run server app', () => {
       routes: basicRoutes,
       Document,
       renderMode: 'SSR',
-      basename: '/ice'
+      basename: '/ice',
     });
     // @ts-ignore
     expect(html?.statusCode).toBe(404);
@@ -92,7 +92,7 @@ describe('run server app', () => {
       // @ts-ignore
       req: {
         url: '/home',
-      }
+      },
     }, {
       app: {},
       assetsManifest,
@@ -101,7 +101,7 @@ describe('run server app', () => {
       Document,
       renderMode: 'SSR',
       serverOnlyBasename: '/',
-      basename: '/ice'
+      basename: '/ice',
     });
     // @ts-ignore
     expect(html?.statusCode).toBe(200);
@@ -112,7 +112,7 @@ describe('run server app', () => {
       // @ts-ignore
       req: {
         url: '/about',
-      }
+      },
     }, {
       app: {},
       assetsManifest,
@@ -129,14 +129,14 @@ describe('run server app', () => {
       // @ts-ignore
       req: {
         url: '/home',
-      }
+      },
     }, {
       app: {
         default: {
           router: {
-            type: 'hash'
-          }
-        }
+            type: 'hash',
+          },
+        },
       },
       assetsManifest,
       runtimeModules: [],
@@ -154,7 +154,7 @@ describe('run server app', () => {
       // @ts-ignore
       req: {
         url: '/home',
-      }
+      },
     }, {
       app: {},
       assetsManifest,
@@ -178,7 +178,7 @@ describe('run server app', () => {
     expect(html?.value?.includes('<div>home</div>')).toBe(false);
     // @ts-ignore
     expect(html?.value?.includes('js/home.js')).toBe(true);
-  })
+  });
 
   it('render to response', async () => {
     let htmlContent = '';
@@ -194,8 +194,8 @@ describe('run server app', () => {
         // @ts-ignore
         end: (content) => {
           htmlContent = content;
-        }
-      }
+        },
+      },
     }, {
       app: {},
       assetsManifest,
@@ -209,4 +209,4 @@ describe('run server app', () => {
     expect(!!htmlContent).toBe(true);
     expect(htmlContent.includes('<div>home</div')).toBe(false);
   });
-})
+});

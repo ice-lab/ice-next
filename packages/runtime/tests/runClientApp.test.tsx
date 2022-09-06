@@ -19,7 +19,7 @@ describe('run client app', () => {
     process.env.ICE_CORE_ROUTER = 'true';
     windowSpy = vi.spyOn(global, 'window', 'get');
     documentSpy = vi.spyOn(global, 'document', 'get');
-    
+
     windowSpy.mockImplementation(() => mockData);
     documentSpy.mockImplementation(() => ({
       head: {
@@ -38,7 +38,7 @@ describe('run client app', () => {
 
   let domstring = '';
 
-  const serverRuntime = async ({setRender}) => {
+  const serverRuntime = async ({ setRender }) => {
     setRender((container, element) => {
       try {
         domstring = renderToString(element as any);
@@ -47,20 +47,20 @@ describe('run client app', () => {
   };
 
   const wrapperRuntime = async ({ addWrapper }) => {
-    const RouteWrapper = ({children}) => {
+    const RouteWrapper = ({ children }) => {
       return <div>{children}</div>;
     };
     addWrapper(RouteWrapper, true);
   };
 
   const providerRuntmie = async ({ addProvider }) => {
-    const Provider = ({children}) => {
+    const Provider = ({ children }) => {
       return <div>{children}</div>;
     };
     addProvider(Provider);
     // Add twice.
     addProvider(Provider);
-  }
+  };
 
   const basicRoutes = [
     {
@@ -75,9 +75,9 @@ describe('run client app', () => {
           );
         },
         getConfig: () => ({ title: 'home' }),
-        getData: async () => ({ data: 'test'}),
+        getData: async () => ({ data: 'test' }),
       }),
-    }
+    },
   ];
 
   it('run client basic', async () => {
@@ -85,7 +85,7 @@ describe('run client app', () => {
       ...mockData,
       location: new URL('http://localhost:4000/?test=1&runtime=true&baisc'),
     }));
-    
+
     await runClientApp({
       app: {},
       routes: basicRoutes,
@@ -154,20 +154,20 @@ describe('run client app', () => {
         default: {
           router: {
             type: 'memory',
-            initialEntries: ['/about']
-          }
-        }
+            initialEntries: ['/about'],
+          },
+        },
       },
       routes,
       runtimeModules: [serverRuntime],
       hydrate: true,
     });
-    
+
     expect(domstring).toBe('<div>about</div>');
     await runClientApp({
       app: {
         default: {
-        }
+        },
       },
       routes,
       runtimeModules: [serverRuntime],
@@ -202,7 +202,7 @@ describe('run client app', () => {
       hydrate: true,
       memoryRouter: true,
     });
-    
+
     expect(domstring).toBe('<div>about</div>');
   });
 
@@ -212,8 +212,8 @@ describe('run client app', () => {
         default: {
           router: {
             type: 'hash',
-          }
-        }
+          },
+        },
       },
       routes: basicRoutes,
       runtimeModules: [serverRuntime],
@@ -249,7 +249,7 @@ describe('run client app', () => {
         return { msg: '-globalData' };
       },
     }));
-    
+
     await runClientApp({
       app: {
         getAppData: async () => {
@@ -272,8 +272,8 @@ describe('run client app', () => {
         default: {
           app: {
             errorBoundary: true,
-          }
-        }
+          },
+        },
       },
       routes: [{
         id: 'home',
@@ -288,7 +288,7 @@ describe('run client app', () => {
             );
           },
           getConfig: () => ({ title: 'home' }),
-          getData: async () => ({ data: 'test'}),
+          getData: async () => ({ data: 'test' }),
         }),
       }],
       runtimeModules: [serverRuntime],
@@ -301,13 +301,13 @@ describe('run client app', () => {
     const homePage = {
       default: () => <></>,
       getConfig: () => ({ title: 'home' }),
-      getData: async () => ({ type: 'getDataHome'}),
+      getData: async () => ({ type: 'getDataHome' }),
     };
     const aboutPage = {
       default: () => <></>,
       getConfig: () => ({ title: 'about' }),
-      getData: async () => ({ type: 'getDataAbout'}),
-    }
+      getData: async () => ({ type: 'getDataAbout' }),
+    };
     const mockedModules = [
       {
         id: 'home',
@@ -320,25 +320,25 @@ describe('run client app', () => {
         load: async () => {
           return aboutPage;
         },
-      }
+      },
     ];
     const { routesData, routesConfig, routeModules } = await loadNextPage(
       // @ts-ignore
-      [{ route: mockedModules[0]}],
+      [{ route: mockedModules[0] }],
       {
         // @ts-ignore
-        matches: [{route: mockedModules[1]}],
+        matches: [{ route: mockedModules[1] }],
         routesData: {},
         routeModules: {},
       },
     );
     expect(routesData).toStrictEqual({
-      home: { type: 'getDataHome'},
+      home: { type: 'getDataHome' },
     });
     expect(routesConfig).toStrictEqual({
       home: {
         title: 'home',
-      }
+      },
     });
     expect(routeModules).toStrictEqual({
       home: homePage,

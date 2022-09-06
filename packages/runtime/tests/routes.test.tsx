@@ -1,9 +1,9 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { expect, it, describe, beforeEach, afterEach, vi } from 'vitest';
+import type { RouteComponent as IRouteComponent } from '@ice/types/esm/runtime';
 import RouteWrapper from '../src/RouteWrapper';
 import { AppContextProvider } from '../src/AppContext';
-import type { RouteComponent as IRouteComponent } from '@ice/types/esm/runtime';
 import {
   filterMatchesToLoad,
   createRouteElements,
@@ -27,14 +27,14 @@ describe('routes', () => {
   const homeItem = {
     default: () => <></>,
     getConfig: () => ({ title: 'home' }),
-    getData: async () => ({ type: 'getData'}),
-    getServerData: async () => ({ type: 'getServerData'}),
-    getStaticData: async () => ({ type: 'getStaticData'}),
+    getData: async () => ({ type: 'getData' }),
+    getServerData: async () => ({ type: 'getServerData' }),
+    getStaticData: async () => ({ type: 'getStaticData' }),
   };
   const aboutItem = {
     default: () => <></>,
     getConfig: () => ({ title: 'about' }),
-  }
+  };
   const routeModules = [
     {
       id: 'home',
@@ -47,19 +47,20 @@ describe('routes', () => {
       load: async () => {
         return aboutItem as IRouteComponent;
       },
-    }
+    },
   ];
 
   it('route Component', () => {
-    const domstring =  renderToString(
+    const domstring = renderToString(
       // @ts-ignore
       <AppContextProvider value={{ routeModules: {
         home: {
-          default: () => <div>home</div>
-        }
-      }}}>
+          default: () => <div>home</div>,
+        },
+      } }}
+      >
         <RouteComponent id="home" />
-      </AppContextProvider>
+      </AppContextProvider>,
     );
     expect(domstring).toBe('<div>home</div>');
   });
@@ -67,22 +68,18 @@ describe('routes', () => {
   it('route error', () => {
     const currentEnv = process.env.NODE_ENV;
     process.env.NODE_ENV = 'development';
-    try {
-      const domstring =  renderToString(
-        // @ts-ignore
-        <AppContextProvider value={{ routeModules: {}}}>
-          <RouteComponent id="home" />
-        </AppContextProvider>
-      );
-    } catch (err) {
-      expect(!!err).toBe(true);
-    }
+    expect(() => renderToString(
+      // @ts-ignore
+      <AppContextProvider value={{ routeModules: {} }}>
+        <RouteComponent id="home" />
+      </AppContextProvider>,
+    )).toThrow();
     process.env.NODE_ENV = currentEnv;
-  })
+  });
 
   it('load route modules', async () => {
     windowSpy.mockImplementation(() => ({}));
-    const routeModule = await loadRouteModules(routeModules, { home : homeItem });
+    const routeModule = await loadRouteModules(routeModules, { home: homeItem });
     expect(routeModule).toStrictEqual({
       home: homeItem,
       about: aboutItem,
@@ -99,7 +96,7 @@ describe('routes', () => {
       },
     }], {});
     expect(routeModule).toStrictEqual({
-      error: undefined
+      error: undefined,
     });
   });
 
@@ -129,23 +126,23 @@ describe('routes', () => {
     expect(routesDataSSG).toStrictEqual({
       home: {
         type: 'getStaticData',
-      }
+      },
     });
     expect(routesDataSSR).toStrictEqual({
       home: {
         type: 'getServerData',
-      }
+      },
     });
     expect(routesDataCSR).toStrictEqual({
       home: {
         type: 'getData',
-      }
+      },
     });
   });
 
   it('load data from __ICE_DATA_LOADER__', async () => {
     windowSpy.mockImplementation(() => ({
-      __ICE_DATA_LOADER__: async (id) => ({id: `${id}_data`})
+      __ICE_DATA_LOADER__: async (id) => ({ id: `${id}_data` }),
     }));
     const routesData = await loadRoutesData(
       // @ts-ignore
@@ -166,7 +163,7 @@ describe('routes', () => {
     const routesConfig = getRoutesConfig(
       // @ts-ignore
       [{ route: routeModules[0] }],
-      {home: {}},
+      { home: {} },
       routeModule,
     );
     expect(routesConfig).toStrictEqual({
@@ -180,7 +177,7 @@ describe('routes', () => {
     const routesConfig = getRoutesConfig(
       // @ts-ignore
       [{ route: routeModules[0] }],
-      {home: {}},
+      { home: {} },
       {},
     );
     expect(routesConfig).toStrictEqual({
@@ -250,42 +247,42 @@ describe('routes', () => {
       {
         pathname: '/',
         route: {
-          id: '/page/layout'
-        }
+          id: '/page/layout',
+        },
       },
       {
         pathname: '/',
         route: {
-          id: '/page/home'
-        }
-      }
+          id: '/page/home',
+        },
+      },
     ];
 
     const newMatches = [
       {
         pathname: '/',
         route: {
-          id: '/page/layout'
-        }
+          id: '/page/layout',
+        },
       },
       {
         pathname: '/about',
         route: {
-          id: '/page/about'
-        }
-      }
+          id: '/page/about',
+        },
+      },
     ];
 
     // @ts-ignore
     const matches = filterMatchesToLoad(oldMatches, newMatches);
 
     expect(
-      matches
+      matches,
     ).toEqual([{
       pathname: '/about',
       route: {
-        id: '/page/about'
-      }
+        id: '/page/about',
+      },
     }]);
   });
 
@@ -294,32 +291,32 @@ describe('routes', () => {
       {
         pathname: '/users/123',
         route: {
-          id: '/users/123'
-        }
-      }
+          id: '/users/123',
+        },
+      },
     ];
 
     const newMatches = [
       {
         pathname: '/users/456',
         route: {
-          id: '/users/456'
-        }
-      }
+          id: '/users/456',
+        },
+      },
     ];
 
     // @ts-ignore
     const matches = filterMatchesToLoad(oldMatches, newMatches);
 
     expect(
-      matches
+      matches,
     ).toEqual([
       {
         pathname: '/users/456',
         route: {
-          id: '/users/456'
-        }
-      }
+          id: '/users/456',
+        },
+      },
     ]);
   });
 });

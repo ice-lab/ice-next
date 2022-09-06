@@ -7,7 +7,7 @@ describe('routes config', () => {
   let documentSpy;
   const insertTags: any[] = [];
   const appendTags: any[] = [];
-  
+
   beforeEach(() => {
     documentSpy = vi.spyOn(global, 'document', 'get');
     documentSpy.mockImplementation(() => ({
@@ -21,7 +21,7 @@ describe('routes config', () => {
         appendChild: (tag) => {
           appendTags.push(tag);
           tag.onload();
-        }
+        },
       },
       getElementById: () => null,
       querySelectorAll: () => [],
@@ -33,7 +33,7 @@ describe('routes config', () => {
           },
         };
         return element;
-      }
+      },
     }));
   });
   afterEach(() => {
@@ -60,7 +60,7 @@ describe('routes config', () => {
       },
     };
     // @ts-ignore
-    await updateRoutesConfig([{ route: { id: 'home'}}], routesConfig);
+    await updateRoutesConfig([{ route: { id: 'home' } }], routesConfig);
     expect(insertTags.length).toBe(1);
     expect(insertTags[0]?.type).toBe('meta');
     expect(appendTags.length).toBe(2);

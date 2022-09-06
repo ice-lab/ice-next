@@ -1,20 +1,20 @@
 import { expect, it, describe } from 'vitest';
+import { render } from '@testing-library/react';
 import { Component } from '../src/index';
 import createFactory from '../src/create-factory';
-import { render } from '@testing-library/react';
 
 describe('createFactory', () => {
   it('basic', () => {
     class CustomComponent extends Component {
-      text: string = '';
+      text = '';
 
       render() {
         return <div>{this.props.text}</div>;
       }
     }
 
-    const factory = createFactory("div");
-    const div = factory(null,'div node');
+    const factory = createFactory('div');
+    const div = factory(null, 'div node');
 
     const wrapper = render(div);
     const node = wrapper.queryByTestId('div');

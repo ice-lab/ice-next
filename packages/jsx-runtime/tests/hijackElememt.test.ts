@@ -10,13 +10,13 @@ describe('hijack element', () => {
   });
 
   it('hijackElementProps style', () => {
-    const props = hijackElementProps({ style: { fontSize: 14, height: '12px', with: '12rpx' }});
+    const props = hijackElementProps({ style: { fontSize: 14, height: '12px', with: '12rpx' } });
     expect(props).toStrictEqual({
       style: {
         fontSize: 14,
         height: '12px',
         with: '1.6vw',
-      }
+      },
     });
   });
 });

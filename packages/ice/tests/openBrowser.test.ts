@@ -1,5 +1,5 @@
-import { expect, it, describe } from 'vitest';
 import * as path from 'path';
+import { expect, it, describe } from 'vitest';
 import openBrowser from '../src/utils/openBrowser';
 
 describe('openBrowser in node', () => {
