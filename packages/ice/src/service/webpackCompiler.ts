@@ -66,7 +66,7 @@ async function webpackCompiler(options: {
     spinner,
     devPath,
   } = options;
-  const { platform } = commandArgs;
+  const { platform = WEB } = commandArgs;
   const { serverCompiler } = hooksAPI;
   await applyHook(`before.${command}.run`, {
     urls,

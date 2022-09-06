@@ -16,7 +16,7 @@ import formatWebpackMessages from '../utils/formatWebpackMessages.js';
 import prepareURLs from '../utils/prepareURLs.js';
 import createRenderMiddleware from '../middlewares/ssr/renderMiddleware.js';
 import createMockMiddleware from '../middlewares/mock/createMiddleware.js';
-import { ROUTER_MANIFEST, RUNTIME_TMP_DIR, SERVER_OUTPUT_DIR, WEB, MINIAPP_PLATFORMS } from '../constant.js';
+import { ROUTER_MANIFEST, RUNTIME_TMP_DIR, SERVER_OUTPUT_DIR, WEB } from '../constant.js';
 import ServerCompilerPlugin from '../webpack/ServerCompilerPlugin.js';
 import ReCompilePlugin from '../webpack/ReCompilePlugin.js';
 import getServerEntry from '../utils/getServerEntry.js';
@@ -51,7 +51,7 @@ const start = async (
     dataCache,
   } = options;
   const { applyHook, commandArgs, command, rootDir, userConfig, extendsPluginAPI: { serverCompileTask } } = context;
-  const { platform, port, host, https = false } = commandArgs;
+  const { platform = WEB, port, host, https = false } = commandArgs;
   const webTaskConfig = taskConfigs.find(({ name }) => name === 'web');
   const webpackConfigs = taskConfigs.map(({ config }) => getWebpackConfig({
     config,
