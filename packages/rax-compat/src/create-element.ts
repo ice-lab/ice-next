@@ -41,6 +41,10 @@ function createInputCompat(type: string) {
       onInput && onInput(event.nativeEvent);
     }, [onInput]);
 
+    useEffect(() => {
+      setV(value);
+    }, [value]);
+
     // Compat maxlength in rax-textinput, because maxlength is invalid props in web,it will be set attributes to element
     // and react will Throw a warning in DEV.
     // https://github.com/raxjs/rax-components/issues/459
