@@ -4,8 +4,8 @@
 import type { Location } from 'history';
 import type { RouteObject } from 'react-router-dom';
 import { matchRoutes as originMatchRoutes } from 'react-router-dom';
-import { matchRoutesSingle } from './utils/history-single.js';
-import type { RouteItem, RouteMatch } from './types.js';
+import type { RouteItem, RouteMatch } from '@ice/types';
+import { matchRoutes as matchRoutesSingle } from './single-router.js';
 
 export default function matchRoutes(
   routes: RouteItem[],

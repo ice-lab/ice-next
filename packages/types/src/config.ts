@@ -13,8 +13,9 @@ import type { ForkTsCheckerWebpackPluginOptions } from 'fork-ts-checker-webpack-
 import type { UnpluginOptions, UnpluginContext } from 'unplugin';
 import type Server from 'webpack-dev-server';
 import type { ECMA } from 'terser';
-import type { Config as SWCCompilationConfig } from '@builder/swc';
+import type { Config as SWCCompilationConfig } from '@swc/core';
 import type { BuildOptions } from 'esbuild';
+import type { UserConfig } from './userConfig';
 
 // get type definitions from terser-webpack-plugin
 interface CustomOptions {
@@ -33,13 +34,12 @@ interface ConfigurationCtx extends Config {
   webpack: typeof webpack;
 }
 
+type Experimental = Configuration['experiments'];
 interface SwcOptions {
   removeExportExprs?: string[];
   compilationConfig?: SWCCompilationConfig;
   keepPlatform?: 'node' | 'web' | 'weex' | 'miniapp';
 }
-
-type Experimental = Pick<Configuration, 'experiments'>;
 
 interface TransformOptions {
   isServer: boolean;
@@ -83,7 +83,7 @@ export interface Config {
     | WebpackPluginInstance
   )[];
 
-  alias?: Record<string, any>;
+  alias?: UserConfig['alias'];
 
   hash?: boolean | string;
 

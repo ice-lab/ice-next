@@ -1,6 +1,6 @@
 import React from 'react';
+import type { RouteItem, RouteModules, RouteWrapperConfig, RouteMatch, RequestContext, RoutesConfig, RoutesData, RenderMode } from '@ice/types';
 import RouteWrapper from './RouteWrapper.js';
-import type { RouteItem, RouteModules, RouteWrapperConfig, RouteMatch, RequestContext, RoutesConfig, RoutesData, RenderMode } from './types.js';
 import { useAppContext } from './AppContext.js';
 
 type RouteModule = Pick<RouteItem, 'id' | 'load'>;
@@ -19,7 +19,8 @@ export async function loadRouteModule(route: RouteModule, routeModulesCache: Rou
     routeModulesCache[id] = routeModule;
     return routeModule;
   } catch (error) {
-    console.error('loadRouteModule', error);
+    console.error(`Failed to load route module: ${id}.`);
+    console.debug(error);
   }
 }
 

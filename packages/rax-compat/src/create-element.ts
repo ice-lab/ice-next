@@ -4,11 +4,14 @@ import type {
   ReactElement,
   ReactNode,
   RefObject,
+  SyntheticEvent,
 } from 'react';
-import { createElement as _createElement, useEffect, useCallback, useRef } from 'react';
+import { createElement as _createElement, useEffect, useCallback, useRef, useState, forwardRef as _forwardRef } from 'react';
 import { cached, convertUnit } from 'style-unit';
 import { observerElement } from './visibility';
 import { isFunction, isObject, isNumber } from './type';
+import transformPrototypes from './prototypes';
+
 
 // https://github.com/alibaba/rax/blob/master/packages/driver-dom/src/index.js
 // opacity -> opa
@@ -25,6 +28,37 @@ import { isFunction, isObject, isNumber } from './type';
 // animationIterationCount -> onit
 // borderImageOutset|borderImageSlice|borderImageWidth -> erim
 const NON_DIMENSIONAL_REG = /opa|ntw|ne[ch]|ex(?:s|g|n|p|$)|^ord|zoo|grid|orp|ows|mnc|^columns$|bs|erim|onit/i;
+
+function createInputCompat(type: string) {
+  function InputCompat(props: any, ref: RefObject<any>) {
+    const { value, onInput, ...rest } = props;
+    const [v, setV] = useState(value);
+    const onChange = useCallback((event: SyntheticEvent) => {
+      setV((event.target as HTMLInputElement).value);
+
+      // Event of onInput should be native event.
+      onInput && onInput(event.nativeEvent);
+    }, [onInput]);
+
+    // Compat maxlength in rax-textinput, because maxlength is invalid props in web,it will be set attributes to element
+    // and react will Throw a warning in DEV.
+    // https://github.com/raxjs/rax-components/issues/459
+    // https://github.com/raxjs/rax-components/blob/master/packages/rax-textinput/src/index.tsx#L142
+    if (rest.maxlength) {
+      rest.maxLength = rest.maxlength;
+      delete rest.maxlength;
+    }
+
+    return _createElement(type, {
+      ...rest,
+      value: v,
+      onChange,
+      ref,
+    });
+  }
+
+  return _forwardRef(InputCompat);
+}
 
 /**
  * Compat createElement for rax export.
@@ -45,7 +79,7 @@ export function createElement<P extends {
   props?: Attributes & P | null,
   ...children: ReactNode[]): ReactElement {
   // Get a shallow copy of props, to avoid mutating the original object.
-  const rest = Object.assign({}, props);
+  let rest: Attributes & P = Object.assign({}, props);
   const { onAppear, onDisappear } = rest;
 
   // Delete props that are not allowed in react.
@@ -57,6 +91,17 @@ export function createElement<P extends {
   if (compatStyleProps) {
     rest.style = compatStyleProps;
   }
+
+  if (type === 'input' || type === 'textarea') {
+    // Setting the value of props makes the component be a controlled component in React.
+    // But setting the value is same as web in Rax.
+    // User can modify value of props to modify native input value
+    // and native input can also modify the value of self in Rax.
+    // So we should compat input to InputCompat, the same as textarea.
+    type = createInputCompat(type);
+  }
+
+  rest = transformPrototypes(rest);
 
   // Compat for visibility events.
   if (isFunction(onAppear) || isFunction(onDisappear)) {
@@ -87,16 +132,19 @@ function VisibilityChange({
 
   const listen = useCallback((eventName: string, handler: Function) => {
     const { current } = ref;
-    if (current != null) {
-      if (isFunction(handler)) {
-        observerElement(current as HTMLElement);
-        current.addEventListener(eventName, handler);
-      }
+    // Rax components will set custom ref by useImperativeHandle.
+    // So We should get eventTarget by _nativeNode.
+    // https://github.com/raxjs/rax-components/blob/master/packages/rax-textinput/src/index.tsx#L151
+    if (current && isFunction(handler)) {
+      const eventTarget = current._nativeNode || current;
+      observerElement(eventTarget as HTMLElement);
+      eventTarget.addEventListener(eventName, handler);
     }
     return () => {
       const { current } = ref;
       if (current) {
-        current.removeEventListener(eventName, handler);
+        const eventTarget = current._nativeNode || current;
+        eventTarget.removeEventListener(eventName, handler);
       }
     };
   }, [ref]);
