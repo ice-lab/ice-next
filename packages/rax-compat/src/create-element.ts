@@ -31,13 +31,14 @@ const NON_DIMENSIONAL_REG = /opa|ntw|ne[ch]|ex(?:s|g|n|p|$)|^ord|zoo|grid|orp|ow
 
 function createInputCompat(type: string) {
   function InputCompat(props: any, ref: RefObject<any>) {
-    const { value, onInput, ...rest } = props;
+    const { value, onInput, onChange, ...rest } = props;
     const [v, setV] = useState(value);
-    const onChange = useCallback((event: SyntheticEvent) => {
+    const changeCallback = useCallback((event: SyntheticEvent) => {
       setV((event.target as HTMLInputElement).value);
 
       // Event of onInput should be native event.
       onInput && onInput(event.nativeEvent);
+      onChange && onChange(event);
     }, [onInput]);
 
     // Compat maxlength in rax-textinput, because maxlength is invalid props in web,it will be set attributes to element
@@ -52,7 +53,7 @@ function createInputCompat(type: string) {
     return _createElement(type, {
       ...rest,
       value: v,
-      onChange,
+      onChange: changeCallback,
       ref,
     });
   }
@@ -86,6 +87,8 @@ export function createElement<P extends {
   delete rest.onAppear;
   delete rest.onDisappear;
 
+  rest = transformPrototypes(rest);
+
   // Compat for style unit.
   const compatStyleProps = compatStyle(rest.style);
   if (compatStyleProps) {
@@ -100,8 +103,6 @@ export function createElement<P extends {
     // So we should compat input to InputCompat, the same as textarea.
     type = createInputCompat(type);
   }
-
-  rest = transformPrototypes(rest);
 
   // Compat for visibility events.
   if (isFunction(onAppear) || isFunction(onDisappear)) {
