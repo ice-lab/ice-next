@@ -27,6 +27,6 @@
       "ice": [".ice"]
     }
   },
-  "include": ["src", ".ice", "ice.config.*", "tests"],
+  "include": ["src", ".ice", "ice.config.*", "tests", "./jest-setup.ts"],
   "exclude": ["node_modules", "build", "public"]
 }
