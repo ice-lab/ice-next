@@ -30,58 +30,54 @@ import transformPrototypes from './prototypes';
 // borderImageOutset|borderImageSlice|borderImageWidth -> erim
 const NON_DIMENSIONAL_REG = /opa|ntw|ne[ch]|ex(?:s|g|n|p|$)|^ord|zoo|grid|orp|ows|mnc|^columns$|bs|erim|onit/i;
 
-function createInputCompat(type: string): Function {
-  function InputCompat(props: any, ref: RefObject<any>) {
-    const { value, onInput, onChange, ...rest } = props;
-    const [v, setV] = useState(value);
-    const changeCallback = useCallback((event: SyntheticEvent) => {
-      setV((event.target as HTMLInputElement).value);
+function InputCompat(props: any) {
+  const { value, onInput, onChange, inputType, ...rest } = props;
+  const [v, setV] = useState(value);
+  const changeCallback = useCallback((event: SyntheticEvent) => {
+    setV((event.target as HTMLInputElement).value);
 
-      // Event of onInput should be native event.
-      onInput && onInput(event.nativeEvent);
-    }, [onInput]);
+    // Event of onInput should be native event.
+    onInput && onInput(event.nativeEvent);
+  }, [onInput]);
 
-    useEffect(() => {
-      setV(value);
-    }, [value]);
+  const ref = useRef();
 
-    // Compat maxlength in rax-textinput, because maxlength is invalid props in web,it will be set attributes to element
-    // and react will Throw a warning in DEV.
-    // https://github.com/raxjs/rax-components/issues/459
-    // https://github.com/raxjs/rax-components/blob/master/packages/rax-textinput/src/index.tsx#L142
-    if (rest.maxlength) {
-      rest.maxLength = rest.maxlength;
-      delete rest.maxlength;
-    }
+  useEffect(() => {
+    setV(value);
+  }, [value]);
 
-    // The onChange event is SyntheticEvent in React but it is dom event in Rax, so it need compat onChange.
-    useEffect(() => {
-      function changeEventListener(event: ChangeEvent) {
-        onChange(event);
-      }
-
-      if (ref && ref.current && onChange) {
-        ref.current.addEventListener('change', changeEventListener);
-      }
-
-      return () => {
-        if (ref && ref.current && onChange) {
-          ref.current.removeEventListener('change', changeEventListener);
-        }
-      };
-    }, [ref, onChange]);
-
-    return _createElement(type, {
-      ...rest,
-      value: v,
-      onChange: changeCallback,
-      ref,
-    });
+  // Compat maxlength in rax-textinput, because maxlength is invalid props in web,it will be set attributes to element
+  // and react will Throw a warning in DEV.
+  // https://github.com/raxjs/rax-components/issues/459
+  // https://github.com/raxjs/rax-components/blob/master/packages/rax-textinput/src/index.tsx#L142
+  if (rest.maxlength) {
+    rest.maxLength = rest.maxlength;
+    delete rest.maxlength;
   }
 
-  const instance = useCallback(InputCompat, [type]);
+  // The onChange event is SyntheticEvent in React but it is dom event in Rax, so it need compat onChange.
+  useEffect(() => {
+    function changeEventListener(event: ChangeEvent) {
+      onChange(event);
+    }
 
-  return _forwardRef(instance);
+    if (ref && ref.current && onChange) {
+      ref.current.addEventListener('change', changeEventListener);
+    }
+
+    return () => {
+      if (ref && ref.current && onChange) {
+        ref.current.removeEventListener('change', changeEventListener);
+      }
+    };
+  }, [onChange]);
+
+  return _createElement(inputType, {
+    ...rest,
+    value: v,
+    onChange: changeCallback,
+    ref,
+  });
 }
 
 /**
@@ -124,7 +120,8 @@ export function createElement<P extends {
   // and native input can also modify the value of self in Rax.
   // So we should compat input to InputCompat, the same as textarea.
   if (type === 'input' || type === 'textarea') {
-    type = createInputCompat(type);
+    rest.inputType = type;
+    type = InputCompat;
   }
 
   // Compat for visibility events.

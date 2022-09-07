@@ -68,32 +68,21 @@ describe('inputElement', () => {
     }, 0);
   });
 
-  it('should work with onChange', () => {
-    const obj = {
-      handleChange: () => console.log('change'),
-    }
-    const change = vi.spyOn(obj, 'handleChange');
+  it('should work with onChange', (context) => {
 
-    function TestInput() {
-      const [val, setVal] = useState('input value');
 
-      return <div>
-        <input
-          data-testid="changeInput"
-          value={val}
-          onChange={obj.handleChange}
-        />
-      </div>;
-    }
+    return new Promise((resolve) => {
+      function TestInput() {
+        return createElement('input', {
+          'data-testid': "changeInput",
+          onChange: (e) => resolve()
+        });
+      }
 
-    const wrapper = render(createElement(TestInput));
+      const wrapper = render(createElement(TestInput));
 
-    const node = wrapper.queryByTestId('changeInput');
-    node?.dispatchEvent('change');
-
-    setTimeout(() => {
-      // Wait for click handler.
-      expect(change).toHaveBeenCalled()
-    }, 0);
+      const node = wrapper.queryByTestId('changeInput');
+      node!.dispatchEvent(new Event('change'));
+    })
   });
 });
