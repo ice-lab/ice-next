@@ -23,7 +23,10 @@
   },
   "sideEffects": false,
   "dependencies": {
-    "@ice/types": "^1.0.0",
-    "@ice/shared": "^1.0.0"
+    "@ice/shared": "^1.0.0",
+    "@ice/types": "^1.0.0"
+  },
+  "devDependencies": {
+    "@ice/miniapp-react-dom": "^1.0.0"
   }
 }

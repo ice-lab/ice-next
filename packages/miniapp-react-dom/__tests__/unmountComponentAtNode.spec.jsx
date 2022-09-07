@@ -1,25 +1,10 @@
+import { expect, describe, test, vi } from 'vitest';
 import * as React from 'react'
-
-let document
-let runtime
+import { render, unmountComponentAtNode, findDOMNode } from '../esm/index';
+import { document } from '@ice/miniapp-runtime';
 
 describe('unmountComponentAtNode', () => {
-  let render, unmountComponentAtNode, batchedUpdates
-  beforeAll(() => {
-    process.env.FRAMEWORK = 'react'
-    runtime = require('@tarojs/runtime')
-    const TaroReact = require('../dist/index')
-    render = TaroReact.render
-    unmountComponentAtNode = TaroReact.unmountComponentAtNode
-    batchedUpdates = TaroReact.unstable_batchedUpdates
-    document = runtime.document
-  })
-
-  afterAll(() => {
-    process.env.FRAMEWORK = undefined
-  })
-
-  it('throws when given a non-node', () => {
+  test('throws when given a non-node', () => {
     expect(function () {
       unmountComponentAtNode(null)
     }).toThrowError(
@@ -27,14 +12,14 @@ describe('unmountComponentAtNode', () => {
     )
   })
 
-  it('returns false on non-React containers', () => {
+  test('returns false on non-React containers', () => {
     const d = document.createElement('div')
     d.id = 'test'
     expect(unmountComponentAtNode(d)).toBe(false)
     expect(d.id).toBe('test')
   })
 
-  it('returns true on React containers', () => {
+  test('returns true on React containers', () => {
     const d = document.createElement('div')
     render(<b>hellooo</b>, d)
 
@@ -43,7 +28,7 @@ describe('unmountComponentAtNode', () => {
     expect(d.textContent).toBe('')
   })
 
-  it('should render different components in same root', () => {
+  test('should render different components in same root', () => {
     const container = document.createElement('container')
 
     render(<div />, container)
@@ -53,11 +38,11 @@ describe('unmountComponentAtNode', () => {
     expect(container.firstChild.tagName).toBe('SPAN')
   })
 
-  it('should unmount and remount if the key changes', () => {
+  test('should unmount and remount if the key changes', () => {
     const container = document.createElement('container')
 
-    const mockMount = jest.fn()
-    const mockUnmount = jest.fn()
+    const mockMount = vi.fn()
+    const mockUnmount = vi.fn()
 
     class Component extends React.Component {
       componentDidMount = mockMount
@@ -88,7 +73,7 @@ describe('unmountComponentAtNode', () => {
     expect(mockUnmount.mock.calls.length).toBe(1)
   })
 
-  it('should reuse markup if rendering to the same target twice', () => {
+  test('should reuse markup if rendering to the same target twice', () => {
     const container = document.createElement('container')
     const instance1 = render(<div />, container)
     const instance2 = render(<div />, container)
@@ -96,7 +81,7 @@ describe('unmountComponentAtNode', () => {
     expect(instance1 === instance2).toBe(true)
   })
 
-  it.skip('initial mount is sync inside batchedUpdates, but task work is deferred until the end of the batch', () => {
+  test.skip('initial mount is sync inside batchedUpdates, but task work is deferred until the end of the batch', () => {
     const container1 = document.createElement('div')
     const container2 = document.createElement('div')
 

@@ -1,8 +1,7 @@
-describe('eventSource', () => {
-  const runtime = require('../../dist/runtime.esm');
-  const { eventSource } = runtime;
-  global.document = runtime.document;
+import { expect, describe, test, beforeEach } from 'vitest';
+import { eventSource, document } from '../../esm/index';
 
+describe('eventSource', () => {
   beforeEach(() => {
     eventSource.clear();
   });
@@ -16,7 +15,7 @@ describe('eventSource', () => {
   /**
    * <div id='target' />
    */
-  it('eventSource.removeNode should remove node\' sid & uid', () => {
+  test('eventSource.removeNode should remove node\' sid & uid', () => {
     const node = createDiv('target');
 
     const { sid, uid } = node;
@@ -40,7 +39,7 @@ describe('eventSource', () => {
    *     div
    *   div
    */
-  it('eventSource.removeNodeTree should remove entire node tree', () => {
+  test('eventSource.removeNodeTree should remove entire node tree', () => {
     const container = createDiv();
     const list = createDiv('list');
     const target = createDiv();

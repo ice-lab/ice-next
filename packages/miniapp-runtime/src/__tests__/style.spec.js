@@ -1,11 +1,8 @@
-let Style;
+import { expect, describe, test } from 'vitest';
+import { Style, document } from '../../esm/index';
 
 describe('style', () => {
-  const runtime = require('../../dist/runtime.esm');
-  Style = runtime.Style;
-  const { document } = runtime;
-
-  it('works', () => {
+  test('works', () => {
     const root = document.createElement('root');
     const style = new Style(root);
     style.color = 'red';

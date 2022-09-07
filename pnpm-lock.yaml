@@ -675,11 +675,14 @@ importers:
 
   packages/miniapp-runtime:
     specifiers:
+      '@ice/miniapp-react-dom': ^1.0.0
       '@ice/shared': ^1.0.0
       '@ice/types': ^1.0.0
     dependencies:
       '@ice/shared': link:../shared
       '@ice/types': link:../types
+    devDependencies:
+      '@ice/miniapp-react-dom': link:../miniapp-react-dom
 
   packages/plugin-antd:
     specifiers:

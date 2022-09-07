@@ -1,12 +1,11 @@
+import { expect, describe, test, vi } from 'vitest';
+import { document, createEvent } from '../../esm/index';
 describe('react', () => {
-  const runtime = require('../../dist/runtime.esm');
-  const { document } = runtime;
-
-  it('event should work', () => {
+  test('event should work', () => {
     const div = document.createElement('div');
-    const spy = jest.fn();
+    const spy = vi.fn();
     div.addEventListener('tap', spy);
-    const event = runtime.createEvent({ type: 'tap' }, div);
+    const event = createEvent({ type: 'tap' }, div);
     div.dispatchEvent(event);
     expect(spy).toBeCalledTimes(1);
   });

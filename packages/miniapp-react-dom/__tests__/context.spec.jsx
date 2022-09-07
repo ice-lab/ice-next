@@ -1,22 +1,12 @@
+import { expect, describe, test } from 'vitest';
 import * as React from 'react'
-
-let document
-let render
+import { render } from '../esm/index';
+import { document } from '@ice/miniapp-runtime';
 
 describe('Context', () => {
-  beforeAll(() => {
-    process.env.FRAMEWORK = 'react'
-    render = require('../dist/index').render
-    document = require('@tarojs/runtime').document
-  })
-
-  afterAll(() => {
-    process.env.FRAMEWORK = undefined
-  })
-
-  it('Context must be available in the consumer', () => {
-    let actual = 0
-    const Context = React.createContext()
+  test('Context must be available in the consumer', () => {
+    let actual = 0;
+    const Context = React.createContext();
 
     function Consumer () {
       return (
@@ -26,7 +16,7 @@ describe('Context', () => {
             return <text prop={'Result: ' + value} />
           }}
         </Context.Consumer>
-      )
+      );
     }
 
     class MyNode extends React.Component {
@@ -36,7 +26,7 @@ describe('Context', () => {
             <text>Noise</text>
             <Consumer />
           </view>
-        )
+        );
       }
     }
 
@@ -47,8 +37,8 @@ describe('Context', () => {
       </Context.Provider>,
       container,
       function () {
-        expect(actual).toBe(5)
+        expect(actual).toBe(5);
       }
-    )
+    );
   })
 })

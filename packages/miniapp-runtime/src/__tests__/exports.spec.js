@@ -1,28 +1,28 @@
-describe('style', () => {
-  const runtime = require('../../dist/runtime.esm');
+import { expect, describe, test } from 'vitest';
+import { document, navigator, window, Element, Node, Text, createEvent, Event, createComponentConfig, createPageConfig } from '../../esm/index';
 
-  it('bom', () => {
-    const { window } = runtime;
+describe('style', () => {
+  test('bom', () => {
     expect(window).not.toBeUndefined();
     expect(window.navigator).not.toBeUndefined();
     expect(window.document).not.toBeUndefined();
-    expect(runtime.document).toBe(window.document);
-    expect(runtime.navigator).toBe(window.navigator);
+    expect(document).toBe(window.document);
+    expect(navigator).toBe(window.navigator);
   });
 
-  it('dom', () => {
-    expect(runtime.Element).not.toBeUndefined();
-    expect(runtime.Node).not.toBeUndefined();
-    expect(runtime.Text).not.toBeUndefined();
+  test('dom', () => {
+    expect(Element).not.toBeUndefined();
+    expect(Node).not.toBeUndefined();
+    expect(Text).not.toBeUndefined();
   });
 
-  it('event', () => {
-    expect(runtime.createEvent).not.toBeUndefined();
-    expect(runtime.Event).not.toBeUndefined();
+  test('event', () => {
+    expect(createEvent).not.toBeUndefined();
+    expect(Event).not.toBeUndefined();
   });
 
-  it('dsl', () => {
-    expect(runtime.createComponentConfig).not.toBeUndefined();
-    expect(runtime.createPageConfig).not.toBeUndefined();
+  test('dsl', () => {
+    expect(createComponentConfig).not.toBeUndefined();
+    expect(createPageConfig).not.toBeUndefined();
   });
 });
