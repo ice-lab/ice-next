@@ -69,8 +69,6 @@ describe('inputElement', () => {
   });
 
   it('should work with onChange', (context) => {
-
-
     return new Promise((resolve) => {
       function TestInput() {
         return createElement('input', {
