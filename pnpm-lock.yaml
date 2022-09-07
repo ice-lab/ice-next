@@ -14,6 +14,7 @@ importers:
       '@types/node': ^17.0.45
       '@types/semver': ^7.3.12
       '@vercel/ncc': ^0.33.4
+      '@vitest/coverage-c8': ^0.23.1
       c8: ^7.12.0
       chalk: ^4.1.2
       chokidar: ^3.5.3
@@ -50,6 +51,7 @@ importers:
       '@types/node': 17.0.45
       '@types/semver': 7.3.12
       '@vercel/ncc': 0.33.4
+      '@vitest/coverage-c8': 0.23.1_jsdom@20.0.0
       c8: 7.12.0
       chalk: 4.1.2
       chokidar: 3.5.3
@@ -7722,6 +7724,23 @@ packages:
       magic-string: 0.26.2
       react-refresh: 0.14.0
     transitivePeerDependencies:
+      - supports-color
+    dev: true
+
+  /@vitest/coverage-c8/0.23.1_jsdom@20.0.0:
+    resolution: {integrity: sha512-si3vK1h3BHdoGfb5J2jXstthROHwDW+yqVNGO/NOPG8642+d1RO/jFFvF3OSSYFEsxxcDL0uywEVcXCjGuPYdA==}
+    dependencies:
+      c8: 7.12.0
+      vitest: 0.23.1_jsdom@20.0.0
+    transitivePeerDependencies:
+      - '@edge-runtime/vm'
+      - '@vitest/browser'
+      - '@vitest/ui'
+      - happy-dom
+      - jsdom
+      - less
+      - sass
+      - stylus
       - supports-color
     dev: true
 
