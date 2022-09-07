@@ -9,7 +9,7 @@ import { minify } from 'html-minifier';
 import { urlToRequest } from 'loader-utils';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
 import EntryDependency from 'webpack/lib/dependencies/EntryDependency.js';
-import webpackSources from 'webpack-sources';
+import webpackSources from '@ice/bundles/compiled/webpack-sources/index.js';
 
 import SingleEntryDependency from '../dependencies/SingleEntryDependency.js';
 import { componentConfig } from '../template/component.js';

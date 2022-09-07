@@ -1,6 +1,4 @@
 import { expect, describe, test } from 'vitest';
-import * as React from 'react';
-import ReactDOM from '@ice/miniapp-react-dom';
 import { document } from '../../esm/index';
 describe('DOM', () => {
   describe('node', () => {
@@ -229,25 +227,6 @@ describe('DOM', () => {
       div.className = 'test';
       div.removeAttribute('class');
       expect(div.className).toBe('');
-    });
-
-    test('textContext', () => {
-      function App() {
-        return (
-          <div>
-            <div>
-              <span> a </span>
-            </div>
-            b
-            <span>c</span>
-          </div>
-        );
-      }
-
-      const div = document.createElement('div');
-      // eslint-disable-next-line react/no-deprecated
-      ReactDOM.render(<App />, div);
-      expect(div.textContent).toBe(' a bc');
     });
   });
 });

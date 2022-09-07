@@ -1,6 +1,6 @@
 import path from 'path';
 import type webpack from '@ice/bundles/compiled/webpack/index.js';
-import webpackSources from 'webpack-sources';
+import webpackSources from '@ice/bundles/compiled/webpack-sources/index.js';
 import { promoteRelativePath } from './index.js';
 
 const { ConcatSource } = webpackSources;

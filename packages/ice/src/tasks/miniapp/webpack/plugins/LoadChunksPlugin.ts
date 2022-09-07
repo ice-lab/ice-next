@@ -1,5 +1,5 @@
 import webpack from '@ice/bundles/compiled/webpack/index.js';
-import webpackSources from 'webpack-sources';
+import webpackSources from '@ice/bundles/compiled/webpack-sources/index.js';
 import type { IComponent } from '../../types.js';
 import { getChunkEntryModule, addRequireToSource, getChunkIdOrName } from '../utils/webpack.js';
 import { META_TYPE } from '../../../../constant.js';

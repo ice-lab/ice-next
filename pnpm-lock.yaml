@@ -582,7 +582,6 @@ importers:
       unplugin: ^0.8.0
       webpack: ^5.73.0
       webpack-dev-server: ^4.7.4
-      webpack-sources: 3.2.3
     dependencies:
       '@babel/generator': 7.18.10
       '@babel/parser': 7.18.10
@@ -633,7 +632,6 @@ importers:
       semver: 7.3.7
       temp: 0.9.4
       trusted-cert: 1.1.3
-      webpack-sources: 3.2.3
     devDependencies:
       '@types/babel__generator': 7.6.4
       '@types/babel__traverse': 7.17.1
@@ -694,14 +692,11 @@ importers:
 
   packages/miniapp-runtime:
     specifiers:
-      '@ice/miniapp-react-dom': ^1.0.0
       '@ice/shared': ^1.0.0
       '@ice/types': ^1.0.0
     dependencies:
       '@ice/shared': link:../shared
       '@ice/types': link:../types
-    devDependencies:
-      '@ice/miniapp-react-dom': link:../miniapp-react-dom
 
   packages/plugin-antd:
     specifiers:

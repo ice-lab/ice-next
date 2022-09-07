@@ -56,7 +56,7 @@ const tasks = [
   ...['cssnano', 'tapable', 'schema-utils', 'lodash',
     'less-loader', 'postcss-loader', 'sass-loader', 'css-loader',
     'postcss-preset-env', 'postcss-nested', 'postcss-modules', 'postcss-plugin-rpx2vw',
-    'webpack-bundle-analyzer', 'es-module-lexer', 'terser',
+    'webpack-bundle-analyzer', 'webpack-sources', 'es-module-lexer', 'terser',
     'eslint-webpack-plugin', 'copy-webpack-plugin', 'cacache', 'ora', 'unplugin',
     // Dependencies of react-refresh-webpack-plugin.
     'loader-utils', 'source-map', 'find-up', 'common-path-prefix',
