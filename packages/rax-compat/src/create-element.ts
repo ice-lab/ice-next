@@ -66,7 +66,7 @@ function InputCompat(props: any) {
     }
 
     return () => {
-      if (ref && ref.current && onChange) {
+      if (ref && ref.current) {
         ref.current.removeEventListener('change', changeEventListener);
       }
     };
