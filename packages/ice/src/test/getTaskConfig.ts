@@ -1,5 +1,5 @@
-import createService from "../createService.js";
-import test from '../commands/test.js';
+import createService from '../createService.js';
+import type test from '../commands/test.js';
 
 async function getTaskConfig() {
   const rootDir = process.cwd();

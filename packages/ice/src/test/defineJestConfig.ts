@@ -1,9 +1,9 @@
-import type { Config as JestConfig } from 'jest';
 import * as path from 'path';
+import type { Config as JestConfig } from 'jest';
 import fse from 'fs-extra';
-import getTaskConfig from './getTaskConfig.js';
 import type { Config } from '@ice/types';
 import lodash from '@ice/bundles/compiled/lodash/index.js';
+import getTaskConfig from './getTaskConfig.js';
 
 const { merge } = lodash;
 
@@ -21,7 +21,7 @@ export default function defineJestConfig(userConfig: UserConfig): () => Promise<
     const defaultConfig = await getDefaultConfig();
 
     return merge(defaultConfig, customConfig);
-  }
+  };
 }
 
 async function getDefaultConfig(): JestConfig {
@@ -32,7 +32,7 @@ async function getDefaultConfig(): JestConfig {
 
   return {
     moduleNameMapper,
-  }
+  };
 }
 
 function generateModuleNameMapper(alias: Config['alias']) {
@@ -40,7 +40,7 @@ function generateModuleNameMapper(alias: Config['alias']) {
   for (const key in alias) {
     const aliasPath = alias[key];
     if (aliasPath === false) {
-      continue
+      continue;
     }
     const isDir = path.isAbsolute(aliasPath) && fse.lstatSync(aliasPath).isDirectory();
     moduleNameMapper[`^${key}${isDir ? '/(.*)' : ''}`] = `${aliasPath}${isDir ? '/$1' : ''}`;
