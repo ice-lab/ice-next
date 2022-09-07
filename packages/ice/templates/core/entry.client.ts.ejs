@@ -5,11 +5,6 @@ import runtimeModules from './runtimeModules';
 <% if (needRoutes) { %>
 import routes from './routes';
 <% } %>
-<% if (needDocument) { %>
-import Document from '@/document';
-<% } %>
-
-
 const getRouterBasename = () => {
   const appConfig = getAppConfig(app);
   return appConfig?.router?.basename ?? '<%- basename %>' ?? '';
@@ -20,9 +15,6 @@ runClientApp({
   runtimeModules,
   <% if (needRoutes) { %>
   routes,
-  <% } %>
-  <% if (needDocument) { %>
-  Document,
   <% } %>
   basename: getRouterBasename(),
   hydrate: <%- hydrate %>,
