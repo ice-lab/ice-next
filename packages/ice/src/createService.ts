@@ -157,14 +157,12 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
 
   const iceRuntimePath = isMiniappPlatform ? '@ice/runtime/miniapp' : '@ice/runtime';
   const needRoutes = platform === WEB;
-  const needDocument = platform === WEB;
   // add render data
   generator.setRenderData({
     ...routesInfo,
     platform,
     iceRuntimePath,
     needRoutes,
-    needDocument,
     hasExportAppData,
     runtimeModules,
     coreEnvKeys,
@@ -189,7 +187,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const renderStart = new Date().getTime();
   generator.render();
   consola.debug('template render cost:', new Date().getTime() - renderStart);
-
   // create serverCompiler with task config
   const serverCompiler = createServerCompiler({
     rootDir,
