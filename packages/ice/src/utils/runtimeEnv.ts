@@ -19,7 +19,7 @@ export async function setEnv(
   rootDir: string,
   commandArgs: CommandArgs,
 ): Promise<void> {
-  const { mode, platform } = commandArgs;
+  const { mode } = commandArgs;
 
   // .env.${mode}.local is the highest priority
   const dotenvFiles = [
@@ -51,8 +51,6 @@ export async function setEnv(
   // set ssr and ssg env to false, for remove dead code in CSR.
   process.env.ICE_CORE_SSG = 'false';
   process.env.ICE_CORE_SSR = 'false';
-
-  process.env.ICE_CORE_PLATFORM = platform;
 }
 
 export const updateRuntimeEnv = (appConfig: AppConfig, options: EnvOptions) => {

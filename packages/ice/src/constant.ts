@@ -34,7 +34,6 @@ export const ALL_PLATFORMS = [
   BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM,
 ];
 
-export const REG_SCRIPTS = /\.[tj]sx?$/i;
 export const REG_TEMPLATE = /\.(wxml|axml|ttml|swan|ksml)(\?.*)?$/;
 export const REG_STYLE = /\.(css|scss|sass|less|styl|stylus|wxss|acss|ttss)(\?.*)?$/;
 

@@ -1,6 +1,8 @@
 # `@ice/miniapp-runtime`
 
 > Forked from [@tarojs/runtime](https://github.com/NervJS/taro/tree/next/packages/taro-runtime) with respect ❤️
+> Licensed under the MIT License
+> https://github.com/NervJS/taro/blob/next/LICENSE
 
 ICE 小程序运行时。连接框架（DSL）渲染机制到小程序渲染机制，连接小程序路由和生命周期到框架对应的生命周期
 

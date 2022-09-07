@@ -8,8 +8,6 @@ import type Generator from './service/runtimeGenerator';
 import getGlobalStyleGlobPattern from './utils/getGlobalStyleGlobPattern.js';
 import renderExportsTemplate from './utils/renderExportsTemplate.js';
 import { getFileExports } from './service/analyze.js';
-import { MINIAPP_PLATFORMS } from './constant.js';
-
 
 interface Options {
   targetDir: string;

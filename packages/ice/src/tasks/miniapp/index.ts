@@ -1,3 +1,9 @@
+/**
+ * Based on [@tarojs/webpack5-runner](https://github.com/NervJS/taro/tree/next/packages/taro-webpack5-runner) with respect ❤️
+ * Licensed under the MIT License
+ * https://github.com/NervJS/taro/blob/next/LICENSE
+ * */
+
 import * as path from 'path';
 import { createRequire } from 'node:module';
 import fg from 'fast-glob';
