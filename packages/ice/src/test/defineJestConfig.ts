@@ -11,6 +11,7 @@ type UserConfig = JestConfig | (() => Promise<JestConfig>);
 
 export default function defineJestConfig(userConfig: UserConfig): () => Promise<JestConfig> {
   return async () => {
+    // Support jest configuration (object or function) Ref: https://jestjs.io/docs/configuration
     let customConfig: JestConfig;
     if (typeof userConfig === 'function') {
       customConfig = await userConfig();

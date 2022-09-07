@@ -1,5 +1,5 @@
 import add from '../src/add';
 
-test('should first', () => {
+test('add', () => {
   expect(add(1, 2)).toBe(3);
 });
