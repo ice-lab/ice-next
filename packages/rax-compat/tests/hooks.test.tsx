@@ -30,7 +30,9 @@ describe('hooks', () => {
           setLoading(false);
           expect(loading).toBe(false);
         }, 1);
-      }, [loading]);
+      // Expect useEffect to execute once
+      // eslint-disable-next-line
+      }, []);
       return <div>{loading ? 'loading...' : 'load end'}</div>;
     }
 
