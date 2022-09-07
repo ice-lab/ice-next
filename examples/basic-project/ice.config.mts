@@ -1,6 +1,7 @@
 import { defineConfig } from '@ice/app';
 import SpeedMeasurePlugin from 'speed-measure-webpack-plugin';
 import auth from '@ice/plugin-auth';
+import custom from './plugin';
 
 export default defineConfig({
   publicPath: '/',
@@ -27,7 +28,8 @@ export default defineConfig({
       name: 'runtime-donot-exsist',
       setup() {},
       runtime: './test',
-    }
+    },
+    custom,
   ],
   eslint: true,
 });
