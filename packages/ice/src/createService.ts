@@ -96,7 +96,20 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   ctx.registerTask('web', getWebTask({ rootDir, command, dataCache }));
 
   // register config
-  ['userConfig', 'cliOption'].forEach((configType) => ctx.registerConfig(configType, config[configType]));
+  ['userConfig', 'cliOption'].forEach((configType) => {
+    // Support getDefaultValue for config, make easier for get default value in different mode.
+    const configData = config[configType].map(({ getDefaultValue, ...resetConfig }) => {
+      if (getDefaultValue && typeof getDefaultValue === 'function') {
+        return {
+          ...resetConfig,
+          defaultValue: getDefaultValue(),
+        };
+      }
+      return resetConfig;
+    });
+
+    ctx.registerConfig(configType, configData);
+  });
 
   let taskConfigs = await ctx.setup();
 
@@ -210,7 +223,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
             reCompileRouteConfig,
             dataCache,
             appConfig,
-            devPath: (routePaths[0] || '').replace(/^[\/\\]/, ''),
+            devPath: (routePaths[0] || '').replace(/^[/\\]/, ''),
             spinner: buildSpinner,
           });
         } else if (command === 'build') {
