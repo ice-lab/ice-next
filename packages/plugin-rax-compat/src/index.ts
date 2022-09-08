@@ -1,9 +1,12 @@
+import fs from 'fs';
+import path from 'path';
 import { createRequire } from 'module';
 import type { Plugin } from '@ice/types';
 import type { RuleSetRule } from 'webpack';
 import consola from 'consola';
 import merge from 'lodash.merge';
 import { transformSync } from '@babel/core';
+import styleSheetLoader from './transform-styles.js';
 
 const require = createRequire(import.meta.url);
 
@@ -91,6 +94,7 @@ const plugin: Plugin<CompatRaxOptions> = (options = {}) => ({
           warnOnce = true;
         }
 
+        applyStylesheetLoaderForServer(config);
         applyStylesheetLoader(config);
         transformClassNameToStyle(config);
       }
@@ -181,5 +185,57 @@ function transformClassNameToStyle(config) {
     }
   }];
 }
+
+function applyStylesheetLoaderForServer(config) {
+  const currentBuildOptions = config.server?.buildOptions;
+
+  config.server = {
+    ...config.server,
+    buildOptions: (buildOptions) => {
+      console.log('reset buildOptions');
+      const currentOptions = currentBuildOptions?.(buildOptions) || buildOptions;
+      // Remove esbuild-empty-css while use inline style.
+      currentOptions.plugins = currentOptions.plugins?.filter(({ name }) => name !== 'esbuild-empty-css');
+      const cssModuleIndex = currentOptions.plugins?.findIndex(({ name }) => name === 'esbuild-css-modules');
+      // Add custom transform for server compile.
+      currentOptions.plugins?.splice(cssModuleIndex as number, 0, inlineStylePlugin());
+
+      console.warn('esbuild options ---');
+      console.warn(currentOptions.plugins);
+      currentOptions.treeShaking = true;
+      return currentOptions;
+    },
+  };
+}
+
+const inlineStylePlugin = () => {
+  return {
+    name: 'esbuild-inline-style',
+    setup: (build) => {
+      build.onResolve({ filter: /\.(css|sass|scss|less)$/ }, (args) => {
+        // golang not support the following regexp, we use javascript to determine again
+        if (/(?<!.module)\.(css|sass|scss|less)$/.test(args.path)) {
+          const absolutePath = path.resolve(args.resolveDir, args.path);
+          return {
+            path: absolutePath,
+            namespace: 'css-content',
+          };
+        }
+      });
+
+      build.onLoad({ filter: /.*/, namespace: 'css-content' }, async (args) => {
+        console.log(args.path);
+
+        const cssContent = fs.readFileSync(args.path, 'utf8');
+        const content = await styleSheetLoader(cssContent, args.path.includes('.less') ? 'less' : 'css');
+
+        return {
+          contents: content,
+          loader: 'js',
+        };
+      });
+    },
+  };
+};
 
 export default plugin;
