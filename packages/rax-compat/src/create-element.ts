@@ -11,7 +11,7 @@ import { createElement as _createElement, useEffect, useCallback, useRef, useSta
 import { cached, convertUnit } from 'style-unit';
 import { observerElement } from './visibility';
 import { isFunction, isObject, isNumber } from './type';
-import transformPrototypes from './prototypes';
+import transformPrototype from './prototypes';
 
 
 // https://github.com/alibaba/rax/blob/master/packages/driver-dom/src/index.js
@@ -106,7 +106,7 @@ export function createElement<P extends {
   delete rest.onAppear;
   delete rest.onDisappear;
 
-  rest = transformPrototypes(rest);
+  rest = transformPrototype(rest);
 
   // Compat for style unit.
   const compatStyleProps = compatStyle(rest.style);
