@@ -17,7 +17,7 @@ function renderExportsTemplate(
   },
 ) {
   const renderList: [string, boolean][] = [
-    ['data-loader.ts.ejs', !!renderData.loaders || renderData.hasExportAppData],
+    ['data-loader.ts.ejs', !!renderData.loaders],
     ['routes-config.ts.ejs', !!renderData.routesConfig],
   ];
   const { rootDir, runtimeDir, templateDir } = renderOptions;
