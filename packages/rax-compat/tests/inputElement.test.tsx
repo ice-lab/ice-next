@@ -1,14 +1,14 @@
 import React from 'react';
-import { expect, it, describe, vi } from 'vitest';
-import { Component, useState } from '../src/index';
-import { createElement } from '../src/create-element';
+import { expect, it, describe } from 'vitest';
 import { render } from '@testing-library/react';
+import { useState } from '../src/index';
+import { createElement } from '../src/create-element';
 
 describe('inputElement', () => {
   it('should work with update input value', () => {
     function TestInput() {
       const [val, setVal] = useState('input value');
-      return <div>
+      return (<div>
         <input
           data-testid="inputValue"
           value={val}
@@ -22,7 +22,7 @@ describe('inputElement', () => {
         >
           click me...
         </div>
-      </div>;
+      </div>);
     }
 
     const wrapper = render(createElement(TestInput));
@@ -38,7 +38,7 @@ describe('inputElement', () => {
   it('inputElement should not recreate when update props', () => {
     function TestInput() {
       const [val, setVal] = useState('input value');
-      return <div>
+      return (<div>
         <input
           data-testid="sameInput"
           value={val}
@@ -52,7 +52,7 @@ describe('inputElement', () => {
         >
           click me...
         </div>
-      </div>;
+      </div>);
     }
 
     const wrapper = render(createElement(TestInput));
@@ -68,12 +68,12 @@ describe('inputElement', () => {
     }, 0);
   });
 
-  it('should work with onChange', (context) => {
+  it('should work with onChange', () => {
     return new Promise((resolve) => {
       function TestInput() {
         return createElement('input', {
-          'data-testid': "changeInput",
-          onChange: (e) => resolve()
+          'data-testid': 'changeInput',
+          onChange: () => resolve(),
         });
       }
 
@@ -81,6 +81,6 @@ describe('inputElement', () => {
 
       const node = wrapper.queryByTestId('changeInput');
       node!.dispatchEvent(new Event('change'));
-    })
+    });
   });
 });
