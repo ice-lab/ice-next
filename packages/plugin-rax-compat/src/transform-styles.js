@@ -21,8 +21,11 @@ const CSS_VAR_NAME = ':root';
 async function styleSheetLoader(source, type = 'css') {
   let cssContent = source;
   if (type === 'less') {
+    // compact for @import "~bootstrap/less/bootstrap";
+    cssContent = cssContent.replace(/@import "~/g, '@import "');
     cssContent = (await less.render(cssContent)).css;
   }
+
   const newContent = await postcss([require('@ice/bundles/compiled/postcss-plugin-rpx2vw/index.js')({ unitPrecision: 4 })]).process(cssContent).css;
   const { stylesheet } = css.parse(newContent);
 
@@ -58,7 +61,9 @@ const parse = (parsedQuery, stylesheet) => {
       style = transformer.default.convert(rule, parsedQuery);
 
       rule.selectors.forEach((selector) => {
-        let sanitizedSelector = transformer.default.sanitizeSelector(selector, transformDescendantCombinator, rule.position, parsedQuery.log);
+        let sanitizedSelector = transformer.default.sanitizeSelector(
+          selector, transformDescendantCombinator, rule.position, parsedQuery.log,
+        );
         if (sanitizedSelector) {
           // handle pseudo class
           const pseudoIndex = sanitizedSelector.indexOf(':');
@@ -195,7 +200,7 @@ const getFontFaceContent = (rules) => {
 
 const stringifyData = (data, theme) => {
   const str = JSON.stringify(data, undefined, '  ');
-  return !theme ? str : str.replace(VAR_KEY_VAL_REG, 'get $1(){return __getValue("$2")}');
+  return theme ? str.replace(VAR_KEY_VAL_REG, 'get $1(){return __getValue("$2")}') : str;
 };
 
 export default styleSheetLoader;

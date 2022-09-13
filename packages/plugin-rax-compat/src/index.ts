@@ -86,6 +86,7 @@ const plugin: Plugin<CompatRaxOptions> = (options = {}) => ({
         jsxFactory: 'createElement',
         jsxFragment: 'Fragment',
       });
+
       Object.assign(config.alias, alias);
 
       if (options.inlineStyle) {
@@ -94,49 +95,20 @@ const plugin: Plugin<CompatRaxOptions> = (options = {}) => ({
           warnOnce = true;
         }
 
-        applyStylesheetLoaderForServer(config);
-        applyStylesheetLoader(config);
         transformClassNameToStyle(config);
+        applyStylesheetLoader(config);
+        applyStylesheetLoaderForServer(config);
       }
     });
   },
 });
 
-function applyStylesheetLoader(config) {
-  config.configureWebpack ??= [];
-  config.configureWebpack.unshift((config) => {
-    const { rules } = config.module || {};
-    if (Array.isArray(rules)) {
-      for (let i = 0, l = rules.length; i < l; i++) {
-        const rule: RuleSetRule | any = rules[i];
-        // Find the css rule, that default to CSS Modules.
-        if (rule.test && rule.test.source && rule.test.source.indexOf('.css') > -1) {
-          rule.test = /\.module\.css$/i;
-          rules[i] = {
-            test: /\.css$/i,
-            oneOf: [
-              rule,
-              ruleSetStylesheet,
-            ],
-          };
-        }
-
-        // Find and replace the less rule
-        if (rule.test && rule.test.source && rule.test.source.indexOf('.less') > -1) {
-          rules[i] = {
-            test: /\.less$/i,
-            oneOf: [
-              ruleSetStylesheetForLess,
-            ],
-          };
-        }
-      }
-    }
-    return config;
-  });
-}
-
-function transformClassNameToStyle(config) {
+/**
+ * Transform StyleSheet selector to style in JSX Elements.
+ * <div className="header" /> => <div style={styleSheet.header} />
+ * @param config
+ */
+ function transformClassNameToStyle(config) {
   config.transforms = [...(config.transforms || []), async (sourceCode, id) => {
     // js file transform with rax-platform-loader and babel-plugin-transform-jsx-stylesheet
     if (id.includes('node_modules') && id.includes('react')) {
@@ -186,28 +158,74 @@ function transformClassNameToStyle(config) {
   }];
 }
 
+/**
+ * StyleSheet Loader for CSR.
+ * Transform css files to inline style by webpack loader.
+ */
+function applyStylesheetLoader(config) {
+  config.configureWebpack ??= [];
+  config.configureWebpack.unshift((config) => {
+    const { rules } = config.module || {};
+    if (Array.isArray(rules)) {
+      for (let i = 0, l = rules.length; i < l; i++) {
+        const rule: RuleSetRule | any = rules[i];
+        // Find the css rule, that default to CSS Modules.
+        if (rule.test && rule.test.source && rule.test.source.indexOf('.css') > -1) {
+          rule.test = /\.module\.css$/i;
+          rules[i] = {
+            test: /\.css$/i,
+            oneOf: [
+              rule,
+              ruleSetStylesheet,
+            ],
+          };
+        }
+
+        // Find and replace the less rule
+        if (rule.test && rule.test.source && rule.test.source.indexOf('.less') > -1) {
+          rules[i] = {
+            test: /\.less$/i,
+            oneOf: [
+              rule,
+              ruleSetStylesheetForLess,
+            ],
+          };
+        }
+      }
+    }
+    return config;
+  });
+}
+
+/**
+ * StyleSheet Loader for Server.
+ * @param config
+ */
 function applyStylesheetLoaderForServer(config) {
   const currentBuildOptions = config.server?.buildOptions;
 
   config.server = {
     ...config.server,
     buildOptions: (buildOptions) => {
-      console.log('reset buildOptions');
       const currentOptions = currentBuildOptions?.(buildOptions) || buildOptions;
+
       // Remove esbuild-empty-css while use inline style.
       currentOptions.plugins = currentOptions.plugins?.filter(({ name }) => name !== 'esbuild-empty-css');
       const cssModuleIndex = currentOptions.plugins?.findIndex(({ name }) => name === 'esbuild-css-modules');
+
       // Add custom transform for server compile.
       currentOptions.plugins?.splice(cssModuleIndex as number, 0, inlineStylePlugin());
 
-      console.warn('esbuild options ---');
-      console.warn(currentOptions.plugins);
       currentOptions.treeShaking = true;
       return currentOptions;
     },
   };
 }
 
+/**
+ * Transform css files to inline style by esbuild.
+ * @returns
+ */
 const inlineStylePlugin = () => {
   return {
     name: 'esbuild-inline-style',
@@ -224,8 +242,6 @@ const inlineStylePlugin = () => {
       });
 
       build.onLoad({ filter: /.*/, namespace: 'css-content' }, async (args) => {
-        console.log(args.path);
-
         const cssContent = fs.readFileSync(args.path, 'utf8');
         const content = await styleSheetLoader(cssContent, args.path.includes('.less') ? 'less' : 'css');
 
