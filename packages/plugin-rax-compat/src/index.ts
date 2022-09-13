@@ -95,9 +95,10 @@ const plugin: Plugin<CompatRaxOptions> = (options = {}) => ({
           warnOnce = true;
         }
 
-        transformClassNameToStyle(config);
-        applyStylesheetLoader(config);
         applyStylesheetLoaderForServer(config);
+
+        applyStylesheetLoader(config);
+        transformClassNameToStyle(config);
       }
     });
   },
@@ -186,7 +187,6 @@ function applyStylesheetLoader(config) {
           rules[i] = {
             test: /\.less$/i,
             oneOf: [
-              rule,
               ruleSetStylesheetForLess,
             ],
           };
