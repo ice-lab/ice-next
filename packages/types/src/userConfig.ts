@@ -14,6 +14,11 @@ interface Optimization {
   router?: boolean;
 }
 
+interface IgnorePattern {
+  resourceRegExp: RegExp;
+  contextRegExp?: RegExp;
+}
+
 export interface UserConfig {
   alias?: Record<string, string | false>;
   define?: Record<string, string | boolean>;
@@ -39,8 +44,9 @@ export interface UserConfig {
   ssr?: boolean;
   ssg?: boolean;
   server?: {
-    format: 'esm' | 'cjs';
-    bundle: boolean;
+    format?: 'esm' | 'cjs';
+    bundle?: boolean;
+    ignores?: IgnorePattern[];
   };
   optimization?: Optimization;
   mock?: { exclude?: string[] };
