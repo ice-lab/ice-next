@@ -131,10 +131,7 @@ export function createElement<P extends {
       {
         onAppear,
         onDisappear,
-        // Passing child ref to `VisibilityChange` to avoid creating a new ref.
-        childRef: rest.ref,
-        // Using forwardedRef as a prop to the backend react element.
-        forwardRef: (ref: RefObject<any>) => _createElement(type, Object.assign({ ref }, rest), ...children),
+        children: _createElement(type, rest, ...children),
       },
     );
   } else {
