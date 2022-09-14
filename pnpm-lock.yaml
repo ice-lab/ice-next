@@ -245,7 +245,6 @@ importers:
     specifiers:
       '@ice/app': workspace:*
       '@ice/plugin-antd': workspace:*
-      '@ice/plugin-css-assets-local': workspace:*
       '@ice/plugin-moment-locales': workspace:*
       '@ice/runtime': workspace:*
       '@types/react': ^18.0.0
@@ -257,7 +256,6 @@ importers:
     dependencies:
       '@ice/app': link:../../packages/ice
       '@ice/plugin-antd': link:../../packages/plugin-antd
-      '@ice/plugin-css-assets-local': link:../../packages/plugin-css-assets-local
       '@ice/plugin-moment-locales': link:../../packages/plugin-moment-locales
       '@ice/runtime': link:../../packages/runtime
       antd: 4.22.3_biqbaboplfbrettd7655fr4n2y
