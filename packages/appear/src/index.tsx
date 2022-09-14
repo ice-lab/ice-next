@@ -1,6 +1,6 @@
 import { Children, useRef, useEffect, useCallback } from 'react';
 import { isFunction } from './type';
-import { observerElement } from './visibility';
+import { observerElement, VisibilityChangeEvent } from './visibility';
 
 function VisibilityChange(props: any) {
   const {
@@ -30,8 +30,8 @@ function VisibilityChange(props: any) {
     };
   }, [ref]);
 
-  useEffect(() => listen('appear', onAppear), [ref, onAppear, listen]);
-  useEffect(() => listen('disappear', onDisappear), [ref, onDisappear, listen]);
+  useEffect(() => listen(VisibilityChangeEvent.appear, onAppear), [ref, onAppear, listen]);
+  useEffect(() => listen(VisibilityChangeEvent.disappear, onDisappear), [ref, onDisappear, listen]);
 
   return Children.only({ ...children, ref });
 }

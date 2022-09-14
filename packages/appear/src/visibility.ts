@@ -3,7 +3,7 @@
 // @ts-nocheck
 import PolyfilledIntersectionObserver from './intersection-observer';
 
-enum VisibilityChangeEvent {
+export enum VisibilityChangeEvent {
   appear = 'appear',
   disappear = 'disappear',
 }
