@@ -94,7 +94,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const runtimeModules = getRuntimeModules(plugins);
 
   // register web
-  ctx.registerTask('web', getWebTask({ rootDir, command }));
+  ctx.registerTask('web', getWebTask({ rootDir, command, dataCache }));
 
   // register config
   ['userConfig', 'cliOption'].forEach((configType) => {
@@ -234,6 +234,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
             taskConfigs,
             serverCompiler,
             spinner: buildSpinner,
+            dataCache,
           });
         } else if (command === 'test') {
           return await test(ctx, {
