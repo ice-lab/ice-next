@@ -2,4 +2,4 @@
 
 ## 1.0.0
 
-- feat: init
+- feat: init plugin
