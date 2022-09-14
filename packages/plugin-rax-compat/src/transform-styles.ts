@@ -4,8 +4,7 @@ import transformer from 'stylesheet-loader/lib/transformer.js';
 import globalCSSVariable from 'stylesheet-loader/lib/globalCSSVariable.js';
 import { getErrorMessages, getWarnMessages, resetMessage } from 'stylesheet-loader/lib/promptMessage.js';
 import { isPrefersColorScheme, processPrefersColorScheme } from 'stylesheet-loader/lib/processPrefersColorScheme.js';
-import less from 'less';
-import postcss from 'postcss';
+import { less, postcss } from '@ice/bundles';
 
 const require = createRequire(import.meta.url);
 
@@ -36,11 +35,6 @@ async function styleSheetLoader(source, type = 'css') {
   // getOptions can return null if no query passed.
   const parsedQuery = {};
 
-  // Compatible with string true.
-  if (parsedQuery.log === 'true') {
-    parsedQuery.log = true;
-  }
-
   const parsedData = parse(parsedQuery, stylesheet);
 
   return genStyleContent(parsedData, parsedQuery);
@@ -58,10 +52,10 @@ const parse = (parsedQuery, stylesheet) => {
 
     // normal rule
     if (rule.type === RULE) {
-      style = transformer.default.convert(rule, parsedQuery);
+      style = transformer.convert(rule, parsedQuery);
 
       rule.selectors.forEach((selector) => {
-        let sanitizedSelector = transformer.default.sanitizeSelector(
+        let sanitizedSelector = transformer.sanitizeSelector(
           selector, transformDescendantCombinator, rule.position, parsedQuery.log,
         );
         if (sanitizedSelector) {
@@ -121,7 +115,7 @@ const genStyleContent = (parsedData, parsedQuery) => {
   const mediaContent = getMediaContent(mediaRules, parsedQuery);
   const warnMessageOutput = parsedQuery.log ? getWarnMessageOutput() : '';
   resetMessage();
-  return `${parsedQuery.theme ? globalCSSVariable.default({ styles, globalCSSVarName: GLOBAL_CSS_VAR }) : ''}
+  return `${parsedQuery.theme ? globalCSSVariable({ styles, globalCSSVarName: GLOBAL_CSS_VAR }) : ''}
   var _styles = ${stringifyData(styles, parsedQuery.theme)};
 ${fontFaceContent}
 ${mediaContent}
@@ -198,7 +192,7 @@ const getFontFaceContent = (rules) => {
   return content;
 };
 
-const stringifyData = (data, theme) => {
+const stringifyData = (data, theme?: string) => {
   const str = JSON.stringify(data, undefined, '  ');
   return theme ? str.replace(VAR_KEY_VAL_REG, 'get $1(){return __getValue("$2")}') : str;
 };
