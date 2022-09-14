@@ -96,7 +96,6 @@ const plugin: Plugin<CompatRaxOptions> = (options = {}) => ({
         }
 
         applyStylesheetLoaderForServer(config);
-
         applyStylesheetLoader(config);
         transformClassNameToStyle(config);
       }
@@ -171,7 +170,7 @@ function applyStylesheetLoader(config) {
       for (let i = 0, l = rules.length; i < l; i++) {
         const rule: RuleSetRule | any = rules[i];
         // Find the css rule, that default to CSS Modules.
-        if (rule.test && rule.test.source && rule.test.source.indexOf('.css') > -1) {
+        if (rule.test && rule.test instanceof RegExp && rule.test.source.indexOf('.css') > -1) {
           rule.test = /\.module\.css$/i;
           rules[i] = {
             test: /\.css$/i,
@@ -183,7 +182,7 @@ function applyStylesheetLoader(config) {
         }
 
         // Find and replace the less rule
-        if (rule.test && rule.test.source && rule.test.source.indexOf('.less') > -1) {
+        if (rule.test && rule.test instanceof RegExp && rule.test.source.indexOf('.less') > -1) {
           rules[i] = {
             test: /\.less$/i,
             oneOf: [
