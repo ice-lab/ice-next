@@ -293,6 +293,7 @@ importers:
     specifiers:
       '@alifd/next': ^1.25.49
       '@ice/app': workspace:*
+      '@ice/plugin-css-assets-local': workspace:*
       '@ice/plugin-fusion': workspace:*
       '@ice/runtime': workspace:*
       '@types/react': ^18.0.0
@@ -301,12 +302,13 @@ importers:
       react-dom: ^18.0.0
     dependencies:
       '@alifd/next': 1.25.49_biqbaboplfbrettd7655fr4n2y
-      '@ice/app': link:../../packages/ice
-      '@ice/plugin-fusion': link:../../packages/plugin-fusion
       '@ice/runtime': link:../../packages/runtime
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
     devDependencies:
+      '@ice/app': link:../../packages/ice
+      '@ice/plugin-css-assets-local': link:../../packages/plugin-css-assets-local
+      '@ice/plugin-fusion': link:../../packages/plugin-fusion
       '@types/react': 18.0.8
       '@types/react-dom': 18.0.3
 
