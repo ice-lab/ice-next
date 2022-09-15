@@ -9,6 +9,10 @@ const igonrePlugin = (ignores: IgnorePattern[] = []): Plugin => {
   return {
     name: 'esbuild-ignore',
     setup(build: PluginBuild) {
+      if (!Array.isArray(ignores)) {
+        return;
+      }
+
       for (const ignorePattern of ignores) {
         build.onResolve({ filter: ignorePattern.resourceRegExp }, args => {
           if (ignorePattern.contextRegExp) {
