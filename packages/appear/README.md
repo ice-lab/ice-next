@@ -12,6 +12,13 @@ npm i @ice/appear
 import VisibilityChange from '@ice/appear';
 
 export default function Home() {
-  return <VisibilityChange>show something</VisibilityChange>
+  return <VisibilityChange
+    onAppear={() => {
+      console.log('onAppear')
+    }}
+    onDisappear={() => {
+      console.log('ondisAppear')
+    }}
+  >show something</VisibilityChange>
 }
 ```
