@@ -687,6 +687,16 @@ importers:
     devDependencies:
       '@ice/types': link:../types
 
+  packages/plugin-jsx-plus:
+    specifiers:
+      '@ice/types': ^1.0.0
+      '@types/react': ^18.0.0
+      '@types/react-dom': ^18.0.0
+    devDependencies:
+      '@ice/types': link:../types
+      '@types/react': 18.0.17
+      '@types/react-dom': 18.0.6
+
   packages/plugin-moment-locales:
     specifiers:
       '@ice/types': ^1.0.0
