@@ -1,7 +1,7 @@
 import createService from '../createService.js';
 import type test from '../commands/test.js';
 
-async function getTaskConfig() {
+export default async function getTaskConfig() {
   const rootDir = process.cwd();
   const { run } = await createService({
     rootDir,
@@ -12,5 +12,3 @@ async function getTaskConfig() {
   const webTaskConfig = taskConfigs.find((taskConfig) => taskConfig.name === 'web');
   return webTaskConfig;
 }
-
-export default getTaskConfig;
