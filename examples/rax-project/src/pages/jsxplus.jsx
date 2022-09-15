@@ -11,6 +11,7 @@ export default function JSXPlusDemo() {
       <div x-if={false}>Should Hide</div>
 
       {/* x-for */}
+      {/* eslint-disable-next-line */}
       <span x-for={item in list} key={item}> {item} </span>
 
       {/* Fragment */}

@@ -7,7 +7,7 @@ import type {
   RefObject,
   SyntheticEvent,
 } from 'react';
-import { createElement as _createElement, useEffect, useCallback, useRef, useState, forwardRef as _forwardRef } from 'react';
+import { createElement as _createElement, useEffect, useCallback, useRef, useState } from 'react';
 import { cached, convertUnit } from 'style-unit';
 import { observerElement } from './visibility';
 import { isFunction, isObject, isNumber } from './type';
@@ -62,11 +62,14 @@ function InputCompat(props: any) {
     }
 
     if (ref && ref.current && onChange) {
+      // @ts-ignore
       ref.current.addEventListener('change', changeEventListener);
     }
 
     return () => {
       if (ref && ref.current) {
+        // @ts-ignore
+        // eslint-disable-next-line
         ref.current.removeEventListener('change', changeEventListener);
       }
     };
