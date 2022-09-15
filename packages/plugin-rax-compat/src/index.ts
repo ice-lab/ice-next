@@ -118,7 +118,7 @@ const plugin: Plugin<CompatRaxOptions> = (options = {}) => ({
  * @param config
  */
 function getClassNameToStyleTransformer(syntaxFeatures) {
-    const { exportDefaultFrom } = syntaxFeatures;
+  const { exportDefaultFrom } = syntaxFeatures;
 
   const plugins: (string | Array<string | object>)[] = [
     [require.resolve('babel-plugin-transform-jsx-stylesheet'), {

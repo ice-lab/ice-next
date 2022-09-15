@@ -294,7 +294,6 @@ export default defineConfig({
 * resourceRegExp 对应文件的匹配路径
 * contextRegExp （可选）对应文件内容的匹配规则
 
-
 ### routes
 
 - 类型：`{ignoreFiles: string[]; defineRoutes: (route) => void}`
