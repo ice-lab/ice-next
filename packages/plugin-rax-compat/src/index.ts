@@ -98,11 +98,12 @@ const plugin: Plugin<CompatRaxOptions> = (options = {}) => ({
         }
 
         if (userConfig.ssr || userConfig.ssg) {
-          applyStylesheetLoaderForServer(config);
+          config.server.buildOptions = applyStylesheetLoaderForServer(config.server.buildOptions);
         }
 
-        applyStylesheetLoader(config);
-        transformClassNameToStyle(config);
+        config.configureWebpack ??= [];
+        config.configureWebpack.unshift(styleSheetLoaderForClient);
+        config.transforms = [...(config.transforms || []), classNameToStyleTransformer];
       }
     });
   },
@@ -113,114 +114,104 @@ const plugin: Plugin<CompatRaxOptions> = (options = {}) => ({
  * <div className="header" /> => <div style={styleSheet.header} />
  * @param config
  */
- function transformClassNameToStyle(config) {
-  config.transforms = [...(config.transforms || []), async (sourceCode, id) => {
-    // js file transform with rax-platform-loader and babel-plugin-transform-jsx-stylesheet
-    if (id.includes('node_modules') && id.includes('react')) {
-      return;
-    }
+const classNameToStyleTransformer = async (sourceCode, id) => {
+  // js file transform with rax-platform-loader and babel-plugin-transform-jsx-stylesheet
+  if (id.includes('node_modules') && id.includes('react')) {
+    return;
+  }
 
-    if (jsRegex.test(id)) {
-      const parserPlugins = [
-        'jsx',
-        'importMeta',
-        'topLevelAwait',
-        'classProperties',
-        'classPrivateMethods',
-      ];
-      if (/\.tsx?$/.test(id)) {
-        // when routes file is a typescript file,
-        // add ts parser plugins
-        parserPlugins.push('typescript');
-        parserPlugins.push('decorators-legacy'); // allowing decorators by default
-      }
-      const { code, map } = transformSync(sourceCode, {
-        babelrc: false,
-        configFile: false,
-        filename: id,
-        parserOpts: {
-          sourceType: 'module',
-          allowAwaitOutsideFunction: true,
-          // ts syntax had already been transformed by swc plugin.
-          plugins: parserPlugins,
-        },
-        generatorOpts: {
-          decoratorsBeforeExport: true,
-        },
-        sourceFileName: id,
-        plugins: [
-          [require.resolve('babel-plugin-transform-jsx-stylesheet'), {
-            retainClassName: true,
-          }],
-          require.resolve('@babel/plugin-proposal-export-default-from'),
-        ],
-      });
-      return {
-        code,
-        map,
-      };
+  if (jsRegex.test(id)) {
+    const parserPlugins = [
+      'jsx',
+      'importMeta',
+      'topLevelAwait',
+      'classProperties',
+      'classPrivateMethods',
+    ];
+    if (/\.tsx?$/.test(id)) {
+      // when routes file is a typescript file,
+      // add ts parser plugins
+      parserPlugins.push('typescript');
+      parserPlugins.push('decorators-legacy'); // allowing decorators by default
     }
-  }];
-}
+    const { code, map } = transformSync(sourceCode, {
+      babelrc: false,
+      configFile: false,
+      filename: id,
+      parserOpts: {
+        sourceType: 'module',
+        allowAwaitOutsideFunction: true,
+        // ts syntax had already been transformed by swc plugin.
+        plugins: parserPlugins,
+      },
+      generatorOpts: {
+        decoratorsBeforeExport: true,
+      },
+      sourceFileName: id,
+      plugins: [
+        [require.resolve('babel-plugin-transform-jsx-stylesheet'), {
+          retainClassName: true,
+        }],
+        require.resolve('@babel/plugin-proposal-export-default-from'),
+      ],
+    });
+    return {
+      code,
+      map,
+    };
+  }
+};
 
 /**
  * StyleSheet Loader for CSR.
  * Transform css files to inline style by webpack loader.
  */
-function applyStylesheetLoader(config) {
-  config.configureWebpack ??= [];
-  config.configureWebpack.unshift((config) => {
-    const { rules } = config.module || {};
-    if (Array.isArray(rules)) {
-      for (let i = 0, l = rules.length; i < l; i++) {
-        const rule: RuleSetRule | any = rules[i];
-        // Find the css rule, that default to CSS Modules.
-        if (rule.test && rule.test instanceof RegExp && rule.test.source.indexOf('.css') > -1) {
-          rules[i] = {
-            test: /\.css$/i,
-            oneOf: [
-              ruleSetStylesheet,
-            ],
-          };
-        }
+const styleSheetLoaderForClient = (config) => {
+  const { rules } = config.module || {};
+  if (Array.isArray(rules)) {
+    for (let i = 0, l = rules.length; i < l; i++) {
+      const rule: RuleSetRule | any = rules[i];
+      // Find the css rule, that default to CSS Modules.
+      if (rule.test && rule.test instanceof RegExp && rule.test.source.indexOf('.css') > -1) {
+        rules[i] = {
+          test: /\.css$/i,
+          oneOf: [
+            ruleSetStylesheet,
+          ],
+        };
+      }
 
-        // Find and replace the less rule
-        if (rule.test && rule.test instanceof RegExp && rule.test.source.indexOf('.less') > -1) {
-          rules[i] = {
-            test: /\.less$/i,
-            oneOf: [
-              ruleSetStylesheetForLess,
-            ],
-          };
-        }
+      // Find and replace the less rule
+      if (rule.test && rule.test instanceof RegExp && rule.test.source.indexOf('.less') > -1) {
+        rules[i] = {
+          test: /\.less$/i,
+          oneOf: [
+            ruleSetStylesheetForLess,
+          ],
+        };
       }
     }
-    return config;
-  });
-}
+  }
+  return config;
+};
 
 /**
  * StyleSheet Loader for Server.
  * @param config
  */
-function applyStylesheetLoaderForServer(config) {
-  const currentBuildOptions = config.server?.buildOptions;
+function applyStylesheetLoaderForServer(preBuildOptions) {
+  return (buildOptions) => {
+    const currentOptions = preBuildOptions?.(buildOptions) || buildOptions;
 
-  config.server = {
-    ...config.server,
-    buildOptions: (buildOptions) => {
-      const currentOptions = currentBuildOptions?.(buildOptions) || buildOptions;
+    // Remove esbuild-empty-css while use inline style.
+    currentOptions.plugins = currentOptions.plugins?.filter(({ name }) => name !== 'esbuild-empty-css');
+    const cssModuleIndex = currentOptions.plugins?.findIndex(({ name }) => name === 'esbuild-css-modules');
 
-      // Remove esbuild-empty-css while use inline style.
-      currentOptions.plugins = currentOptions.plugins?.filter(({ name }) => name !== 'esbuild-empty-css');
-      const cssModuleIndex = currentOptions.plugins?.findIndex(({ name }) => name === 'esbuild-css-modules');
+    // Add custom transform for server compile.
+    currentOptions.plugins?.splice(cssModuleIndex as number, 0, inlineStylePlugin());
 
-      // Add custom transform for server compile.
-      currentOptions.plugins?.splice(cssModuleIndex as number, 0, inlineStylePlugin());
-
-      currentOptions.treeShaking = true;
-      return currentOptions;
-    },
+    currentOptions.treeShaking = true;
+    return currentOptions;
   };
 }
 
