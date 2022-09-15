@@ -103,7 +103,10 @@ const plugin: Plugin<CompatRaxOptions> = (options = {}) => ({
 
         config.configureWebpack ??= [];
         config.configureWebpack.unshift(styleSheetLoaderForClient);
-        config.transforms = [...(config.transforms || []), classNameToStyleTransformer];
+        config.transforms = [
+          ...(config.transforms || []),
+          getClassNameToStyleTransformer(userConfig.syntaxFeatures || {}),
+        ];
       }
     });
   },
@@ -114,53 +117,65 @@ const plugin: Plugin<CompatRaxOptions> = (options = {}) => ({
  * <div className="header" /> => <div style={styleSheet.header} />
  * @param config
  */
-const classNameToStyleTransformer = async (sourceCode, id) => {
-  // js file transform with rax-platform-loader and babel-plugin-transform-jsx-stylesheet
-  if (id.includes('node_modules') && id.includes('react')) {
-    return;
+function getClassNameToStyleTransformer(syntaxFeatures) {
+    const { exportDefaultFrom } = syntaxFeatures;
+
+  const plugins: (string | Array<string | object>)[] = [
+    [require.resolve('babel-plugin-transform-jsx-stylesheet'), {
+      retainClassName: true,
+    }],
+  ];
+
+  if (exportDefaultFrom) {
+    plugins.push(require.resolve('@babel/plugin-proposal-export-default-from'));
   }
 
-  if (jsRegex.test(id)) {
-    const parserPlugins = [
-      'jsx',
-      'importMeta',
-      'topLevelAwait',
-      'classProperties',
-      'classPrivateMethods',
-    ];
-    if (/\.tsx?$/.test(id)) {
-      // when routes file is a typescript file,
-      // add ts parser plugins
-      parserPlugins.push('typescript');
-      parserPlugins.push('decorators-legacy'); // allowing decorators by default
+  return async (sourceCode, id) => {
+    // js file transform with rax-platform-loader and babel-plugin-transform-jsx-stylesheet
+    if (id.includes('node_modules') && id.includes('react')) {
+      return;
     }
-    const { code, map } = transformSync(sourceCode, {
-      babelrc: false,
-      configFile: false,
-      filename: id,
-      parserOpts: {
-        sourceType: 'module',
-        allowAwaitOutsideFunction: true,
-        // ts syntax had already been transformed by swc plugin.
-        plugins: parserPlugins,
-      },
-      generatorOpts: {
-        decoratorsBeforeExport: true,
-      },
-      sourceFileName: id,
-      plugins: [
-        [require.resolve('babel-plugin-transform-jsx-stylesheet'), {
-          retainClassName: true,
-        }],
-        require.resolve('@babel/plugin-proposal-export-default-from'),
-      ],
-    });
-    return {
-      code,
-      map,
-    };
-  }
-};
+
+    if (jsRegex.test(id)) {
+      const parserPlugins = [
+        'jsx',
+        'importMeta',
+        'topLevelAwait',
+        'classProperties',
+        'classPrivateMethods',
+      ];
+
+      if (/\.tsx?$/.test(id)) {
+        // when routes file is a typescript file,
+        // add ts parser plugins
+        parserPlugins.push('typescript');
+        parserPlugins.push('decorators-legacy'); // allowing decorators by default
+      }
+
+      const { code, map } = transformSync(sourceCode, {
+        babelrc: false,
+        configFile: false,
+        filename: id,
+        parserOpts: {
+          sourceType: 'module',
+          allowAwaitOutsideFunction: true,
+          // ts syntax had already been transformed by swc plugin.
+          plugins: parserPlugins,
+        },
+        generatorOpts: {
+          decoratorsBeforeExport: true,
+        },
+        sourceFileName: id,
+        plugins,
+      });
+
+      return {
+        code,
+        map,
+      };
+    }
+  };
+}
 
 /**
  * StyleSheet Loader for CSR.
