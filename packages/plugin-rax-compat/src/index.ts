@@ -59,7 +59,9 @@ export interface CompatRaxOptions {
 
 const plugin: Plugin<CompatRaxOptions> = (options = {}) => ({
   name: '@ice/plugin-rax-compat',
-  setup: ({ onGetConfig }) => {
+  setup: ({ onGetConfig, context }) => {
+    const { userConfig } = context;
+
     onGetConfig((config) => {
       // Reset jsc.transform.react.runtime to classic.
       config.swcOptions = merge(config.swcOptions || {}, {
@@ -95,7 +97,10 @@ const plugin: Plugin<CompatRaxOptions> = (options = {}) => ({
           warnOnce = true;
         }
 
-        applyStylesheetLoaderForServer(config);
+        if (userConfig.ssr || userConfig.ssg) {
+          applyStylesheetLoaderForServer(config);
+        }
+
         applyStylesheetLoader(config);
         transformClassNameToStyle(config);
       }
