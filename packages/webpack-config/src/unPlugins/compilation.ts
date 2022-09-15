@@ -138,7 +138,6 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
         return { code, map };
       } catch (e) {
         // catch error for Unhandled promise rejection
-        this.error(e);
         return { code: null, map: null };
       }
     },
