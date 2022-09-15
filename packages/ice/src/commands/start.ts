@@ -21,6 +21,7 @@ import ServerCompilerPlugin from '../webpack/ServerCompilerPlugin.js';
 import ReCompilePlugin from '../webpack/ReCompilePlugin.js';
 import getServerEntry from '../utils/getServerEntry.js';
 import getRouterBasename from '../utils/getRouterBasename.js';
+import { getRoutePathsFromCache } from '../utils/getRoutePaths.js';
 import emptyDir from '../utils/emptyDir.js';
 
 const { merge } = lodash;
@@ -97,9 +98,11 @@ const start = async (
           {
             preBundle: format === 'esm' && (ssr || ssg),
             swc: {
-              // Remove components and getData when document only.
-              removeExportExprs: (!ssg && !ssr) ? ['default', 'getData', 'getServerData', 'getStaticData'] : [],
+              keepExports: (!ssg && !ssr) ? ['getConfig'] : null,
               keepPlatform: 'node',
+              getRoutePaths: () => {
+                return getRoutePathsFromCache(dataCache);
+              },
             },
           },
         ],
@@ -148,17 +151,17 @@ const start = async (
           serverRenderMiddleware,
         );
 
-        if (commandArgs.mock) {
-          const mockMiddleware = createMockMiddleware({ rootDir, exclude: userConfig?.mock?.exclude });
-          middlewares.splice(insertIndex, 0, mockMiddleware);
-        }
-        return customMiddlewares ? customMiddlewares(middlewares, devServer) : middlewares;
-      },
-    };
-    // merge devServerConfig with webpackConfig.devServer
-    devServerConfig = merge(webpackConfigs[0].devServer, devServerConfig);
-    const protocol = devServerConfig.https ? 'https' : 'http';
-    let urlPathname = getRouterBasename(webTaskConfig, appConfig) || '/';
+      if (commandArgs.mock) {
+        const mockMiddleware = createMockMiddleware({ rootDir, exclude: userConfig?.mock?.exclude });
+        middlewares.splice(insertIndex, 0, mockMiddleware);
+      }
+      return customMiddlewares ? customMiddlewares(middlewares, devServer) : middlewares;
+    },
+  };
+  // merge devServerConfig with webpackConfig.devServer
+  devServerConfig = merge(webpackConfigs[0].devServer, devServerConfig);
+  const protocol = devServerConfig.https ? 'https' : 'http';
+  let urlPathname = getRouterBasename(webTaskConfig, appConfig) || '/';
 
     const urls = prepareURLs(
       protocol,
@@ -177,6 +180,7 @@ const start = async (
       hooksAPI,
       spinner,
       devPath,
+      dataCache,
     });
     const devServer = new WebpackDevServer(devServerConfig, compiler);
     devServer.startCallback(() => {

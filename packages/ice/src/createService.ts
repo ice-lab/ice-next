@@ -105,7 +105,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
 
   if (platform === WEB) {
     // register web
-    ctx.registerTask(WEB, getWebTask({ rootDir, command }));
+    ctx.registerTask(WEB, getWebTask({ rootDir, command, dataCache }));
   } else if (isMiniappPlatform) {
     ctx.registerTask(platform, getMiniappTask({ rootDir, command, platform, getAppConfig, getRoutesConfig }));
   }
@@ -247,6 +247,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
             taskConfigs,
             serverCompiler,
             spinner: buildSpinner,
+            dataCache,
           });
         }
       } catch (err) {

@@ -53,6 +53,7 @@ async function webpackCompiler(options: {
     getAppConfig: GetAppConfig;
     getRoutesConfig: GetRoutesConfig;
   };
+  dataCache: Map<string, string>;
 }) {
   const {
     rootDir,
@@ -65,6 +66,8 @@ async function webpackCompiler(options: {
     webpackConfigs,
     spinner,
     devPath,
+    rootDir,
+    dataCache,
   } = options;
   const { platform = WEB } = commandArgs;
   const { serverCompiler } = hooksAPI;
@@ -78,7 +81,7 @@ async function webpackCompiler(options: {
   // Add webpack plugin of data-loader in web task
   const needDataLoader = platform === WEB;
   if (needDataLoader) {
-    webpackConfigs[0].plugins.push(new DataLoaderPlugin({ serverCompiler, rootDir }));
+    webpackConfigs[0].plugins.push(new DataLoaderPlugin({ serverCompiler, rootDir, dataCache }));
   }
 
   // Add default plugins for spinner
