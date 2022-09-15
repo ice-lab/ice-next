@@ -171,11 +171,9 @@ function applyStylesheetLoader(config) {
         const rule: RuleSetRule | any = rules[i];
         // Find the css rule, that default to CSS Modules.
         if (rule.test && rule.test instanceof RegExp && rule.test.source.indexOf('.css') > -1) {
-          rule.test = /\.module\.css$/i;
           rules[i] = {
             test: /\.css$/i,
             oneOf: [
-              rule,
               ruleSetStylesheet,
             ],
           };
@@ -230,14 +228,11 @@ const inlineStylePlugin = () => {
     name: 'esbuild-inline-style',
     setup: (build) => {
       build.onResolve({ filter: /\.(css|sass|scss|less)$/ }, (args) => {
-        // golang not support the following regexp, we use javascript to determine again
-        if (/(?<!.module)\.(css|sass|scss|less)$/.test(args.path)) {
-          const absolutePath = path.resolve(args.resolveDir, args.path);
-          return {
-            path: absolutePath,
-            namespace: 'css-content',
-          };
-        }
+        const absolutePath = path.resolve(args.resolveDir, args.path);
+        return {
+          path: absolutePath,
+          namespace: 'css-content',
+        };
       });
 
       build.onLoad({ filter: /.*/, namespace: 'css-content' }, async (args) => {

@@ -1,6 +1,6 @@
 import { createRequire } from 'module';
 import css from 'css';
-import transformer from 'stylesheet-loader/lib/transformer.js';
+import transformerModule from 'stylesheet-loader/lib/transformer.js';
 import globalCSSVariable from 'stylesheet-loader/lib/globalCSSVariable.js';
 import { getErrorMessages, getWarnMessages, resetMessage } from 'stylesheet-loader/lib/promptMessage.js';
 import { isPrefersColorScheme, processPrefersColorScheme } from 'stylesheet-loader/lib/processPrefersColorScheme.js';
@@ -16,6 +16,9 @@ const QUOTES_REG = /['|"]/g;
 const VAR_KEY_VAL_REG = /"(.*?)"\s*:\s*"var\((.*)\)"/g;
 const GLOBAL_CSS_VAR = '__CSSVariables';
 const CSS_VAR_NAME = ':root';
+
+// @ts-ignore
+const transformer = transformerModule.default;
 
 async function styleSheetLoader(source, type = 'css') {
   let cssContent = source;
