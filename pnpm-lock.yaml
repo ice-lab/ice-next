@@ -367,9 +367,11 @@ importers:
 
   packages/appear:
     specifiers:
-      react: ^18.2.0
-    dependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    devDependencies:
       react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
 
   packages/bundles:
     specifiers:
@@ -766,7 +768,7 @@ importers:
 
   packages/rax-compat:
     specifiers:
-      '@ice/appear': ^0.0.1
+      '@ice/appear': ^0.1.0
       '@ice/pkg': 1.1.2-0
       '@swc/helpers': ^0.4.3
       '@types/rax': ^1.0.8
