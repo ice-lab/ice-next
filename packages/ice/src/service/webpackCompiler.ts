@@ -32,10 +32,6 @@ function logMessage(platform: string, { urls, hashChar, devPath, commandArgs, ro
 - Network:  ${chalk.underline.white(`${urls.lanUrlForTerminal}${hashChar}${devPath}`)}`;
     }
     consola.log(`${logoutMessage}\n`);
-
-    if (commandArgs.open) {
-      openBrowser(`${urls.localUrlForBrowser}${hashChar}${devPath}`);
-    }
   }
 }
 async function webpackCompiler(options: {
@@ -66,7 +62,6 @@ async function webpackCompiler(options: {
     webpackConfigs,
     spinner,
     devPath,
-    rootDir,
     dataCache,
   } = options;
   const { platform = WEB } = commandArgs;
@@ -132,6 +127,9 @@ async function webpackCompiler(options: {
       const hashChar = appConfig?.router?.type === 'hash' ? '#/' : '';
       if (isSuccessful && isFirstCompile) {
         logMessage(platform, { urls, hashChar, devPath, commandArgs, rootDir });
+        if (platform === WEB && commandArgs.open) {
+          openBrowser(`${urls.localUrlForBrowser}${hashChar}${devPath}`);
+        }
       }
       // compiler.hooks.done is AsyncSeriesHook which does not support async function
       await applyHook('after.start.compile', {
