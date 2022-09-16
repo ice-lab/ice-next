@@ -9,11 +9,10 @@ const example = 'routes-generate';
 describe(`build ${example}`, () => {
   let page: Page;
   let browser: Browser;
-  const defaultHtml = 'index.html';
 
   test('open /', async () => {
     await buildFixture(example);
-    const res = await setupBrowser({ example, defaultHtml });
+    const res = await setupBrowser({ example });
     page = res.page;
     browser = res.browser;
     expect(await page.$$text('h1')).toStrictEqual(['Layout']);
@@ -21,22 +20,22 @@ describe(`build ${example}`, () => {
   }, 120000);
 
   test('define extra routes', async () => {
-    await page.goto(page.baseUrl.replace(RegExp(`${defaultHtml}$`), 'about-me.html'));
+    await page.push('/about-me.html');
     expect(await page.$$text('h1')).toStrictEqual([]);
     expect(await page.$$text('h2')).toStrictEqual(['About']);
 
-    await page.goto(page.baseUrl.replace(RegExp(`${defaultHtml}$`), 'product.html'));
+    await page.push('/product.html');
     expect(await page.$$text('h1')).toStrictEqual(['Layout']);
     expect(await page.$$text('h2')).toStrictEqual(['Products Page']);
   });
 
   test('page layout', async () => {
-    await page.goto(page.baseUrl.replace(RegExp(`${defaultHtml}$`), 'dashboard/a.html'));
+    await page.push('/dashboard/a.html');
     expect(await page.$$text('h1')).toStrictEqual(['Layout']);
     expect(await page.$$text('h2')).toStrictEqual(['Dashboard']);
     expect(await page.$$text('h3')).toStrictEqual(['A page']);
 
-    await page.goto(page.baseUrl.replace(RegExp(`${defaultHtml}$`), 'dashboard/b.html'));
+    await page.push('/dashboard/b.html');
     expect(await page.$$text('h1')).toStrictEqual(['Layout']);
     expect(await page.$$text('h2')).toStrictEqual(['Dashboard']);
     expect(await page.$$text('h3')).toStrictEqual(['B page']);
@@ -64,33 +63,33 @@ describe(`start ${example}`, () => {
   }, 120000);
 
   test('define extra routes', async () => {
-    await page.push('about-me');
+    await page.push('/about-me');
     expect(await page.$$text('h1')).toStrictEqual([]);
     expect(await page.$$text('h2')).toStrictEqual(['About']);
 
-    await page.push('product');
+    await page.push('/product');
     expect(await page.$$text('h1')).toStrictEqual(['Layout']);
     expect(await page.$$text('h2')).toStrictEqual(['Products Page']);
   });
 
   test('page layout', async () => {
-    await page.push('dashboard/a');
+    await page.push('/dashboard/a');
     expect(await page.$$text('h1')).toStrictEqual(['Layout']);
     expect(await page.$$text('h2')).toStrictEqual(['Dashboard']);
     expect(await page.$$text('h3')).toStrictEqual(['A page']);
 
-    await page.push('dashboard/b');
+    await page.push('/dashboard/b');
     expect(await page.$$text('h1')).toStrictEqual(['Layout']);
     expect(await page.$$text('h2')).toStrictEqual(['Dashboard']);
     expect(await page.$$text('h3')).toStrictEqual(['B page']);
   });
 
   test('dynamic routes layout', async () => {
-    await page.push('detail/a');
+    await page.push('/detail/a');
     expect(await page.$$text('h1')).toStrictEqual(['Layout']);
     expect(await page.$$text('h2')).toStrictEqual(['Detail id: a']);
 
-    await page.push('detail/b');
+    await page.push('/detail/b');
     expect(await page.$$text('h1')).toStrictEqual(['Layout']);
     expect(await page.$$text('h2')).toStrictEqual(['Detail id: b']);
   });
