@@ -692,7 +692,7 @@ importers:
   packages/plugin-jsx-plus:
     specifiers:
       '@babel/core': ^7.19.1
-      '@ice/types': workspace:^1.0.0
+      '@ice/types': release
       '@types/react': ^18.0.20
       '@types/react-dom': ^18.0.6
       babel-plugin-transform-jsx-class: ^0.1.3

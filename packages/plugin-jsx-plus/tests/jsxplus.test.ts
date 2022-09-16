@@ -72,6 +72,7 @@ describe('JSX Plus Plugin', () => {
       const context = {
         rootDir: '/foo/bar',
       };
+      // @ts-ignore
       plugin.setup({ onGetConfig, context });
 
       const transformer = fakeConfig['transforms'][0];
