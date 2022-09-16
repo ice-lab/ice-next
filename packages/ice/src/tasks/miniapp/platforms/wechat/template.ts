@@ -27,7 +27,7 @@ export default class Template extends UnRecursiveTemplate {
   buildXsTemplate() {
     return '<wxs module="xs" src="./utils.wxs" />';
   }
-  // @ts-ignore
+
   replacePropName(name: string, value: string, componentName: string, componentAlias) {
     if (value === 'eh') {
       const nameLowerCase = name.toLowerCase();
@@ -43,11 +43,8 @@ export default class Template extends UnRecursiveTemplate {
 
   buildXSTepFocus(nn: string) {
     if (this.pluginOptions.enablekeyboardAccessory) {
-      // @ts-ignore
       const textarea = this.componentsAlias.textarea._num;
-      // @ts-ignore
       const input = this.componentsAlias.input._num;
-      // @ts-ignore
       const ka = this.componentsAlias['keyboard-accessory']._num;
       return `function(i, prefix) {
       var s = i.focus !== undefined ? 'focus' : 'blur'
@@ -67,7 +64,6 @@ export default class Template extends UnRecursiveTemplate {
 
     if ((nodeName === 'textarea' || nodeName === 'input') && this.pluginOptions.enablekeyboardAccessory) {
       const list = res.split('</template>');
-      // @ts-ignore
       const componentAlias = this.componentsAlias[nodeName];
       const nodeNameAlias = componentAlias._num;
 
