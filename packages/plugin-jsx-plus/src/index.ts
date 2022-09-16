@@ -105,8 +105,7 @@ const plugin: Plugin<JSXPlusOptions> = (options: JSXPlusOptions = {}) => ({
             sourceFileName: id,
           }, babelTransformOptions);
           if (/\.tsx?$/.test(id)) {
-            // when routes file is a typescript file,
-            // add ts parser plugins
+            // When routes file is a typescript file, add ts parser plugins.
             options.parserOpts.plugins.push('typescript');
             options.parserOpts.plugins.push('decorators-legacy'); // allowing decorators by default
           }

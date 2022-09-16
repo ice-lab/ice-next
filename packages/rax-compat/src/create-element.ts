@@ -1,6 +1,5 @@
 import type {
   Attributes,
-  ChangeEvent,
   FunctionComponent,
   ReactElement,
   ReactNode,
@@ -55,22 +54,17 @@ function InputCompat(props: any) {
     delete rest.maxlength;
   }
 
-  // The onChange event is SyntheticEvent in React but it is dom event in Rax, so it need compat onChange.
+  // The onChange event is SyntheticEvent in React, but it is dom event in Rax, so it needs compat onChange.
   useEffect(() => {
-    function changeEventListener(event: ChangeEvent) {
-      onChange(event);
-    }
-
+    let eventTarget: EventTarget;
     if (ref && ref.current && onChange) {
-      // @ts-ignore
-      ref.current.addEventListener('change', changeEventListener);
+      eventTarget = ref.current;
+      eventTarget.addEventListener('change', onChange);
     }
 
     return () => {
-      if (ref && ref.current) {
-        // @ts-ignore
-        // eslint-disable-next-line
-        ref.current.removeEventListener('change', changeEventListener);
+      if (eventTarget) {
+        eventTarget.removeEventListener('change', onChange);
       }
     };
   }, [onChange]);
