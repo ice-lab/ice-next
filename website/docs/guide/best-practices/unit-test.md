@@ -220,7 +220,7 @@ test('add', () => {
 $ npm i @testing-library/react jsdom @testing-library/jest-dom @vitejs/plugin-react@1.3.2 -D
 ```
 
-然后在项目根目录下新建 `vitest-setup.ts` 并写入以下内容，以扩展匹配器(matchers)：
+然后在项目根目录下新建 `vitest-setup.js` 并写入以下内容，以扩展匹配器(matchers)：
 
 ```ts title="vitest-setup.js"
 import matchers from '@testing-library/jest-dom/matchers';
@@ -229,7 +229,7 @@ import { expect } from 'vitest';
 expect.extend(matchers);
 ```
 
-最后在 vitest.config.mjs 中加入以下内容：
+最后在 `vitest.config.mjs` 中加入以下内容：
 
 ```diff title="vitest.config.mjs"
 import { defineVitestConfig } from '@ice/app';
