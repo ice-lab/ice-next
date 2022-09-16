@@ -1,6 +1,6 @@
 import webpack from '@ice/bundles/compiled/webpack/index.js';
 import webpackSources from '@ice/bundles/compiled/webpack-sources/index.js';
-import type { IComponent } from '../../types.js';
+import type { MiniappComponent } from '../../types.js';
 import { getChunkEntryModule, addRequireToSource, getChunkIdOrName } from '../utils/webpack.js';
 import { META_TYPE } from '../../../../constant.js';
 import type NormalModule from './NormalModule.js';
@@ -10,14 +10,14 @@ const PLUGIN_NAME = 'LoadChunksPlugin';
 
 interface IOptions {
   commonChunks: string[];
-  pages: Set<IComponent>;
+  pages: Set<MiniappComponent>;
   needAddCommon?: string[];
   isIndependentPackages?: boolean;
 }
 
 export default class LoadChunksPlugin {
   commonChunks: string[];
-  pages: Set<IComponent>;
+  pages: Set<MiniappComponent>;
   isCompDepsFound: boolean;
   needAddCommon: string[];
   isIndependentPackages: boolean;

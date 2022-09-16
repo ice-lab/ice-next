@@ -1,12 +1,12 @@
 import * as path from 'path';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
-import type { IMiniappWebpackOptions } from '../types.js';
+import type { MiniappWebpackOptions } from '../types.js';
 import MiniPlugin from './plugins/MiniPlugin.js';
 
 export class MiniWebpackPlugin {
-  config: IMiniappWebpackOptions;
+  config: MiniappWebpackOptions;
 
-  constructor(config: IMiniappWebpackOptions) {
+  constructor(config: MiniappWebpackOptions) {
     this.config = config;
   }
 

@@ -13,7 +13,7 @@ import webpackSources from '@ice/bundles/compiled/webpack-sources/index.js';
 
 import SingleEntryDependency from '../dependencies/SingleEntryDependency.js';
 import { componentConfig } from '../template/component.js';
-import type { IComponent, IFileType } from '../../types.js';
+import type { MiniappComponent, FileType } from '../../types.js';
 import { META_TYPE, NODE_MODULES_REG, REG_STYLE, SCRIPT_EXT } from '../../../../constant.js';
 import { promoteRelativePath, resolveMainFilePath } from '../utils/index.js';
 import LoadChunksPlugin from './LoadChunksPlugin.js';
@@ -33,7 +33,7 @@ interface MiniPluginOptions {
   minifyXML?: {
     collapseWhitespace?: boolean;
   };
-  fileType: IFileType;
+  fileType: FileType;
   template: RecursiveTemplate | UnRecursiveTemplate;
   loaderMeta?: Record<string, string>;
   getAppConfig: Config['getAppConfig'];
@@ -75,7 +75,7 @@ export default class MiniPlugin {
   filesConfig: FilesConfig = {};
   isWatch = false;
   /** 页面列表 */
-  pages = new Set<IComponent>();
+  pages = new Set<MiniappComponent>();
   /** tabbar icon 图片路径列表 */
   tabBarIcons = new Set<string>();
   dependencies = new Map<string, SingleEntryDependency>();
@@ -286,7 +286,7 @@ export default class MiniPlugin {
 
     this.getTabBarFiles(this.appConfig);
     this.pages = new Set([
-      ...appPages.map<IComponent>(item => {
+      ...appPages.map<MiniappComponent>(item => {
         const pagePath = resolveMainFilePath(path.join(this.options.sourceDir, item), SCRIPT_EXT);
         const pageTemplatePath = this.getTemplatePath(pagePath);
         const isNative = this.isNativePageORComponent(pageTemplatePath);
@@ -365,7 +365,7 @@ export default class MiniPlugin {
   /**
    * 读取页面、组件的配置，并递归读取依赖的组件的配置
    */
-  async compileFile(file: IComponent, routesConfig: any) {
+  async compileFile(file: MiniappComponent, routesConfig: any) {
     // Remove pages/ prefix
     const id = file.name.slice(6);
     const routeConfig = routesConfig[id]?.();

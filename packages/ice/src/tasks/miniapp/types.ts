@@ -2,7 +2,7 @@ import type { RecursiveTemplate, UnRecursiveTemplate } from '@ice/shared';
 import type { Configuration } from 'webpack';
 import type { Config } from '@ice/types';
 
-export interface IMiniappConfig {
+export interface MiniappConfig {
   rootDir: string;
   template: any;
   fileType: any;
@@ -10,7 +10,7 @@ export interface IMiniappConfig {
   getRoutesConfig: (specifyRoutId?: string) => Promise<any>;
 }
 
-export interface IComponent {
+export interface MiniappComponent {
   name: string;
   path: string;
   isNative: boolean;
@@ -18,27 +18,27 @@ export interface IComponent {
   templatePath?: string;
 }
 
-export interface IFileType {
+export interface FileType {
   templ: string;
   style: string;
   config: string;
   script: string;
   xs?: string;
 }
-export interface IPlatformConfig {
+export interface PlatformConfig {
   globalObject: string;
   projectConfigJson?: string;
-  fileType: IFileType;
+  fileType: FileType;
   template: RecursiveTemplate | UnRecursiveTemplate;
 }
 
-export interface IMiniappWebpackOptions {
+export interface MiniappWebpackOptions {
   rootDir: string;
   env?: Record<string, string>;
-  template: IPlatformConfig['template'];
-  fileType: IPlatformConfig['fileType'];
+  template: PlatformConfig['template'];
+  fileType: PlatformConfig['fileType'];
   getAppConfig: Config['getAppConfig'];
   getRoutesConfig: Config['getRoutesConfig'];
 }
 
-export type IMiniappWebpackConfig = Pick<Configuration, 'plugins' | 'module'>;
+export type MiniappWebpackConfig = Pick<Configuration, 'plugins' | 'module'>;

@@ -1,8 +1,8 @@
-import type { IMiniappWebpackOptions, IMiniappWebpackConfig } from '../types.js';
+import type { MiniappWebpackOptions, MiniappWebpackConfig } from '../types.js';
 import { MiniWebpackModule } from './module.js';
 import { MiniWebpackPlugin } from './plugin.js';
 
-export default function getMiniappWebpackConfig(rawConfig: IMiniappWebpackOptions): IMiniappWebpackConfig {
+export default function getMiniappWebpackConfig(rawConfig: MiniappWebpackOptions): MiniappWebpackConfig {
   const webpackPlugin = new MiniWebpackPlugin(rawConfig);
   const webpackModule = new MiniWebpackModule(rawConfig);
 

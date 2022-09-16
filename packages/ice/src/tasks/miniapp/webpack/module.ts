@@ -2,7 +2,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'node:module';
 import { REG_TEMPLATE } from '../../../constant.js';
-import type { IMiniappWebpackOptions } from '../types.js';
+import type { MiniappWebpackOptions } from '../types.js';
 
 
 interface IRule {
@@ -31,10 +31,10 @@ const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export class MiniWebpackModule {
-  config: IMiniappWebpackOptions;
+  config: MiniappWebpackOptions;
   sourceRoot: string;
 
-  constructor(config: IMiniappWebpackOptions) {
+  constructor(config: MiniappWebpackOptions) {
     this.config = config;
     this.sourceRoot = 'src';
   }
