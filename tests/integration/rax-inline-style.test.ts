@@ -1,5 +1,3 @@
-import * as path from 'path';
-import * as fs from 'fs';
 import { expect, test, describe, afterAll } from 'vitest';
 import { buildFixture, setupBrowser } from '../utils/build';
 import { startFixture, setupStartBrowser } from '../utils/start';
