@@ -179,7 +179,7 @@ defineVitestConfig 入参支持三种写法：
 
 以修改 `include` 参数为例：
 
-```diff title="vitest.config.mts"
+```diff title="vitest.config.mjs"
 import { defineVitestConfig } from '@ice/app';
 
 export default defineVitestConfig({
@@ -222,7 +222,7 @@ $ npm i @testing-library/react jsdom @testing-library/jest-dom @vitejs/plugin-re
 
 然后在项目根目录下新建 `vitest-setup.ts` 并写入以下内容，以扩展匹配器(matchers)：
 
-```ts title="vitest-setup.ts"
+```ts title="vitest-setup.js"
 import matchers from '@testing-library/jest-dom/matchers';
 import { expect } from 'vitest';
 
@@ -238,7 +238,7 @@ import { defineVitestConfig } from '@ice/app';
 export default defineVitestConfig({
 + test: {
 +   environment: 'jsdom',
-+   setupFiles: ['./vitest-setup.ts'],
++   setupFiles: ['./vitest-setup.js'],
 +   plugins: [react()],                // 支持解析 JSX 语法
 + },
 });
