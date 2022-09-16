@@ -154,7 +154,7 @@ describe('test webpack config modify', () => {
     })).toStrictEqual(getWebpackConfig());
     expect(removeLoader(getWebpackConfig(), {
       rule: '.test',
-      loader: 'test-loader',
+      loader: 'css-loader',
     })).toStrictEqual(getWebpackConfig());
   });
 });
