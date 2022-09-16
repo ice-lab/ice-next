@@ -89,7 +89,7 @@ export class BaseTemplate {
   protected modifyTemplateResult?: (res: string, nodeName: string, level: number, children: string) => string;
   protected modifyThirdPartyLoopBody?: (child: string, nodeName: string) => string;
 
-  public Adapter = weixinAdapter;
+  public adapter = weixinAdapter;
   /** 组件列表 */
   public internalComponents = internalComponents;
   /** 可以 focus 聚焦的组件 */
@@ -202,7 +202,7 @@ export class BaseTemplate {
   }
 
   protected buildBaseTemplate() {
-    const { Adapter } = this;
+    const { adapter } = this;
 
     const data = !this.isSupportRecursive && this.supportXS
       ? `${this.dataKeymap('i:item,l:\'\'')}`
@@ -210,7 +210,7 @@ export class BaseTemplate {
 
     return `${this.buildXsTemplate()}
 <template name="ice_tmpl">
-  <block ${Adapter.for}="{{root.cn}}" ${Adapter.key}="sid">
+  <block ${adapter.for}="{{root.cn}}" ${adapter.key}="sid">
     <template is="tmpl_0_${Shortcuts.Container}" data="{{${data}}}" />
   </block>
 </template>
@@ -260,7 +260,7 @@ export class BaseTemplate {
   }
 
   private getChildren(comp: Component, level: number): string {
-    const { isSupportRecursive, Adapter, supportXS } = this;
+    const { isSupportRecursive, adapter, supportXS } = this;
     const nextLevel = isSupportRecursive ? 0 : level + 1;
 
     const data = !this.isSupportRecursive && supportXS
@@ -278,7 +278,7 @@ export class BaseTemplate {
     let children = this.voidElements.has(comp.nodeName)
       ? ''
       : `
-    <block ${Adapter.for}="{{i.${Shortcuts.Childnodes}}}" ${Adapter.key}="sid">
+    <block ${adapter.for}="{{i.${Shortcuts.Childnodes}}}" ${adapter.key}="sid">
       ${indent(child, 6)}
     </block>
   `;
@@ -366,7 +366,7 @@ export class BaseTemplate {
   }
 
   protected buildThirdPartyTemplate(level: number, componentConfig: ComponentConfig) {
-    const { Adapter, isSupportRecursive, supportXS, nestElements } = this;
+    const { adapter, isSupportRecursive, supportXS, nestElements } = this;
     const nextLevel = isSupportRecursive ? 0 : level + 1;
     let template = '';
 
@@ -396,7 +396,7 @@ export class BaseTemplate {
         template += `
 <template name="tmpl_${level}_${compName}">
   <${compName} ${this.buildThirdPartyAttr(attrs, this.thirdPartyPatcher[compName] || {})} id="{{i.uid||i.sid}}" data-sid="{{i.sid}}">
-    <block ${Adapter.for}="{{i.${Shortcuts.Childnodes}}}" ${Adapter.key}="sid">
+    <block ${adapter.for}="{{i.${Shortcuts.Childnodes}}}" ${adapter.key}="sid">
       ${child}
     </block>
   </${compName}>
@@ -411,10 +411,10 @@ export class BaseTemplate {
   protected buildContainerTemplate(level: number, restart = false) {
     let tmpl = '';
     if (restart) {
-      tmpl = `<block ${this.Adapter.if}="{{i.nn === '#text'}}">
+      tmpl = `<block ${this.adapter.if}="{{i.nn === '#text'}}">
     <template is="tmpl_0_#text" data="{{i:i}}" />
   </block>
-  <block ${this.Adapter.else}>
+  <block ${this.adapter.else}>
     ${!this.isSupportRecursive && this.supportXS ? '<comp i="{{i}}" l="{{l}}" />' : '<comp i="{{i}}" />'}
   </block>`;
     } else {
@@ -470,12 +470,12 @@ export class BaseTemplate {
   };
 
   public buildCustomComponentTemplate = (ext: string) => {
-    const { Adapter } = this;
+    const { adapter } = this;
     const data = !this.isSupportRecursive && this.supportXS
       ? `${this.dataKeymap('i:item,l:\'\'')}`
       : this.dataKeymap('i:item');
     return `<import src="./base${ext}" />
-  <block ${Adapter.for}="{{i.${Shortcuts.Childnodes}}}" ${Adapter.key}="sid">
+  <block ${adapter.for}="{{i.${Shortcuts.Childnodes}}}" ${adapter.key}="sid">
     <template is="tmpl_0_container" data="{{${data}}}" />
   </block>`;
   };

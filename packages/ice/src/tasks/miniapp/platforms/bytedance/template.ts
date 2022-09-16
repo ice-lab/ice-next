@@ -2,7 +2,7 @@ import { RecursiveTemplate } from '@ice/shared';
 
 export default class Template extends RecursiveTemplate {
   supportXS = false;
-  Adapter = {
+  adapter = {
     if: 'tt:if',
     else: 'tt:else',
     elseif: 'tt:elif',

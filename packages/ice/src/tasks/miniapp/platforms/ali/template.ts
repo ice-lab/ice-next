@@ -3,7 +3,7 @@ import { capitalize, toCamelCase, RecursiveTemplate } from '@ice/shared';
 export default class Template extends RecursiveTemplate {
   exportExpr = 'export default';
   supportXS = true;
-  Adapter = {
+  adapter = {
     if: 'a:if',
     else: 'a:else',
     elseif: 'a:elif',

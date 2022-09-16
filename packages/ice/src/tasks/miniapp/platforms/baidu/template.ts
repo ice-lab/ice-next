@@ -17,7 +17,7 @@ interface TemplateOptions {
 export default class Template extends RecursiveTemplate {
   supportXS = true;
 
-  Adapter = {
+  adapter = {
     if: 's-if',
     else: 's-else',
     elseif: 's-elif',

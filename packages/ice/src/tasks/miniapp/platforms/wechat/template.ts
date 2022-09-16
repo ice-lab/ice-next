@@ -7,7 +7,7 @@ interface IOptions {
 export default class Template extends UnRecursiveTemplate {
   pluginOptions: IOptions;
   supportXS = true;
-  Adapter = {
+  adapter = {
     if: 'wx:if',
     else: 'wx:else',
     elseif: 'wx:elif',
