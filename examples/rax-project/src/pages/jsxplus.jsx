@@ -7,7 +7,7 @@ export default function JSXPlusDemo() {
     // x-class
     <div x-class={{ item: true, active: val }}>
       {/* x-if */}
-      <div x-if>Should Show</div>
+      <div x-if="YES">Should Show</div>
       <div x-if={false}>Should Hide</div>
 
       {/* x-for */}
