@@ -122,11 +122,15 @@ const plugin: Plugin<JSXPlusOptions> = (options: JSXPlusOptions = {}) => ({
 
     onGetConfig((config) => {
       // Add runtime alias.
-      config.alias ??= {};
+      if (!config.alias) {
+        config.alias = {};
+      }
       config.alias[runtimePackage] = runtimePackagePath;
 
       // Apply babel jsx plus transformer.
-      config.transforms ??= [];
+      if (!config.transforms) {
+        config.transforms = [];
+      }
       config.transforms.push(jsxPlusTransformer);
     });
   },
