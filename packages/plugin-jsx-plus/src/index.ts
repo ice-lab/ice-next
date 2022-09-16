@@ -47,14 +47,58 @@ babelPlugins.forEach((plugin) => {
   }
 });
 
-const plugin: Plugin = () => ({
+export function idFilter(options: JSXPlusOptions, id: string): boolean {
+  const extFilter = (id) => options.extensions.some((ext) => id.endsWith(ext));
+
+  if (options.exclude) {
+    for (const pattern of options.exclude) {
+      if (typeof pattern === 'string') {
+        if (id.indexOf(pattern) > -1) {
+          return false;
+        }
+      } else if (pattern instanceof RegExp && pattern.test(id)) {
+        return false;
+      }
+    }
+  }
+
+  if (options.include) {
+    for (const pattern of options.include) {
+      if (typeof pattern === 'string') {
+        if (id.indexOf(pattern) > -1) {
+          return extFilter(id);
+        }
+      } else if (pattern instanceof RegExp && pattern.test(id)) {
+        return extFilter(id);
+      }
+    }
+  }
+
+  return false;
+}
+
+export interface JSXPlusOptions {
+  include?: (string | RegExp)[];
+  exclude?: (string | RegExp)[];
+  extensions?: string[];
+}
+
+const plugin: Plugin<JSXPlusOptions> = (options: JSXPlusOptions = {}) => ({
   name: '@ice/plugin-jsx-plus',
   setup: ({ onGetConfig, context }) => {
-    const sourceDir = path.join(context.rootDir, 'src');
+    // Default include all files in `src`.
+    if (!options.include) {
+      const sourceDir = path.join(context.rootDir, 'src');
+      options.include = [sourceDir];
+    }
+
+    // Default include all files with `.tsx` and `.jsx` extensions.
+    if (!options.extensions) {
+      options.extensions = ['.tsx', '.jsx'];
+    }
 
     function jsxPlusTransformer(source, id) {
-      // Filter that 'src' files that to be executed.
-      if (id.startsWith(sourceDir) && /\.[tj]sx$/.test(id)) {
+      if (idFilter(options, id)) {
         try {
           const options = Object.assign({
             filename: id,
