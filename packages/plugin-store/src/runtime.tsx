@@ -5,9 +5,9 @@ import type { StoreConfig } from './types.js';
 import appStore from '$store';
 
 const runtime: RuntimePlugin = async ({ appContext, addWrapper, addProvider, useAppContext }) => {
-  const { appExport } = appContext;
+  const { appExport, appData } = appContext;
   const storeConfig: StoreConfig = (typeof appExport.store === 'function'
-    ? (await appExport.store()) : appExport.store) || {};
+    ? (await appExport.store(appData)) : appExport.store) || {};
   const { initialStates } = storeConfig;
   if (appStore && Object.prototype.hasOwnProperty.call(appStore, 'Provider')) {
     // Add app store Provider

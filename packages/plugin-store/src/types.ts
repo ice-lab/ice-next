@@ -2,7 +2,7 @@ export interface StoreConfig {
   initialStates: Record<string, any>;
 }
 
-type Store = (() => Promise<StoreConfig>) | StoreConfig;
+type Store = ((data?: any) => Promise<StoreConfig>) | StoreConfig;
 
 function defineStoreConfig(fn: Store) {
   return fn;
