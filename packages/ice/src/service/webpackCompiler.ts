@@ -49,7 +49,7 @@ async function webpackCompiler(options: {
     getAppConfig: GetAppConfig;
     getRoutesConfig: GetRoutesConfig;
   };
-  dataCache: Map<string, string>;
+  dataCache?: Map<string, string>;
 }) {
   const {
     rootDir,
