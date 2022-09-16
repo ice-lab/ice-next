@@ -135,9 +135,7 @@ describe('test webpack config modify', () => {
     });
   });
   it('remove plugin', () => {
-    class TestPlugin {
-      constructor() {}
-    }
+    class TestPlugin {}
     expect(removePlugin({
       plugins: [
         // @ts-ignore fake webpack plugin
