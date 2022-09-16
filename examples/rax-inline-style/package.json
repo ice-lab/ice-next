@@ -1,5 +1,5 @@
 {
-  "name": "with-fusion",
+  "name": "rax-project",
   "version": "1.0.0",
   "scripts": {
     "start": "ice start",
@@ -9,16 +9,20 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@alifd/next": "^1.25.49",
+    "@ice/app": "workspace:*",
+    "@ice/plugin-rax-compat": "workspace:*",
     "@ice/runtime": "workspace:*",
+    "rax": "^1.2.2",
+    "rax-image": "^2.4.1",
+    "rax-is-valid-element": "^1.0.0",
+    "rax-text": "^2.2.0",
+    "rax-view": "^2.3.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.2",
-    "@ice/app": "workspace:*",
-    "@ice/plugin-css-assets-local": "workspace:*",
-    "@ice/plugin-fusion": "workspace:*"
+    "webpack": "^5.73.0"
   }
 }
