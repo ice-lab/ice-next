@@ -5,17 +5,18 @@ import fse from 'fs-extra';
 import puppeteer from 'puppeteer';
 
 export interface Page extends puppeteer.Page {
-  html?: () => Promise<string>;
-  $text?: (selector: string, trim?: boolean) => Promise<string | null>;
-  $$text?: (selector: string, trim?: boolean) => Promise<(string | null)[]>;
-  $attr?: (selector: string, attr: string) => Promise<string | null>;
-  $$attr?: (selector: string, attr: string) => Promise<(string | null)[]>;
-  push?: (url: string, options?: puppeteer.WaitForOptions & { referer?: string }) => Promise<puppeteer.HTTPResponse>;
+  html: () => Promise<string>;
+  baseUrl: string;
+  $text: (selector: string, trim?: boolean) => Promise<string | null>;
+  $$text: (selector: string, trim?: boolean) => Promise<(string | null)[]>;
+  $attr: (selector: string, attr: string) => Promise<string | null>;
+  $$attr: (selector: string, attr: string) => Promise<(string | null)[]>;
+  push: (url: string, options?: puppeteer.WaitForOptions & { referer?: string }) => Promise<puppeteer.HTTPResponse>;
 }
 
 interface BrowserOptions {
-  cwd?: string;
-  port?: number;
+  cwd: string;
+  port: number;
   server?: http.Server;
 }
 
@@ -90,16 +91,18 @@ export default class Browser {
     }
   }
 
-  async page(url: string, disableJS?: boolean) {
+  async page(url: string, disableJS?: boolean): Promise<Page> {
     this.baseUrl = url;
     if (!this.browser) { throw new Error('Please call start() before page(url)'); }
-    const page: Page = await this.browser.newPage();
+    const page = (await this.browser.newPage()) as Page;
 
     if (disableJS) {
       page.setJavaScriptEnabled(false);
     }
 
     await page.goto(url);
+
+    page.baseUrl = this.baseUrl;
     page.push = (url, options) => page.goto(`${this.baseUrl}${url}`, options);
     page.html = () =>
       page.evaluate(() => window.document.documentElement.outerHTML);
@@ -120,6 +123,7 @@ export default class Browser {
         (els, attr) => els.map(el => el.getAttribute(attr as string)),
         attr,
       );
+
     return page;
   }
 }
