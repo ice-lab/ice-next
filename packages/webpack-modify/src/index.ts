@@ -9,9 +9,9 @@ interface RemoveOptions {
 function findLoader(webpackConfig: Configuration, ruleName: string) {
   // Find webpack loader by options
   const targetRule = webpackConfig?.module?.rules?.find((rule) => {
-    if (typeof rule === 'object' && rule.test instanceof RegExp) {
-      return rule.test.source.includes(ruleName);
-    }
+    return typeof rule === 'object' &&
+      rule.test instanceof RegExp &&
+      rule.test.source.includes(ruleName);
   });
   if (!targetRule) {
     consola.warn(`Can not find webpack rule with rule.test of ${ruleName}`);
