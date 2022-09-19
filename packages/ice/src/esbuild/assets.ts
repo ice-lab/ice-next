@@ -48,7 +48,7 @@ const createAssetsPlugin = (assetsManifest: AssetsManifest, rootDir: string) => 
   name: 'esbuild-assets',
   setup(build) {
     build.onResolve({ filter: /assets-manifest.json$/ }, (args) => {
-      if (args.importer.endsWith('.ice/entry.server.ts')) {
+      if (args.path === 'virtual:assets-manifest.json') {
         return {
           path: args.path,
           namespace: 'asset-manifest',
