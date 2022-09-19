@@ -64,9 +64,9 @@ export default createModel({
   } as User,
   // 定义改变该 model 状态的纯函数
   reducers: {
-    update(prevState, payload) {
+    update(state, payload) {
       return {
-        ...prevState,
+        ...state,
         ...payload,
       };
     },
@@ -146,9 +146,9 @@ export default createModel({
     title: '',
   },
   reducers: {
-    update(prevState, payload) {
+    update(state, payload) {
       return {
-        ...prevState,
+        ...state,
         ...payload,
       };
     },
@@ -304,14 +304,14 @@ export default ({
   state: { count: 0, list: [] },
 
   reducers: {
-    increment (prevState, payload) {
-      const newList = prevState.list.slice();
+    increment (state, payload) {
+      const newList = state.list.slice();
       newList.push(payload);
-      const newCount = prevState.count + 1;
-      return { ...prevState, count: newCount, list: newList }
+      const newCount = state.count + 1;
+      return { ...state, count: newCount, list: newList }
     },
-    decrement (prevState) {
-      return { ...prevState, count: prevState.count - 1 }
+    decrement (state) {
+      return { ...state, count: state.count - 1 }
     }
   }
 }
@@ -416,22 +416,22 @@ export default createModel({
     },
   },
   reducers: {
-    addTasks(prevState, payload) {
+    addTasks(state, payload) {
 -     return {
--       ..prevState,
--       tasks: [ ...prevState.tasks, payload ],
+-       ...state,
+-       tasks: [ ...state.tasks, payload ],
 -     },
-+     prevState.tasks.push(payload);
++     state.tasks.push(payload);
     },
-    updateAge(prevState, payload) {
+    updateAge(state, payload) {
 -     return {
--       ..prevState,
+-       ...state,
 -       detail: {
--         ...prevState.detail,
+-         ...state.detail,
 -         age: payload,
 -       },
 -     },
-+     prevState.detail.age = payload;
++     state.detail.age = payload;
     }
   }
 })
@@ -445,7 +445,7 @@ import { createModel } from 'ice';
 export default createModel({
   state: 0,
   reducers: {
-    add(prevState) {
+    add(state) {
 -     state += 1;
 +     return state += 1;
     },
