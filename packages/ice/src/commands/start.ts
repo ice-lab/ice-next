@@ -44,7 +44,7 @@ const start = async (
     getRoutesConfig,
     dataCache,
   } = options;
-  const { applyHook, commandArgs, command, rootDir, userConfig, extendsPluginAPI: { serverCompileTask } } = context;
+  const { applyHook, commandArgs, rootDir, userConfig, extendsPluginAPI: { serverCompileTask } } = context;
   const { port, host, https = false } = commandArgs;
   const webTaskConfig = taskConfigs.find(({ name }) => name === 'web');
   const webpackConfigs = taskConfigs.map(({ config }) => getWebpackConfig({

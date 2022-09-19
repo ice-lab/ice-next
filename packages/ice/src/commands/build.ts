@@ -25,7 +25,7 @@ const build = async (
   },
 ) => {
   const { taskConfigs, serverCompiler, spinner, getAppConfig, getRoutesConfig, dataCache } = options;
-  const { applyHook, commandArgs, command, rootDir, userConfig } = context;
+  const { applyHook, rootDir, userConfig } = context;
   const webpackConfigs = taskConfigs.map(({ config }) => getWebpackConfig({
     config,
     rootDir,

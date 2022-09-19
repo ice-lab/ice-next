@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as mrmime from 'mrmime';
 import fs from 'fs-extra';
-import { build } from 'esbuild';
+import type { PluginBuild } from 'esbuild';
 
 export const ASSET_TYPES = [
   // images
@@ -46,7 +46,7 @@ interface AssetsManifest {
 
 const createAssetsPlugin = (assetsManifest: AssetsManifest, rootDir: string) => ({
   name: 'esbuild-assets',
-  setup(build) {
+  setup(build: PluginBuild) {
     build.onResolve({ filter: /assets-manifest.json$/ }, (args) => {
       if (args.path === 'virtual:assets-manifest.json') {
         return {
