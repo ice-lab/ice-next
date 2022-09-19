@@ -2,23 +2,21 @@ import webpack from '@ice/bundles/compiled/webpack/index.js';
 import type ora from '@ice/bundles/compiled/ora/index.js';
 import consola from 'consola';
 import chalk from 'chalk';
-import type { CommandArgs, TaskConfig } from 'build-scripts';
+import type { TaskConfig, Context } from 'build-scripts';
 import type { Compiler, Configuration } from 'webpack';
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
-import type { Urls, ServerCompiler, GetAppConfig, GetRoutesConfig } from '@ice/types/esm/plugin.js';
+import type { Urls, ServerCompiler, GetAppConfig, GetRoutesConfig, ExtendsPluginAPI } from '@ice/types/esm/plugin.js';
 import type { Config } from '@ice/types';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
 import openBrowser from '../utils/openBrowser.js';
 import DataLoaderPlugin from '../webpack/DataLoaderPlugin.js';
+import getServerCompilerPlugin from '../utils/getServerCompilerPlugin.js';
 
 type WebpackConfig = Configuration & { devServer?: DevServerConfiguration };
 async function webpackCompiler(options: {
+  context: Context<Config, ExtendsPluginAPI>;
   webpackConfigs: WebpackConfig | WebpackConfig[];
   taskConfigs: TaskConfig<Config>[];
-  command: string;
-  commandArgs: CommandArgs;
-  applyHook: (key: string, opts?: {}) => Promise<void>;
-  rootDir: string;
   urls?: Urls;
   spinner: ora.Ora;
   devPath?: string;
@@ -32,16 +30,14 @@ async function webpackCompiler(options: {
   const {
     taskConfigs,
     urls,
-    applyHook,
-    command,
-    commandArgs,
     hooksAPI,
     webpackConfigs,
     spinner,
     devPath,
-    rootDir,
     dataCache,
+    context,
   } = options;
+  const { applyHook, commandArgs, command, rootDir, userConfig, extendsPluginAPI: { serverCompileTask } } = context;
   const { serverCompiler } = hooksAPI;
   await applyHook(`before.${command}.run`, {
     urls,
@@ -52,6 +48,16 @@ async function webpackCompiler(options: {
   });
   // Add webpack plugin of data-loader
   webpackConfigs[0].plugins.push(new DataLoaderPlugin({ serverCompiler, rootDir, dataCache }));
+
+  // Add ServerCompilerPlugin
+  webpackConfigs[0].plugins.push(getServerCompilerPlugin(serverCompiler, {
+    rootDir,
+    serverEntry: taskConfigs[0].config?.server?.entry,
+    outputDir: webpackConfigs[0].output.path,
+    dataCache,
+    serverCompileTask: command === 'start' ? serverCompileTask : null,
+    userConfig,
+  }));
 
   // Add default plugins for spinner
   webpackConfigs[0].plugins.push((compiler: Compiler) => {

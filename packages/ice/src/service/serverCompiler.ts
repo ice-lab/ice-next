@@ -54,6 +54,7 @@ export function createServerCompiler(options: Options) {
     swc,
     externalDependencies,
     transformEnv = true,
+    assetsManifest,
   } = {}) => {
     let depsMetadata: DepsMetaData;
     let swcOptions = merge({}, {
@@ -134,7 +135,7 @@ export function createServerCompiler(options: Options) {
             return escapeLocalIdent(`${name}--${hash.digest('base64').slice(0, 8)}`);
           },
         }),
-        fs.existsSync(assetsManifest) && createAssetsPlugin(assetsManifest, rootDir),
+        assetsManifest && createAssetsPlugin(assetsManifest, rootDir),
         transformPipePlugin({
           plugins: [
             ...transformPlugins,

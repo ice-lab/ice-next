@@ -13,12 +13,9 @@ import webpackCompiler from '../service/webpackCompiler.js';
 import prepareURLs from '../utils/prepareURLs.js';
 import createRenderMiddleware from '../middlewares/ssr/renderMiddleware.js';
 import createMockMiddleware from '../middlewares/mock/createMiddleware.js';
-import { ROUTER_MANIFEST, RUNTIME_TMP_DIR, SERVER_OUTPUT_DIR } from '../constant.js';
-import ServerCompilerPlugin from '../webpack/ServerCompilerPlugin.js';
+import { ROUTER_MANIFEST, RUNTIME_TMP_DIR } from '../constant.js';
 import ReCompilePlugin from '../webpack/ReCompilePlugin.js';
-import getServerEntry from '../utils/getServerEntry.js';
 import getRouterBasename from '../utils/getRouterBasename.js';
-import { getRoutePathsFromCache } from '../utils/getRoutePaths.js';
 
 const { merge } = lodash;
 
@@ -59,36 +56,8 @@ const start = async (
   }));
 
   // Compile server entry after the webpack compilation.
-  const outputDir = webpackConfigs[0].output.path;
-  const { ssg, ssr, server: { format } } = userConfig;
-  const entryPoint = getServerEntry(rootDir, taskConfigs[0].config?.server?.entry);
-  const esm = format === 'esm';
-  const outJSExtension = esm ? '.mjs' : '.cjs';
+  const { ssg, ssr } = userConfig;
   webpackConfigs[0].plugins.push(
-    new ServerCompilerPlugin(
-      serverCompiler,
-      [
-        {
-          entryPoints: { index: entryPoint },
-          outdir: path.join(outputDir, SERVER_OUTPUT_DIR),
-          splitting: esm,
-          format,
-          platform: esm ? 'browser' : 'node',
-          outExtension: { '.js': outJSExtension },
-        },
-        {
-          preBundle: format === 'esm' && (ssr || ssg),
-          swc: {
-            keepExports: (!ssg && !ssr) ? ['getConfig'] : null,
-            keepPlatform: 'node',
-            getRoutePaths: () => {
-              return getRoutePathsFromCache(dataCache);
-            },
-          },
-        },
-      ],
-      serverCompileTask,
-    ),
     new ReCompilePlugin(reCompileRouteConfig, (files) => {
       // Only when routes file changed.
       const routeManifest = JSON.parse(dataCache.get('routes'))?.routeManifest || {};
@@ -155,13 +124,10 @@ const start = async (
     getRoutesConfig,
   };
   const compiler = await webpackCompiler({
-    rootDir,
+    context,
     webpackConfigs,
     taskConfigs,
     urls,
-    commandArgs,
-    command,
-    applyHook,
     hooksAPI,
     spinner,
     devPath,
