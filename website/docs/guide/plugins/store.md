@@ -527,7 +527,3 @@ createStore({ user }, {
   }
 })
 ```
-
-## 参考
-
-- [icestore](https://github.com/ice-lab/icestore)
