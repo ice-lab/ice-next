@@ -1,7 +1,9 @@
 ---
 title: 状态管理
-order: 2
+order: 3
 ---
+
+icejs 基于 [icestore](https://github.com/ice-lab/icestore) ，提供主流的状态管理解决方案，以更好管理复杂的状态管理逻辑。
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -33,14 +35,14 @@ import store from '@ice/plugin-store';
 
 export default defineConfig({
   plugins: [
-   store(),
+    store(),
   ],
 });
 ```
 
 ## 全局状态
 
-推荐在不同页面组件中使用的状态存放在全局状态中，比如主题、国际化语言、用户信息等。
+推荐在不同页面组件中共享的状态存放在全局状态中，比如主题、国际化语言、用户信息等。
 
 ### 定义 Model
 
@@ -50,8 +52,8 @@ export default defineConfig({
 import { createModel } from 'ice';
 
 interface User {
-  name: string,
-  id: string,
+  name: string;
+  id: string;
 }
 
 export default createModel({
@@ -97,7 +99,7 @@ export default createStore({ user });
 
 ```diff
 import { useEffect } from 'react';
-import store from '@/store';
++ import store from '@/store';
 
 export default function Home() {
 + const [userState, userDispatchers] = store.useModel('user');
@@ -117,23 +119,26 @@ export default function Home() {
 
 ## 页面状态
 
-注意：页面状态只能在该页面下的组件中使用，无法跨页面使用。
+:::caution
+
+页面状态只能在该页面下的组件中使用，无法跨页面使用。
+:::
 
 ### 定义 Model
 
-约定在当前路由目录下新建 models 目录并定义 model：
+约定在当前路由目录下新建 models 目录并定义 Model：
 
 ```diff
  src
  └── pages
  |   ├── home                // /home 页面
-+|   │   ├── models         // 定义 model
-+|   │   |   └── title.ts
++|   │   ├── models          // 定义 model
++|   │   |   └── info.ts
  |   │   └── index.tsx
 ```
 
-定义 model 如下：
-```ts title="src/pages/home/models/title.ts"
+定义 Model 如下：
+```ts title="src/pages/home/models/info.ts"
 import { createModel } from 'ice';
 
 export default createModel({
@@ -178,7 +183,7 @@ export default store;
 
 ```diff title="src/pages/home/index.tsx"
 import { useEffect } from 'react';
-import homeStore from './store';
++ import homeStore from './store';
 
 export default function Home() {
 + const [infoState, infoDispatchers] = homeStore.useModel('info');
@@ -196,18 +201,67 @@ export default function Home() {
 
 ### 设置初始状态
 
-假设我们有 `models/user.ts` 和 `models/counter.ts` 两个 model，我们可以在 `src/app.ts` 中设置初始状态：
+:::caution
+
+页面级状态目前不支持设置 `initialStates`。
+
+:::
+
+假设我们有 `user` 和 `counter` 两个 Model：
+
+<Tabs>
+<TabItem value="store" label="src/store.ts">
+
+```ts
+import { createStore } from 'ice';
+import user from './models/user';
+import counter from './models/counter';
+
+export default createStore({ user, counter });
+```
+
+</TabItem>
+<TabItem value="user" label="src/models/user.ts">
+
+```ts
+import { createModel } from 'ice';
+
+export default createModel({ 
+  state: {
+    name: '',
+  }
+});
+```
+
+</TabItem>
+<TabItem value="counter" label="src/models/counter.ts">
+
+```ts
+import { createModel } from 'ice';
+
+export default createModel({ 
+  state: {
+    count: 0,
+  }
+});
+```
+
+</TabItem>
+</Tabs>
+
+我们可以在 `src/app.ts` 中设置两个 Model 初始状态：
 
 ```ts title="src/app.ts"
 import { defineStoreConfig } from '@ice/plugin-store/esm/runtime';
 
 export const store = defineStoreConfig(async () => {
-  // fetch Data
+  // 模拟请求后端数据
   // const data = (await fetch('your-url')).json();
   return {
     initialStates: {
+      // initialStates 键值与 createStore 的第一个入参键值保持一致
       user: {
-        name: 'ICE 3',
+        name: 'icejs',
       },
       counter: {
         count: 1
@@ -217,8 +271,6 @@ export const store = defineStoreConfig(async () => {
 });
 ```
 
-> 注意：页面级状态目前不支持设置 initialStates
-
 ### Model 定义详细说明
 
 插件约定在 `src/models`、`src/pages/**/models` 目录下的文件为项目定义的 model 文件，每个文件需要默认导出一个对象。
@@ -226,7 +278,7 @@ export const store = defineStoreConfig(async () => {
 
 #### state
 
-定义 model 的初始 state：
+定义 Model 的初始 state：
 ```ts
 import { createModel } from 'ice';
 
@@ -238,10 +290,12 @@ export default createModel({
 #### reducers
 
 ```ts
-reducers: { [string]: (prevState, payload) => any }
+type Reducers = { 
+  [k: string]: (state, payload) => any;
+};
 ```
 
-一个改变该模型状态的函数集合。这些方法以模型的上一次 prevState 和一个 payload 作为入参，在方法中使用可变的方式来更新状态。这些方法应该是仅依赖于 prevState 和 payload 参数来计算下一个 nextState 的纯函数。对于有副作用的函数，请使用 effects。
+一个改变该模型状态的函数集合。这些方法以模型的上一次 `state` 和一个 `payload`（调用 reducer 时传入的参数）作为入参，在方法中使用可变的方式来更新状态。 这些方法应该是仅依赖于 `state` 和 `payload` 参数来计算下一个 `state` 的纯函数。对于有副作用的函数，请使用 [`effects`](#effects) 。
 
 ```ts
 import { createModel } from 'ice';
@@ -266,10 +320,10 @@ export default ({
 #### effects
 
 ```ts
-effects: (dispatch) => ({ [string]: (payload, rootState) => void })
+type Effects = (dispatch) => ({ [string]: (payload, rootState) => void })
 ```
 
-一个可以处理该模型副作用的函数集合。这些方法以 payload 和 rootState 作为入参，适用于进行异步调用、模型联动等场景。
+一个可以处理该模型副作用的函数集合。这些方法以 `payload` 和 `rootState`（当前模型的 state） 作为入参，适用于进行异步调用、模型联动等场景。
 
 
 ```ts
@@ -292,7 +346,11 @@ export default createModel({
 
 ### Model 之间通信
 
-> 注意：如果两个 model 不属于同一个 store 实例，是无法通信的
+:::caution
+
+如果两个 Model 不属于同一个 Store 实例，是无法通信的
+
+:::
 
 <Tabs>
 <TabItem value="user" label="src/models/user.ts">
@@ -342,9 +400,9 @@ export default {
 </Tabs>
 
 
-### Model 中使用 immer 更改 State
+### 使用不可变状态
 
-Redux 默认的函数式写法在处理一些复杂对象的 state 时会非常繁琐。因此插件默认支持了使用 [immer](https://immerjs.github.io/immer/) 来操作 state：
+Redux 默认的函数式写法在处理一些复杂对象的 state 时会非常繁琐。推荐使用 [immer](https://immerjs.github.io/immer/) 的方式来操作 state：
 
 ```diff
 import { createModel } from 'ice';
@@ -395,9 +453,9 @@ export default createModel({
 })
 ```
 
-### 获取 effects 的 loading/error 状态
+### 获取内置的加载状态和错误状态
 
-通过 `useModelEffectsState` API 即可获取到 `effects` 的 `loading` 和 `error` 状态。
+通过 `useModelEffectsState` API 即可获取到 `effects` 的 加载状态（ `isLoading` ）和 错误状态（`error`）。
 
 ```diff
 import store from '@/store';
@@ -417,7 +475,7 @@ function FunctionComponent() {
 
 ### 页面切换后重置状态
 
-如果想切换页面后再次进入原页面重新初始化页面状态，需要添加以下配置：
+在单页应用下进行页面切换时，页面状态是会保留的。如果想切换页面后再次进入原页面时重新初始化页面状态，需要添加以下配置：
 
 ```diff title="ice.config.mts"
 import { defineConfig } from '@ice/app';
@@ -469,3 +527,7 @@ createStore({ user }, {
   }
 })
 ```
+
+## 参考
+
+- [icestore](https://github.com/ice-lab/icestore)
