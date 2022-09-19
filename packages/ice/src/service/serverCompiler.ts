@@ -1,6 +1,5 @@
 import * as path from 'path';
 import { createHash } from 'crypto';
-import * as fs from 'fs';
 import consola from 'consola';
 import esbuild from 'esbuild';
 import type { Config, UserConfig } from '@ice/types';
