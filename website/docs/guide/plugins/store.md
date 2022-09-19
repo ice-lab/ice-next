@@ -496,7 +496,8 @@ export default defineConfig({
 ```tsx
 import store from '@/store';
 
-class TodoList extends React.Component {
+@store.withModel('todos')
+export default class TodoList extends React.Component {
   render() {
     const { todos } = this.props;
     const [state, dispatchers] = todos;
@@ -504,11 +505,13 @@ class TodoList extends React.Component {
     // ...
   }
 }
-
-export default store.withModel('todos')(TodoList);
-// 绑定多个 model
-// export default withModel('user')(withModel('todos')(TodoList));
 ```
+
+:::tip
+
+TS 应用需要在 `tsconfig.json` 里添加 `compilerOptions: { "experimentalDecorators": true }`
+才可启用装饰器语法。
+:::
 
 ### Redux Devtools
 
