@@ -1,5 +1,5 @@
-import { defineAppConfig } from '../disable-data-loader/.ice';
-import type { GetAppData } from '../disable-data-loader/.ice';
+import { defineAppConfig } from 'ice';
+import type { GetAppData } from 'ice';
 
 export default defineAppConfig({
   app: {

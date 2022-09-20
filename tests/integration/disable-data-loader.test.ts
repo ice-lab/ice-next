@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import { expect, test, describe } from 'vitest';
 import { buildFixture } from '../utils/build';
 
-const example = 'without-data-loader';
+const example = 'disable-data-loader';
 
 describe(`build ${example}`, () => {
   test('open /', async () => {

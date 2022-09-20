@@ -2,8 +2,8 @@
   "compileOnSave": false,
   "buildOnSave": false,
   "compilerOptions": {
-    "baseUrl": "../disable-data-loader",
-    "outDir": "../disable-data-loader/build",
+    "baseUrl": ".",
+    "outDir": "build",
     "module": "esnext",
     "target": "es6",
     "jsx": "react-jsx",
@@ -12,7 +12,7 @@
     "lib": ["es6", "dom"],
     "sourceMap": true,
     "allowJs": true,
-    "rootDir": "../disable-data-loader",
+    "rootDir": "./",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
@@ -23,10 +23,10 @@
     "noUnusedLocals": true,
     "skipLibCheck": true,
     "paths": {
-      "@/*": ["../disable-data-loader/src/*"],
-      "ice": ["../disable-data-loader/.ice"]
+      "@/*": ["./src/*"],
+      "ice": [".ice"]
     }
   },
-  "include": ["../disable-data-loader/src", "../disable-data-loader/.ice", "../disable-data-loader/ice.config.*"],
-  "exclude": ["../disable-data-loader/node_modules", "../disable-data-loader/build", "../disable-data-loader/public"]
+  "include": ["src", ".ice", "ice.config.*"],
+  "exclude": ["node_modules", "build", "public"]
 }
