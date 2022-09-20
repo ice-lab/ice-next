@@ -34,6 +34,7 @@ import {
 import dataLoader from './dataLoader.js';
 import getAppConfig, { defineAppConfig } from './appConfig.js';
 import { routerHistory as history } from './history.js';
+import { default as BrowserOnly } from './BrowserOnly.js';
 
 export {
   getAppConfig,
@@ -59,6 +60,8 @@ export {
   useSearchParams,
   useLocation,
   history,
+
+  BrowserOnly,
 };
 
 export type {

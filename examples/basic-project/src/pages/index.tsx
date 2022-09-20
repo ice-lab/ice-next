@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react';
-import { Link, useData, useAppData, useConfig } from 'ice';
+import { Link, useData, useAppData, useConfig, BrowserOnly } from 'ice';
 // not recommended but works
 import { useAppContext } from '@ice/runtime';
 import { useRequest } from 'ahooks';
@@ -41,6 +41,9 @@ export default function Home(props) {
         <div>userInfo: {JSON.stringify(userInfo)}</div>
         <div>data from: <span id="data-from">{data.from}</span></div>
       </div>
+      <BrowserOnly>
+        {() => <span>page url is {window.location.href}</span>}
+      </BrowserOnly>
     </>
   );
 }

@@ -71,6 +71,7 @@ export interface AppContext {
   routesData: RoutesData;
   routesConfig: RoutesConfig;
   routeModules: RouteModules;
+  isBrowser?: boolean;
   routePath?: string;
   matches?: RouteMatch[];
   routes?: RouteItem[];
