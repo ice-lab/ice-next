@@ -10,7 +10,7 @@ import { createElement as _createElement, useEffect, useCallback, useRef, useSta
 import { cached, convertUnit } from 'style-unit';
 import VisibilityChange from '@ice/appear';
 import { isFunction, isObject, isNumber } from './type';
-import transformPrototype from './prototypes';
+import transformProps from './props';
 
 
 // https://github.com/alibaba/rax/blob/master/packages/driver-dom/src/index.js

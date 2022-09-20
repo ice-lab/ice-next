@@ -1,7 +1,7 @@
 import { registrationNameToReactEvent } from './events';
 import possibleStandardNames from './possible-standard-names';
 
-export default function transformPrototype(props: Object): Object {
+function transformProps(props: Object): Object {
   const resProps: Object = {};
   Object.keys(props).forEach((propKey: string) => {
     let resKey: string = propKey;
@@ -19,9 +19,9 @@ export default function transformPrototype(props: Object): Object {
           resKey = reactEvent;
         }
       }
-    } else {
+    } else if (possibleStandardNames.hasOwnProperty(lowerCasedPropkey)) {
       // Transform the event so that it works properly in React.
-      resValue = possibleStandardNames[lowerCasedPropkey] || resValue;
+      resKey = possibleStandardNames[lowerCasedPropkey];
     }
 
     resProps[resKey] = resValue;
@@ -29,3 +29,5 @@ export default function transformPrototype(props: Object): Object {
 
   return resProps;
 }
+
+export default transformProps;
