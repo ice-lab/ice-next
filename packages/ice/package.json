@@ -55,7 +55,6 @@
     "fast-glob": "^3.2.11",
     "find-up": "^5.0.0",
     "fs-extra": "^10.0.0",
-    "less": "^4.1.2",
     "magic-string": "^0.26.1",
     "micromatch": "^4.0.5",
     "mrmime": "^1.0.0",
@@ -65,7 +64,6 @@
     "react-router": "^6.3.0",
     "regenerator-runtime": "^0.13.9",
     "resolve.exports": "^1.1.0",
-    "sass": "^1.49.9",
     "semver": "^7.3.5",
     "temp": "^0.9.4",
     "trusted-cert": "^1.1.3"
