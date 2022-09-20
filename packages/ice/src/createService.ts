@@ -91,7 +91,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
 
   // get plugins include built-in plugins and custom plugins
   const plugins = await ctx.resolvePlugins();
-  const runtimeModules = getRuntimeModules(plugins);
+  const runtimeModules = getRuntimeModules(plugins, rootDir);
 
   // register web
   ctx.registerTask('web', getWebTask({ rootDir, command, dataCache }));
