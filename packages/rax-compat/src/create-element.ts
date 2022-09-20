@@ -45,15 +45,6 @@ function InputCompat(props: any) {
     setV(value);
   }, [value]);
 
-  // Compat maxlength in rax-textinput, because maxlength is invalid props in web,it will be set attributes to element
-  // and react will Throw a warning in DEV.
-  // https://github.com/raxjs/rax-components/issues/459
-  // https://github.com/raxjs/rax-components/blob/master/packages/rax-textinput/src/index.tsx#L142
-  if (rest.maxlength) {
-    rest.maxLength = rest.maxlength;
-    delete rest.maxlength;
-  }
-
   // The onChange event is SyntheticEvent in React, but it is dom event in Rax, so it needs compat onChange.
   useEffect(() => {
     let eventTarget: EventTarget;
