@@ -31,6 +31,7 @@ function getRuntimeModules(plugins: Array<PluginInfo<any, ExtendsPluginAPI>>, ro
       consola.error(`Failed to load package.json of plugin ${path.basename(packageDir)}`);
       return false;
     }
+
     let runtimeExists = false;
     try {
       runtimeExists = !!(resolveExports(pkgInfo, runtime) || require.resolve(runtime, { paths: [rootDir] }));
