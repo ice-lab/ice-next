@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { ReactNode } from 'react';
-import type { AppContextFromServer, RouteMatch, AssetsManifest } from '@ice/types';
+import type { WindowContext, RouteMatch, AssetsManifest } from '@ice/types';
 import { useAppContext } from './AppContext.js';
 import { useAppData } from './AppData.js';
 import { getMeta, getTitle, getLinks, getScripts } from './routesConfig.js';
@@ -77,7 +77,7 @@ export function Scripts(props: React.ScriptHTMLAttributes<HTMLScriptElement>) {
   }
 
   const routePath = getCurrentRoutePath(matches);
-  const appContext: AppContextFromServer = {
+  const windowContext: WindowContext = {
     appData,
     routesData,
     routesConfig,
@@ -93,7 +93,7 @@ export function Scripts(props: React.ScriptHTMLAttributes<HTMLScriptElement>) {
        */}
       <script
         suppressHydrationWarning={documentOnly}
-        dangerouslySetInnerHTML={{ __html: `window.__ICE_APP_CONTEXT__=Object.assign(${JSON.stringify(appContext)}, window.__ICE_APP_CONTEXT__ || {})` }}
+        dangerouslySetInnerHTML={{ __html: `window.__ICE_APP_CONTEXT__=Object.assign(${JSON.stringify(windowContext)}, window.__ICE_APP_CONTEXT__ || {})` }}
       />
       {
         routeScripts.map(routeScriptProps => {
