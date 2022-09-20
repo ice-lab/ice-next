@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { ReactNode } from 'react';
-import type { AppContext, RouteMatch, AssetsManifest } from '@ice/types';
+import type { AppContextFromServer, RouteMatch, AssetsManifest } from '@ice/types';
 import { useAppContext } from './AppContext.js';
 import { useAppData } from './AppData.js';
 import { getMeta, getTitle, getLinks, getScripts } from './routesConfig.js';
@@ -79,16 +79,12 @@ export function Scripts(props: React.ScriptHTMLAttributes<HTMLScriptElement>) {
   const matchedIds = matches.map(match => match.route.id);
   const routePath = getCurrentRoutePath(matches);
 
-  const appContext: AppContext = {
+  const appContext: AppContextFromServer = {
     appData,
     routesData,
     routesConfig,
     assetsManifest,
-    appConfig: {},
-    matchedIds,
-    routeModules,
     routePath,
-    basename,
   };
 
   return (

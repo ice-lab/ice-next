@@ -80,6 +80,8 @@ export interface AppContext {
   basename?: string;
 }
 
+export type AppContextFromServer = Pick<AppContext, 'appData' | 'routesData' | 'routesConfig' | 'assetsManifest' | 'routePath'>;
+
 export type Renderer = (
   container: Element | Document,
   initialChildren: React.ReactNode,
