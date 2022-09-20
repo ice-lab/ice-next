@@ -94,7 +94,7 @@ export function createElement<P extends {
   delete rest.onAppear;
   delete rest.onDisappear;
 
-  rest = transformPrototype(rest);
+  rest = transformProps(rest);
 
   // Compat for style unit.
   const compatStyleProps = compatStyle(rest.style);
