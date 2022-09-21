@@ -1,6 +1,5 @@
 import { Link, useData, useConfig, history } from 'ice';
 import { isWeb } from '@uni/env';
-// @ts-expect-error
 import url from './ice.png';
 
 interface Data {
@@ -8,7 +7,7 @@ interface Data {
 }
 
 export default function About() {
-  const data = useData<Data>();
+  const data = useData() as Data;
   const config = useConfig();
 
   console.log('render About', 'data', data, 'config', config);
