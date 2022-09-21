@@ -35,6 +35,7 @@ import dataLoader from './dataLoader.js';
 import getAppConfig, { defineAppConfig } from './appConfig.js';
 import { routerHistory as history } from './history.js';
 import { default as BrowserOnly } from './BrowserOnly.js';
+import { default as useIsBrowser } from './useIsBrowser.js';
 
 export {
   getAppConfig,
@@ -62,6 +63,7 @@ export {
   history,
 
   BrowserOnly,
+  useIsBrowser,
 };
 
 export type {

@@ -1,9 +1,9 @@
 import React, { isValidElement } from 'react';
 import type { ComponentWithChildren } from '@ice/types';
-import { useAppContext } from './AppContext.js';
+import useIsBrowser from './useIsBrowser.js';
 
 const BrowserOnly: ComponentWithChildren<{ fallback: React.ReactNode }> = ({ children, fallback }) => {
-  const { isBrowser } = useAppContext();
+  const isBrowser = useIsBrowser();
 
   // Ref https://github.com/facebook/docusaurus/blob/v2.1.0/packages/docusaurus/src/client/exports/BrowserOnly.tsx
   if (isBrowser) {
