@@ -33,7 +33,6 @@ const start = async (
     spinner: ora.Ora;
     getAppConfig: GetAppConfig;
     getRoutesConfig: GetRoutesConfig;
-    dataCache: Map<string, string>;
     reCompileRouteConfig: (compileKey: string) => void;
   },
 ) => {
@@ -45,7 +44,6 @@ const start = async (
     spinner,
     getAppConfig,
     getRoutesConfig,
-    dataCache,
   } = options;
   const { applyHook, commandArgs, command, rootDir, userConfig, extendsPluginAPI: { serverCompileTask } } = context;
   const { platform = WEB } = commandArgs;

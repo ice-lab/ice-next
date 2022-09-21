@@ -236,7 +236,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
             getRoutesConfig,
             getAppConfig,
             reCompileRouteConfig,
-            dataCache,
             appConfig,
             devPath: (routePaths[0] || '').replace(/^[/\\]/, ''),
             spinner: buildSpinner,
@@ -248,7 +247,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
             taskConfigs,
             serverCompiler,
             spinner: buildSpinner,
-            dataCache,
           });
         } else if (command === 'test') {
           return await test(ctx, {

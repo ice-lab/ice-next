@@ -17,7 +17,6 @@ const build = async (
     taskConfigs: TaskConfig<Config>[];
     serverCompiler: ServerCompiler;
     spinner: ora.Ora;
-    dataCache: Map<string, string>;
     getAppConfig: GetAppConfig;
     getRoutesConfig: GetRoutesConfig;
   },
