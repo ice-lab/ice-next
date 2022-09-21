@@ -7,7 +7,7 @@ interface Data {
 }
 
 export default function About() {
-  const data = useData() as Data;
+  const data = useData<Data>();
   const config = useConfig();
 
   console.log('render About', 'data', data, 'config', config);
