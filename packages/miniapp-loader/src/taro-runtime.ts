@@ -1,4 +1,4 @@
-import { getOptions } from 'loader-utils';
+import { getOptions } from '@ice/bundles/compiled/loader-utils/index.js';
 import type webpack from 'webpack';
 
 export default function (this: webpack.LoaderContext<any>, source: string) {

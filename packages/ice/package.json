@@ -65,7 +65,6 @@
     "loader-utils": "^3.2.0",
     "magic-string": "^0.26.1",
     "micromatch": "^4.0.5",
-    "mini-css-extract-plugin": "2.6.0",
     "mrmime": "^1.0.0",
     "multer": "^1.4.5-lts.1",
     "open": "^8.4.0",

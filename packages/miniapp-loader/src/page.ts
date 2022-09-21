@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { getOptions, stringifyRequest } from 'loader-utils';
+import { getOptions, stringifyRequest } from '@ice/bundles/compiled/loader-utils/index.js';
 import type webpack from 'webpack';
 import normalizePath from './utils/normalizePath.js';
 

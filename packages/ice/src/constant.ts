@@ -30,8 +30,7 @@ export const MINIAPP_PLATFORMS = [
 ];
 export const ALL_PLATFORMS = [
   WEB,
-  ALI_MINIAPP, WECHAT_MINIPROGRAM, BYTEDANCE_MICROAPP,
-  BAIDU_SMARTPROGRAM, KUAISHOU_MINIPROGRAM,
+  ...MINIAPP_PLATFORMS,
 ];
 
 export const REG_TEMPLATE = /\.(wxml|axml|ttml|swan|ksml)(\?.*)?$/;

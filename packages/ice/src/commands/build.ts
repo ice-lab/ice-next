@@ -1,7 +1,7 @@
 import consola from 'consola';
 import { getWebpackConfig } from '@ice/webpack-config';
 import type { Context, TaskConfig } from 'build-scripts';
-import type { StatsError } from 'webpack';
+import type { StatsError, Stats } from 'webpack';
 import type { Config } from '@ice/types';
 import type { ServerCompiler, GetAppConfig, GetRoutesConfig } from '@ice/types/esm/plugin.js';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
@@ -22,7 +22,7 @@ const build = async (
     getRoutesConfig: GetRoutesConfig;
   },
 ) => {
-  const { taskConfigs, serverCompiler, spinner, getAppConfig, getRoutesConfig, dataCache } = options;
+  const { taskConfigs, serverCompiler, spinner, getAppConfig, getRoutesConfig } = options;
   const { applyHook, commandArgs, command, rootDir } = context;
   const webpackConfigs = taskConfigs.map(({ config }) => getWebpackConfig({
     config,
@@ -50,7 +50,13 @@ const build = async (
   });
 
   const serverEntryRef = { current: null };
-  const { stats, isSuccessful, messages } = await new Promise((resolve, reject): void => {
+
+  type CompileResults = {
+    stats: Stats;
+    isSuccessful: boolean;
+    messages: { errors: string[]; warnings: string[] };
+  };
+  const { stats, isSuccessful, messages } = await new Promise<CompileResults>((resolve, reject) => {
     let messages: { errors: string[]; warnings: string[] };
     compiler.run(async (err, stats) => {
       if (err) {

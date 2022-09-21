@@ -1,4 +1,4 @@
-import { isUrlRequest, urlToRequest } from 'loader-utils';
+import { isUrlRequest, urlToRequest } from '@ice/bundles/compiled/loader-utils/index.js';
 import sax from 'sax';
 
 export default function miniTemplateLoader(source) {

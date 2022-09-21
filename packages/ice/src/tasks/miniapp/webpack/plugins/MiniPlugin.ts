@@ -9,7 +9,6 @@ import { minify } from 'html-minifier';
 import { urlToRequest } from 'loader-utils';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
 import EntryDependency from 'webpack/lib/dependencies/EntryDependency.js';
-import webpackSources from '@ice/bundles/compiled/webpack-sources/index.js';
 
 import SingleEntryDependency from '../dependencies/SingleEntryDependency.js';
 import { componentConfig } from '../template/component.js';
@@ -19,7 +18,7 @@ import { promoteRelativePath, resolveMainFilePath } from '../utils/index.js';
 import LoadChunksPlugin from './LoadChunksPlugin.js';
 import NormalModulesPlugin from './NormalModulesPlugin.js';
 
-const { ConcatSource, RawSource } = webpackSources;
+const { ConcatSource, RawSource } = webpack.sources;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);

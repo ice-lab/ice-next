@@ -1,11 +1,10 @@
 import webpack from '@ice/bundles/compiled/webpack/index.js';
-import webpackSources from '@ice/bundles/compiled/webpack-sources/index.js';
 import type { MiniappComponent } from '../../types.js';
 import { getChunkEntryModule, addRequireToSource, getChunkIdOrName } from '../utils/webpack.js';
 import { META_TYPE } from '../../../../constant.js';
 import type NormalModule from './NormalModule.js';
 
-const { ConcatSource } = webpackSources;
+const { ConcatSource } = webpack.sources;
 const PLUGIN_NAME = 'LoadChunksPlugin';
 
 interface IOptions {
@@ -40,7 +39,7 @@ export default class LoadChunksPlugin {
         commonChunks = chunksArray.filter(chunk => this.commonChunks.includes(chunk.name) && chunkHasJs(chunk, compilation.chunkGraph)).reverse();
       });
 
-      webpack.javascript.JavascriptModulesPlugin.getCompilationHooks(compilation).render.tap(PLUGIN_NAME, (modules: typeof ConcatSource, { chunk }) => {
+      webpack.javascript.JavascriptModulesPlugin.getCompilationHooks(compilation).render.tap(PLUGIN_NAME, (modules: webpack.sources.ConcatSource, { chunk }) => {
         const chunkEntryModule = getChunkEntryModule(compilation, chunk) as any;
         if (chunkEntryModule) {
           const entryModule: NormalModule = chunkEntryModule.rootModule ?? chunkEntryModule;
@@ -60,7 +59,7 @@ export default class LoadChunksPlugin {
       /**
        * 在每个 chunk 文本刚生成后，按判断条件在文本头部插入 require 语句
        */
-      webpack.javascript.JavascriptModulesPlugin.getCompilationHooks(compilation).render.tap(PLUGIN_NAME, (modules: typeof ConcatSource, { chunk }) => {
+      webpack.javascript.JavascriptModulesPlugin.getCompilationHooks(compilation).render.tap(PLUGIN_NAME, (modules: webpack.sources.ConcatSource, { chunk }) => {
         const chunkEntryModule = getChunkEntryModule(compilation, chunk) as any;
         if (chunkEntryModule) {
           const entryModule: NormalModule = chunkEntryModule.rootModule ?? chunkEntryModule;

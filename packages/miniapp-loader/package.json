@@ -18,7 +18,7 @@
   },
   "sideEffects": false,
   "dependencies": {
-    "loader-utils": "^1.2.3"
+    "@ice/bundles": "^0.1.0"
   },
   "devDependencies": {
     "webpack": "^5.73.0"

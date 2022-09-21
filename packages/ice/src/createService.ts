@@ -157,13 +157,13 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const platformTaskConfig = taskConfigs.find(({ name }) => ALL_PLATFORMS.includes(name));
 
   const iceRuntimePath = isMiniappPlatform ? '@ice/runtime/miniapp' : '@ice/runtime';
-  const needRoutes = platform === WEB;
+  const enableRoutes = platform === WEB;
   // add render data
   generator.setRenderData({
     ...routesInfo,
     platform,
     iceRuntimePath,
-    needRoutes,
+    enableRoutes,
     hasExportAppData,
     runtimeModules,
     coreEnvKeys,
