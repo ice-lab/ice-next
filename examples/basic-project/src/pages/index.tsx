@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react';
-import { Link, useData, useAppData, useConfig, BrowserOnly } from 'ice';
+import { Link, useData, useAppData, useConfig, BrowserOnly, useIsBrowser } from 'ice';
 // not recommended but works
 import { useAppContext } from '@ice/runtime';
 import { useRequest } from 'ahooks';
@@ -17,6 +17,7 @@ export default function Home(props) {
   const appData = useAppData<AppData>();
   const data = useData();
   const config = useConfig();
+  const isBrowser = useIsBrowser();
 
   if (typeof window !== 'undefined') {
     console.log('render Home', props);
@@ -42,6 +43,7 @@ export default function Home(props) {
         <div>userInfo: {JSON.stringify(userInfo)}</div>
         <div>data from: <span id="data-from">{data.from}</span></div>
       </div>
+      <div>{isBrowser ? 'Client' : 'Server'}</div>
       <BrowserOnly>
         {() => <PageUrl />}
       </BrowserOnly>
