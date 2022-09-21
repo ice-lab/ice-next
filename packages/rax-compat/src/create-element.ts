@@ -1,15 +1,14 @@
 import type {
   Attributes,
-  ChangeEvent,
   FunctionComponent,
   ReactElement,
   ReactNode,
   RefObject,
   SyntheticEvent,
 } from 'react';
-import { createElement as _createElement, useEffect, useCallback, useRef, useState, forwardRef as _forwardRef } from 'react';
+import { createElement as _createElement, useEffect, useCallback, useRef, useState } from 'react';
 import { cached, convertUnit } from 'style-unit';
-import { observerElement } from './visibility';
+import VisibilityChange from '@ice/appear';
 import { isFunction, isObject, isNumber } from './type';
 import transformPrototype from './prototypes';
 
@@ -55,19 +54,17 @@ function InputCompat(props: any) {
     delete rest.maxlength;
   }
 
-  // The onChange event is SyntheticEvent in React but it is dom event in Rax, so it need compat onChange.
+  // The onChange event is SyntheticEvent in React, but it is dom event in Rax, so it needs compat onChange.
   useEffect(() => {
-    function changeEventListener(event: ChangeEvent) {
-      onChange(event);
-    }
-
+    let eventTarget: EventTarget;
     if (ref && ref.current && onChange) {
-      ref.current.addEventListener('change', changeEventListener);
+      eventTarget = ref.current;
+      eventTarget.addEventListener('change', onChange);
     }
 
     return () => {
-      if (ref && ref.current) {
-        ref.current.removeEventListener('change', changeEventListener);
+      if (eventTarget) {
+        eventTarget.removeEventListener('change', onChange);
       }
     };
   }, [onChange]);
@@ -131,49 +128,12 @@ export function createElement<P extends {
       {
         onAppear,
         onDisappear,
-        // Passing child ref to `VisibilityChange` to avoid creating a new ref.
-        childRef: rest.ref,
-        // Using forwardedRef as a prop to the backend react element.
-        forwardRef: (ref: RefObject<any>) => _createElement(type, Object.assign({ ref }, rest), ...children),
+        children: _createElement(type, rest, ...children),
       },
     );
   } else {
     return _createElement(type, rest, ...children);
   }
-}
-
-function VisibilityChange({
-  onAppear,
-  onDisappear,
-  childRef,
-  forwardRef,
-}: any) {
-  const fallbackRef = useRef(null); // `fallbackRef` used if `childRef` is not provided.
-  const ref = childRef || fallbackRef;
-
-  const listen = useCallback((eventName: string, handler: Function) => {
-    const { current } = ref;
-    // Rax components will set custom ref by useImperativeHandle.
-    // So We should get eventTarget by _nativeNode.
-    // https://github.com/raxjs/rax-components/blob/master/packages/rax-textinput/src/index.tsx#L151
-    if (current && isFunction(handler)) {
-      const eventTarget = current._nativeNode || current;
-      observerElement(eventTarget as HTMLElement);
-      eventTarget.addEventListener(eventName, handler);
-    }
-    return () => {
-      const { current } = ref;
-      if (current) {
-        const eventTarget = current._nativeNode || current;
-        eventTarget.removeEventListener(eventName, handler);
-      }
-    };
-  }, [ref]);
-
-  useEffect(() => listen('appear', onAppear), [ref, onAppear, listen]);
-  useEffect(() => listen('disappear', onDisappear), [ref, onDisappear, listen]);
-
-  return forwardRef(ref);
 }
 
 const isDimensionalProp = cached((prop: string) => !NON_DIMENSIONAL_REG.test(prop));
