@@ -107,31 +107,6 @@ importers:
       speed-measure-webpack-plugin: 1.5.0_webpack@5.74.0
       webpack: 5.74.0
 
-  examples/basic-miniapp-project:
-    specifiers:
-      '@ice/app': workspace:*
-      '@ice/runtime': workspace:*
-      '@types/react': ^18.0.0
-      '@types/react-dom': ^18.0.2
-      ahooks: ^3.3.8
-      browserslist: ^4.19.3
-      react: ^18.0.0
-      react-dom: ^18.0.0
-      speed-measure-webpack-plugin: ^1.5.0
-      webpack: ^5.73.0
-    dependencies:
-      '@ice/app': link:../../packages/ice
-      '@ice/runtime': link:../../packages/runtime
-      ahooks: 3.4.1_react@18.2.0
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
-    devDependencies:
-      '@types/react': 18.0.20
-      '@types/react-dom': 18.0.6
-      browserslist: 4.21.3
-      speed-measure-webpack-plugin: 1.5.0_webpack@5.74.0
-      webpack: 5.74.0
-
   examples/basic-project:
     specifiers:
       '@ice/app': workspace:*
@@ -202,6 +177,31 @@ importers:
     devDependencies:
       '@types/react': 18.0.8
       '@types/react-dom': 18.0.3
+
+  examples/miniapp-project:
+    specifiers:
+      '@ice/app': workspace:*
+      '@ice/runtime': workspace:*
+      '@types/react': ^18.0.0
+      '@types/react-dom': ^18.0.2
+      ahooks: ^3.3.8
+      browserslist: ^4.19.3
+      react: ^18.0.0
+      react-dom: ^18.0.0
+      speed-measure-webpack-plugin: ^1.5.0
+      webpack: ^5.73.0
+    dependencies:
+      '@ice/app': link:../../packages/ice
+      '@ice/runtime': link:../../packages/runtime
+      ahooks: 3.4.1_react@18.2.0
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    devDependencies:
+      '@types/react': 18.0.20
+      '@types/react-dom': 18.0.6
+      browserslist: 4.21.3
+      speed-measure-webpack-plugin: 1.5.0_webpack@5.74.0
+      webpack: 5.74.0
 
   examples/rax-inline-style:
     specifiers:
