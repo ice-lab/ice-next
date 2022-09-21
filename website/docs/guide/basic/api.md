@@ -8,7 +8,7 @@ order: 15
 
 ### `useIsBrowser`
 
-该方法会在 React Hydrate 完成后后返回 `true`，一般在开启 SSR/SSG 的应用中使用。
+该方法会在 React Hydrate 完成后返回 `true`，一般在开启 SSR/SSG 的应用中使用。
 
 :::caution
 
