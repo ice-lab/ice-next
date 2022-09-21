@@ -22,7 +22,7 @@ export const taskExternals = {
 };
 
 const commonDeps = ['terser', 'tapable', 'cssnano', 'terser-webpack-plugin', 'webpack', 'schema-utils',
-'lodash', 'postcss-preset-env', 'loader-utils', 'find-up', 'common-path-prefix'];
+'lodash', 'postcss-preset-env', 'loader-utils', 'find-up', 'common-path-prefix', 'acorn', 'magic-string'];
 
 const webpackDevServerDeps = ['bonjour-service', 'colorette', 'compression', 'connect-history-api-fallback',
 'default-gateway', 'express', 'graceful-fs', 'http-proxy-middleware',
@@ -56,17 +56,18 @@ const tasks = [
   ...['cssnano', 'tapable', 'schema-utils', 'lodash',
     'less-loader', 'postcss-loader', 'sass-loader', 'css-loader',
     'postcss-preset-env', 'postcss-nested', 'postcss-modules', 'postcss-plugin-rpx2vw',
-    'webpack-bundle-analyzer', 'es-module-lexer', 'terser',
-    'eslint-webpack-plugin', 'copy-webpack-plugin', 'cacache', 'ora', 'unplugin',
+    'webpack-bundle-analyzer', 'es-module-lexer', 'terser', 'trusted-cert', 'magic-string',
+    'eslint-webpack-plugin', 'copy-webpack-plugin', 'cacache', 'ora', 'unplugin', 'acorn',
     // Dependencies of react-refresh-webpack-plugin.
     'loader-utils', 'source-map', 'find-up', 'common-path-prefix',
     // Dependencies of webpack-dev-server.
     ...webpackDevServerDeps,
-  ].map((pkgName) => ({ pkgName })),
+  ].map((pkgName) => ({ pkgName, externals: taskExternals })),
   {
     pkgName: 'unplugin',
     declaration: false,
     emptyDir: false,
+    externals: taskExternals,
     file: 'node_modules/unplugin/dist/webpack/loaders/transform.js',
     bundleName: 'webpack/loaders/transform.js',
   },
@@ -74,16 +75,19 @@ const tasks = [
     pkgName: 'unplugin',
     declaration: false,
     emptyDir: false,
+    externals: taskExternals,
     file: 'node_modules/unplugin/dist/webpack/loaders/load.js',
     bundleName: 'webpack/loaders/load.js',
   },
   {
     // pack main package
     pkgName: 'fork-ts-checker-webpack-plugin',
+    externals: taskExternals,
   },
   {
     // pack worker file
     pkgName: 'fork-ts-checker-webpack-plugin',
+    externals: taskExternals,
     declaration: false,
     emptyDir: false,
     file: 'node_modules/fork-ts-checker-webpack-plugin/lib/typescript/worker/get-issues-worker.js',
@@ -92,6 +96,7 @@ const tasks = [
   {
     // pack worker file
     pkgName: 'fork-ts-checker-webpack-plugin',
+    externals: taskExternals,
     declaration: false,
     emptyDir: false,
     file: path.join('node_modules', 'fork-ts-checker-webpack-plugin/lib/typescript/worker/get-dependencies-worker.js'),
@@ -99,6 +104,7 @@ const tasks = [
   },
   {
     pkgName: 'css-minimizer-webpack-plugin',
+    externals: taskExternals,
     matchCopyFiles: (data: { resolvePath: string; resolveId: string }): boolean => {
       const { resolvePath, resolveId } = data;
       return resolvePath.includes('./utils') && resolveId.includes('css-minimizer-webpack-plugin/dist');
@@ -119,6 +125,7 @@ const tasks = [
   },
   {
     pkgName: 'terser-webpack-plugin',
+    externals: taskExternals,
     matchCopyFiles: (data: { resolvePath: string; resolveId: string }): boolean => {
       const { resolvePath } = data;
       return resolvePath.endsWith('./utils') || resolvePath.endsWith('.json');
