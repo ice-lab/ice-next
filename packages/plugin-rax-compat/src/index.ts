@@ -78,9 +78,7 @@ const plugin: Plugin<CompatRaxOptions> = (options = {}) => ({
         },
       });
 
-      if (!config.server) {
-        config.server = {};
-      }
+      config.server ??= {};
       const originalOptions = config.server.buildOptions;
       config.server.buildOptions = (options) => ({
         ...(originalOptions ? originalOptions(options) : options),
@@ -90,6 +88,18 @@ const plugin: Plugin<CompatRaxOptions> = (options = {}) => ({
       });
 
       Object.assign(config.alias, alias);
+
+      // External weex module.
+      config.externals ??= [];
+      config.externals.unshift((...args) => {
+        const { request } = args[0];
+        const callback = args[1];
+
+        if (request.indexOf('@weex-module') >= 0) {
+          return callback(null, `commonjs ${request}`);
+        }
+        callback();
+      });
 
       if (options.inlineStyle) {
         if (!warnOnce) {
