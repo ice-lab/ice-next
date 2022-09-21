@@ -83,6 +83,11 @@ const tasks = [
     // pack main package
     pkgName: 'fork-ts-checker-webpack-plugin',
     externals: taskExternals,
+    patch: () => {
+      // Hack: ncc will prebundle typescript because of require.resolve('typescript'), overwrite to make it externaled.
+      const targetPath = path.join(__dirname, '../compiled/fork-ts-checker-webpack-plugin/typescript.js');
+      fs.writeFileSync(targetPath, 'module.exports = require(\'typescript\');');
+    },
   },
   {
     // pack worker file
