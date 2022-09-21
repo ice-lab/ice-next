@@ -42,7 +42,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     .description('start server')
     .allowUnknownOption()
     .addOption(new Option('--platform <platform>', 'set platform').default('web').choices(ALL_PLATFORMS))
-    .option('--platform <platform>', 'set platform', 'web')
     .option('--mode <mode>', 'set mode', 'development')
     .option('--config <config>', 'custom config path')
     .option('-h, --host <host>', 'dev server host', '0.0.0.0')
