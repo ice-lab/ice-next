@@ -89,17 +89,21 @@ const plugin: Plugin<CompatRaxOptions> = (options = {}) => ({
 
       Object.assign(config.alias, alias);
 
+      const { externals } = config;
       // External weex module.
-      config.externals ??= [];
-      config.externals.unshift((...args) => {
-        const { request } = args[0];
-        const callback = args[1];
-
-        if (request.indexOf('@weex-module') >= 0) {
-          return callback(null, `commonjs ${request}`);
-        }
-        callback();
-      });
+      config.externals = [
+        ({ request }, callback) => {
+          if (request.indexOf('@weex-module') >= 0) {
+            return callback(null, `commonjs ${request}`);
+          }
+          callback();
+        },
+      ];
+      if (Array.isArray(externals)) {
+        config.externals.concat(externals);
+      } else if (typeof externals === 'object') {
+        config.externals.push(externals);
+      }
 
       if (options.inlineStyle) {
         if (!warnOnce) {

@@ -72,7 +72,7 @@ export interface Config {
 
   outputDir?: string;
 
-  externals?: Record<string, string | string[]>;
+  externals?: Record<string, string | string[]> | Array<Function | Record<string, string | string[]>>;
 
   outputAssetsPath?: Record<string, string>;
 
