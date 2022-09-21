@@ -9,8 +9,10 @@ import { createRequire } from 'node:module';
 import fg from 'fast-glob';
 import type { Config } from '@ice/types';
 import { RUNTIME_TMP_DIR, CACHE_DIR } from '../../constant.js';
+import { getRoutePathsFromCache } from '../../utils/getRoutePaths.js';
 import getMiniappPlatformConfig from './platforms/index.js';
 import getMiniappWebpackConfig from './webpack/index.js';
+
 
 const require = createRequire(import.meta.url);
 
@@ -30,7 +32,7 @@ function getEntry(rootDir: string) {
   };
 }
 
-const getMiniappTask = ({ rootDir, command, platform, getAppConfig, getRoutesConfig }): Config => {
+const getMiniappTask = ({ rootDir, command, platform, getAppConfig, getRoutesConfig, dataCache }): Config => {
   const entry = getEntry(rootDir);
   const mode = command === 'start' ? 'development' : 'production';
   const { template, globalObject, fileType } = getMiniappPlatformConfig(platform);
@@ -110,6 +112,9 @@ const getMiniappTask = ({ rootDir, command, platform, getAppConfig, getRoutesCon
       // compatible with former design that miniapp represents ali miniapp
       keepPlatform: platform === 'ali-miniapp' ? 'miniapp' : platform,
       removeExportExprs: ['getServerData', 'getStaticData'],
+      getRoutePaths: () => {
+        return getRoutePathsFromCache(dataCache);
+      },
     },
     cssFilename: `[name]${fileType.style}`,
     cssChunkFilename: `[name]${fileType.style}`,

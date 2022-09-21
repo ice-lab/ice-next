@@ -1,4 +1,3 @@
-import * as path from 'path';
 import consola from 'consola';
 import { getWebpackConfig } from '@ice/webpack-config';
 import type { Context, TaskConfig } from 'build-scripts';
@@ -9,11 +8,8 @@ import webpack from '@ice/bundles/compiled/webpack/index.js';
 import type ora from '@ice/bundles/compiled/ora/index.js';
 import webpackCompiler from '../service/webpackCompiler.js';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
-import { RUNTIME_TMP_DIR, SERVER_OUTPUT_DIR, WEB } from '../constant.js';
-import generateHTML from '../utils/generateHTML.js';
+import { RUNTIME_TMP_DIR } from '../constant.js';
 import emptyDir from '../utils/emptyDir.js';
-import getServerEntry from '../utils/getServerEntry.js';
-import { getRoutePathsFromCache } from '../utils/getRoutePaths.js';
 
 const build = async (
   context: Context<Config>,
@@ -27,8 +23,7 @@ const build = async (
   },
 ) => {
   const { taskConfigs, serverCompiler, spinner, getAppConfig, getRoutesConfig, dataCache } = options;
-  const { applyHook, commandArgs, command, rootDir, userConfig } = context;
-  const { platform = WEB } = commandArgs;
+  const { applyHook, commandArgs, command, rootDir } = context;
   const webpackConfigs = taskConfigs.map(({ config }) => getWebpackConfig({
     config,
     rootDir,
@@ -45,7 +40,6 @@ const build = async (
     getRoutesConfig,
   };
   const compiler = await webpackCompiler({
-    rootDir,
     webpackConfigs,
     taskConfigs,
     commandArgs,
@@ -53,16 +47,9 @@ const build = async (
     spinner,
     applyHook,
     hooksAPI,
-    dataCache,
   });
 
-  const { ssg, ssr, server: { format } } = userConfig;
-  // compile server bundle
-  const entryPoint = getServerEntry(rootDir, taskConfigs[0].config?.server?.entry);
-  const esm = format === 'esm';
-  const outJSExtension = esm ? '.mjs' : '.cjs';
-  const serverOutputDir = path.join(outputDir, SERVER_OUTPUT_DIR);
-  let serverEntry;
+  const serverEntryRef = { current: null };
   const { stats, isSuccessful, messages } = await new Promise((resolve, reject): void => {
     let messages: { errors: string[]; warnings: string[] };
     compiler.run(async (err, stats) => {
@@ -86,51 +73,6 @@ const build = async (
       } else {
         compiler?.close?.(() => {});
         const isSuccessful = !messages.errors.length;
-
-        const shouldCompileServerBundle = platform === WEB;
-        if (shouldCompileServerBundle) {
-          const serverCompilerResult = await serverCompiler(
-            {
-              entryPoints: { index: entryPoint },
-              outdir: serverOutputDir,
-              splitting: esm,
-              format,
-              platform: esm ? 'browser' : 'node',
-              outExtension: { '.js': outJSExtension },
-            },
-            {
-              preBundle: format === 'esm' && (ssr || ssg),
-              swc: {
-                keepExports: (!ssg && !ssr) ? ['getConfig'] : null,
-                keepPlatform: 'node',
-                getRoutePaths: () => {
-                  return getRoutePathsFromCache(dataCache);
-                },
-              },
-            },
-          );
-          if (serverCompilerResult.error) {
-            consola.error('Build failed.');
-            return;
-          }
-
-          serverEntry = serverCompilerResult.serverEntry;
-
-          let renderMode;
-          if (ssg) {
-            renderMode = 'SSG';
-          }
-
-          // generate html
-          await generateHTML({
-            rootDir,
-            outputDir,
-            entry: serverEntry,
-            // only ssg need to generate the whole page html when build time.
-            documentOnly: !ssg,
-            renderMode,
-          });
-        }
         resolve({
           stats,
           messages,
@@ -145,8 +87,9 @@ const build = async (
     isSuccessful,
     messages,
     taskConfigs,
+    webpackConfigs,
     serverCompiler,
-    serverEntry,
+    serverEntryRef,
     getAppConfig,
     getRoutesConfig,
   });
