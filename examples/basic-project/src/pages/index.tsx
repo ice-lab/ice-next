@@ -8,6 +8,7 @@ import './index.css';
 import styles from './index.module.css';
 import lessStyles from './index.module.less';
 import sassStyles from './index.module.scss';
+import PageUrl from '@/components/PageUrl';
 
 const Bar = lazy(() => import('../components/bar'));
 
@@ -42,7 +43,7 @@ export default function Home(props) {
         <div>data from: <span id="data-from">{data.from}</span></div>
       </div>
       <BrowserOnly>
-        {() => <span>page url is {window.location.href}</span>}
+        {() => <PageUrl />}
       </BrowserOnly>
     </>
   );
