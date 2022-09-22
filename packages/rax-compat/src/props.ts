@@ -19,7 +19,7 @@ function transformProps(props: Object): Object {
           resKey = reactEvent;
         }
       }
-    } else if (possibleStandardNames.hasOwnProperty(lowerCasedPropkey)) {
+    } else if (Object.prototype.hasOwnProperty.call(possibleStandardNames, lowerCasedPropkey)) {
       // Transform the event so that it works properly in React.
       resKey = possibleStandardNames[lowerCasedPropkey];
     }
