@@ -315,7 +315,7 @@ function renderDocument({ matches, renderOptions, routePath }: RenderDocumentOpt
     app,
     Document,
     basename,
-    routesConfig,
+    routesConfig = {},
   } = renderOptions;
 
   const routesData = null;
