@@ -238,8 +238,9 @@ export class Node extends EventTarget {
     this.insertBefore(newChild, oldChild, true);
 
     // Destroy the oldChild
-    //   - cleanRef: true (Need to clean eventSource, because the oldChild was detached from the DOM tree)
-    //   - update: false (No need to update parent.childNodes, because replace will not cause the parent.childNodes being reordered)
+    // - cleanRef: true (Need to clean eventSource, because the oldChild was detached from the DOM tree)
+    // - update: false (No need to update parent.childNodes,
+    // because replace will not cause the parent.childNodes being reordered)
     oldChild.remove({ doUpdate: false });
 
     return oldChild;

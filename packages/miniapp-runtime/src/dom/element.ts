@@ -236,7 +236,7 @@ export class Element extends Node {
         return;
       }
 
-      if (!this.props.hasOwnProperty(qualifiedName)) {
+      if (!Object.prototype.hasOwnProperty.call(this.props, qualifiedName)) {
         return;
       }
       delete this.props[qualifiedName];

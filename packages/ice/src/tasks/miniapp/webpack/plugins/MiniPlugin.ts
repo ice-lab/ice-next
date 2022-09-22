@@ -55,7 +55,7 @@ function isEmptyObject(obj: any): boolean {
     return true;
   }
   for (const key in obj) {
-    if (obj.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
       return false;
     }
   }
@@ -119,7 +119,7 @@ export default class MiniPlugin {
     compiler.hooks.run.tapAsync(
       PLUGIN_NAME,
       this.tryAsync<webpack.Compiler>(async compiler => {
-        await this.run(compiler);
+        await this.run();
         new LoadChunksPlugin({
           commonChunks: commonChunks,
           pages: this.pages,
@@ -135,7 +135,7 @@ export default class MiniPlugin {
         if (changedFiles?.size > 0) {
           this.isWatch = true;
         }
-        await this.run(compiler);
+        await this.run();
         if (!this.loadChunksPlugin) {
           this.loadChunksPlugin = new LoadChunksPlugin({
             commonChunks: commonChunks,
@@ -173,25 +173,26 @@ export default class MiniPlugin {
        * webpack NormalModule 在 runLoaders 真正解析资源的前一刻，
        * 往 NormalModule.loaders 中插入对应的 miniapp Loader
        */
-      webpack.NormalModule.getCompilationHooks(compilation).loader.tap(PLUGIN_NAME, (_loaderContext, module:/** NormalModule */ any) => {
-        const { loaderMeta = {} } = this.options;
-        if (module.miniType === META_TYPE.PAGE) {
-          const loaderName = require.resolve(this.pageLoaderName);
-          if (!isLoaderExist(module.loaders, loaderName)) {
-            module.loaders.unshift({
-              loader: loaderName,
-              options: {
-                loaderMeta,
-                name: module.name,
-                config: this.filesConfig,
-                appConfig: this.appConfig,
-                miniType: module.miniType,
-              },
-            });
+      webpack.NormalModule.getCompilationHooks(compilation).loader.tap(PLUGIN_NAME,
+        (_loaderContext, module:/** NormalModule */ any) => {
+          const { loaderMeta = {} } = this.options;
+          if (module.miniType === META_TYPE.PAGE) {
+            const loaderName = require.resolve(this.pageLoaderName);
+            if (!isLoaderExist(module.loaders, loaderName)) {
+              module.loaders.unshift({
+                loader: loaderName,
+                options: {
+                  loaderMeta,
+                  name: module.name,
+                  config: this.filesConfig,
+                  appConfig: this.appConfig,
+                  miniType: module.miniType,
+                },
+              });
+            }
           }
-        }
-        // TODO: 组件 loader 处理
-      });
+          // TODO: 组件 loader 处理
+        });
 
       compilation.hooks.processAssets.tapAsync(
         {
@@ -242,7 +243,7 @@ export default class MiniPlugin {
    * 分析 app 入口文件，搜集页面、组件信息，
    * 往 this.dependencies 中添加资源模块
    */
-  async run(compiler: webpack.Compiler) {
+  async run() {
     this.appConfig = await this.getAppConfig();
     this.getPages();
     await this.getPagesConfig();
@@ -432,7 +433,12 @@ export default class MiniPlugin {
 
     if (!template.isSupportRecursive) {
       // 如微信、QQ 不支持递归模版的小程序，需要使用自定义组件协助递归
-      this.generateTemplateFile(compilation, baseCompName, template.buildBaseComponentTemplate, this.options.fileType.templ);
+      this.generateTemplateFile(
+        compilation,
+        baseCompName,
+        template.buildBaseComponentTemplate,
+        this.options.fileType.templ,
+      );
       this.generateConfigFile(compilation, baseCompName, {
         component: true,
         usingComponents: {
@@ -456,10 +462,20 @@ export default class MiniPlugin {
       });
     }
     this.generateTemplateFile(compilation, baseTemplateName, template.buildTemplate, componentConfig);
-    this.generateTemplateFile(compilation, customWrapperName, template.buildCustomComponentTemplate, this.options.fileType.templ);
+    this.generateTemplateFile(
+      compilation,
+      customWrapperName,
+      template.buildCustomComponentTemplate,
+      this.options.fileType.templ,
+    );
     this.generateXSFile(compilation, 'utils');
     this.pages.forEach(page => {
-      let importBaseTemplatePath = promoteRelativePath(path.relative(page.path, path.join(sourceDir, this.getTemplatePath(baseTemplateName))));
+      let importBaseTemplatePath = promoteRelativePath(
+        path.relative(
+          page.path,
+          path.join(sourceDir, this.getTemplatePath(baseTemplateName)),
+        ),
+      );
       const config = this.filesConfig[this.getConfigFilePath(page.name)];
       if (config) {
         let importBaseCompPath = promoteRelativePath(path.relative(page.path, path.join(sourceDir, this.getTargetFilePath(baseCompName, ''))));
@@ -484,7 +500,11 @@ export default class MiniPlugin {
     }
   }
 
-  generateConfigFile(compilation: webpack.Compilation, filePath: string, config: MiniappConfig & { component?: boolean }) {
+  generateConfigFile(
+    compilation: webpack.Compilation,
+    filePath: string,
+    config: MiniappConfig & { component?: boolean },
+  ) {
     const fileConfigName = this.getConfigPath(this.getComponentName(filePath));
     const unOfficalConfigs = ['enableShareAppMessage', 'enableShareTimeline', 'components'];
     unOfficalConfigs.forEach(item => {
@@ -494,7 +514,12 @@ export default class MiniPlugin {
     compilation.assets[fileConfigName] = new RawSource(fileConfigStr);
   }
 
-  generateTemplateFile(compilation: webpack.Compilation, filePath: string, templateFn: (...args) => string, ...options) {
+  generateTemplateFile(
+    compilation: webpack.Compilation,
+    filePath: string,
+    templateFn: (...args) => string,
+    ...options
+  ) {
     let templStr = templateFn(...options);
     const fileTemplName = this.getTemplatePath(this.getComponentName(filePath));
 
@@ -599,7 +624,10 @@ export default class MiniPlugin {
     const source = new ConcatSource('');
     Object.keys(assets).forEach(assetName => {
       const fileName = path.basename(assetName, path.extname(assetName));
-      if ((REG_STYLE.test(assetName) || REG_STYLE_EXT.test(assetName)) && this.options.commonChunks.includes(fileName)) {
+      if ((REG_STYLE.test(assetName) ||
+        REG_STYLE_EXT.test(assetName)) &&
+        this.options.commonChunks.includes(fileName)
+      ) {
         source.add(`@import ${JSON.stringify(urlToRequest(assetName))};\n`);
         assets[appStyle] = source;
       }

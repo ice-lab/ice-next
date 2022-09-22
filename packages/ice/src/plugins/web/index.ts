@@ -15,7 +15,7 @@ import { getRoutePathsFromCache } from '../../utils/getRoutePaths.js';
 import generateHTML from '../../utils/generateHTML.js';
 import openBrowser from '../../utils/openBrowser.js';
 
-const plugin = ({ registerTask, onGetConfig, onHook, context }) => {
+const plugin = ({ registerTask, onHook, context }) => {
   const { rootDir, commandArgs, command, userConfig, extendsPluginAPI: { serverCompileTask, dataCache } } = context;
   const { ssg, ssr, server: { format } } = userConfig;
   const esm = format === 'esm';
@@ -138,9 +138,6 @@ const plugin = ({ registerTask, onGetConfig, onHook, context }) => {
         openBrowser(`${urls.localUrlForBrowser}${hashChar}${devPath}`);
       }
     }
-  });
-
-  onGetConfig('web', (config) => {
   });
 };
 

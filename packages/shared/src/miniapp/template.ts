@@ -383,7 +383,14 @@ export class BaseTemplate {
 </template>
   `;
       } else {
-        if (!isSupportRecursive && supportXS && nestElements.has(compName) && level + 1 > nestElements.get(compName)!) return;
+        if (
+          !isSupportRecursive &&
+          supportXS &&
+          nestElements.has(compName) &&
+          level + 1 > nestElements.get(compName)!
+        ) {
+          return;
+        }
 
         let child = supportXS
           ? `<template is="{{xs.e(${isSupportRecursive ? 0 : 'cid+1'})}}" data="{{${data}}}" />`
@@ -534,7 +541,10 @@ export class RecursiveTemplate extends BaseTemplate {
     }
     const ZERO_FLOOR = 0;
     const components = Object.keys(this.miniComponents)
-      .filter(c => (componentConfig.includes.size && !componentConfig.includeAll ? componentConfig.includes.has(c) : true));
+      .filter(c => (
+        componentConfig.includes.size &&
+        !componentConfig.includeAll ? componentConfig.includes.has(c) : true
+      ));
 
     template = components.reduce((current, nodeName) => {
       const attributes: Attributes = this.miniComponents[nodeName];
@@ -570,7 +580,10 @@ export class UnRecursiveTemplate extends BaseTemplate {
       this.miniComponents = this.createMiniComponents(this.internalComponents);
     }
     const components = Object.keys(this.miniComponents)
-      .filter(c => (componentConfig.includes.size && !componentConfig.includeAll ? componentConfig.includes.has(c) : true));
+      .filter(c => (
+        componentConfig.includes.size &&
+        !componentConfig.includeAll ? componentConfig.includes.has(c) : true
+      ));
 
     let template = this.buildBaseTemplate();
     for (let i = 0; i < this.baseLevel; i++) {

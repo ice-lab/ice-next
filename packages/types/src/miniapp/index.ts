@@ -348,7 +348,9 @@ export interface MiniappAppConfig {
    * @see https://developers.weixin.qq.com/miniprogram/dev/framework/material/support_material.html
    */
   supportedMaterials?: {
-    /** 支持文件类型的MimeType，音频，视频支持二级配置的通配模式，例如: video/*。通配模式配置和精确类型配置同时存在时，则优先使用精确类型的配置(例如video/*和video/mp4同时存在，会优先使用video/mp4的配置)。 */
+    /** 支持文件类型的MimeType，音频，视频支持二级配置的通配模式，例如: video
+        通配模式配置和精确类型配置同时存在时，则优先使用精确类型的配置(例如video/*和video/mp4同时存在，会优先使用video/mp4的配置)。
+    */
     materialType: string;
     /** 开发者配置的标题，在素材页面会展示该标题，配置中必须包含${nickname}, 代码包编译后会自动替换为小程序名称，如果声明了简称则会优先使用简称。除去${nickname}其余字数不得超过6个。 */
     name: string;

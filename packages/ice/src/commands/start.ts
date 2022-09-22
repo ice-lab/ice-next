@@ -83,7 +83,6 @@ const start = async (
     }));
   } else {
     return (await invokeCompilerWatch({
-      rootDir,
       webpackConfigs,
       taskConfigs,
       commandArgs,
@@ -184,7 +183,6 @@ async function startDevServer({
 }
 
 async function invokeCompilerWatch({
-  rootDir,
   webpackConfigs,
   taskConfigs,
   commandArgs,
@@ -208,7 +206,6 @@ async function invokeCompilerWatch({
     poll: undefined,
   }, async (err, stats) => {
     if (err) {
-      debugger;
       if (!err.message) {
         throw err;
       }

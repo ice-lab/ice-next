@@ -250,7 +250,11 @@ export function createPageConfig(
   return config;
 }
 
-export function createComponentConfig(component: React.ComponentClass, componentName?: string, data?: Record<string, unknown>) {
+export function createComponentConfig(
+  component: React.ComponentClass,
+  componentName?: string,
+  data?: Record<string, unknown>,
+) {
   const id = componentName ?? `ice_component_${pageId()}`;
   let componentElement: RootElement | null = null;
 

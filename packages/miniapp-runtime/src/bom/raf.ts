@@ -20,7 +20,8 @@ let lastTime = 0;
 // https://gist.github.com/jalbam/5fe05443270fa6d8136238ec72accbc0
 const raf = function (callback) {
   const _now = now();
-  const nextTime = Math.max(lastTime + 16, _now); // First time will execute it immediately but barely noticeable and performance is gained.
+  // First time will execute it immediately but barely noticeable and performance is gained.
+  const nextTime = Math.max(lastTime + 16, _now);
   return setTimeout(() => { callback(lastTime = nextTime); }, nextTime - _now);
 };
 

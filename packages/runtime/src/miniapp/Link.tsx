@@ -6,7 +6,7 @@ interface ILinkProps extends React.ComponentProps<any> {
 }
 
 function matchRoute(url: string, routes: Array<string>): string | undefined {
-  const [url_, hash] = url.split('#');
+  const [url_] = url.split('#');
   const [path, query] = url_.split('?');
   /*
   * path => route

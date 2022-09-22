@@ -2,7 +2,7 @@ export const EMPTY_OBJ: any = {};
 
 export const EMPTY_ARR = [];
 
-export const noop = (..._: unknown[]) => {};
+export const noop = () => {};
 
 
 export function toCamelCase(s: string) {

@@ -118,7 +118,7 @@ const hostConfig: HostConfig<
 
   unhideInstance(instance, props) {
     const styleProp = props.style;
-    let display = styleProp?.hasOwnProperty('display') ? styleProp.display : null;
+    let display = (styleProp && Object.prototype.hasOwnProperty.call(styleProp, 'display')) ? styleProp.display : null;
     display = display == null || isBoolean(display) || display === '' ? '' : (`${display}`).trim();
     // eslint-disable-next-line dot-notation
     instance.style['display'] = display;
@@ -142,7 +142,7 @@ const hostConfig: HostConfig<
   : setTimeout,
 
   shouldSetTextContent: returnFalse,
-  prepareForCommit(..._: any[]) { return null; },
+  prepareForCommit() { return null; },
   resetAfterCommit: noop,
   commitMount: noop,
   now,
