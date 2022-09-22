@@ -163,11 +163,12 @@ export const getRouteExportConfig = (rootDir: string) => {
     return specifyRoutId ? routeConfig[specifyRoutId] : routeConfig;
   };
 
-  const compileRoutesConfig = async () => {
+  const ensureRoutesConfig = async () => {
     const outfile = getOutfile();
 
     // Routes config file may be removed after file changed.
     if (!fs.existsSync(routeConfigFile)) {
+      // ensure routes config file exists
       !fs.existsSync(outfile) && await fs.writeFileSync(outfile, 'export default {}', 'utf8');
       return;
     }
@@ -180,7 +181,7 @@ export const getRouteExportConfig = (rootDir: string) => {
       routeExportConfig.setCompiler(serverCompiler);
     },
     getRoutesConfig,
-    compileRoutesConfig,
+    ensureRoutesConfig,
     reCompile: routeExportConfig.reCompile,
   };
 };

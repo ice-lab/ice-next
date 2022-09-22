@@ -18,7 +18,7 @@ export type ServerCompiler = (
     preBundle?: boolean;
     externalDependencies?: boolean;
     transformEnv?: boolean;
-    compileRoutesConfig?: Function;
+    ensureRoutesConfig?: Function;
   }
 ) => Promise<Partial<BuildResult & { serverEntry: string; error: any }>>;
 export type WatchEvent = [

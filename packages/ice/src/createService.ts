@@ -182,7 +182,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     getRoutesConfig,
     init: initRouteConfigCompiler,
     reCompile: reCompileRouteConfig,
-    compileRoutesConfig,
+    ensureRoutesConfig,
   } = getRouteExportConfig(rootDir);
   initAppConfigCompiler(serverCompiler);
   initRouteConfigCompiler(serverCompiler);
@@ -199,7 +199,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   );
 
   // generate static routes config file
-  await compileRoutesConfig();
+  await ensureRoutesConfig();
 
   let appConfig: AppConfig;
   try {
@@ -230,7 +230,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
             appConfig,
             devPath: (routePaths[0] || '').replace(/^[/\\]/, ''),
             spinner: buildSpinner,
-            compileRoutesConfig,
+            ensureRoutesConfig,
           });
         } else if (command === 'build') {
           return await build(ctx, {

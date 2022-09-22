@@ -50,7 +50,7 @@ export function createServerCompiler(options: Options) {
   });
 
   const serverCompiler: ServerCompiler = async (customBuildOptions, {
-    compileRoutesConfig,
+    ensureRoutesConfig,
     preBundle,
     swc,
     externalDependencies,
@@ -85,9 +85,9 @@ export function createServerCompiler(options: Options) {
       });
     }
 
-    // build after update routes config.
-    if (dev && compileRoutesConfig) {
-      await compileRoutesConfig();
+    // ensure routes config is up to date.
+    if (dev && ensureRoutesConfig) {
+      await ensureRoutesConfig();
     }
 
     // get runtime variable for server build
