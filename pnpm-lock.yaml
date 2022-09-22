@@ -380,6 +380,27 @@ importers:
       ts-jest: 28.0.8_oavexkd2euoi6eueqpz7c42uqe
       typescript: 4.8.3
 
+  examples/with-keep-alive:
+    specifiers:
+      '@ice/app': workspace:*
+      '@ice/plugin-keep-alive': workspace:*
+      '@ice/runtime': workspace:*
+      '@types/react': ^18.0.0
+      '@types/react-dom': ^18.0.2
+      react: ^18.0.0
+      react-activation: ^0.12.0
+      react-dom: ^18.0.0
+    dependencies:
+      '@ice/runtime': link:../../packages/runtime
+      react: 18.2.0
+      react-activation: 0.12.0_react@18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    devDependencies:
+      '@ice/app': link:../../packages/ice
+      '@ice/plugin-keep-alive': link:../../packages/plugin-keep-alive
+      '@types/react': 18.0.20
+      '@types/react-dom': 18.0.6
+
   examples/with-pha:
     specifiers:
       '@ice/app': workspace:*
@@ -825,6 +846,17 @@ importers:
       '@types/react': 18.0.20
       '@types/react-dom': 18.0.6
 
+  packages/plugin-keep-alive:
+    specifiers:
+      '@ice/types': ^1.0.0
+      '@types/react': ^18.0.0
+      react-activation: ^0.12.0
+    dependencies:
+      react-activation: 0.12.0
+    devDependencies:
+      '@ice/types': link:../types
+      '@types/react': 18.0.20
+
   packages/plugin-moment-locales:
     specifiers:
       '@ice/types': ^1.0.0
@@ -930,7 +962,7 @@ importers:
       react-dom: ^18.0.0
       style-unit: ^3.0.5
     dependencies:
-      '@ice/appear': link:../appear
+      '@ice/appear': 0.1.1_biqbaboplfbrettd7655fr4n2y
       '@swc/helpers': 0.4.3
       create-react-class: 15.7.0
       style-unit: 3.0.5
@@ -5691,6 +5723,16 @@ packages:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
 
+  /@ice/appear/0.1.1_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-beDieWxXTnYjmuP2o1OmPV3DZ+TETK8PojyN9V1lpmjed5rDXL8dscBzTW8Y65NkL+/0rVVSCAfXBi2EPxfcLQ==}
+    peerDependencies:
+      react: ^18
+      react-dom: ^18
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
+
   /@ice/pkg-plugin-component/1.0.0:
     resolution: {integrity: sha512-Mff6Em1RwY2NOZgciQyy2NXL65u9ebHV2Jqb5746vUVEh0l7Xpokb+3djV1pKcgED4wU8pSuSQ6jj+hXd9Ht1Q==}
     dependencies:
@@ -8362,7 +8404,6 @@ packages:
       es-abstract: 1.20.1
       get-intrinsic: 1.1.2
       is-string: 1.0.7
-    dev: true
 
   /array-tree-filter/2.1.0:
     resolution: {integrity: sha512-4ROwICNlNw/Hqa9v+rk5h22KjmzB1JGTMVKP2AKJBOCgb0yL0ASf0+YvCcLNNwquOHNX48jkeZIJ3a+oOQqKcw==}
@@ -9764,6 +9805,27 @@ packages:
     dependencies:
       loose-envify: 1.4.0
       object-assign: 4.1.1
+    dev: false
+
+  /create-react-context/0.3.0:
+    resolution: {integrity: sha512-dNldIoSuNSvlTJ7slIKC/ZFGKexBMBrrcc+TTe1NdmROnaASuLPvqpwj9v4XS4uXZ8+YPu0sNmShX2rXI5LNsw==}
+    peerDependencies:
+      prop-types: ^15.0.0
+      react: ^0.14.0 || ^15.0.0 || ^16.0.0
+    dependencies:
+      gud: 1.0.0
+      warning: 4.0.3
+    dev: false
+
+  /create-react-context/0.3.0_react@18.2.0:
+    resolution: {integrity: sha512-dNldIoSuNSvlTJ7slIKC/ZFGKexBMBrrcc+TTe1NdmROnaASuLPvqpwj9v4XS4uXZ8+YPu0sNmShX2rXI5LNsw==}
+    peerDependencies:
+      prop-types: ^15.0.0
+      react: ^0.14.0 || ^15.0.0 || ^16.0.0
+    dependencies:
+      gud: 1.0.0
+      react: 18.2.0
+      warning: 4.0.3
     dev: false
 
   /create-require/1.1.1:
@@ -12504,6 +12566,10 @@ packages:
       section-matter: 1.0.0
       strip-bom-string: 1.0.0
 
+  /gud/1.0.0:
+    resolution: {integrity: sha512-zGEOVKFM5sVPPrYs7J5/hYEw2Pof8KCyOwyhG8sAF26mCAeUFAcYPu1mwB7hhpIP29zOIBaDqwuHdLp0jvZXjw==}
+    dev: false
+
   /gzip-size/6.0.0:
     resolution: {integrity: sha512-ax7ZYomf6jqPTQ4+XCpUGyXKHk5WweS+e05MBO4/y3WJ5RkmPXNKvX+bx1behVILVwr6JSQvZAku021CHPXG3Q==}
     engines: {node: '>=10'}
@@ -14587,7 +14653,6 @@ packages:
     dependencies:
       array-includes: 3.1.5
       object.assign: 4.1.3
-    dev: true
 
   /jsx-ast-utils/3.3.3:
     resolution: {integrity: sha512-fYQHZTZ8jSfmWZ0iyzfwiU4WDX4HpHbMCZ3gPlWYiCl3BoeOTsqKBqnTVfH2rYT7eP5c3sVbeSPHnnJOaTrWiw==}
@@ -18191,6 +18256,33 @@ packages:
       minimist: 1.2.6
       strip-json-comments: 2.0.1
 
+  /react-activation/0.12.0:
+    resolution: {integrity: sha512-o4p88N2qYYGEKJaaFHQdWNREABi0PrmdgYEDvxXFb44T0uvlueyShoe22k3FIo9DPpLd1A9/iBYL6/ZDhn4rHA==}
+    peerDependencies:
+      react: '>=16'
+    dependencies:
+      create-react-context: 0.3.0
+      hoist-non-react-statics: 3.3.2
+      react-node-key: 0.4.0
+      szfe-tools: 0.0.0-beta.7
+    transitivePeerDependencies:
+      - prop-types
+    dev: false
+
+  /react-activation/0.12.0_react@18.2.0:
+    resolution: {integrity: sha512-o4p88N2qYYGEKJaaFHQdWNREABi0PrmdgYEDvxXFb44T0uvlueyShoe22k3FIo9DPpLd1A9/iBYL6/ZDhn4rHA==}
+    peerDependencies:
+      react: '>=16'
+    dependencies:
+      create-react-context: 0.3.0_react@18.2.0
+      hoist-non-react-statics: 3.3.2
+      react: 18.2.0
+      react-node-key: 0.4.0_react@18.2.0
+      szfe-tools: 0.0.0-beta.7
+    transitivePeerDependencies:
+      - prop-types
+    dev: false
+
   /react-base16-styling/0.6.0:
     resolution: {integrity: sha512-yvh/7CArceR/jNATXOKDlvTnPKPmGZz7zsenQ3jUwLzHkNUR0CvY3yGYJbWJ/nnxsL8Sgmt5cO3/SILVuPO6TQ==}
     dependencies:
@@ -18315,6 +18407,25 @@ packages:
       '@babel/runtime': 7.18.9
       react-loadable: /@docusaurus/react-loadable/5.5.2_react@17.0.2
       webpack: 5.74.0
+
+  /react-node-key/0.4.0:
+    resolution: {integrity: sha512-puiuP2QYEuNBVVvcjpUE8d8/jdAhiXHBHMmjZzQT4+fe276RMYea/tY7JoZoYlrhAX8DORLPvjySjXYJZ1m6/A==}
+    peerDependencies:
+      react: '>=16'
+    dependencies:
+      jsx-ast-utils: 2.4.1
+      szfe-tools: 0.0.0-beta.7
+    dev: false
+
+  /react-node-key/0.4.0_react@18.2.0:
+    resolution: {integrity: sha512-puiuP2QYEuNBVVvcjpUE8d8/jdAhiXHBHMmjZzQT4+fe276RMYea/tY7JoZoYlrhAX8DORLPvjySjXYJZ1m6/A==}
+    peerDependencies:
+      react: '>=16'
+    dependencies:
+      jsx-ast-utils: 2.4.1
+      react: 18.2.0
+      szfe-tools: 0.0.0-beta.7
+    dev: false
 
   /react-redux/7.2.8:
     resolution: {integrity: sha512-6+uDjhs3PSIclqoCk0kd6iX74gzrGc3W5zcAjbrFgEdIjRSQObdIwfx80unTkVUYvbQ95Y8Av3OvFHq1w5EOUw==}
@@ -19862,6 +19973,12 @@ packages:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
     dev: true
 
+  /szfe-tools/0.0.0-beta.7:
+    resolution: {integrity: sha512-/M7+Tel2G8zapfDYZlz17hf9ViqAi/loZMfM81b5iZMyaWL/t5dajBszEBI2kyIDFzlLT4btBcq+BimFgmAHug==}
+    dependencies:
+      '@babel/runtime': 7.18.9
+    dev: false
+
   /table/6.8.0:
     resolution: {integrity: sha512-s/fitrbVeEyHKFa7mFdkuQMWlH1Wgw/yEXMt5xACT4ZpzWFluehAxRtUUQKPuWhaLAWhFcVx6w3oC8VKaUfPGA==}
     engines: {node: '>=10.0.0'}
@@ -21030,6 +21147,12 @@ packages:
     dependencies:
       makeerror: 1.0.12
     dev: true
+
+  /warning/4.0.3:
+    resolution: {integrity: sha512-rpJyN222KWIvHJ/F53XSZv0Zl/accqHR8et1kpaMTD/fLCRxtV8iX8czMzY7sVZupTI3zcUTg8eycS2kNF9l6w==}
+    dependencies:
+      loose-envify: 1.4.0
+    dev: false
 
   /watchpack/2.4.0:
     resolution: {integrity: sha512-Lcvm7MGST/4fup+ifyKi2hjyIAwcdI4HRgtvTpIUxBRhB+RFtUh8XtDOxUfctVCnhVi+QQj49i91OyvzkJl6cg==}
