@@ -91,7 +91,6 @@ export function Scripts(props: React.ScriptHTMLAttributes<HTMLScriptElement>) {
     routeModules,
     routePath,
     basename,
-    documentOnly,
     downgrade,
   };
 
