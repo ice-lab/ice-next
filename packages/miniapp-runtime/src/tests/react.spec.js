@@ -1,5 +1,5 @@
 import { expect, describe, test, vi } from 'vitest';
-import { document, createEvent } from '../../esm/index';
+import { document, createEvent } from '../index';
 describe('react', () => {
   test('event should work', () => {
     const div = document.createElement('div');

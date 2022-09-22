@@ -1,5 +1,5 @@
 // 字符串简写
-export const enum Shortcuts {
+export enum Shortcuts {
   Container = 'container',
   Childnodes = 'cn',
   Text = 'v',

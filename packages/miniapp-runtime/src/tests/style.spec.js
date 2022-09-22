@@ -1,5 +1,5 @@
 import { expect, describe, test } from 'vitest';
-import { Style, document } from '../../esm/index';
+import { Style, document } from '../index';
 
 describe('style', () => {
   test('works', () => {

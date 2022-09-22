@@ -1,7 +1,7 @@
 import { expect, describe, test, vi } from 'vitest';
 import * as React from 'react';
 import { document } from '@ice/miniapp-runtime';
-import { render, unmountComponentAtNode, unstable_batchedUpdates as batchedUpdates } from '../esm/index';
+import { render, unmountComponentAtNode, unstable_batchedUpdates as batchedUpdates } from '../src/index';
 
 describe('unmountComponentAtNode', () => {
   test('throws when given a non-node', () => {

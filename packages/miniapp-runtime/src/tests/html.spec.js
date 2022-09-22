@@ -1,11 +1,11 @@
 import { expect, describe, test } from 'vitest';
-import { document } from '../../esm/index';
-import '../../esm/dom-external/inner-html/html';
+import { document } from '../index';
+import '../dom-external/inner-html/html';
 
-import { parser } from '../../esm/dom-external/inner-html/parser';
-import { Scaner } from '../../esm/dom-external/inner-html/scaner';
-import { options } from '../../esm/options';
-import { isElement } from '../../esm/utils';
+import { parser } from '../dom-external/inner-html/parser';
+import { Scaner } from '../dom-external/inner-html/scaner';
+import { options } from '../options';
+import { isElement } from '../utils';
 
 // 测试还没写完，先跳过
 describe.skip('html', () => {

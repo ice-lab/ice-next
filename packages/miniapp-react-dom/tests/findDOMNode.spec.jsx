@@ -1,7 +1,7 @@
 import { expect, describe, test } from 'vitest';
 import * as React from 'react';
 import { document } from '@ice/miniapp-runtime';
-import { render, unmountComponentAtNode, findDOMNode } from '../esm/index';
+import { render, unmountComponentAtNode, findDOMNode } from '../src/index';
 
 describe('findDOMNode', () => {
   function renderIntoDetachedNode(children) {

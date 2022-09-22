@@ -1,5 +1,5 @@
 import { expect, describe, test } from 'vitest';
-import { document, navigator, window, Element, Node, Text, createEvent, Event, createComponentConfig, createPageConfig } from '../../esm/index';
+import { document, navigator, window, Element, Node, Text, createEvent, Event, createComponentConfig, createPageConfig } from '../index';
 
 describe('style', () => {
   test('bom', () => {

@@ -1,5 +1,5 @@
 import { expect, describe, test, beforeEach } from 'vitest';
-import { eventSource, document } from '../../esm/index';
+import { eventSource, document } from '../index';
 
 describe('eventSource', () => {
   beforeEach(() => {

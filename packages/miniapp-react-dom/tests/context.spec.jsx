@@ -1,7 +1,7 @@
 import { expect, describe, test } from 'vitest';
 import * as React from 'react';
 import { document } from '@ice/miniapp-runtime';
-import { render } from '../esm/index';
+import { render } from '../src/index';
 
 describe('Context', () => {
   test('Context must be available in the consumer', () => {

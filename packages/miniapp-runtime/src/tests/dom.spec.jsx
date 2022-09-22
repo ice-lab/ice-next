@@ -1,5 +1,5 @@
 import { expect, describe, test } from 'vitest';
-import { document } from '../../esm/index';
+import { document } from '../index';
 describe('DOM', () => {
   describe('node', () => {
     test('childeNodes 有任何类型', () => {
