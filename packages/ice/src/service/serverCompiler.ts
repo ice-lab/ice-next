@@ -50,6 +50,7 @@ export function createServerCompiler(options: Options) {
   });
 
   const serverCompiler: ServerCompiler = async (customBuildOptions, {
+    compileRoutesConfig,
     preBundle,
     swc,
     externalDependencies,
@@ -83,6 +84,12 @@ export function createServerCompiler(options: Options) {
         ] : [],
       });
     }
+
+    // build after update routes config.
+    if (dev && compileRoutesConfig) {
+      await compileRoutesConfig();
+    }
+
     // get runtime variable for server build
     const runtimeDefineVars = {};
     Object.keys(process.env).forEach((key) => {

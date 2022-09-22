@@ -32,6 +32,7 @@ const start = async (
     spinner: ora.Ora;
     getAppConfig: GetAppConfig;
     getRoutesConfig: GetRoutesConfig;
+    compileRoutesConfig: Function;
     dataCache: Map<string, string>;
     reCompileRouteConfig: (compileKey: string) => void;
   },
@@ -42,6 +43,7 @@ const start = async (
     appConfig,
     devPath,
     spinner,
+    compileRoutesConfig,
     reCompileRouteConfig,
     getAppConfig,
     getRoutesConfig,
@@ -77,6 +79,7 @@ const start = async (
           outExtension: { '.js': outJSExtension },
         },
         {
+          compileRoutesConfig,
           preBundle: format === 'esm' && (ssr || ssg),
           swc: {
             keepExports: (!ssg && !ssr) ? ['getConfig'] : null,

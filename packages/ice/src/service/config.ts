@@ -61,7 +61,7 @@ class Config {
     }
   };
 
-  public getConfig = async (keepExports: string[]) => {
+  public compile = async (keepExports: string[]) => {
     const taskKey = keepExports.join('_');
     this.lastOptions = keepExports;
     let targetFile = '';
@@ -82,6 +82,12 @@ class Config {
     if (!targetFile) {
       targetFile = await this.compileTasks[taskKey];
     }
+
+    return targetFile;
+  };
+
+  public getConfig = async (keepExports: string[]) => {
+    const targetFile = await this.compile(keepExports);
     if (targetFile) return await dynamicImport(targetFile, true);
   };
 }
@@ -125,9 +131,12 @@ export const getAppExportConfig = (rootDir: string) => {
 
 export const getRouteExportConfig = (rootDir: string) => {
   const routeConfigFile = path.join(rootDir, RUNTIME_TMP_DIR, 'routes-config.ts');
+  const getOutfile = () => formatPath(path.join(rootDir, RUNTIME_TMP_DIR, 'routes-config.bundle.mjs'));
+
   const routeExportConfig = new Config({
     entry: routeConfigFile,
     rootDir,
+    getOutfile,
     // Only remove top level code for route component file.
     transformInclude: (id) => id.includes('src/pages'),
     needRecompile: async (entry) => {
@@ -153,11 +162,25 @@ export const getRouteExportConfig = (rootDir: string) => {
     const routeConfig = (await routeExportConfig.getConfig(['getConfig']) || {}).default;
     return specifyRoutId ? routeConfig[specifyRoutId] : routeConfig;
   };
+
+  const compileRoutesConfig = async () => {
+    const outfile = getOutfile();
+
+    // Routes config file may be removed after file changed.
+    if (!fs.existsSync(routeConfigFile)) {
+      !fs.existsSync(outfile) && await fs.writeFileSync(outfile, 'export default {}', 'utf8');
+      return;
+    }
+
+    await routeExportConfig.compile(['getConfig']);
+  };
+
   return {
     init(serverCompiler: ServerCompiler) {
       routeExportConfig.setCompiler(serverCompiler);
     },
     getRoutesConfig,
+    compileRoutesConfig,
     reCompile: routeExportConfig.reCompile,
   };
 };
