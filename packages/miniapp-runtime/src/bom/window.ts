@@ -28,7 +28,9 @@ class Window extends Events {
       }
     });
 
-    this.Date ||= Date;
+    if (!this.Date) {
+      this.Date = Date;
+    }
   }
 
   get document() {

@@ -137,7 +137,9 @@ const eventsBatch = {};
 export function eventHandler(event: MpEvent) {
   hooks.call('modifyMpEventImpl', event);
 
-  event.currentTarget ||= event.target;
+  if (!event.currentTarget) {
+    event.currentTarget = event.target;
+  }
 
   const { currentTarget } = event;
   const id = currentTarget.dataset?.sid as string /** sid */ || currentTarget.id /** uid */ || '';
@@ -167,7 +169,10 @@ export function eventHandler(event: MpEvent) {
         });
       } else {
         // 如果上层组件也有绑定同类型的组件，委托给上层组件调用事件回调
-        (eventsBatch[type] ||= []).push(dispatch);
+        if (!eventsBatch[type]) {
+          eventsBatch[type] = [];
+        }
+        eventsBatch[type].push(dispatch);
       }
     } else {
       dispatch();

@@ -29,7 +29,9 @@ list;
       return this;
     }
     eventName = eventName.split(Events.eventSplitter);
-    this.callbacks ||= {};
+    if (!this.callbacks) {
+      this.callbacks = {};
+    }
     const calls = this.callbacks;
     while ((event = eventName.shift())) {
       list = calls[event];
