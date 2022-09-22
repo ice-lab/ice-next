@@ -165,11 +165,11 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
 
   const routePath = getCurrentRoutePath(matches);
 
-  const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
-
   if (documentOnly) {
     return renderDocument({ matches, routePath, renderOptions });
   }
+
+  const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   try {
     return await renderServerEntry({
