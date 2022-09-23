@@ -54,6 +54,10 @@ class Config {
     };
   }
 
+  public clearTasks = () => {
+    this.compileTasks = {};
+  };
+
   public reCompile = (taskKey: string) => {
     // Re-compile only triggered when `getConfig` has been called.
     if (this.compileTasks[taskKey]) {
@@ -146,12 +150,15 @@ type RouteExportConfig = {
   reCompile: (taskKey: string) => void;
   ensureRoutesConfig: () => Promise<void>;
 };
+
+// FIXME: when run multiple test cases, this config will not be reset.
 let routeExportConfig: null | RouteExportConfig;
 
 export const getRouteExportConfig = (rootDir: string) => {
   if (routeExportConfig) {
     return routeExportConfig;
   }
+
   const routeConfigFile = path.join(rootDir, RUNTIME_TMP_DIR, 'routes-config.ts');
   const getOutfile = () => formatPath(path.join(rootDir, RUNTIME_TMP_DIR, 'routes-config.bundle.mjs'));
 
@@ -201,6 +208,7 @@ export const getRouteExportConfig = (rootDir: string) => {
 
   routeExportConfig = {
     init(serverCompiler: ServerCompiler) {
+      config.clearTasks();
       config.setCompiler(serverCompiler);
     },
     getRoutesConfig,
