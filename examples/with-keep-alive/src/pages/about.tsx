@@ -14,6 +14,6 @@ export default function About() {
 export function getConfig() {
   return {
     title: 'About',
-    keepAlive: false,
+    // keepAlive: false,
   };
 }
