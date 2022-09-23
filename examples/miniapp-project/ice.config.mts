@@ -4,8 +4,10 @@ export default defineConfig({
   alias: {
     components: './src/components',
   },
-  // TODO:
-  // proxy: {}
   sourceMap: false,
-  // eslint: false,
+  miniapp: {
+    nativeConfig: {
+      appid: '2021000117649999',
+    }
+  }
 });

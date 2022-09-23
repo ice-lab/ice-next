@@ -24,6 +24,22 @@ interface IgnorePattern {
   contextRegExp?: RegExp;
 }
 
+interface MiniappNativeConfig {
+  appid?: string;
+  miniprogramRoot?: string;
+  pluginRoot?: string;
+  compileType?: string;
+  setting?: Record<string, any>;
+  projectname?: string;
+  scripts?: Record<string, any>;
+  debugOptions?: Record<string, any>;
+  [configName: string]: any;
+}
+
+interface MiniappConfig {
+  nativeConfig?: MiniappNativeConfig;
+}
+
 export interface UserConfig {
   alias?: Record<string, string | false>;
   define?: Record<string, string | boolean>;
@@ -60,4 +76,7 @@ export interface UserConfig {
   syntaxFeatures?: SyntaxFeatures;
   splitChunks?: boolean;
   dataLoader?: boolean;
+
+  // For miniapp
+  miniapp?: MiniappConfig;
 }
