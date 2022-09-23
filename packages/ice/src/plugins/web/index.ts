@@ -1,7 +1,6 @@
 import * as path from 'path';
 import consola from 'consola';
 import chalk from 'chalk';
-import type { Configuration } from 'webpack';
 import type { Config } from '@ice/types';
 import type { Context, TaskConfig } from 'build-scripts';
 import type { ServerCompiler, ExtendsPluginAPI } from '@ice/types/esm/plugin.js';
@@ -21,28 +20,27 @@ const getServerCompilerOptions = ({
   rootDir,
   userConfig,
   taskConfigs,
-  webpackConfigs,
   dataCache,
+  serverOutfile,
 }: {
   rootDir: string;
+  serverOutfile: string;
   userConfig: Context<Config, ExtendsPluginAPI>['userConfig'];
-  webpackConfigs: Configuration | Configuration[];
   taskConfigs: TaskConfig<Config>[];
   dataCache: Map<string, string>;
 }): Parameters<ServerCompiler> => {
   const { ssg, ssr, server: { format } } = userConfig;
-  const outputDir = webpackConfigs[0].output.path;
   const entryPoint = getServerEntry(rootDir, taskConfigs[0].config?.server?.entry);
   const esm = format === 'esm';
-  const outJSExtension = esm ? '.mjs' : '.cjs';
+
   return [
     {
       entryPoints: { index: entryPoint },
-      outdir: path.join(outputDir, SERVER_OUTPUT_DIR),
+      outdir: path.dirname(serverOutfile),
       splitting: esm,
       format,
       platform: esm ? 'browser' : 'node',
-      outExtension: { '.js': outJSExtension },
+      outExtension: { '.js': format === 'esm' ? '.mjs' : '.cjs' },
     },
     {
       preBundle: format === 'esm' && (ssr || ssg),
@@ -59,35 +57,27 @@ const getServerCompilerOptions = ({
 
 const plugin = ({ registerTask, onHook, context }) => {
   const { rootDir, commandArgs, command, userConfig, extendsPluginAPI: { serverCompileTask, dataCache } } = context;
-  const { ssg } = userConfig;
+  const { ssg, server: { format } } = userConfig;
 
   registerTask(WEB, getWebTask({ rootDir, command, dataCache }));
-
-  onHook('before.start.run', async ({ webpackConfigs, taskConfigs, serverCompiler }) => {
+  let serverOutfile: string;
+  onHook(`before.${command}.run`, async ({ webpackConfigs, taskConfigs, serverCompiler }) => {
     // Compile server entry after the webpack compilation.
     const { reCompile: reCompileRouteConfig } = getRouteExportConfig(rootDir);
-
+    const outputDir = webpackConfigs[0].output.path;
+    serverOutfile = path.join(outputDir, SERVER_OUTPUT_DIR, `index${format === 'esm' ? '.mjs' : '.cjs'}`);
     webpackConfigs[0].plugins.push(
       new ServerCompilerPlugin(
         serverCompiler,
         getServerCompilerOptions({
           rootDir,
+          serverOutfile,
           userConfig,
           taskConfigs,
-          webpackConfigs,
           dataCache,
         }),
         serverCompileTask,
       ),
-      new ReCompilePlugin(reCompileRouteConfig, (files) => {
-        // Only when routes file changed.
-        const routeManifest = JSON.parse(dataCache.get('routes'))?.routeManifest || {};
-        const routeFiles = Object.keys(routeManifest).map((key) => {
-          const { file } = routeManifest[key];
-          return `src/pages/${file}`;
-        });
-        return files.some((filePath) => routeFiles.some(routeFile => filePath.includes(routeFile)));
-      }),
       // Add webpack plugin of data-loader in web task
       new DataLoaderPlugin({ serverCompiler, rootDir, dataCache }),
       // Add ServerCompilerPlugin
@@ -100,39 +90,34 @@ const plugin = ({ registerTask, onHook, context }) => {
         userConfig,
       }),
     );
-  });
 
-  onHook('before.build.run', async ({ webpackConfigs, serverCompiler }) => {
-    webpackConfigs[0].plugins.push(new DataLoaderPlugin({ serverCompiler, rootDir, dataCache }));
-  });
-
-  onHook('after.build.compile', async ({ serverCompiler, taskConfigs, webpackConfigs, serverEntryRef }) => {
-    const outputDir = webpackConfigs[0].output.path;
-    // compile server bundle
-    const serverCompilerResult = await serverCompiler(...getServerCompilerOptions({
-      rootDir,
-      userConfig,
-      taskConfigs,
-      webpackConfigs,
-      dataCache,
-    }));
-    if (serverCompilerResult.error) {
-      consola.error('Build failed.');
-      return;
+    if (command === 'start') {
+      webpackConfigs[0].plugins.push(
+        new ReCompilePlugin(reCompileRouteConfig, (files) => {
+          // Only when routes file changed.
+          const routeManifest = JSON.parse(dataCache.get('routes'))?.routeManifest || {};
+          const routeFiles = Object.keys(routeManifest).map((key) => {
+            const { file } = routeManifest[key];
+            return `src/pages/${file}`;
+          });
+          return files.some((filePath) => routeFiles.some(routeFile => filePath.includes(routeFile)));
+        }),
+      );
     }
+  });
 
-    serverEntryRef.current = serverCompilerResult.serverEntry;
-
+  onHook('after.build.compile', async ({ webpackConfigs, serverEntryRef }) => {
+    const outputDir = webpackConfigs[0].output.path;
     let renderMode;
     if (ssg) {
       renderMode = 'SSG';
     }
-
+    serverEntryRef.current = serverOutfile;
     // generate html
     await generateHTML({
       rootDir,
       outputDir,
-      entry: serverEntryRef.current,
+      entry: serverOutfile,
       // only ssg need to generate the whole page html when build time.
       documentOnly: !ssg,
       renderMode,
