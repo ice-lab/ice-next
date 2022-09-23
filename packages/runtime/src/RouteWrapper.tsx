@@ -20,13 +20,11 @@ export default function RouteWrapper(props: Props) {
   let element;
 
   if (RouteWrappers.length) {
-    element = RouteWrappers.reduce((preElement, CurrentWrapper) => {
-      return (
-        <CurrentWrapper routeId={id}>
-          {preElement}
-        </CurrentWrapper>
-      );
-    }, props.children);
+    element = RouteWrappers.reduce((preElement, CurrentWrapper) => (
+      <CurrentWrapper routeId={id}>
+        {preElement}
+      </CurrentWrapper>
+    ), props.children);
   } else {
     element = props.children;
   }
