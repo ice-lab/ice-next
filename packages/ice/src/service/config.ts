@@ -80,12 +80,18 @@ class Config {
         this.reCompile(taskKey);
       }
     }
+
+    let newTask = false;
+
     if (!this.compileTasks[taskKey]) {
       this.compileTasks[taskKey] = this.compiler(keepExports);
+      newTask = true;
     }
-    if (!targetFile) {
+
+    if (!targetFile || newTask) {
       targetFile = await this.compileTasks[taskKey];
     }
+
     return targetFile;
   };
 
