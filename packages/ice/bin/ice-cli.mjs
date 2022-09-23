@@ -26,7 +26,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
     .command('build')
     .description('build project')
     .allowUnknownOption()
-    .option('--platform <platform>', 'set platform', 'web')
+    .addOption(new Option('--platform <platform>', 'set platform').default('web').choices(ALL_PLATFORMS))
     .option('--mode <mode>', 'set mode', 'production')
     .option('--analyzer', 'visualize size of output files', false)
     .option('--config <config>', 'use custom config')
