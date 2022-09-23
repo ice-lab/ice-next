@@ -109,7 +109,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const {
     getRoutesConfig,
     init: initRouteConfigCompiler,
-    ensureRoutesConfig,
   } = getRouteExportConfig(rootDir);
 
   // register config
@@ -210,9 +209,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
       serverCompiler,
     }),
   );
-
-  // generate static routes config file
-  await ensureRoutesConfig();
 
   let appConfig: AppConfig;
   try {

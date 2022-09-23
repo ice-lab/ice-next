@@ -72,6 +72,11 @@ export function createServerCompiler(options: Options) {
       swcOptions,
     }, 'esbuild');
 
+    // ensure routes config is up to date.
+    if (ensureRoutesConfig) {
+      await ensureRoutesConfig();
+    }
+
     if (preBundle) {
       depsMetadata = await createDepsMetadata({
         task,
@@ -83,11 +88,6 @@ export function createServerCompiler(options: Options) {
           }),
         ] : [],
       });
-    }
-
-    // ensure routes config is up to date.
-    if (dev && ensureRoutesConfig) {
-      await ensureRoutesConfig();
     }
 
     // get runtime variable for server build

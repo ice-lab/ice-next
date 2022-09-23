@@ -74,6 +74,7 @@ const plugin = ({ registerTask, onHook, context }) => {
 
   onHook('after.build.compile', async ({ serverCompiler, taskConfigs, webpackConfigs, serverEntryRef }) => {
     const entryPoint = getServerEntry(rootDir, taskConfigs[0].config?.server?.entry);
+    const { ensureRoutesConfig } = getRouteExportConfig(rootDir);
     const outputDir = webpackConfigs[0].output.path;
     const serverOutputDir = path.join(outputDir, SERVER_OUTPUT_DIR);
     // compile server bundle
@@ -87,6 +88,7 @@ const plugin = ({ registerTask, onHook, context }) => {
         outExtension: { '.js': outJSExtension },
       },
       {
+        ensureRoutesConfig,
         preBundle: format === 'esm' && (ssr || ssg),
         swc: {
           keepExports: (!ssg && !ssr) ? ['getConfig'] : null,
