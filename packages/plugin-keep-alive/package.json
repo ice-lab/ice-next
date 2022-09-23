@@ -18,6 +18,16 @@
       "types": "./esm/index.d.ts",
       "import": "./esm/index.js",
       "default": "./esm/index.js"
+    },
+    "./runtime": {
+      "types": "./esm/runtime.d.ts",
+      "import": "./esm/runtime.js",
+      "default": "./esm/runtime.js"
+    },
+    "./api": {
+      "types": "./esm/api.d.ts",
+      "import": "./esm/api.js",
+      "default": "./esm/api.js"
     }
   },
   "dependencies": {
