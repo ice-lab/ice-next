@@ -180,24 +180,17 @@ async function startDevServer({
   });
   return { compiler, devServer };
 }
-interface InvokeCompilerWatchOptions {
-  context: Context<Config, ExtendsPluginAPI>;
-  webpackConfigs: Configuration | Configuration[];
-  taskConfigs: TaskConfig<Config>[];
-  spinner: ora.Ora;
-  hooksAPI: {
-    serverCompiler: ServerCompiler;
-    getAppConfig: GetAppConfig;
-    getRoutesConfig: GetRoutesConfig;
-  };
-}
+
 async function invokeCompilerWatch({
   context,
   webpackConfigs,
   taskConfigs,
   spinner,
   hooksAPI,
-}: InvokeCompilerWatchOptions): Promise<{ compiler: Compiler }> {
+}: Pick<
+  StartDevServerOptions,
+  'context' | 'webpackConfigs' | 'taskConfigs' | 'spinner' | 'hooksAPI'
+>): Promise<{ compiler: Compiler }> {
   const compiler = await webpackCompiler({
     context,
     webpackConfigs,
