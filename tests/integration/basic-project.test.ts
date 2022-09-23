@@ -59,7 +59,7 @@ describe(`build ${example}`, () => {
     await page.push('/downgrade.html');
     expect(await page.$$text('title')).toStrictEqual(['hello']);
     expect((await page.$$text('h2')).length).toEqual(0);
-  });
+  }, 120000);
 
   afterAll(async () => {
     await browser.close();
