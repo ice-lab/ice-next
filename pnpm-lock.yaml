@@ -388,12 +388,10 @@ importers:
       '@types/react': ^18.0.0
       '@types/react-dom': ^18.0.2
       react: ^18.0.0
-      react-activation: ^0.12.0
       react-dom: ^18.0.0
     dependencies:
       '@ice/runtime': link:../../packages/runtime
       react: 18.2.0
-      react-activation: 0.12.0_react@18.2.0
       react-dom: 18.2.0_react@18.2.0
     devDependencies:
       '@ice/app': link:../../packages/ice
@@ -9817,17 +9815,6 @@ packages:
       warning: 4.0.3
     dev: false
 
-  /create-react-context/0.3.0_react@18.2.0:
-    resolution: {integrity: sha512-dNldIoSuNSvlTJ7slIKC/ZFGKexBMBrrcc+TTe1NdmROnaASuLPvqpwj9v4XS4uXZ8+YPu0sNmShX2rXI5LNsw==}
-    peerDependencies:
-      prop-types: ^15.0.0
-      react: ^0.14.0 || ^15.0.0 || ^16.0.0
-    dependencies:
-      gud: 1.0.0
-      react: 18.2.0
-      warning: 4.0.3
-    dev: false
-
   /create-require/1.1.1:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
     dev: true
@@ -18269,20 +18256,6 @@ packages:
       - prop-types
     dev: false
 
-  /react-activation/0.12.0_react@18.2.0:
-    resolution: {integrity: sha512-o4p88N2qYYGEKJaaFHQdWNREABi0PrmdgYEDvxXFb44T0uvlueyShoe22k3FIo9DPpLd1A9/iBYL6/ZDhn4rHA==}
-    peerDependencies:
-      react: '>=16'
-    dependencies:
-      create-react-context: 0.3.0_react@18.2.0
-      hoist-non-react-statics: 3.3.2
-      react: 18.2.0
-      react-node-key: 0.4.0_react@18.2.0
-      szfe-tools: 0.0.0-beta.7
-    transitivePeerDependencies:
-      - prop-types
-    dev: false
-
   /react-base16-styling/0.6.0:
     resolution: {integrity: sha512-yvh/7CArceR/jNATXOKDlvTnPKPmGZz7zsenQ3jUwLzHkNUR0CvY3yGYJbWJ/nnxsL8Sgmt5cO3/SILVuPO6TQ==}
     dependencies:
@@ -18414,16 +18387,6 @@ packages:
       react: '>=16'
     dependencies:
       jsx-ast-utils: 2.4.1
-      szfe-tools: 0.0.0-beta.7
-    dev: false
-
-  /react-node-key/0.4.0_react@18.2.0:
-    resolution: {integrity: sha512-puiuP2QYEuNBVVvcjpUE8d8/jdAhiXHBHMmjZzQT4+fe276RMYea/tY7JoZoYlrhAX8DORLPvjySjXYJZ1m6/A==}
-    peerDependencies:
-      react: '>=16'
-    dependencies:
-      jsx-ast-utils: 2.4.1
-      react: 18.2.0
       szfe-tools: 0.0.0-beta.7
     dev: false
 
