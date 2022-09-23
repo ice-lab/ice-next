@@ -1,7 +1,9 @@
 import * as path from 'path';
+import consola from 'consola';
 import WebpackDevServer from '@ice/bundles/compiled/webpack-dev-server/lib/Server.js';
-import type { Configuration } from 'webpack-dev-server';
+import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
 import type { Context, TaskConfig } from 'build-scripts';
+import type { StatsError, Compiler, Configuration } from 'webpack';
 import lodash from '@ice/bundles/compiled/lodash/index.js';
 import type { Config } from '@ice/types';
 import type { ExtendsPluginAPI, ServerCompiler, GetAppConfig, GetRoutesConfig } from '@ice/types/esm/plugin.js';
@@ -10,12 +12,13 @@ import { getWebpackConfig } from '@ice/webpack-config';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
 import type ora from '@ice/bundles/compiled/ora/index.js';
 import webpackCompiler from '../service/webpackCompiler.js';
+import formatWebpackMessages from '../utils/formatWebpackMessages.js';
 import prepareURLs from '../utils/prepareURLs.js';
 import createRenderMiddleware from '../middlewares/ssr/renderMiddleware.js';
 import createMockMiddleware from '../middlewares/mock/createMiddleware.js';
-import { ROUTER_MANIFEST, RUNTIME_TMP_DIR } from '../constant.js';
-import ReCompilePlugin from '../webpack/ReCompilePlugin.js';
+import { ROUTER_MANIFEST, RUNTIME_TMP_DIR, WEB } from '../constant.js';
 import getRouterBasename from '../utils/getRouterBasename.js';
+import emptyDir from '../utils/emptyDir.js';
 
 const { merge } = lodash;
 
@@ -29,7 +32,6 @@ const start = async (
     spinner: ora.Ora;
     getAppConfig: GetAppConfig;
     getRoutesConfig: GetRoutesConfig;
-    dataCache: Map<string, string>;
     reCompileRouteConfig: (compileKey: string) => void;
   },
 ) => {
@@ -39,14 +41,11 @@ const start = async (
     appConfig,
     devPath,
     spinner,
-    reCompileRouteConfig,
     getAppConfig,
     getRoutesConfig,
-    dataCache,
   } = options;
-  const { applyHook, commandArgs, rootDir, userConfig, extendsPluginAPI: { serverCompileTask } } = context;
-  const { port, host, https = false } = commandArgs;
-  const webTaskConfig = taskConfigs.find(({ name }) => name === 'web');
+  const { commandArgs, rootDir } = context;
+  const { platform = WEB } = commandArgs;
   const webpackConfigs = taskConfigs.map(({ config }) => getWebpackConfig({
     config,
     rootDir,
@@ -55,22 +54,67 @@ const start = async (
     runtimeTmpDir: RUNTIME_TMP_DIR,
   }));
 
-  // Compile server entry after the webpack compilation.
-  const { ssg, ssr } = userConfig;
-  webpackConfigs[0].plugins.push(
-    new ReCompilePlugin(reCompileRouteConfig, (files) => {
-      // Only when routes file changed.
-      const routeManifest = JSON.parse(dataCache.get('routes'))?.routeManifest || {};
-      const routeFiles = Object.keys(routeManifest).map((key) => {
-        const { file } = routeManifest[key];
-        return `src/pages/${file}`;
-      });
-      return files.some((filePath) => routeFiles.some(routeFile => filePath.includes(routeFile)));
-    }),
-  );
+  const hooksAPI = {
+    serverCompiler,
+    getAppConfig,
+    getRoutesConfig,
+  };
 
+  const outputDir = webpackConfigs[0].output.path;
+  await emptyDir(outputDir);
+
+  const useDevServer = platform === WEB;
+
+  if (useDevServer) {
+    return (await startDevServer({
+      context,
+      webpackConfigs,
+      taskConfigs,
+      spinner,
+      hooksAPI,
+      appConfig,
+      devPath,
+    }));
+  } else {
+    return (await invokeCompilerWatch({
+      context,
+      webpackConfigs,
+      taskConfigs,
+      spinner,
+      hooksAPI,
+    }));
+  }
+};
+
+interface StartDevServerOptions {
+  context: Context<Config, ExtendsPluginAPI>;
+  webpackConfigs: Configuration | Configuration[];
+  taskConfigs: TaskConfig<Config>[];
+  spinner: ora.Ora;
+  hooksAPI: {
+    serverCompiler: ServerCompiler;
+    getAppConfig: GetAppConfig;
+    getRoutesConfig: GetRoutesConfig;
+  };
+  appConfig: AppConfig;
+  devPath: string;
+}
+async function startDevServer({
+  context,
+  webpackConfigs,
+  taskConfigs,
+  spinner,
+  hooksAPI,
+  appConfig,
+  devPath,
+}: StartDevServerOptions): Promise<{ compiler: Compiler; devServer: WebpackDevServer }> {
+  const { commandArgs, userConfig, rootDir, applyHook, extendsPluginAPI: { serverCompileTask } } = context;
+  const { port, host, https = false } = commandArgs;
+  const { ssg, ssr } = userConfig;
+  const { getAppConfig } = hooksAPI;
+  const webTaskConfig = taskConfigs.find(({ name }) => name === WEB);
   const customMiddlewares = webpackConfigs[0].devServer?.setupMiddlewares;
-  let devServerConfig: Configuration = {
+  let devServerConfig: DevServerConfiguration = {
     port,
     host,
     https,
@@ -100,12 +144,12 @@ const start = async (
         serverRenderMiddleware,
       );
 
-      if (commandArgs.mock) {
-        const mockMiddleware = createMockMiddleware({ rootDir, exclude: userConfig?.mock?.exclude });
-        middlewares.splice(insertIndex, 0, mockMiddleware);
-      }
-      return customMiddlewares ? customMiddlewares(middlewares, devServer) : middlewares;
-    },
+    if (commandArgs.mock) {
+      const mockMiddleware = createMockMiddleware({ rootDir, exclude: userConfig?.mock?.exclude });
+      middlewares.splice(insertIndex, 0, mockMiddleware);
+    }
+    return customMiddlewares ? customMiddlewares(middlewares, devServer) : middlewares;
+  },
   };
   // merge devServerConfig with webpackConfig.devServer
   devServerConfig = merge(webpackConfigs[0].devServer, devServerConfig);
@@ -118,11 +162,6 @@ const start = async (
     devServerConfig.port as number,
     urlPathname.endsWith('/') ? urlPathname : `${urlPathname}/`,
   );
-  const hooksAPI = {
-    serverCompiler,
-    getAppConfig,
-    getRoutesConfig,
-  };
   const compiler = await webpackCompiler({
     context,
     webpackConfigs,
@@ -131,7 +170,6 @@ const start = async (
     hooksAPI,
     spinner,
     devPath,
-    dataCache,
   });
   const devServer = new WebpackDevServer(devServerConfig, compiler);
   devServer.startCallback(() => {
@@ -141,6 +179,55 @@ const start = async (
     });
   });
   return { compiler, devServer };
-};
+}
+interface InvokeCompilerWatchOptions {
+  context: Context<Config, ExtendsPluginAPI>;
+  webpackConfigs: Configuration | Configuration[];
+  taskConfigs: TaskConfig<Config>[];
+  spinner: ora.Ora;
+  hooksAPI: {
+    serverCompiler: ServerCompiler;
+    getAppConfig: GetAppConfig;
+    getRoutesConfig: GetRoutesConfig;
+  };
+}
+async function invokeCompilerWatch({
+  context,
+  webpackConfigs,
+  taskConfigs,
+  spinner,
+  hooksAPI,
+}: InvokeCompilerWatchOptions): Promise<{ compiler: Compiler }> {
+  const compiler = await webpackCompiler({
+    context,
+    webpackConfigs,
+    taskConfigs,
+    spinner,
+    hooksAPI,
+  });
+  let messages: { errors: string[]; warnings: string[] };
+  compiler.watch({
+    aggregateTimeout: 300,
+    poll: undefined,
+  }, async (err, stats) => {
+    if (err) {
+      if (!err.message) {
+        throw err;
+      }
+      messages = formatWebpackMessages({
+        errors: [err.message as unknown as StatsError],
+        warnings: [],
+      });
+    } else {
+      messages = formatWebpackMessages(stats.toJson({ all: false, warnings: true, errors: true }));
+    }
+
+    if (messages.errors.length) {
+      consola.error('webpack compile error');
+      throw new Error(messages.errors.join('\n\n'));
+    }
+  });
+  return { compiler };
+}
 
 export default start;
