@@ -67,9 +67,9 @@ export interface RoutesData {
 export interface AppContext {
   appConfig: AppConfig;
   appData: any;
-  assetsManifest: AssetsManifest;
-  routesData: RoutesData;
-  routesConfig: RoutesConfig;
+  assetsManifest?: AssetsManifest;
+  routesData?: RoutesData;
+  routesConfig?: RoutesConfig;
   routeModules?: RouteModules;
   routePath?: string;
   matches?: RouteMatch[];
@@ -78,6 +78,7 @@ export interface AppContext {
   matchedIds?: string[];
   appExport?: AppExport;
   basename?: string;
+  downgrade?: boolean;
 }
 
 export type Renderer = (
@@ -156,7 +157,7 @@ export interface AssetsManifest {
 }
 
 export interface RuntimeAPI {
-  setAppRouter: SetAppRouter;
+  setAppRouter?: SetAppRouter;
   addProvider: AddProvider;
   setRender: SetRender;
   addWrapper: AddWrapper;

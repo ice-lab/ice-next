@@ -57,13 +57,19 @@ interface AfterCommandCompileOptions {
   getAppConfig: GetAppConfig;
   getRoutesConfig: GetRoutesConfig;
   serverCompiler: ServerCompiler;
+  webpackConfigs: Configuration | Configuration[];
+}
+
+interface DevServerInfo {
+  devPath: string;
+  hashChar: string;
 }
 
 export interface HookLifecycle {
   'before.start.run': BeforeCommandRunOptions;
   'before.build.run': BeforeCommandRunOptions;
-  'after.start.compile': AfterCommandCompileOptions;
-  'after.build.compile': AfterCommandCompileOptions & { serverEntry: string };
+  'after.start.compile': AfterCommandCompileOptions & { devUrlInfo?: DevServerInfo };
+  'after.build.compile': AfterCommandCompileOptions & { serverEntryRef: { current: string } };
   'after.start.devServer': {
     urls: Urls;
     devServer: WebpackDevServer;
@@ -93,6 +99,7 @@ export interface ExtendsPluginAPI {
     set: (task: ReturnType<ServerCompiler>) => void;
     get: () => ReturnType<ServerCompiler>;
   };
+  dataCache: Map<string, string>;
 }
 
 export interface OverwritePluginAPI extends ExtendsPluginAPI {

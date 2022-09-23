@@ -189,7 +189,7 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
       throw err;
     }
     console.error('Warning: render server entry error, downgrade to csr.', err);
-    return renderDocument({ matches, routePath, renderOptions });
+    return renderDocument({ matches, routePath, renderOptions, downgrade: true });
   }
 }
 
@@ -289,7 +289,7 @@ async function renderServerEntry(
   const pipe = renderToNodeStream(element, false);
 
   const fallback = () => {
-    return renderDocument({ matches, routePath, renderOptions });
+    return renderDocument({ matches, routePath, renderOptions, downgrade: true });
   };
 
   return {
@@ -304,11 +304,14 @@ interface RenderDocumentOptions {
   matches: RouteMatch[];
   renderOptions: RenderOptions;
   routePath?: string;
+  downgrade?: boolean;
 }
 /**
  * Render Document for CSR.
  */
-function renderDocument({ matches, renderOptions, routePath }: RenderDocumentOptions): RenderResult {
+function renderDocument(options: RenderDocumentOptions): RenderResult {
+  const { matches, renderOptions, routePath, downgrade }: RenderDocumentOptions = options;
+
   const {
     routes,
     assetsManifest,
@@ -341,6 +344,7 @@ function renderDocument({ matches, renderOptions, routePath }: RenderDocumentOpt
     documentOnly: true,
     routePath,
     basename,
+    downgrade,
   };
 
   const documentContext = {
