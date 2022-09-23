@@ -52,6 +52,11 @@ const userConfig = [
     },
   },
   {
+    name: 'dataLoader',
+    validation: 'boolean',
+    defaultValue: true,
+  },
+  {
     name: 'publicPath',
     validation: 'string',
     defaultValue: '/',
@@ -326,6 +331,10 @@ const userConfig = [
 ];
 
 const cliOption = [
+  {
+    name: 'platform',
+    commands: ['start', 'build'],
+  },
   {
     name: 'open',
     commands: ['start'],
