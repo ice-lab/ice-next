@@ -7464,7 +7464,7 @@ packages:
   /@types/hoist-non-react-statics/3.3.1:
     resolution: {integrity: sha512-iMIqiko6ooLrTh1joXodJK5X9xeEALT1kM5G3ZLhD3hszxBdIEd5C75U834D9mLcINgD4OyZf5uQXjkuYydWvA==}
     dependencies:
-      '@types/react': 18.0.17
+      '@types/react': 18.0.20
       hoist-non-react-statics: 3.3.2
     dev: false
 
@@ -7629,7 +7629,7 @@ packages:
     resolution: {integrity: sha512-7FkurKcS1k0FHZEtdbbgN8Oc6b+stGSfZYjQGicofJ0j4U0qIn/jaSvnP2pLwZKiai3/17xqqxkkrxTgN8UNbQ==}
     dependencies:
       '@types/hoist-non-react-statics': 3.3.1
-      '@types/react': 18.0.17
+      '@types/react': 18.0.20
       hoist-non-react-statics: 3.3.2
       redux: 4.2.0
     dev: false
@@ -7674,7 +7674,6 @@ packages:
       '@types/prop-types': 15.7.5
       '@types/scheduler': 0.16.2
       csstype: 3.1.0
-    dev: true
 
   /@types/react/18.0.20:
     resolution: {integrity: sha512-MWul1teSPxujEHVwZl4a5HxQ9vVNsjTchVA+xRqv/VYGCuKGAU6UhfrTdF5aBefwD1BHUD8i/zq+O/vyCm/FrA==}
@@ -10028,7 +10027,7 @@ packages:
       postcss-modules-values: 4.0.0_postcss@8.4.12
       postcss-value-parser: 4.2.0
       semver: 7.3.7
-      webpack: 5.74.0
+      webpack: 5.74.0_@swc+core@1.2.210
 
   /css-minimizer-webpack-plugin/3.4.1_webpack@5.74.0:
     resolution: {integrity: sha512-1u6D71zeIfgngN2XNRJefc/hY7Ybsxd74Jm4qngIXyUEk7fss3VUzuHxLAq/R8NAba4QU9OUSaMZlbpRc7bM4Q==}
@@ -15330,7 +15329,7 @@ packages:
       webpack: ^5.0.0
     dependencies:
       schema-utils: 4.0.0
-      webpack: 5.74.0
+      webpack: 5.74.0_@swc+core@1.2.210
 
   /miniapp-history/0.1.7:
     resolution: {integrity: sha512-q/+f8ncjeyDvPahMLEeknvJiKcVwZLVNDm3tNeB4o8sxJxoQbHIaStJ9SpQkbdhJn971kmoUQyH8aH26O7OvIw==}
@@ -18535,7 +18534,7 @@ packages:
       scheduler: 0.21.0
     dev: false
 
-  /react-redux/7.2.8:
+  /react-redux/7.2.8_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-6+uDjhs3PSIclqoCk0kd6iX74gzrGc3W5zcAjbrFgEdIjRSQObdIwfx80unTkVUYvbQ95Y8Av3OvFHq1w5EOUw==}
     peerDependencies:
       react: ^16.8.3 || ^17 || ^18
@@ -20202,7 +20201,6 @@ packages:
       serialize-javascript: 6.0.0
       terser: 5.14.2
       webpack: 5.74.0_esbuild@0.14.54
-    dev: true
 
   /terser-webpack-plugin/5.3.5_vwzmvoh3samqo2nn3x7mqt365m:
     resolution: {integrity: sha512-AOEDLDxD2zylUGf/wxHxklEkOe2/r+seuyOWujejFrIxHf11brA1/dWQNIgXa1c6/Wkxgu7zvv0JhOWfc2ELEA==}
@@ -20227,7 +20225,6 @@ packages:
       serialize-javascript: 6.0.0
       terser: 5.14.2
       webpack: 5.74.0_@swc+core@1.2.210
-    dev: true
 
   /terser-webpack-plugin/5.3.5_webpack@5.74.0:
     resolution: {integrity: sha512-AOEDLDxD2zylUGf/wxHxklEkOe2/r+seuyOWujejFrIxHf11brA1/dWQNIgXa1c6/Wkxgu7zvv0JhOWfc2ELEA==}
@@ -21332,7 +21329,7 @@ packages:
       mime-types: 2.1.35
       range-parser: 1.2.1
       schema-utils: 4.0.0
-      webpack: 5.74.0
+      webpack: 5.74.0_@swc+core@1.2.210
 
   /webpack-dev-server/4.10.0_webpack@5.74.0:
     resolution: {integrity: sha512-7dezwAs+k6yXVFZ+MaL8VnE+APobiO3zvpp3rBHe/HmWQ+avwh0Q3d0xxacOiBybZZ3syTZw9HXzpa3YNbAZDQ==}
@@ -21516,7 +21513,7 @@ packages:
       serve-index: 1.9.1
       sockjs: 0.3.24
       spdy: 4.0.2
-      webpack: 5.74.0
+      webpack: 5.74.0_esbuild@0.14.54
       webpack-dev-middleware: 5.3.1_webpack@5.74.0
       ws: 8.5.0
     transitivePeerDependencies:
@@ -21665,7 +21662,6 @@ packages:
       - '@swc/core'
       - esbuild
       - uglify-js
-    dev: true
 
   /webpack/5.74.0_esbuild@0.14.54:
     resolution: {integrity: sha512-A2InDwnhhGN4LYctJj6M1JEaGL7Luj6LOmyBHjcI8529cm5p6VXiTIW2sn6ffvEAKmveLzvu4jrihwXtPojlAA==}
@@ -21705,7 +21701,6 @@ packages:
       - '@swc/core'
       - esbuild
       - uglify-js
-    dev: true
 
   /webpackbar/5.0.2_webpack@5.74.0:
     resolution: {integrity: sha512-BmFJo7veBDgQzfWXl/wwYXr/VFus0614qZ8i9znqcl9fnEdiVkdbi0TedLQ6xAK92HZHDJ0QmyQ0fmuZPAgCYQ==}
