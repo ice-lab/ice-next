@@ -10,7 +10,7 @@ import { resolve as resolveExports } from 'resolve.exports';
 const require = createRequire(import.meta.url);
 
 export interface RuntimeModule {
-  staticModule: boolean;
+  staticRuntime: boolean;
   path: string;
   name: string;
 }
@@ -18,17 +18,16 @@ export interface RuntimeModule {
 function getRuntimeModules(plugins: Array<PluginInfo<any, ExtendsPluginAPI>>, rootDir: string) {
   const runtimes = plugins
     .filter(({ runtime }) => !!runtime)
-    .map(({ name, runtime }) => ({ name, runtime }));
-  return runtimes.map(({ runtime, name }) => {
+    // @ts-expect-error build-scripts should support `staticRuntime`
+    .map(({ name, runtime, staticRuntime }) => ({ name, runtime, staticRuntime }));
+  return runtimes.map(({ runtime, name, staticRuntime }) => {
     let runtimeExists = false;
-    let pkgInfo: Record<string, any>;
 
     if (path.isAbsolute(runtime)) {
-      // The runtime path is in the local project directory not in the node_modules.
       runtimeExists = fse.pathExistsSync(runtime);
-      pkgInfo = getPkgInfo(path.join(rootDir, 'package.json'));
     } else {
       // The runtime is in the node_modules.
+      // Not support the runtime path is relative(`./runtime`) which is in the local project directory.
       let pluginName = '';
       if (runtime.startsWith('@')) {
         // @ice/plugin-auth
@@ -39,7 +38,7 @@ function getRuntimeModules(plugins: Array<PluginInfo<any, ExtendsPluginAPI>>, ro
       }
       // for example: xx/@ice/plugin-auth/package.json
       const pkgPath = findUp.sync('package.json', { cwd: path.join(rootDir, 'node_modules', pluginName) });
-      pkgInfo = getPkgInfo(pkgPath);
+      const pkgInfo = getPkgInfo(pkgPath);
 
       try {
         runtimeExists = !!(resolveExports(pkgInfo || {}, runtime) || require.resolve(runtime, { paths: [rootDir] }));
@@ -50,9 +49,9 @@ function getRuntimeModules(plugins: Array<PluginInfo<any, ExtendsPluginAPI>>, ro
 
     if (runtimeExists) {
       return {
-        staticModule: !!pkgInfo?.pluginConfig?.staticModule,
+        staticRuntime,
         path: runtime,
-        name: pkgInfo?.name as string,
+        name,
       };
     } else {
       consola.warn(`runtime is not exist in ${name}`);
