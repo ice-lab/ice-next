@@ -81,14 +81,11 @@ class Config {
       }
     }
 
-    let newTask = false;
-
     if (!this.compileTasks[taskKey]) {
       this.compileTasks[taskKey] = this.compiler(keepExports);
-      newTask = true;
     }
 
-    if (!targetFile || newTask) {
+    if (!targetFile) {
       targetFile = await this.compileTasks[taskKey];
     }
 
