@@ -3,10 +3,8 @@ import { createRequire } from 'module';
 import fse from 'fs-extra';
 import findUp from 'find-up';
 import consola from 'consola';
-import type { PluginInfo } from 'build-scripts';
-import type { ExtendsPluginAPI } from '@ice/types/esm/plugin.js';
 import { resolve as resolveExports } from 'resolve.exports';
-
+import type { PluginData } from '@ice/types';
 const require = createRequire(import.meta.url);
 
 export interface RuntimeModule {
@@ -15,10 +13,9 @@ export interface RuntimeModule {
   name: string;
 }
 
-function getRuntimeModules(plugins: Array<PluginInfo<any, ExtendsPluginAPI>>, rootDir: string) {
+function getRuntimeModules(plugins: PluginData[], rootDir: string) {
   const runtimes = plugins
     .filter(({ runtime }) => !!runtime)
-    // @ts-expect-error build-scripts should support `staticRuntime`
     .map(({ name, runtime, staticRuntime }) => ({ name, runtime, staticRuntime }));
   return runtimes.map(({ runtime, name, staticRuntime }) => {
     let runtimeExists = false;
