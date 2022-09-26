@@ -201,15 +201,6 @@ export const getRouteExportConfig = (rootDir: string) => {
 
   // ensure routes config is up to date.
   const ensureRoutesConfig = async () => {
-    const outfile = getOutfile();
-
-    // Routes config file may be removed after file changed.
-    if (!fs.existsSync(routeConfigFile)) {
-      // ensure routes config file exists
-      !fs.existsSync(outfile) && await fs.writeFileSync(outfile, 'export default {}', 'utf8');
-      return;
-    }
-
     await config.getConfigFile(['getConfig']);
   };
 
