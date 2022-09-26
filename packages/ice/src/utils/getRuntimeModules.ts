@@ -23,10 +23,9 @@ function getRuntimeModules(plugins: Array<PluginInfo<any, ExtendsPluginAPI>>, ro
     let runtimeExists = false;
     let pkgInfo: Record<string, any>;
 
-    if (runtime.startsWith('.')) {
-      // The runtime path is relative and it exists in the local project directory not in the node_modules.
-      // for example: ./runtime
-      runtimeExists = fse.pathExistsSync(path.join(rootDir, runtime));
+    if (path.isAbsolute(runtime)) {
+      // The runtime path is in the local project directory not in the node_modules.
+      runtimeExists = fse.pathExistsSync(runtime);
       pkgInfo = getPkgInfo(path.join(rootDir, 'package.json'));
     } else {
       // The runtime is in the node_modules.
