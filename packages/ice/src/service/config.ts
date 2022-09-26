@@ -199,6 +199,7 @@ export const getRouteExportConfig = (rootDir: string) => {
     return specifyRoutId ? routeConfig[specifyRoutId] : routeConfig;
   };
 
+  // ensure routes config is up to date.
   const ensureRoutesConfig = async () => {
     const outfile = getOutfile();
 

@@ -10,20 +10,25 @@ export default class ServerCompilerPlugin {
   private serverCompiler: ServerCompiler;
   private serverCompilerOptions: Parameters<ServerCompiler>;
   private serverCompileTask: ExtendsPluginAPI['serverCompileTask'];
+  private ensureRoutesConfig: () => Promise<void>;
 
   public constructor(
     serverCompiler: ServerCompiler,
     serverCompilerOptions: Parameters<ServerCompiler>,
     serverCompileTask: ExtendsPluginAPI['serverCompileTask'],
+    ensureRoutesConfig: () => Promise<void>,
   ) {
     this.serverCompiler = serverCompiler;
     this.serverCompilerOptions = serverCompilerOptions;
     this.serverCompileTask = serverCompileTask;
+    this.ensureRoutesConfig = ensureRoutesConfig;
   }
 
   public apply(compiler: Compiler) {
     compiler.hooks.emit.tap(pluginName, () => {
-      this.serverCompileTask.set(this.serverCompiler(...this.serverCompilerOptions));
+      this.ensureRoutesConfig().then(() => {
+        this.serverCompileTask.set(this.serverCompiler(...this.serverCompilerOptions));
+      });
     });
   }
 }

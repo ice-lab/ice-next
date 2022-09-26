@@ -41,7 +41,6 @@ const plugin = ({ registerTask, onHook, context }) => {
             outExtension: { '.js': outJSExtension },
           },
           {
-            ensureRoutesConfig,
             preBundle: format === 'esm' && (ssr || ssg),
             swc: {
               keepExports: (!ssg && !ssr) ? ['getConfig'] : null,
@@ -53,6 +52,7 @@ const plugin = ({ registerTask, onHook, context }) => {
           },
         ],
         serverCompileTask,
+        ensureRoutesConfig,
       ),
       new ReCompilePlugin(reCompileRouteConfig, (files) => {
         // Only when routes file changed.
@@ -77,6 +77,9 @@ const plugin = ({ registerTask, onHook, context }) => {
     const { ensureRoutesConfig } = getRouteExportConfig(rootDir);
     const outputDir = webpackConfigs[0].output.path;
     const serverOutputDir = path.join(outputDir, SERVER_OUTPUT_DIR);
+
+    await ensureRoutesConfig();
+
     // compile server bundle
     const serverCompilerResult = await serverCompiler(
       {
@@ -88,7 +91,6 @@ const plugin = ({ registerTask, onHook, context }) => {
         outExtension: { '.js': outJSExtension },
       },
       {
-        ensureRoutesConfig,
         preBundle: format === 'esm' && (ssr || ssg),
         swc: {
           keepExports: (!ssg && !ssr) ? ['getConfig'] : null,

@@ -50,7 +50,6 @@ export function createServerCompiler(options: Options) {
   });
 
   const serverCompiler: ServerCompiler = async (customBuildOptions, {
-    ensureRoutesConfig,
     preBundle,
     swc,
     externalDependencies,
@@ -71,11 +70,6 @@ export function createServerCompiler(options: Options) {
       fastRefresh: false,
       swcOptions,
     }, 'esbuild');
-
-    // ensure routes config is up to date.
-    if (ensureRoutesConfig) {
-      await ensureRoutesConfig();
-    }
 
     if (preBundle) {
       depsMetadata = await createDepsMetadata({
