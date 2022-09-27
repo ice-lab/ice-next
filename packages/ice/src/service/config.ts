@@ -55,6 +55,7 @@ class Config {
   }
 
   public clearTasks = () => {
+    this.status = 'PENDING';
     this.compileTasks = {};
   };
 
