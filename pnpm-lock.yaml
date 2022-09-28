@@ -1133,9 +1133,9 @@ importers:
   packages/webpack-config:
     specifiers:
       '@ice/bundles': ^0.1.0
-      '@ice/swc-plugin-keep-export': ^0.1.1
-      '@ice/swc-plugin-keep-platform': ^0.1.0
-      '@ice/swc-plugin-remove-export': ^0.1.0
+      '@ice/swc-plugin-keep-export': 0.1.2
+      '@ice/swc-plugin-keep-platform': 0.1.1
+      '@ice/swc-plugin-remove-export': 0.1.1
       '@ice/types': ^1.0.0
       '@rollup/pluginutils': ^4.2.0
       '@swc/core': 1.3.3
@@ -1149,9 +1149,9 @@ importers:
       webpack-dev-server: ^4.7.4
     dependencies:
       '@ice/bundles': link:../bundles
-      '@ice/swc-plugin-keep-export': 0.1.1
-      '@ice/swc-plugin-keep-platform': 0.1.0
-      '@ice/swc-plugin-remove-export': 0.1.0
+      '@ice/swc-plugin-keep-export': 0.1.2
+      '@ice/swc-plugin-keep-platform': 0.1.1
+      '@ice/swc-plugin-remove-export': 0.1.1
       '@rollup/pluginutils': 4.2.1
       '@swc/core': 1.3.3
       browserslist: 4.20.3
@@ -5909,16 +5909,16 @@ packages:
       - react-native
     dev: false
 
-  /@ice/swc-plugin-keep-export/0.1.1:
-    resolution: {integrity: sha512-FjBZV6msseDZ+g1DmS8qTQADDK646A7jWZpSbJ15Z0QX0KTmNwSCzb061nj7p7EW3xOW6N2cGNdGV6+TENb7Jg==}
+  /@ice/swc-plugin-keep-export/0.1.2:
+    resolution: {integrity: sha512-X1PuWULKYySegzChtp2+Q1YaktmWtDB2g3frO7FL8cGduhC4PYR/boQLIDk1V91d4nx1ecUmyt8sPiitWtwuMA==}
     dev: false
 
-  /@ice/swc-plugin-keep-platform/0.1.0:
-    resolution: {integrity: sha512-y9ckEmUBr6e6dzYzHVAV/+WMhBcHkOGnIiIQh91cTm1ZlGq5gMEbJDQJh/0ucacBrMpWNCPDvJwsBvqHZDVIdQ==}
+  /@ice/swc-plugin-keep-platform/0.1.1:
+    resolution: {integrity: sha512-6Sq0vHb04aGD/+EVNzrQ/1wUufPJ4/hOVAoaSoaXzTUwxgPN/cqb44Y1sx9SmdRe+AjVYLTum63rqtEh8jZctA==}
     dev: false
 
-  /@ice/swc-plugin-remove-export/0.1.0:
-    resolution: {integrity: sha512-L3dSLxJ2b+u8tEF5ISYzpqYMRTfKHwtTlfdKHUWHqK+z8gIUwsqB28SfkGbHlRFPhjlvE+5zP727lsbC3uED5g==}
+  /@ice/swc-plugin-remove-export/0.1.1:
+    resolution: {integrity: sha512-b0/KZQ9rXGNfq0dFTzDL1wZ23eN6FV0R9clY6hpmmwH2u3r6puABsV2f/aCSnX3T5FbzY4kCpt3noon+3Ew+vg==}
     dev: false
 
   /@istanbuljs/load-nyc-config/1.1.0:
@@ -20208,7 +20208,7 @@ packages:
       uglify-js:
         optional: true
     dependencies:
-      '@jridgewell/trace-mapping': 0.3.14
+      '@jridgewell/trace-mapping': 0.3.15
       '@swc/core': 1.3.3
       esbuild: 0.14.54
       jest-worker: 27.5.1
@@ -20234,7 +20234,7 @@ packages:
       uglify-js:
         optional: true
     dependencies:
-      '@jridgewell/trace-mapping': 0.3.14
+      '@jridgewell/trace-mapping': 0.3.15
       esbuild: 0.14.54
       jest-worker: 27.5.1
       schema-utils: 3.1.1
@@ -20258,7 +20258,7 @@ packages:
       uglify-js:
         optional: true
     dependencies:
-      '@jridgewell/trace-mapping': 0.3.14
+      '@jridgewell/trace-mapping': 0.3.15
       jest-worker: 27.5.1
       schema-utils: 3.1.1
       serialize-javascript: 6.0.0
@@ -20281,7 +20281,7 @@ packages:
       uglify-js:
         optional: true
     dependencies:
-      '@jridgewell/trace-mapping': 0.3.14
+      '@jridgewell/trace-mapping': 0.3.15
       '@swc/core': 1.3.3
       jest-worker: 27.5.1
       schema-utils: 3.1.1
