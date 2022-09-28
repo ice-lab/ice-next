@@ -1,7 +1,7 @@
 {
   "name": "@ice/plugin-i18n",
   "version": "1.0.0",
-  "description": "The i18n plugin for icejs.",
+  "description": "The i18n plugin for icejs 3.",
   "license": "MIT",
   "type": "module",
   "main": "./esm/index.js",

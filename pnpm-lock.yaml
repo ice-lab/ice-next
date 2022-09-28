@@ -401,6 +401,25 @@ importers:
       '@types/react': 18.0.8
       '@types/react-dom': 18.0.3
 
+  examples/with-i18n:
+    specifiers:
+      '@ice/app': workspace:*
+      '@ice/plugin-i18n': workspace:*
+      '@ice/runtime': workspace:*
+      '@types/react': ^18.0.0
+      '@types/react-dom': ^18.0.2
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    dependencies:
+      '@ice/runtime': link:../../packages/runtime
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    devDependencies:
+      '@ice/app': link:../../packages/ice
+      '@ice/plugin-i18n': link:../../packages/plugin-i18n
+      '@types/react': 18.0.20
+      '@types/react-dom': 18.0.6
+
   examples/with-jest:
     specifiers:
       '@ice/app': workspace:*
