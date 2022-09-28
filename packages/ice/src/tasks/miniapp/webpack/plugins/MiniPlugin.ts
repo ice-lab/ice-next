@@ -6,7 +6,7 @@ import type { RecursiveTemplate, UnRecursiveTemplate } from '@ice/shared';
 import type { Config, MiniappAppConfig, MiniappConfig } from '@ice/types';
 import fs from 'fs-extra';
 import { minify } from 'html-minifier';
-import { urlToRequest } from 'loader-utils';
+import loaderUtils from '@ice/bundles/compiled/loader-utils/index.js';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
 import EntryDependency from 'webpack/lib/dependencies/EntryDependency.js';
 
@@ -19,7 +19,7 @@ import LoadChunksPlugin from './LoadChunksPlugin.js';
 import NormalModulesPlugin from './NormalModulesPlugin.js';
 
 const { ConcatSource, RawSource } = webpack.sources;
-
+const { urlToRequest } = loaderUtils;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const PLUGIN_NAME = 'MiniPlugin';
@@ -431,7 +431,14 @@ export default class MiniPlugin {
     // app.json
     this.generateConfigFile(compilation, APP_CONFIG_FILE, this.filesConfig[APP_CONFIG_FILE].content);
 
-    if (!template.isSupportRecursive) {
+    if (template.isSupportRecursive) {
+      this.generateConfigFile(compilation, customWrapperName, {
+        component: true,
+        usingComponents: {
+          [customWrapperName]: `./${customWrapperName}`,
+        },
+      });
+    } else {
       // 如微信、QQ 不支持递归模版的小程序，需要使用自定义组件协助递归
       this.generateTemplateFile(
         compilation,
@@ -450,13 +457,6 @@ export default class MiniPlugin {
         component: true,
         usingComponents: {
           [baseCompName]: `./${baseCompName}`,
-          [customWrapperName]: `./${customWrapperName}`,
-        },
-      });
-    } else {
-      this.generateConfigFile(compilation, customWrapperName, {
-        component: true,
-        usingComponents: {
           [customWrapperName]: `./${customWrapperName}`,
         },
       });
