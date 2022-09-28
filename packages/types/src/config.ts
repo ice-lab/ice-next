@@ -8,6 +8,7 @@ import type {
   ServerOptions,
   Configuration as DevServerConfiguration,
 } from 'webpack-dev-server';
+import type { DefineExtraRoutes } from '@ice/route-manifest';
 import type { Options } from 'eslint-webpack-plugin';
 import type { ForkTsCheckerWebpackPluginOptions } from 'fork-ts-checker-webpack-plugin/lib/plugin-options';
 import type { UnpluginOptions, UnpluginContext } from 'unplugin';
@@ -166,4 +167,6 @@ export interface Config {
   getAppConfig?: (exportNamse?: string[]) => Promise<any>;
 
   getRoutesConfig?: (specifyRoutId?: string) => Promise<any>;
+
+  defineRoutes?: DefineExtraRoutes[];
 }

@@ -129,23 +129,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   });
   let taskConfigs = await ctx.setup();
 
-  // get userConfig after setup because of userConfig maybe modified by plugins
-  const { userConfig } = ctx;
-  const { routes: routesConfig, server, syntaxFeatures } = userConfig;
-
-  await setEnv(rootDir, commandArgs);
-  const coreEnvKeys = getCoreEnvKeys();
-
-  const routesInfo = await generateRoutesInfo(rootDir, routesConfig);
-  const hasExportAppData = (await getFileExports({ rootDir, file: 'src/app' })).includes('getAppData');
-  const csr = !userConfig.ssr && !userConfig.ssg;
-
-  const disableRouter = userConfig?.optimization?.router && routesInfo.routesCount <= 1;
-  let taskAlias = {};
-  if (disableRouter) {
-    consola.info('[ice]', 'optimization.router is enabled and only have one route, ice build will remove react-router and history which is unnecessary.');
-    taskAlias['@ice/runtime/router'] = path.join(require.resolve('@ice/runtime'), '../single-router.js');
-  }
   // merge task config with built-in config
   taskConfigs = mergeTaskConfig(taskConfigs, {
     port: commandArgs.port,
@@ -155,6 +138,24 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     },
   });
   const platformTaskConfig = taskConfigs.find(({ name }) => ALL_PLATFORMS.includes(name));
+
+  // get userConfig after setup because of userConfig maybe modified by plugins
+  const { userConfig } = ctx;
+  const { routes: routesConfig, server, syntaxFeatures } = userConfig;
+
+  await setEnv(rootDir, commandArgs);
+  const coreEnvKeys = getCoreEnvKeys();
+
+  const routesInfo = await generateRoutesInfo(rootDir, routesConfig, platformTaskConfig.config?.defineRoutesQueue);
+  const hasExportAppData = (await getFileExports({ rootDir, file: 'src/app' })).includes('getAppData');
+  const csr = !userConfig.ssr && !userConfig.ssg;
+
+  const disableRouter = userConfig?.optimization?.router && routesInfo.routesCount <= 1;
+  const taskAlias = {};
+  if (disableRouter) {
+    consola.info('[ice]', 'optimization.router is enabled and only have one route, ice build will remove react-router and history which is unnecessary.');
+    taskAlias['@ice/runtime/router'] = path.join(require.resolve('@ice/runtime'), '../single-router.js');
+  }
 
   const iceRuntimePath = isMiniappPlatform ? '@ice/runtime/miniapp' : '@ice/runtime';
   const enableRoutes = platform === WEB;

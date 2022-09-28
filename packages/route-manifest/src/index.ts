@@ -40,7 +40,7 @@ export function isRouteModuleFile(filename: string): boolean {
 export function generateRouteManifest(
   rootDir: string,
   ignoreFiles: string[] = [],
-  defineExtraRoutes?: DefineExtraRoutes,
+  defineExtraRoutesList?: DefineExtraRoutes[],
 ) {
   const srcDir = path.join(rootDir, 'src');
   const routeManifest: RouteManifest = {};
@@ -64,22 +64,25 @@ export function generateRouteManifest(
     }
   }
   // 3. add extra routes from user config
-  if (defineExtraRoutes) {
-    const extraRoutes = defineRoutes(
-      defineExtraRoutes,
-      {
-        routeManifest,
-        nestedRouteManifest: formatNestedRouteManifest(routeManifest),
-      },
-    );
-    for (const key of Object.keys(extraRoutes)) {
-      const route = extraRoutes[key];
-      routeManifest[route.id] = {
-        ...route,
-        parentId: route.parentId || undefined,
-      };
-    }
+  if (Array.isArray(defineExtraRoutesList)) {
+    defineExtraRoutesList.forEach((defineExtraRoutes) => {
+      const extraRoutes = defineRoutes(
+        defineExtraRoutes,
+        {
+          routeManifest,
+          nestedRouteManifest: formatNestedRouteManifest(routeManifest),
+        },
+      );
+      for (const key of Object.keys(extraRoutes)) {
+        const route = extraRoutes[key];
+        routeManifest[route.id] = {
+          ...route,
+          parentId: route.parentId || undefined,
+        };
+      }
+    });
   }
+
   return routeManifest;
 }
 
@@ -128,7 +131,7 @@ function defineConventionalRoutes(
   // 2. recurse through all routes using the public defineRoutes() API
   function defineNestedRoutes(
     defineRoute: DefineRouteFunction,
-    options: DefineRouteOptions,
+    options: DefineRoutesOptions,
     parentId?: string,
   ): void {
     const childRouteIds = routeIds.filter((id) => {
