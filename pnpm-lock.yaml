@@ -892,6 +892,12 @@ importers:
     devDependencies:
       '@ice/types': link:../types
 
+  packages/plugin-i18n:
+    specifiers:
+      '@ice/types': ^1.0.0
+    devDependencies:
+      '@ice/types': link:../types
+
   packages/plugin-jsx-plus:
     specifiers:
       '@babel/core': ^7.19.1

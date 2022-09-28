@@ -1,0 +1,34 @@
+{
+  "name": "@ice/plugin-i18n",
+  "version": "1.0.0",
+  "description": "The i18n plugin for icejs.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./esm/index.js",
+  "types": "./esm/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./esm/index.d.ts",
+      "import": "./esm/index.js",
+      "default": "./esm/index.js"
+    }
+  },
+  "files": [
+    "esm",
+    "!esm/**/*.map"
+  ],
+  "repository": {
+    "type": "http",
+    "url": "https://github.com/ice-lab/ice-next/tree/master/packages/plugin-fusion"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "watch": "tsc -w",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@ice/types": "^1.0.0"
+  }
+}
