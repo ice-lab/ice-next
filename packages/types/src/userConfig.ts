@@ -1,4 +1,4 @@
-import type { DefineRouteFunction } from '@ice/route-manifest';
+import type { DefineExtraRoutes } from '@ice/route-manifest';
 import type { PluginList } from 'build-scripts';
 import type { UnpluginOptions } from 'unplugin';
 import type { Config, ModifyWebpackConfig, MinimizerOptions } from './config';
@@ -37,7 +37,7 @@ export interface UserConfig {
   webpack?: ModifyWebpackConfig;
   routes?: {
     ignoreFiles?: string[];
-    defineRoutes?: (defineRoute: DefineRouteFunction) => void;
+    defineRoutes?: DefineExtraRoutes;
   };
   plugins?: PluginList<Config, OverwritePluginAPI>;
   dropLogLevel?: 'trace' | 'debug' | 'log' | 'info' | 'warn' | 'error';

@@ -175,15 +175,19 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   dataCache.set('hasExportAppData', hasExportAppData ? 'true' : '');
 
   // Render exports files if route component export getData / getConfig.
-  renderExportsTemplate({
-    ...routesInfo,
-    hasExportAppData,
-  }, generator.addRenderFile, {
-    rootDir,
-    runtimeDir: RUNTIME_TMP_DIR,
-    templateDir: path.join(templateDir, '../exports'),
-    dataLoader: userConfig.dataLoader,
-  });
+  renderExportsTemplate(
+    {
+      ...routesInfo,
+      hasExportAppData,
+    },
+    generator.addRenderFile,
+    {
+      rootDir,
+      runtimeDir: RUNTIME_TMP_DIR,
+      templateDir: path.join(templateDir, '../exports'),
+      dataLoader: userConfig.dataLoader,
+    },
+  );
 
   // render template before webpack compile
   const renderStart = new Date().getTime();

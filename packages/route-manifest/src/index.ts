@@ -3,13 +3,22 @@ import fs from 'fs';
 import path from 'path';
 import minimatch from 'minimatch';
 import { createRouteId, defineRoutes, normalizeSlashes } from './routes.js';
-import type { RouteManifest, DefineRouteFunction, NestedRouteManifest, ConfigRoute } from './routes.js';
+import type {
+  RouteManifest,
+  DefineRouteFunction,
+  NestedRouteManifest,
+  ConfigRoute,
+  DefineExtraRoutes,
+  DefineRoutesOptions,
+} from './routes.js';
 
 export type {
   RouteManifest,
   NestedRouteManifest,
   DefineRouteFunction,
   ConfigRoute,
+  DefineExtraRoutes,
+  DefineRoutesOptions,
 };
 
 const validRouteChar = ['-', '\\w', '/', ':', '*'];
@@ -31,7 +40,7 @@ export function isRouteModuleFile(filename: string): boolean {
 export function generateRouteManifest(
   rootDir: string,
   ignoreFiles: string[] = [],
-  defineExtraRoutes?: (defineRoute: DefineRouteFunction) => void,
+  defineExtraRoutes?: DefineExtraRoutes,
 ) {
   const srcDir = path.join(rootDir, 'src');
   const routeManifest: RouteManifest = {};
@@ -39,6 +48,10 @@ export function generateRouteManifest(
   if (fs.existsSync(path.resolve(srcDir, 'pages'))) {
     const conventionalRoutes = defineConventionalRoutes(
       rootDir,
+      {
+        routeManifest,
+        nestedRouteManifest: formatNestedRouteManifest(routeManifest),
+      },
       ignoreFiles,
     );
 
@@ -52,7 +65,13 @@ export function generateRouteManifest(
   }
   // 3. add extra routes from user config
   if (defineExtraRoutes) {
-    const extraRoutes = defineRoutes(defineExtraRoutes);
+    const extraRoutes = defineRoutes(
+      defineExtraRoutes,
+      {
+        routeManifest,
+        nestedRouteManifest: formatNestedRouteManifest(routeManifest),
+      },
+    );
     for (const key of Object.keys(extraRoutes)) {
       const route = extraRoutes[key];
       routeManifest[route.id] = {
@@ -79,6 +98,7 @@ export function formatNestedRouteManifest(routeManifest: RouteManifest, parentId
 
 function defineConventionalRoutes(
   rootDir: string,
+  options: DefineRoutesOptions,
   ignoredFilePatterns?: string[],
 ): RouteManifest {
   const files: { [routeId: string]: string } = {};
@@ -108,6 +128,7 @@ function defineConventionalRoutes(
   // 2. recurse through all routes using the public defineRoutes() API
   function defineNestedRoutes(
     defineRoute: DefineRouteFunction,
+    options: DefineRouteOptions,
     parentId?: string,
   ): void {
     const childRouteIds = routeIds.filter((id) => {
@@ -157,13 +178,13 @@ function defineConventionalRoutes(
         });
       } else {
         defineRoute(routePath, files[routeId], () => {
-          defineNestedRoutes(defineRoute, routeId);
+          defineNestedRoutes(defineRoute, options, routeId);
         });
       }
     }
   }
 
-  return defineRoutes(defineNestedRoutes);
+  return defineRoutes(defineNestedRoutes, options);
 }
 
 export function createRoutePath(routeId: string): string | undefined {

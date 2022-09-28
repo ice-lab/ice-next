@@ -82,8 +82,20 @@ export interface NestedRouteManifest extends ConfigRoute {
   children?: ConfigRoute[];
 }
 
+export interface DefineRoutesOptions {
+  routeManifest: RouteManifest;
+  nestedRouteManifest: NestedRouteManifest[];
+}
+
+export type DefineExtraRoutes = (
+  defineRoute: DefineRouteFunction,
+  options: DefineRoutesOptions,
+) => void;
+
+
 export function defineRoutes(
-  callback: (defineRoute: DefineRouteFunction) => void,
+  callback: (defineRoute: DefineRouteFunction, options: DefineRoutesOptions) => void,
+  options: DefineRoutesOptions,
 ) {
   const routes: RouteManifest = Object.create(null);
   const parentRoutes: ConfigRoute[] = [];
@@ -132,7 +144,7 @@ export function defineRoutes(
     }
   };
 
-  callback(defineRoute);
+  callback(defineRoute, options);
 
   alreadyReturned = true;
 
