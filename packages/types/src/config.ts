@@ -167,6 +167,4 @@ export interface Config {
   getAppConfig?: (exportNamse?: string[]) => Promise<any>;
 
   getRoutesConfig?: (specifyRoutId?: string) => Promise<any>;
-
-  defineRoutes?: DefineExtraRoutes[];
 }

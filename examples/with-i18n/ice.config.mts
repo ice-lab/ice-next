@@ -3,6 +3,9 @@ import i18n from '@ice/plugin-i18n';
 
 export default defineConfig({
   plugins: [
-    i18n(),
+    i18n({
+      locales: ['zh-CN', 'en-US', 'zh-HK'],
+      defaultLocale: 'zh-CN',
+    }),
   ],
 });

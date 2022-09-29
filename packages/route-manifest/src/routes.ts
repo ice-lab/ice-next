@@ -44,6 +44,10 @@ export interface DefineRouteOptions {
    * Should be `true` if this is an index route that does not allow child routes.
    */
   index?: boolean;
+  /**
+   * Support custom route id.
+   */
+  id?: string;
 }
 
 interface DefineRouteChildren {
@@ -121,7 +125,7 @@ export function defineRoutes(
       options = optionsOrChildren || {};
     }
 
-    const id = createRouteId(file);
+    const id = options.id || createRouteId(file);
     const route: ConfigRoute = {
       path,
       index: options.index ? true : undefined,

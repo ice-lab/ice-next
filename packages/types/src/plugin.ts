@@ -3,7 +3,7 @@ import type { Plugin as _Plugin, CommandArgs, TaskConfig } from 'build-scripts';
 import type { Configuration, Stats } from 'webpack';
 import type WebpackDevServer from 'webpack-dev-server';
 import type { BuildOptions, BuildResult } from 'esbuild';
-import type { NestedRouteManifest } from '@ice/route-manifest';
+import type { DefineExtraRoutes, NestedRouteManifest } from '@ice/route-manifest';
 import type { Config } from './config.js';
 import type { ExportData, AddRenderFile, AddTemplateFiles } from './generator.js';
 import type { AssetsManifest } from './runtime.js';
@@ -101,6 +101,7 @@ export interface ExtendsPluginAPI {
     get: () => ReturnType<ServerCompiler>;
   };
   dataCache: Map<string, string>;
+  addDefineRoutesFunc: (defineRoutes: DefineExtraRoutes) => void;
 }
 
 export interface OverwritePluginAPI extends ExtendsPluginAPI {

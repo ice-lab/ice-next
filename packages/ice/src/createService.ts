@@ -29,6 +29,7 @@ import ServerCompileTask from './utils/ServerCompileTask.js';
 import { getAppExportConfig, getRouteExportConfig } from './service/config.js';
 import renderExportsTemplate from './utils/renderExportsTemplate.js';
 import { getFileExports } from './service/analyze.js';
+import Route from './service/Route.js';
 
 const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -50,6 +51,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     // add default template of ice
     templates: [templateDir],
   });
+  const route = new Route();
 
   const { addWatchEvent, removeWatchEvent } = createWatch({
     watchDir: rootDir,
@@ -90,6 +92,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
         addEvent: addWatchEvent,
         removeEvent: removeWatchEvent,
       },
+      addDefineRoutesFunc: route.addDefineRoutesFunc.bind(route),
       context: {
         // @ts-expect-error repack type can not match with original type
         webpack,
@@ -146,7 +149,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   await setEnv(rootDir, commandArgs);
   const coreEnvKeys = getCoreEnvKeys();
 
-  const routesInfo = await generateRoutesInfo(rootDir, routesConfig, platformTaskConfig.config?.defineRoutesQueue);
+  const routesInfo = await generateRoutesInfo(rootDir, routesConfig, route.getDefineRoutesFuncs());
   const hasExportAppData = (await getFileExports({ rootDir, file: 'src/app' })).includes('getAppData');
   const csr = !userConfig.ssr && !userConfig.ssg;
 
@@ -214,6 +217,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
       cache: dataCache,
       ctx,
       serverCompiler,
+      route,
     }),
   );
 

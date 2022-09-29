@@ -8,6 +8,7 @@ import type Generator from './service/runtimeGenerator';
 import getGlobalStyleGlobPattern from './utils/getGlobalStyleGlobPattern.js';
 import renderExportsTemplate from './utils/renderExportsTemplate.js';
 import { getFileExports } from './service/analyze.js';
+import type Route from './service/Route.js';
 
 interface Options {
   targetDir: string;
@@ -16,16 +17,18 @@ interface Options {
   cache: Map<string, string>;
   ctx: Context<Config>;
   serverCompiler: ServerCompiler;
+  route: Route;
 }
 
 const getWatchEvents = (options: Options): WatchEvent[] => {
-  const { generator, targetDir, templateDir, cache, ctx } = options;
+  const { generator, targetDir, templateDir, cache, ctx, route } = options;
   const { userConfig: { routes: routesConfig, dataLoader }, configFile, rootDir } = ctx;
+
   const watchRoutes: WatchEvent = [
     /src\/pages\/?[\w*-:.$]+$/,
     async (eventName: string) => {
       if (eventName === 'add' || eventName === 'unlink' || eventName === 'change') {
-        const routesRenderData = await generateRoutesInfo(rootDir, routesConfig);
+        const routesRenderData = await generateRoutesInfo(rootDir, routesConfig, route.getDefineRoutesFuncs());
         const stringifiedData = JSON.stringify(routesRenderData);
         if (cache.get('routes') !== stringifiedData) {
           cache.set('routes', stringifiedData);
