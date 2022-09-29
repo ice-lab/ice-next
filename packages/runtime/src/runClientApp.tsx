@@ -23,6 +23,7 @@ interface RunClientAppOptions {
   routes: RouteItem[];
   runtimeModules: RuntimeModules;
   hydrate: boolean;
+  pluginData: Record<string, any>;
   basename?: string;
   memoryRouter?: boolean;
 }
@@ -37,6 +38,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
     basename,
     hydrate,
     memoryRouter,
+    pluginData,
   } = options;
   const appContextFromServer: AppContext = (window as any).__ICE_APP_CONTEXT__ || {};
   let {
@@ -95,7 +97,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
     });
   }
 
-  await Promise.all(runtimeModules.map(m => runtime.loadModule(m)).filter(Boolean));
+  await Promise.all(runtimeModules.map(m => runtime.loadModule(m, pluginData)).filter(Boolean));
 
   render({ runtime, history });
 }

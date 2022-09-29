@@ -34,6 +34,7 @@ interface RenderOptions {
   routes: RouteItem[];
   runtimeModules: (RuntimePlugin | CommonJsRuntime)[];
   Document: DocumentComponent;
+  pluginData: Record<string, any>;
   documentOnly?: boolean;
   renderMode?: RenderMode;
   // basename is used both for server and client, once set, it will be sync to client.
@@ -136,7 +137,7 @@ function pipeToResponse(res: ServerResponse, pipe: NodeWritablePiper) {
 
 async function doRender(serverContext: ServerContext, renderOptions: RenderOptions): Promise<RenderResult> {
   const { req } = serverContext;
-  const { routes, documentOnly, app, basename, serverOnlyBasename, disableFallback } = renderOptions;
+  const { routes, documentOnly, app, basename, serverOnlyBasename, disableFallback, pluginData } = renderOptions;
 
   const location = getLocation(req.url);
 
@@ -179,6 +180,7 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
       routeModules,
       basename: serverOnlyBasename || basename,
       routePath,
+      pluginData,
     });
   } catch (err) {
     if (disableFallback) {
@@ -197,7 +199,7 @@ function render404(): RenderResult {
   };
 }
 
-interface renderServerEntry {
+interface RenderServerEntryOptions {
   appExport: AppExport;
   requestContext: RequestContext;
   renderOptions: RenderOptions;
@@ -206,6 +208,7 @@ interface renderServerEntry {
   appConfig: AppConfig;
   appData: AppData;
   routeModules: RouteModules;
+  pluginData: Record<string, any>;
   routePath?: string;
   basename?: string;
 }
@@ -225,7 +228,8 @@ async function renderServerEntry(
     routeModules,
     basename,
     routePath,
-  }: renderServerEntry,
+    pluginData,
+  }: RenderServerEntryOptions,
 ): Promise<RenderResult> {
   const {
     assetsManifest,
@@ -253,7 +257,7 @@ async function renderServerEntry(
   };
 
   const runtime = new Runtime(appContext);
-  await Promise.all(runtimeModules.map(m => runtime.loadModule(m)).filter(Boolean));
+  await Promise.all(runtimeModules.map(m => runtime.loadModule(m, pluginData)).filter(Boolean));
 
   const staticNavigator = createStaticNavigator();
   const AppProvider = runtime.composeAppProvider() || React.Fragment;

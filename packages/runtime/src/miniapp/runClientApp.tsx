@@ -15,10 +15,11 @@ import { setHistory } from './history.js';
 interface RunClientAppOptions {
   app: AppExport;
   runtimeModules: RuntimeModules;
+  pluginData: Record<string, any>;
 }
 
 export default async function runClientApp(options: RunClientAppOptions) {
-  const { app, runtimeModules } = options;
+  const { app, runtimeModules, pluginData } = options;
   const appData = await getAppData(app);
   const { miniappManifest } = app;
   const appConfig = getAppConfig(app);
@@ -31,7 +32,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
   const runtime = new Runtime(appContext);
 
   // TODO: to be tested
-  await Promise.all(runtimeModules.map(m => runtime.loadModule(m)).filter(Boolean));
+  await Promise.all(runtimeModules.map(m => runtime.loadModule(m, pluginData)).filter(Boolean));
   render(runtime);
   // TODO: transform routes to pages in miniappManifest
   createMiniApp(miniappManifest);

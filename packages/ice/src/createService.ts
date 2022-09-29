@@ -30,6 +30,7 @@ import { getAppExportConfig, getRouteExportConfig } from './service/config.js';
 import renderExportsTemplate from './utils/renderExportsTemplate.js';
 import { getFileExports } from './service/analyze.js';
 import Route from './service/Route.js';
+import PluginData from './service/PluginData.js';
 
 const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -52,6 +53,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     templates: [templateDir],
   });
   const route = new Route();
+  const pluginData = new PluginData();
 
   const { addWatchEvent, removeWatchEvent } = createWatch({
     watchDir: rootDir,
@@ -92,13 +94,14 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
         addEvent: addWatchEvent,
         removeEvent: removeWatchEvent,
       },
-      addDefineRoutesFunc: route.addDefineRoutesFunc.bind(route),
       context: {
         // @ts-expect-error repack type can not match with original type
         webpack,
       },
       serverCompileTask,
       dataCache,
+      addDefineRoutesFunc: route.addDefineRoutesFunc.bind(route),
+      setData: pluginData.setPluginData.bind(pluginData),
     },
   });
   // resolve userConfig from ice.config.ts before registerConfig
@@ -171,6 +174,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     hasExportAppData,
     runtimeModules,
     coreEnvKeys,
+    pluginData: pluginData.getPluginData(),
     basename: platformTaskConfig.config.basename || '/',
     memoryRouter: platformTaskConfig.config.memoryRouter,
     hydrate: !csr,

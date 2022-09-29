@@ -102,6 +102,7 @@ export interface ExtendsPluginAPI {
   };
   dataCache: Map<string, string>;
   addDefineRoutesFunc: (defineRoutes: DefineExtraRoutes) => void;
+  setData: (pluginName: string, data: any) => void;
 }
 
 export interface OverwritePluginAPI extends ExtendsPluginAPI {

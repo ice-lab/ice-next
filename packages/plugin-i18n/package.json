@@ -11,6 +11,21 @@
       "types": "./esm/index.d.ts",
       "import": "./esm/index.js",
       "default": "./esm/index.js"
+    },
+    "./runtime": {
+      "types": "./esm/runtime/index.d.ts",
+      "import": "./esm/runtime/index.js",
+      "default": "./esm/runtime/index.js"
+    },
+    "./api": {
+      "types": "./esm/runtime/api.d.ts",
+      "import": "./esm/runtime/api.js",
+      "default": "./esm/runtime/api.js"
+    },
+    "./esm/api": {
+      "types": "./esm/runtime/api.d.ts",
+      "import": "./esm/runtime/api.js",
+      "default": "./esm/runtime/api.js"
     }
   },
   "files": [
@@ -28,7 +43,11 @@
     "watch": "tsc -w",
     "build": "tsc"
   },
+  "dependencies": {
+    "universal-cookie": "^4.0.4"
+  },
   "devDependencies": {
-    "@ice/types": "^1.0.0"
+    "@ice/types": "^1.0.0",
+    "@types/react": "^18.0.21"
   }
 }

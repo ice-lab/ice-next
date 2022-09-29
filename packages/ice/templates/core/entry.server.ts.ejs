@@ -8,6 +8,8 @@ import type { RenderMode } from '@ice/runtime';
 import assetsManifest from 'virtual:assets-manifest.json';
 import routes from './routes';
 
+const pluginData = <%- JSON.stringify(pluginData) %>;
+
 const getRouterBasename = () => {
   const appConfig = runtime.getAppConfig(app);
   return appConfig?.router?.basename ?? '<%- basename %>' ?? '';
@@ -46,6 +48,7 @@ export async function renderToHTML(requestContext, options: RenderOptions = {}) 
     renderMode,
     routePath,
     disableFallback,
+    pluginData,
   });
 }
 
@@ -64,5 +67,6 @@ export async function renderToResponse(requestContext, options: RenderOptions = 
     documentOnly,
     renderMode,
     disableFallback,
+    pluginData,
   });
 }

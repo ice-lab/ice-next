@@ -169,7 +169,8 @@ export interface RuntimeAPI {
 
 export interface RuntimePlugin {
   (
-    apis: RuntimeAPI
+    apis: RuntimeAPI,
+    pluginData: Record<string, any>,
   ): Promise<void> | void;
 }
 

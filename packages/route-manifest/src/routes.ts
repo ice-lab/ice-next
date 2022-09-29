@@ -83,7 +83,7 @@ export interface RouteManifest {
 }
 
 export interface NestedRouteManifest extends ConfigRoute {
-  children?: ConfigRoute[];
+  children?: NestedRouteManifest[];
 }
 
 export interface DefineRoutesOptions {
