@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'http';
-import type { Action, InitialEntry, Location } from 'history';
+import type { Action, InitialEntry, Location, History } from 'history';
 import type { ComponentType, ReactNode, PropsWithChildren } from 'react';
 import type { HydrationOptions } from 'react-dom/client';
 import type { Navigator, Params } from 'react-router-dom';
@@ -165,6 +165,7 @@ export interface RuntimeAPI {
   useData: useData;
   useConfig: useConfig;
   useAppContext: useAppContext;
+  history: History;
 }
 
 export interface RuntimePlugin {

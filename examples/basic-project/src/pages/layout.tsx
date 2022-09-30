@@ -1,6 +1,8 @@
-import { Outlet, useData, useConfig } from 'ice';
+import { Outlet, useData, useConfig, useAuth } from 'ice';
 
-export default () => {
+export default function layout() {
+  const auth = useAuth();
+  console.log('auth====>', auth);
   const data = useData();
   const config = useConfig();
 
@@ -12,7 +14,7 @@ export default () => {
       <Outlet />
     </div>
   );
-};
+}
 
 export function getConfig() {
   return {

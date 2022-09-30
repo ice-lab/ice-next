@@ -18,6 +18,7 @@ import type {
 import DefaultAppRouter from './AppRouter.js';
 import { useData, useConfig } from './RouteContext.js';
 import { useAppContext } from './AppContext.js';
+import { routerHistory } from './history.js';
 
 class Runtime {
   private appContext: AppContext;
@@ -61,6 +62,7 @@ class Runtime {
       useData,
       useConfig,
       useAppContext,
+      history: routerHistory,
     };
 
     const runtimeModule = (module as CommonJsRuntime).default || module as RuntimePlugin;

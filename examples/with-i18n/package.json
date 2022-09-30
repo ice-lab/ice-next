@@ -11,7 +11,8 @@
   "dependencies": {
     "@ice/runtime": "workspace:*",
     "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react-dom": "^18.0.0",
+    "react-intl": "^5.25.1"
   },
   "devDependencies": {
     "@ice/app": "workspace:*",

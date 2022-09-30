@@ -3,21 +3,38 @@ import { fileURLToPath } from 'url';
 import type { Plugin } from '@ice/types';
 import type { I18nConfig } from './types';
 import { DEFAULT_PLUGIN_CONFIG, PLUGIN_NAME } from './constants.js';
+import createI18nMiddleware from './createI18nMiddleware.js';
 
 const plugin: Plugin<I18nConfig> = (originI18nConfig) => {
   ensureCorrectPluginOptions(originI18nConfig);
 
   const i18nConfig = mergeDefaultConfig(originI18nConfig);
+
   return {
     name: PLUGIN_NAME,
-    setup: ({ addDefineRoutesFunc, setData, generator }) => {
+    setup: ({ addDefineRoutesFunc, onGetConfig, setData, generator, context: { userConfig, ...rest } }) => {
       // The i18nConfig is for the runtime to use.
       setData(PLUGIN_NAME, i18nConfig);
       // Register API: `import { useLocale, withLocale } from 'ice';`
       generator.addExport({
         specifier: ['withLocale', 'useLocale'],
-        source: '@ice/plugin-i18n/esm/api',
+        source: '@ice/plugin-i18n/esm/runtime/I18nContext',
       });
+
+      if (userConfig.ssr) {
+        onGetConfig(config => {
+          config.middlewares = (middlewares) => {
+            const newMiddlewares = [...middlewares];
+            // TODO: how to get the app.router.basename
+            const basename = config.basename || '/';
+            const i18nMiddleware = createI18nMiddleware(i18nConfig, basename);
+            const serverRenderMiddlewareIndex = newMiddlewares.findIndex((middleware) => middleware.name === 'server-render');
+            newMiddlewares.splice(serverRenderMiddlewareIndex, 0, i18nMiddleware);
+
+            return newMiddlewares;
+          };
+        });
+      }
       // Add locale prefixed path.
       if (i18nConfig.i18nRouting) {
         const defineRoutes: Parameters<typeof addDefineRoutesFunc>[0] = (defineRoute, options) => {

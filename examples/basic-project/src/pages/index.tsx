@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react';
-import { Link, useData, useAppData, useConfig } from 'ice';
+import { Link, useData, useAppData, useConfig, useAuth } from 'ice';
 // not recommended but works
 import { useAppContext } from '@ice/runtime';
 import { useRequest } from 'ahooks';
@@ -16,7 +16,8 @@ export default function Home(props) {
   const appData = useAppData<AppData>();
   const data = useData();
   const config = useConfig();
-
+  const auth = useAuth();
+  console.log('auth11111====>', auth);
   if (typeof window !== 'undefined') {
     console.log('render Home', props);
     console.log('get AppData', appData);

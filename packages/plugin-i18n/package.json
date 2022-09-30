@@ -17,15 +17,25 @@
       "import": "./esm/runtime/index.js",
       "default": "./esm/runtime/index.js"
     },
-    "./api": {
-      "types": "./esm/runtime/api.d.ts",
-      "import": "./esm/runtime/api.js",
-      "default": "./esm/runtime/api.js"
+    "./runtime/I18nContext": {
+      "types": "./esm/runtime/I18nContext.d.ts",
+      "import": "./esm/runtime/I18nContext.js",
+      "default": "./esm/runtime/I18nContext.js"
     },
-    "./esm/api": {
-      "types": "./esm/runtime/api.d.ts",
-      "import": "./esm/runtime/api.js",
-      "default": "./esm/runtime/api.js"
+    "./esm/runtime/I18nContext": {
+      "types": "./esm/runtime/I18nContext.d.ts",
+      "import": "./esm/runtime/I18nContext.js",
+      "default": "./esm/runtime/I18nContext.js"
+    },
+    "./createI18nMiddleware": {
+      "types": "./esm/createI18nMiddleware.d.ts",
+      "import": "./esm/createI18nMiddleware.js",
+      "default": "./esm/createI18nMiddleware.js"
+    },
+    "./esm/createI18nMiddleware": {
+      "types": "./esm/createI18nMiddleware.d.ts",
+      "import": "./esm/createI18nMiddleware.js",
+      "default": "./esm/createI18nMiddleware.js"
     }
   },
   "files": [
@@ -44,10 +54,14 @@
     "build": "tsc"
   },
   "dependencies": {
+    "accept-language-parser": "^1.5.0",
     "universal-cookie": "^4.0.4"
   },
   "devDependencies": {
     "@ice/types": "^1.0.0",
-    "@types/react": "^18.0.21"
+    "@types/react": "^18.0.21",
+    "history": "^5.3.0",
+    "react-router-dom": "^6.4.1",
+    "webpack-dev-server": "^4.11.1"
   }
 }
