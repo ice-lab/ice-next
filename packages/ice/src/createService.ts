@@ -115,7 +115,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const {
     getRoutesConfig,
     init: initRouteConfigCompiler,
-    reCompile: reCompileRouteConfig,
   } = getRouteExportConfig(rootDir);
 
   // register config
@@ -209,7 +208,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     server,
     syntaxFeatures,
   });
-
   initAppConfigCompiler(serverCompiler);
   initRouteConfigCompiler(serverCompiler);
 
@@ -249,7 +247,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
             serverCompiler,
             getRoutesConfig,
             getAppConfig,
-            reCompileRouteConfig,
             appConfig,
             devPath: (routePaths[0] || '').replace(/^[/\\]/, ''),
             spinner: buildSpinner,
