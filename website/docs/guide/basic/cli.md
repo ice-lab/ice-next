@@ -13,7 +13,7 @@ order: 14
 {
   "scripts": {
 -   "start": "ice start"
-+   "start": "ice start --https" 
++   "start": "ice start --https"
   }
 }
 ```
