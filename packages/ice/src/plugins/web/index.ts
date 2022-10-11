@@ -10,11 +10,34 @@ import generateHTML from '../../utils/generateHTML.js';
 import openBrowser from '../../utils/openBrowser.js';
 import getServerCompilerPlugin from '../../utils/getServerCompilerPlugin.js';
 
-const plugin = ({ registerTask, onHook, context }) => {
+const plugin = ({ registerTask, onHook, context, generator }) => {
   const { rootDir, commandArgs, command, userConfig, extendsPluginAPI: { serverCompileTask, dataCache } } = context;
   const { ssg, server: { format } } = userConfig;
 
   registerTask(WEB, getWebTask({ rootDir, command, dataCache }));
+
+  generator.addExport({
+    specifier: ['Link', 'Outlet', 'useParams', 'useSearchParams', 'useLocation', 'useNavigate'],
+    source: '@ice/runtime/router',
+  });
+
+  generator.addExport({
+    specifier: [
+      'defineAppConfig',
+      'useAppData',
+      'useData',
+      'useConfig',
+      'Meta',
+      'Title',
+      'Links',
+      'Scripts',
+      'Data',
+      'Main',
+      'history',
+    ],
+    source: '@ice/runtime',
+  });
+
   let serverOutfile: string;
   onHook(`before.${command}.run`, async ({ webpackConfigs, taskConfigs, serverCompiler }) => {
     // Compile server entry after the webpack compilation.
