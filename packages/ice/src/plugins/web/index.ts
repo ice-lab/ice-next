@@ -80,7 +80,7 @@ const plugin = ({ registerTask, onHook, context }) => {
       } else {
         logoutMessage += `\n
   - Local  : ${chalk.underline.white(`${urls.localUrlForBrowser}${hashChar}${devPath}`)}
-  - Network:  ${chalk.underline.white(`${urls.lanUrlForTerminal}${hashChar}${devPath}`)}`;
+  - Network: ${chalk.underline.white(`${urls.lanUrlForTerminal}${hashChar}${devPath}`)}`;
       }
       consola.log(`${logoutMessage}\n`);
 

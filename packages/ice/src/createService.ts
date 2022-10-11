@@ -106,10 +106,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const runtimeModules = getRuntimeModules(plugins);
 
   const { getAppConfig, init: initAppConfigCompiler } = getAppExportConfig(rootDir);
-  const {
-    getRoutesConfig,
-    init: initRouteConfigCompiler,
-  } = getRouteExportConfig(rootDir);
+  const { getRoutesConfig, init: initRouteConfigCompiler } = getRouteExportConfig(rootDir);
 
   // register config
   ['userConfig', 'cliOption'].forEach((configType) => {
