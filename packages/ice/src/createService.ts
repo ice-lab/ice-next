@@ -74,8 +74,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     command,
     commandArgs,
     configFile,
-    // @ts-expect-error fix build-scripts type error.
-    plugins: platform === WEB ? [webPlugin] : [],
+    plugins: platform === WEB ? [webPlugin()] : [],
     extendsPluginAPI: {
       generator: generatorAPI,
       watch: {
