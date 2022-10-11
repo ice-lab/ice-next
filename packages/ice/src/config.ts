@@ -328,6 +328,10 @@ const userConfig = [
       config.splitChunks = splitChunks;
     },
   },
+  {
+    name: 'miniapp',
+    validation: 'object',
+  },
 ];
 
 const cliOption = [
