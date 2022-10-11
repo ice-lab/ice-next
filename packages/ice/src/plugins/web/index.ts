@@ -14,7 +14,6 @@ import getServerCompilerPlugin from '../../utils/getServerCompilerPlugin.js';
 const plugin: Plugin = () => ({
   name: 'plugin-web',
   setup: ({ registerTask, onHook, context, generator, serverCompileTask, dataCache }) => {
-    console.log('setup');
     const { rootDir, commandArgs, command, userConfig } = context;
     const { ssg, server: { format } } = userConfig;
 
