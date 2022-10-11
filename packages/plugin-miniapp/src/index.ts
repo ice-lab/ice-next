@@ -20,6 +20,7 @@ const plugin: Plugin<MiniappOptions> = () => ({
         getAppConfig: async () => ({}),
         getRoutesConfig: async () => ({}),
       };
+      const miniappRuntime = '@ice/runtime/miniapp';
       generator.addExport({
         specifier: [
           'defineAppConfig',
@@ -30,7 +31,13 @@ const plugin: Plugin<MiniappOptions> = () => ({
           'useSearchParams',
           'history',
         ],
-        source: '@ice/runtime/miniapp',
+        source: miniappRuntime,
+      });
+      generator.modifyRenderData((renderData) => {
+        return {
+          ...renderData,
+          iceRuntimePath: miniappRuntime,
+        };
       });
       // Get server compiler by hooks
       onHook(`before.${command as 'start' | 'build'}.run`, async ({ getAppConfig, getRoutesConfig }) => {
