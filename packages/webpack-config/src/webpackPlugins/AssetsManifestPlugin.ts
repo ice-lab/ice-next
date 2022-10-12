@@ -43,7 +43,7 @@ export default class AssetsManifestPlugin {
         assets[asset.sourceFilename] = asset.contenthash;
       }
     }
-    let entryFiles = [];
+    const entryFiles = [];
     for (const entrypoint of entrypoints) {
       const entryName = entrypoint.name;
       const mainFiles = filterAssets(entrypoint);
