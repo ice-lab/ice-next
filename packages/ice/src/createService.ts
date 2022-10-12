@@ -103,7 +103,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
 
   // get plugins include built-in plugins and custom plugins
   const plugins = await ctx.resolvePlugins() as PluginData[];
-  const runtimeModules = getRuntimeModules(plugins, rootDir);
+  const runtimeModules = getRuntimeModules(plugins);
 
   const { getAppConfig, init: initAppConfigCompiler } = getAppExportConfig(rootDir);
   const {
