@@ -30,9 +30,9 @@ const Home = () => {
 
 ## 组件
 
-### `<BrowserOnly />`
+### `<ClientOnly />`
 
-`<BrowserOnly />` 组件只允许在 React Hydrate 完成后在 Client 端中渲染组件。
+`<ClientOnly />` 组件只允许在 React Hydrate 完成后在 Client 端中渲染组件。
 
 **Props**
 
@@ -42,27 +42,27 @@ const Home = () => {
 使用示例：
 
 ```tsx
-import { BrowserOnly } from 'ice';
+import { ClientOnly } from 'ice';
 
 export function Home () {
   return (
-    <BrowserOnly fallback={<div>loading...</div>}>
+    <ClientOnly fallback={<div>loading...</div>}>
       {() => <span>page url is {window.location.href}</span>}
-    </BrowserOnly>
+    </ClientOnly>
   );
 };
 ```
 
 引入一个组件：
 ```tsx
-import { BrowserOnly } from 'ice';
+import { ClientOnly } from 'ice';
 import MyComponent from './MyComponent';
 
 export function Home () {
   return (
-    <BrowserOnly fallback={<div>loading...</div>}>
+    <ClientOnly fallback={<div>loading...</div>}>
       {() => <MyComponent />}
-    </BrowserOnly>
+    </ClientOnly>
   );
 };
 ```
