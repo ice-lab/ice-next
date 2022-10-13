@@ -19,7 +19,7 @@ module.exports = {
     },
     {
       type: 'category',
-      label: '集成',
+      label: '进阶',
       collapsed: false,
       items: getDocsFromDir('guide/best-practices'),
     },
