@@ -1,6 +1,5 @@
 ---
 title: 权限管理
-order: 4
 ---
 
 import Tabs from '@theme/Tabs';
@@ -11,7 +10,7 @@ import TabItem from '@theme/TabItem';
   <ul>
     <li>
       <a href="https://github.com/ice-lab/ice-next/tree/master/examples/basic-project" target="_blank" rel="noopener noreferrer">
-        Basic Project
+        basic-project
       </a>
     </li>
   </ul>

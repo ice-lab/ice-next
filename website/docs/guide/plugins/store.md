@@ -1,6 +1,5 @@
 ---
 title: 状态管理
-order: 3
 ---
 
 icejs 基于 [icestore](https://github.com/ice-lab/icestore) ，提供主流的状态管理解决方案，以更好管理复杂的状态管理逻辑。
@@ -8,7 +7,7 @@ icejs 基于 [icestore](https://github.com/ice-lab/icestore) ，提供主流的�
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-<details>
+<details open>
   <summary>示例</summary>
   <ul>
     <li>
