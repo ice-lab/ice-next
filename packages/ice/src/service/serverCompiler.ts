@@ -161,7 +161,7 @@ export function createServerCompiler(options: Options) {
     }
 
     const startTime = new Date().getTime();
-    consola.debug('[esbuild]', `start compile for: ${buildOptions.entryPoints}`);
+    consola.debug('[esbuild]', `start compile for: ${JSON.stringify(buildOptions.entryPoints)}`);
 
     try {
       const esbuildResult = await esbuild.build(buildOptions);
