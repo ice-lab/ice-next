@@ -3,23 +3,23 @@ title: 单元测试
 order: 8
 ---
 
-ice.js 不耦合任何一个测试框架，开发者可自由选择。目前提供开箱即用的 [jest](https://jestjs.io/) 和 [vitest](https://vitest.dev/) 配置，以便快速开始单元测试。
-
-<details>
+<details open>
   <summary>示例</summary>
   <ul>
     <li>
       <a href="https://github.com/ice-lab/ice-next/tree/master/examples/with-jest" target="_blank" rel="noopener noreferrer">
-        ice.js with jest
+        with-jest
       </a>
     </li>
     <li>
       <a href="https://github.com/ice-lab/ice-next/tree/master/examples/with-vitest" target="_blank" rel="noopener noreferrer">
-        ice.js with vitest
+        with-vitest
       </a>
     </li>
   </ul>
 </details>
+
+ice.js 不耦合任何一个测试框架，开发者可自由选择。目前提供开箱即用的 [jest](https://jestjs.io/) 和 [vitest](https://vitest.dev/) 配置，以便快速开始单元测试。
 
 ## Jest
 

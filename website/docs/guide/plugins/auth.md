@@ -5,7 +5,7 @@ title: 权限管理
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-<details>
+<details open>
   <summary>示例</summary>
   <ul>
     <li>
