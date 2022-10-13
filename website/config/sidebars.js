@@ -13,7 +13,7 @@ module.exports = {
     // 'guide/practice',
     {
       type: 'category',
-      label: 'icejs 指南',
+      label: 'ice.js 指南',
       collapsed: false,
       items: getDocsFromDir('guide/basic'),
     },

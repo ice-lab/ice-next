@@ -16,7 +16,7 @@ import TabItem from '@theme/TabItem';
   </ul>
 </details>
 
-icejs 基于 [icestore](https://github.com/ice-lab/icestore) ，提供主流的状态管理解决方案，以更好管理复杂的状态管理逻辑。
+ice.js 基于 [icestore](https://github.com/ice-lab/icestore) ，提供主流的状态管理解决方案，以更好管理复杂的状态管理逻辑。
 
 ## 开启状态管理
 
@@ -260,7 +260,7 @@ export const store = defineStoreConfig(async () => {
     initialStates: {
       // initialStates 键值与 createStore 的第一个入参键值保持一致
       user: {
-        name: 'icejs',
+        name: 'ice.js',
       },
       counter: {
         count: 1
