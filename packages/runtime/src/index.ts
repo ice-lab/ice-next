@@ -34,7 +34,7 @@ import {
 import dataLoader from './dataLoader.js';
 import getAppConfig, { defineAppConfig } from './appConfig.js';
 import { routerHistory as history } from './history.js';
-import { default as KeepAliveOutlet } from './KeepAliveOutlet.js';
+import KeepAliveOutlet from './KeepAliveOutlet.js';
 
 export {
   getAppConfig,
