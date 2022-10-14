@@ -1,3 +1,3 @@
 export default function PageUrl() {
-  return <span>page url is {window.location.href}</span>;
+  return <span id="page-url">page url is {window.location.href}</span>;
 }
