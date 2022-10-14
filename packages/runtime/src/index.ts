@@ -34,8 +34,8 @@ import {
 import dataLoader from './dataLoader.js';
 import getAppConfig, { defineAppConfig } from './appConfig.js';
 import { routerHistory as history } from './history.js';
-import { default as BrowserOnly } from './BrowserOnly.js';
-import { default as useIsBrowser } from './useIsBrowser.js';
+import { default as ClientOnly } from './ClientOnly.js';
+import { default as useMounted } from './useMounted.js';
 
 export {
   getAppConfig,
@@ -62,8 +62,8 @@ export {
   useLocation,
   history,
 
-  BrowserOnly,
-  useIsBrowser,
+  ClientOnly,
+  useMounted,
 };
 
 export type {

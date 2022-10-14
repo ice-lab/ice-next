@@ -6,7 +6,7 @@ order: 15
 
 ## Hooks
 
-### `useIsBrowser`
+### `useMounted`
 
 该方法会在 React Hydrate 完成后返回 `true`，一般在开启 SSR/SSG 的应用中使用。
 
@@ -14,17 +14,17 @@ order: 15
 
 使用此 Hook 而不是 `typeof windows !== 'undefined'` 来判断当前是否在 Client 端中渲染。
 
-因为第一次 Client 端渲染必须与 Server 端渲染的接口一致，如果不使用此 Hook 判断的话，在 Hydrate 时可能出现节点不匹配的情况。 
+因为第一次 Client 端渲染必须与 Server 端渲染的接口一致，如果不使用此 Hook 判断的话，在 Hydrate 时可能出现节点不匹配的情况。
 :::
 
 使用示例：
 
 ```tsx
-import { useIsBrowser } from 'ice';
+import { useMounted } from 'ice';
 
 const Home = () => {
-  const isBrowser = useIsBrowser();
-  return <div>{isBrowser ? 'Client' : 'Server'}</div>;
+  const mounted = useMounted();
+  return <div>{mounted ? 'Client' : 'Server'}</div>;
 };
 ```
 
@@ -54,6 +54,7 @@ export function Home () {
 ```
 
 引入一个组件：
+
 ```tsx
 import { ClientOnly } from 'ice';
 import MyComponent from './MyComponent';

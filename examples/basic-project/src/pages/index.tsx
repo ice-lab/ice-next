@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react';
-import { Link, useData, useAppData, useConfig, BrowserOnly, useIsBrowser } from 'ice';
+import { Link, useData, useAppData, useConfig, ClientOnly, useMounted } from 'ice';
 // not recommended but works
 import { useAppContext } from '@ice/runtime';
 import { useRequest } from 'ahooks';
@@ -8,7 +8,6 @@ import './index.css';
 import styles from './index.module.css';
 import lessStyles from './index.module.less';
 import sassStyles from './index.module.scss';
-import PageUrl from '@/components/PageUrl';
 
 const Bar = lazy(() => import('../components/bar'));
 
@@ -17,7 +16,7 @@ export default function Home(props) {
   const appData = useAppData<AppData>();
   const data = useData();
   const config = useConfig();
-  const isBrowser = useIsBrowser();
+  const mounted = useMounted();
 
   if (typeof window !== 'undefined') {
     console.log('render Home', props);
@@ -43,10 +42,19 @@ export default function Home(props) {
         <div>userInfo: {JSON.stringify(userInfo)}</div>
         <div>data from: <span id="data-from">{data.from}</span></div>
       </div>
-      <div>{isBrowser ? 'Client' : 'Server'}</div>
-      <BrowserOnly>
-        {() => <PageUrl />}
-      </BrowserOnly>
+      <p>
+        <div>{mounted ? 'Client' : 'Server'}</div>
+        <ClientOnly>
+          {() => {
+            const PageUrl = lazy(() => import('@/components/PageUrl'));
+            return (
+              <Suspense>
+                <PageUrl />
+              </Suspense>
+            );
+          }}
+        </ClientOnly>
+      </p>
     </>
   );
 }

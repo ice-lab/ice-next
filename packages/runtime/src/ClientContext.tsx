@@ -3,16 +3,16 @@ import React, { type ReactNode, useEffect, useState, createContext } from 'react
 
 export const Context = createContext<boolean>(false);
 
-export function BrowserProvider({
+export function ClientProvider({
   children,
 }: {
   children: ReactNode;
 }): JSX.Element {
-  const [isBrowser, setIsBrowser] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setIsBrowser(true);
+    setMounted(true);
   }, []);
 
-  return <Context.Provider value={isBrowser}>{children}</Context.Provider>;
+  return <Context.Provider value={mounted}>{children}</Context.Provider>;
 }
