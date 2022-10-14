@@ -112,8 +112,17 @@ async function render({ history, runtime }: RenderOptions) {
   const RouteWrappers = runtime.getWrappers();
   const AppRouter = runtime.getAppRouter();
 
+  const rootId = appConfig.app.rootId || 'app';
+  let root = document.getElementById(rootId);
+  console.log('root=', root);
+  if (!root) {
+    root = document.createElement('div');
+    root.setAttribute('id', rootId);
+    document.body.appendChild(root);
+  }
+  console.log('root=', root);
   render(
-    document.getElementById(appConfig.app.rootId),
+    root,
     <BrowserEntry
       history={history}
       appContext={appContext}
