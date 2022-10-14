@@ -37,7 +37,7 @@ npm install --global surge
 
 #### 运行 surge
 
-以 `ice-demo` 项目名，ice 项目默认构建目录 `build` 为例：
+以 `ice-demo` 项目名，ice.js 项目默认构建目录 `build` 为例：
 
 ```bash
 $ cd ice-demo/build
