@@ -3,8 +3,8 @@ import * as ReactDOM from 'react-dom/client';
 import { createHashHistory, createBrowserHistory, createMemoryHistory } from 'history';
 import type { HashHistory, BrowserHistory, Action, Location, InitialEntry, MemoryHistory } from 'history';
 import type {
-  AppContext, AppExport, RouteItem, AppRouterProps, RoutesData, RoutesConfig,
-  RouteWrapperConfig, RuntimeModules, RouteMatch, RouteModules, AppConfig,
+  AppContext, WindowContext, AppExport, RouteItem, AppRouterProps, RoutesData, RoutesConfig,
+  RouteWrapperConfig, RuntimeModules, RouteMatch, RouteModules, AppConfig, AssetsManifest,
 } from '@ice/types';
 import { createHistory as createHistorySingle } from './single-router.js';
 import { setHistory } from './history.js';
@@ -38,15 +38,15 @@ export default async function runClientApp(options: RunClientAppOptions) {
     hydrate,
     memoryRouter,
   } = options;
-  const appContextFromServer: AppContext = (window as any).__ICE_APP_CONTEXT__ || {};
+  const windowContext: WindowContext = (window as any).__ICE_APP_CONTEXT__ || {};
+  const assetsManifest: AssetsManifest = (window as any).__ICE_ASSETS_MANIFEST__ || {};
   let {
     appData,
     routesData,
     routesConfig,
-    assetsManifest,
     routePath,
     downgrade,
-  } = appContextFromServer;
+  } = windowContext;
 
   const requestContext = getRequestContext(window.location);
 
@@ -112,8 +112,17 @@ async function render({ history, runtime }: RenderOptions) {
   const RouteWrappers = runtime.getWrappers();
   const AppRouter = runtime.getAppRouter();
 
+  const rootId = appConfig.app.rootId || 'app';
+  let root = document.getElementById(rootId);
+  if (!root) {
+    root = document.createElement('div');
+    root.id = rootId;
+    document.body.appendChild(root);
+    console.warn(`Root node #${rootId} is not found, current root is automatically created by the framework.`);
+  }
+
   render(
-    document.getElementById(appConfig.app.rootId),
+    root,
     <BrowserEntry
       history={history}
       appContext={appContext}
