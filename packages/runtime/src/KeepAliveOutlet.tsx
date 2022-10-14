@@ -4,6 +4,7 @@ import { useOutlet, useLocation } from 'react-router-dom';
 // @ts-ignore
 const Offscreen = React.unstable_Offscreen;
 
+// ref: https://leomyili.github.io/react-stillness-component/docs/examples/react-router/v6
 export default function KeepAliveOutlet() {
   if (!Offscreen) {
     throw new Error('`<unstable_KeepAliveOutlet />` requires react experimental version. Please install it first.');
