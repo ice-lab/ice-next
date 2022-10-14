@@ -118,7 +118,7 @@ async function render({ history, runtime }: RenderOptions) {
     root = document.createElement('div');
     root.id = rootId;
     document.body.appendChild(root);
-    console.warn('The root node is created by framework.');
+    console.warn(`Root node #${rootId} is not found, current root is automatically created by the framework.`);
   }
 
   render(
