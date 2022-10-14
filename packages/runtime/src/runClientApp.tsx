@@ -114,13 +114,13 @@ async function render({ history, runtime }: RenderOptions) {
 
   const rootId = appConfig.app.rootId || 'app';
   let root = document.getElementById(rootId);
-  console.log('root=', root);
   if (!root) {
     root = document.createElement('div');
-    root.setAttribute('id', rootId);
+    root.id = rootId;
     document.body.appendChild(root);
+    console.warn('The root node is created by framework.');
   }
-  console.log('root=', root);
+
   render(
     root,
     <BrowserEntry
