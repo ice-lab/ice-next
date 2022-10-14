@@ -4,7 +4,7 @@ import { createRequire } from 'module';
 import { Context } from 'build-scripts';
 import consola from 'consola';
 import type { CommandArgs, CommandName } from 'build-scripts';
-import type { AppConfig, Config } from '@ice/types';
+import type { AppConfig, Config, PluginData } from '@ice/types';
 import type { ExportData } from '@ice/types/esm/generator.js';
 import type { ExtendsPluginAPI } from '@ice/types/esm/plugin.js';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
@@ -14,7 +14,6 @@ import createWatch from './service/watchSource.js';
 import start from './commands/start.js';
 import build from './commands/build.js';
 import webPlugin from './plugins/web/index.js';
-import miniappPlugin from './plugins/miniapp/index.js';
 import test from './commands/test.js';
 import mergeTaskConfig from './utils/mergeTaskConfig.js';
 import getWatchEvents from './getWatchEvents.js';
@@ -22,7 +21,7 @@ import { setEnv, updateRuntimeEnv, getCoreEnvKeys } from './utils/runtimeEnv.js'
 import getRuntimeModules from './utils/getRuntimeModules.js';
 import { generateRoutesInfo } from './routes.js';
 import * as config from './config.js';
-import { RUNTIME_TMP_DIR, WEB, MINIAPP_PLATFORMS, ALL_PLATFORMS } from './constant.js';
+import { RUNTIME_TMP_DIR, WEB } from './constant.js';
 import createSpinner from './utils/createSpinner.js';
 import getRoutePaths from './utils/getRoutePaths.js';
 import ServerCompileTask from './utils/ServerCompileTask.js';
@@ -65,25 +64,18 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     },
     addRenderFile: generator.addRenderFile,
     addRenderTemplate: generator.addTemplateFiles,
+    modifyRenderData: generator.modifyRenderData,
   };
 
   const serverCompileTask = new ServerCompileTask();
 
   const { platform = WEB } = commandArgs;
-  const isMiniappPlatform = MINIAPP_PLATFORMS.includes(platform);
-  const builtinPlugins = [];
-  if (platform === WEB) {
-    builtinPlugins.push(webPlugin);
-  } else if (isMiniappPlatform) {
-    builtinPlugins.push(miniappPlugin);
-  }
-
   const ctx = new Context<Config, ExtendsPluginAPI>({
     rootDir,
     command,
     commandArgs,
     configFile,
-    plugins: builtinPlugins,
+    plugins: platform === WEB ? [webPlugin()] : [],
     extendsPluginAPI: {
       generator: generatorAPI,
       watch: {
@@ -102,7 +94,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   await ctx.resolveUserConfig();
 
   // get plugins include built-in plugins and custom plugins
-  const plugins = await ctx.resolvePlugins();
+  const plugins = await ctx.resolvePlugins() as PluginData[];
   const runtimeModules = getRuntimeModules(plugins);
 
   const { getAppConfig, init: initAppConfigCompiler } = getAppExportConfig(rootDir);
@@ -150,9 +142,11 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
       'regenerator-runtime': require.resolve('regenerator-runtime'),
     },
   });
-  const platformTaskConfig = taskConfigs.find(({ name }) => ALL_PLATFORMS.includes(name));
 
-  const iceRuntimePath = isMiniappPlatform ? '@ice/runtime/miniapp' : '@ice/runtime';
+  // Get first task config as default platform config.
+  const platformTaskConfig = taskConfigs[0];
+
+  const iceRuntimePath = '@ice/runtime';
   const enableRoutes = platform === WEB;
   // add render data
   generator.setRenderData({
