@@ -26,7 +26,7 @@ export default function createMiddleware(options: MockOptions): Middleware {
     const matchResult = matchPath(req, mockConfigs);
     if (matchResult) {
       const { match, mockConfig, keys } = matchResult;
-      const { handler, method } = mockConfig;
+      const { handler } = mockConfig;
       if (typeof handler === 'function') {
         // params
         const params: Record<string, any> = {};
