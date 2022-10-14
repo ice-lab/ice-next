@@ -4,9 +4,11 @@ import Counter from '@/components/Counter';
 export default function About() {
   return (
     <>
-      <h1>About</h1>
+      <h3>About</h3>
       <Counter />
       <Link to="/">Home</Link>
+      <br />
+      <Link to="/about/me">About Me</Link>
     </>
   );
 }
@@ -14,6 +16,5 @@ export default function About() {
 export function getConfig() {
   return {
     title: 'About',
-    // keepAlive: false,
   };
 }
