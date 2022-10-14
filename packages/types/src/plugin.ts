@@ -1,11 +1,11 @@
 import type webpack from 'webpack';
-import type { Plugin as _Plugin, CommandArgs, TaskConfig } from 'build-scripts';
+import type { _Plugin, CommandArgs, TaskConfig } from 'build-scripts';
 import type { Configuration, Stats } from 'webpack';
 import type WebpackDevServer from 'webpack-dev-server';
 import type { BuildOptions, BuildResult } from 'esbuild';
 import type { NestedRouteManifest } from '@ice/route-manifest';
 import type { Config } from './config.js';
-import type { ExportData, AddRenderFile, AddTemplateFiles } from './generator.js';
+import type { ExportData, AddRenderFile, AddTemplateFiles, ModifyRenderData } from './generator.js';
 import type { AssetsManifest } from './runtime.js';
 
 type AddExport = (exportData: ExportData) => void;
@@ -91,6 +91,7 @@ export interface ExtendsPluginAPI {
     addExportTypes: AddExport;
     addRenderFile: AddRenderFile;
     addRenderTemplate: AddTemplateFiles;
+    modifyRenderData: ModifyRenderData;
   };
   watch: {
     addEvent?: (watchEvent: WatchEvent) => void;
@@ -107,4 +108,9 @@ export interface OverwritePluginAPI extends ExtendsPluginAPI {
   onHook: OnHook;
 }
 
-export type Plugin<Options = any> = (options?: Options) => _Plugin<Config, OverwritePluginAPI>;
+export interface PluginData extends _Plugin<Config, OverwritePluginAPI> {
+  runtime?: string;
+  staticRuntime?: boolean;
+}
+
+export type Plugin<Options = any> = (options?: Options) => PluginData;
