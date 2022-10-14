@@ -5,7 +5,6 @@ import type { RouteWrapperConfig, AppRouterProps } from '@ice/types';
 import AppErrorBoundary from './AppErrorBoundary.js';
 import { useAppContext } from './AppContext.js';
 import { createRouteElements } from './routes.js';
-import { ClientProvider } from './ClientContext.js';
 
 interface Props {
   action: Action;
@@ -59,11 +58,9 @@ export default function App(props: Props) {
   return (
     <StrictMode>
       <ErrorBoundary>
-        <ClientProvider>
-          <AppProvider>
-            {element}
-          </AppProvider>
-        </ClientProvider>
+        <AppProvider>
+          {element}
+        </AppProvider>
       </ErrorBoundary>
     </StrictMode>
   );

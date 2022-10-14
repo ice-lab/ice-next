@@ -1,6 +1,10 @@
-import { useContext } from 'react';
-import { Context } from './ClientContext.js';
+import { useState, useEffect } from 'react';
 
 export default function useMounted() {
-  return useContext(Context);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  return mounted;
 }
