@@ -6,7 +6,7 @@ const Offscreen = React.unstable_Offscreen;
 
 export default function KeepAliveOutlet() {
   if (!Offscreen) {
-    throw new Error('`<KeepAliveOutlet />` requires react experimental version. Please install it first.');
+    throw new Error('`<unstable_KeepAliveOutlet />` requires react experimental version. Please install it first.');
   }
   const [outlets, setOutlets] = useState([]);
   const location = useLocation();
