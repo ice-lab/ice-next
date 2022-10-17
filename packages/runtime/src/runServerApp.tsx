@@ -46,6 +46,7 @@ interface RenderOptions {
   routesConfig: {
     [key: string]: GetConfig;
   };
+  extraContext?: Record<string, any>;
 }
 
 interface Piper {
@@ -140,7 +141,7 @@ function pipeToResponse(res: ServerResponse, pipe: NodeWritablePiper) {
 
 async function doRender(serverContext: ServerContext, renderOptions: RenderOptions): Promise<RenderResult> {
   const { req } = serverContext;
-  const { routes, documentOnly, app, basename, serverOnlyBasename, disableFallback } = renderOptions;
+  const { routes, documentOnly, app, basename, serverOnlyBasename, disableFallback, extraContext } = renderOptions;
 
   const location = getLocation(req.url);
 
@@ -183,6 +184,7 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
       routeModules,
       basename: serverOnlyBasename || basename,
       routePath,
+      extraContext,
     });
   } catch (err) {
     if (disableFallback) {
@@ -201,7 +203,7 @@ function render404(): RenderResult {
   };
 }
 
-interface renderServerEntry {
+interface RenderServerEntry {
   appExport: AppExport;
   requestContext: RequestContext;
   renderOptions: RenderOptions;
@@ -212,6 +214,7 @@ interface renderServerEntry {
   routeModules: RouteModules;
   routePath?: string;
   basename?: string;
+  extraContext?: Record<string, any>;
 }
 
 /**
@@ -229,7 +232,8 @@ async function renderServerEntry(
     routeModules,
     basename,
     routePath,
-  }: renderServerEntry,
+    extraContext,
+  }: RenderServerEntry,
 ): Promise<RenderResult> {
   const {
     assetsManifest,
@@ -254,6 +258,7 @@ async function renderServerEntry(
     routeModules,
     basename,
     routePath,
+    extraContext,
   };
 
   const runtime = new Runtime(appContext);

@@ -79,6 +79,7 @@ export interface AppContext {
   appExport?: AppExport;
   basename?: string;
   downgrade?: boolean;
+  extraContext?: Record<string, any>;
 }
 
 export type WindowContext = Pick<

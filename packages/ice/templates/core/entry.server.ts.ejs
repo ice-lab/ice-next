@@ -8,6 +8,11 @@ import type { RenderMode } from '@ice/runtime';
 import assetsManifest from 'virtual:assets-manifest.json';
 import routes from './routes';
 import routesConfig from './routes-config.bundle.mjs';
+<% if (extraContext) { -%>
+<% extraContext.forEach(({ source, specifier }) => { -%>
+import <%= specifier %> from '<%= source %>';
+<% }) -%>
+<% } -%>
 
 const getRouterBasename = () => {
   const appConfig = runtime.getAppConfig(app);
@@ -48,6 +53,14 @@ export async function renderToHTML(requestContext, options: RenderOptions = {}) 
     routePath,
     disableFallback,
     routesConfig,
+<% if (extraContext) { -%>
+    extraContext: {
+  <% extraContext.forEach(({ specifier }) => { -%>
+    <%= specifier %>,
+  <% }) -%>
+    },
+<% } -%>
+
   });
 }
 
@@ -67,5 +80,12 @@ export async function renderToResponse(requestContext, options: RenderOptions = 
     renderMode,
     disableFallback,
     routesConfig,
+<% if (extraContext) { -%>
+    extraContext: {
+  <% extraContext.forEach(({ specifier }) => { -%>
+    <%= specifier %>,
+  <% }) -%>
+    },
+<% } -%>
   });
 }

@@ -1,11 +1,8 @@
 import * as path from 'path';
-import { fileURLToPath } from 'url';
 import type { Config, Plugin } from '@ice/types';
 import micromatch from 'micromatch';
 import fg from 'fast-glob';
 import { PAGE_STORE_MODULE, PAGE_STORE_PROVIDER, PAGE_STORE_INITIAL_STATES } from './constants.js';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 interface Options {
   resetPageState?: boolean;
@@ -17,7 +14,7 @@ const ignoreStoreFilePatterns = ['**/models/**', storeFilePattern];
 
 const plugin: Plugin<Options> = (options) => ({
   name: PLUGIN_NAME,
-  setup: ({ onGetConfig, modifyUserConfig, generator, context: { rootDir, userConfig } }) => {
+  setup: ({ onGetConfig, modifyUserConfig, generator, context: { rootDir, userConfig }, watch }) => {
     const { resetPageState = false } = options || {};
     const srcDir = path.join(rootDir, 'src');
     const pageDir = path.join(srcDir, 'pages');
@@ -27,14 +24,47 @@ const plugin: Plugin<Options> = (options) => ({
       ignoreFiles: [...(userConfig?.routes?.ignoreFiles || []), ...ignoreStoreFilePatterns],
     });
 
-    onGetConfig(config => {
-      // Add app store provider.
-      const appStorePath = getAppStorePath(srcDir);
-      config.alias = {
-        ...config.alias || {},
-        $store: appStorePath || path.join(__dirname, '_appStore.js'),
-      };
+    const extraContextItem = {
+      source: '@/store',
+      specifier: 'appStore',
+    };
 
+    const addExtraContextToRenderData: Parameters<typeof generator['modifyRenderData']>[0] = (renderData) => {
+      const extraContext = (renderData.extraContext || []) as Record<string, any>[];
+      extraContext.push(extraContextItem);
+      return {
+        ...renderData,
+        extraContext,
+      };
+    };
+    const removeExtraContextFromRenderData: Parameters<typeof generator['modifyRenderData']>[0] = (renderData) => {
+      const extraContext = (renderData.extraContext || []) as Record<string, any>[];
+      const newExtraContext = extraContext.filter(({ source, specifier }) => {
+        return !(source === extraContextItem.source && specifier === extraContextItem.specifier);
+      });
+      return {
+        ...renderData,
+        extraContext: newExtraContext,
+      };
+    };
+
+    if (getAppStorePath(srcDir)) {
+      generator.modifyRenderData(addExtraContextToRenderData);
+    }
+
+    watch.addEvent([
+      /src\/store.(js|ts)$/,
+      async (event) => {
+        if (event === 'unlink') {
+          generator.modifyRenderData(removeExtraContextFromRenderData);
+        }
+        if (event === 'add') {
+          generator.modifyRenderData(addExtraContextToRenderData);
+        }
+      },
+    ]);
+
+    onGetConfig(config => {
       config.transformPlugins = [
         ...(config.transformPlugins || []),
         exportStoreProviderPlugin({ pageDir, resetPageState }),
@@ -45,7 +75,7 @@ const plugin: Plugin<Options> = (options) => ({
     // Export store api: createStore, createModel from `.ice/index.ts`.
     generator.addExport({
       specifier: ['createStore', 'createModel'],
-      source: '@ice/plugin-store/esm/api',
+      source: '@ice/plugin-store/esm/runtime',
       type: false,
     });
   },

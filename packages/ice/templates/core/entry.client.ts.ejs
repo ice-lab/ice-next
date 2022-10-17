@@ -1,10 +1,15 @@
 import { runClientApp, getAppConfig } from '<%- iceRuntimePath %>';
 import * as app from '@/app';
 import runtimeModules from './runtimeModules';
-
-<% if (enableRoutes) { %>
+<% if (enableRoutes) { -%>
 import routes from './routes';
-<% } %>
+<% } -%>
+<% if (extraContext) { -%>
+<% extraContext.forEach(({ source, specifier }) => { -%>
+import <%= specifier %> from '<%= source %>';
+<% }) -%>
+<% } -%>
+
 const getRouterBasename = () => {
   const appConfig = getAppConfig(app);
   return appConfig?.router?.basename ?? '<%- basename %>' ?? '';
@@ -13,9 +18,16 @@ const getRouterBasename = () => {
 runClientApp({
   app,
   runtimeModules,
-  <% if (enableRoutes) { %>
+<% if (enableRoutes) { -%>
   routes,
-  <% } %>
+<% } -%>
+<% if (extraContext) { -%>
+  extraContext: {
+  <% extraContext.forEach(({ specifier }) => { -%>
+    <%= specifier %>,
+  <% }) -%>
+  },
+<% } -%>
   basename: getRouterBasename(),
   hydrate: <%- hydrate %>,
   memoryRouter: <%- memoryRouter || false %>,

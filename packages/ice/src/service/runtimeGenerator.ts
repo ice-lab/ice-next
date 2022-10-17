@@ -192,6 +192,7 @@ export default class Generator {
       ...exportsData,
       staticConfig: staticConfig.length && staticConfig[0],
       globalStyle: globalStyles.length && `@/${path.basename(globalStyles[0])}`,
+      extraContext: undefined,
     };
   };
 
