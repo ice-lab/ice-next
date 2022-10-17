@@ -25,7 +25,7 @@ interface RunClientAppOptions {
   hydrate: boolean;
   basename?: string;
   memoryRouter?: boolean;
-  extraContext?: Record<string, any>;
+  runtimeOptions?: Record<string, any>;
 }
 
 type History = BrowserHistory | HashHistory | MemoryHistory;
@@ -38,7 +38,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
     basename,
     hydrate,
     memoryRouter,
-    extraContext,
+    runtimeOptions,
   } = options;
   const windowContext: WindowContext = (window as any).__ICE_APP_CONTEXT__ || {};
   const assetsManifest: AssetsManifest = (window as any).__ICE_ASSETS_MANIFEST__ || {};
@@ -87,10 +87,9 @@ export default async function runClientApp(options: RunClientAppOptions) {
     routeModules,
     basename,
     routePath,
-    extraContext,
   };
 
-  const runtime = new Runtime(appContext);
+  const runtime = new Runtime(appContext, runtimeOptions);
 
   if (hydrate && !downgrade) {
     runtime.setRender((container, element) => {

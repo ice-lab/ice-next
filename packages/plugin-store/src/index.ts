@@ -24,42 +24,24 @@ const plugin: Plugin<Options> = (options) => ({
       ignoreFiles: [...(userConfig?.routes?.ignoreFiles || []), ...ignoreStoreFilePatterns],
     });
 
-    const extraContextItem = {
-      source: '@/store',
-      specifier: 'appStore',
-    };
-
-    const addExtraContextToRenderData: Parameters<typeof generator['modifyRenderData']>[0] = (renderData) => {
-      const extraContext = (renderData.extraContext || []) as Record<string, any>[];
-      extraContext.push(extraContextItem);
-      return {
-        ...renderData,
-        extraContext,
-      };
-    };
-    const removeExtraContextFromRenderData: Parameters<typeof generator['modifyRenderData']>[0] = (renderData) => {
-      const extraContext = (renderData.extraContext || []) as Record<string, any>[];
-      const newExtraContext = extraContext.filter(({ source, specifier }) => {
-        return !(source === extraContextItem.source && specifier === extraContextItem.specifier);
-      });
-      return {
-        ...renderData,
-        extraContext: newExtraContext,
-      };
-    };
-
     if (getAppStorePath(srcDir)) {
-      generator.modifyRenderData(addExtraContextToRenderData);
+      generator.addRuntimeOptions({
+        source: '@/store',
+        specifier: 'appStore',
+      });
     }
 
     watch.addEvent([
       /src\/store.(js|ts)$/,
       async (event) => {
         if (event === 'unlink') {
-          generator.modifyRenderData(removeExtraContextFromRenderData);
+          generator.removeRuntimeOptions('@/store');
         }
         if (event === 'add') {
-          generator.modifyRenderData(addExtraContextToRenderData);
+          generator.addRuntimeOptions({
+            source: '@/store',
+            specifier: 'appStore',
+          });
         }
       },
     ]);

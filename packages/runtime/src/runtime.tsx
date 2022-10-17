@@ -22,6 +22,8 @@ import { useAppContext } from './AppContext.js';
 class Runtime {
   private appContext: AppContext;
 
+  private runtimeOptions?: Record<string, any>;
+
   private AppRouter: ComponentType<AppRouterProps>;
 
   private AppProvider: ComponentWithChildren[];
@@ -30,7 +32,7 @@ class Runtime {
 
   private render: Renderer;
 
-  public constructor(appContext: AppContext) {
+  public constructor(appContext: AppContext, runtimeOptions?: Record<string, any>) {
     this.AppProvider = [];
     this.appContext = appContext;
     this.render = (container, element) => {
@@ -39,6 +41,7 @@ class Runtime {
     };
     this.AppRouter = DefaultAppRouter;
     this.RouteWrappers = [];
+    this.runtimeOptions = runtimeOptions;
   }
 
   public getAppContext = () => this.appContext;
@@ -65,7 +68,7 @@ class Runtime {
 
     const runtimeModule = (module as CommonJsRuntime).default || module as RuntimePlugin;
     if (module) {
-      return await runtimeModule(runtimeAPI);
+      return await runtimeModule(runtimeAPI, this.runtimeOptions);
     }
   }
 

@@ -79,7 +79,6 @@ export interface AppContext {
   appExport?: AppExport;
   basename?: string;
   downgrade?: boolean;
-  extraContext?: Record<string, any>;
 }
 
 export type WindowContext = Pick<
@@ -175,7 +174,8 @@ export interface RuntimeAPI {
 
 export interface RuntimePlugin {
   (
-    apis: RuntimeAPI
+    apis: RuntimeAPI,
+    runtimeOptions?: Record<string, any>,
   ): Promise<void> | void;
 }
 

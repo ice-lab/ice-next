@@ -8,7 +8,8 @@ import type { Config } from './config.js';
 import type { ExportData, AddRenderFile, AddTemplateFiles, ModifyRenderData } from './generator.js';
 import type { AssetsManifest } from './runtime.js';
 
-type AddExport = (exportData: ExportData) => void;
+type AddExport = (exportData: ExportData | ExportData[]) => void;
+type RemoveExport = (removeSource: string | string[]) => void;
 type EventName = 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir';
 
 type ServerCompilerBuildOptions = Pick<BuildOptions, 'write' |
@@ -104,6 +105,8 @@ export interface ExtendsPluginAPI {
   generator: {
     addExport: AddExport;
     addExportTypes: AddExport;
+    addRuntimeOptions: AddExport;
+    removeRuntimeOptions: RemoveExport;
     addRenderFile: AddRenderFile;
     addRenderTemplate: AddTemplateFiles;
     modifyRenderData: ModifyRenderData;

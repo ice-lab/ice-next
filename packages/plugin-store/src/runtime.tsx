@@ -3,7 +3,7 @@ import type { RuntimePlugin, AppProvider, RouteWrapper } from '@ice/types';
 import { PAGE_STORE_INITIAL_STATES, PAGE_STORE_PROVIDER } from './constants.js';
 import type { StoreConfig } from './types.js';
 
-const runtime: RuntimePlugin = async ({ appContext, addWrapper, addProvider, useAppContext }) => {
+const runtime: RuntimePlugin = async ({ appContext, addWrapper, addProvider, useAppContext }, runtimeOptions) => {
   const { appExport, appData } = appContext;
   const storeConfig: StoreConfig = (typeof appExport.store === 'function'
     ? (await appExport.store(appData)) : appExport.store) || {};
@@ -11,9 +11,8 @@ const runtime: RuntimePlugin = async ({ appContext, addWrapper, addProvider, use
 
   // Add app store <Provider />.
   const StoreProvider: AppProvider = ({ children }) => {
-    const { extraContext } = useAppContext();
-    if (extraContext?.appStore && extraContext?.appStore?.Provider) {
-      const { Provider } = extraContext.appStore;
+    if (runtimeOptions?.appStore && runtimeOptions?.appStore?.Provider) {
+      const { Provider } = runtimeOptions.appStore;
       return (
         <Provider initialStates={initialStates}>
           {children}

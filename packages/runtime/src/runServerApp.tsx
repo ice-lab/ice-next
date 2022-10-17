@@ -46,7 +46,7 @@ interface RenderOptions {
   routesConfig: {
     [key: string]: GetConfig;
   };
-  extraContext?: Record<string, any>;
+  runtimeOptions?: Record<string, any>;
 }
 
 interface Piper {
@@ -141,7 +141,7 @@ function pipeToResponse(res: ServerResponse, pipe: NodeWritablePiper) {
 
 async function doRender(serverContext: ServerContext, renderOptions: RenderOptions): Promise<RenderResult> {
   const { req } = serverContext;
-  const { routes, documentOnly, app, basename, serverOnlyBasename, disableFallback, extraContext } = renderOptions;
+  const { routes, documentOnly, app, basename, serverOnlyBasename, disableFallback, runtimeOptions } = renderOptions;
 
   const location = getLocation(req.url);
 
@@ -184,7 +184,7 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
       routeModules,
       basename: serverOnlyBasename || basename,
       routePath,
-      extraContext,
+      runtimeOptions,
     });
   } catch (err) {
     if (disableFallback) {
@@ -214,7 +214,7 @@ interface RenderServerEntry {
   routeModules: RouteModules;
   routePath?: string;
   basename?: string;
-  extraContext?: Record<string, any>;
+  runtimeOptions?: Record<string, any>;
 }
 
 /**
@@ -232,7 +232,7 @@ async function renderServerEntry(
     routeModules,
     basename,
     routePath,
-    extraContext,
+    runtimeOptions,
   }: RenderServerEntry,
 ): Promise<RenderResult> {
   const {
@@ -258,10 +258,9 @@ async function renderServerEntry(
     routeModules,
     basename,
     routePath,
-    extraContext,
   };
 
-  const runtime = new Runtime(appContext);
+  const runtime = new Runtime(appContext, runtimeOptions);
   await Promise.all(runtimeModules.map(m => runtime.loadModule(m)).filter(Boolean));
 
   const staticNavigator = createStaticNavigator();

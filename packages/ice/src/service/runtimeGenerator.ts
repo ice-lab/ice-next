@@ -118,7 +118,7 @@ export default class Generator {
     this.rerender = false;
     this.renderTemplates = [];
     this.renderDataRegistration = [];
-    this.contentTypes = ['framework', 'frameworkTypes', 'configTypes'];
+    this.contentTypes = ['framework', 'frameworkTypes', 'configTypes', 'runtimeOptions'];
     // empty .ice before render
     fse.emptyDirSync(path.join(rootDir, targetDir));
     // add initial templates
@@ -143,11 +143,17 @@ export default class Generator {
       registerKey,
       Array.isArray(exportData) ? exportData.map((data) => data.source) : exportData.source);
     this.addContent(registerKey, exportData);
+    if (this.rerender) {
+      this.debounceRender();
+    }
   };
 
   public removeExport: RemoveExport = (registerKey, removeSource) => {
     const exportList = this.contentRegistration[registerKey] || [];
     this.contentRegistration[registerKey] = removeExportData(exportList, removeSource);
+    if (this.rerender) {
+      this.debounceRender();
+    }
   };
 
   public addContent: AddContent = (apiName, ...args) => {
@@ -192,7 +198,6 @@ export default class Generator {
       ...exportsData,
       staticConfig: staticConfig.length && staticConfig[0],
       globalStyle: globalStyles.length && `@/${path.basename(globalStyles[0])}`,
-      extraContext: undefined,
     };
   };
 
