@@ -24,6 +24,11 @@
       "types": "./esm/api.d.ts",
       "import": "./esm/api.js",
       "default": "./esm/api.js"
+    },
+    "./esm/api": {
+      "types": "./esm/api.d.ts",
+      "import": "./esm/api.js",
+      "default": "./esm/api.js"
     }
   },
   "main": "./esm/index.js",

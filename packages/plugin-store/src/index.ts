@@ -45,7 +45,7 @@ const plugin: Plugin<Options> = (options) => ({
     // Export store api: createStore, createModel from `.ice/index.ts`.
     generator.addExport({
       specifier: ['createStore', 'createModel'],
-      source: '@ice/plugin-store/api',
+      source: '@ice/plugin-store/esm/api',
       type: false,
     });
   },
