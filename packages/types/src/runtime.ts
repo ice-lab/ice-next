@@ -44,7 +44,7 @@ export type GetData = (ctx: RequestContext) => Promise<RouteData> | RouteData;
 export type GetServerData = (ctx: RequestContext) => Promise<RouteData> | RouteData;
 export type GetStaticData = (ctx: RequestContext) => Promise<RouteData> | RouteData;
 // route.getConfig
-export type GetConfig = (args: { data: RouteData }) => RouteConfig;
+export type GetConfig = (args: { data?: RouteData }) => RouteConfig;
 
 export interface AppConfig {
   app?: App;
@@ -80,6 +80,11 @@ export interface AppContext {
   basename?: string;
   downgrade?: boolean;
 }
+
+export type WindowContext = Pick<
+  AppContext,
+  'appData' | 'routesData' | 'routesConfig' | 'routePath' | 'downgrade'
+>;
 
 export type Renderer = (
   container: Element | Document,

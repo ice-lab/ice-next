@@ -1,21 +1,16 @@
 import webpack from '@ice/bundles/compiled/webpack/index.js';
 import type ora from '@ice/bundles/compiled/ora/index.js';
 import consola from 'consola';
-import type { CommandArgs, TaskConfig } from 'build-scripts';
+import type { TaskConfig, Context } from 'build-scripts';
 import type { Compiler, Configuration } from 'webpack';
-import type { Configuration as DevServerConfiguration } from 'webpack-dev-server';
-import type { Urls, ServerCompiler, GetAppConfig, GetRoutesConfig } from '@ice/types/esm/plugin.js';
+import type { Urls, ServerCompiler, GetAppConfig, GetRoutesConfig, ExtendsPluginAPI } from '@ice/types/esm/plugin.js';
 import type { Config } from '@ice/types';
 import formatWebpackMessages from '../utils/formatWebpackMessages.js';
 
-type WebpackConfig = Configuration & { devServer?: DevServerConfiguration };
-
 async function webpackCompiler(options: {
-  webpackConfigs: WebpackConfig | WebpackConfig[];
+  context: Context<Config, ExtendsPluginAPI>;
+  webpackConfigs: Configuration | Configuration[];
   taskConfigs: TaskConfig<Config>[];
-  command: string;
-  commandArgs: CommandArgs;
-  applyHook: (key: string, opts?: {}) => Promise<void>;
   urls?: Urls;
   spinner: ora.Ora;
   devPath?: string;
@@ -28,14 +23,13 @@ async function webpackCompiler(options: {
   const {
     taskConfigs,
     urls,
-    applyHook,
-    command,
-    commandArgs,
     hooksAPI,
     webpackConfigs,
     spinner,
     devPath,
+    context,
   } = options;
+  const { applyHook, commandArgs, command } = context;
   await applyHook(`before.${command}.run`, {
     urls,
     commandArgs,
@@ -47,7 +41,7 @@ async function webpackCompiler(options: {
   // Add default plugins for spinner
   webpackConfigs[0].plugins.push((compiler: Compiler) => {
     compiler.hooks.beforeCompile.tap('spinner', () => {
-      spinner.text = 'compiling...';
+      spinner.text = 'compiling...\n';
     });
     compiler.hooks.afterEmit.tap('spinner', () => {
       spinner.stop();
@@ -80,7 +74,7 @@ async function webpackCompiler(options: {
       if (messages.errors.length > 1) {
         messages.errors.length = 1;
       }
-      consola.error('Failed to compile.');
+      consola.error('Compiled with errors.');
       console.error(messages.errors.join('\n'));
       return;
     } else if (messages.warnings.length) {
