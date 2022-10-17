@@ -4,7 +4,7 @@ import '<%= globalStyle %>'
 import type { RouteConfig } from './types';
 <%- framework.imports %>
 
-interface GetConfig = () => RouteConfig;
+type GetConfig = () => RouteConfig;
 function defineGetConfig(getConfig: GetConfig): GetConfig {
   return getConfig;
 }
