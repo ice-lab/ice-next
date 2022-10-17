@@ -1,8 +1,11 @@
 import * as path from 'path';
+import { fileURLToPath } from 'url';
 import type { Config, Plugin } from '@ice/types';
 import micromatch from 'micromatch';
 import fg from 'fast-glob';
 import { PAGE_STORE_MODULE, PAGE_STORE_PROVIDER, PAGE_STORE_INITIAL_STATES } from './constants.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 interface Options {
   resetPageState?: boolean;
@@ -27,12 +30,11 @@ const plugin: Plugin<Options> = (options) => ({
     onGetConfig(config => {
       // Add app store provider.
       const appStorePath = getAppStorePath(srcDir);
-      if (appStorePath) {
-        config.alias = {
-          ...config.alias || {},
-          $store: appStorePath,
-        };
-      }
+      config.alias = {
+        ...config.alias || {},
+        $store: appStorePath || path.join(__dirname, '_appStore.js'),
+      };
+
       config.transformPlugins = [
         ...(config.transformPlugins || []),
         exportStoreProviderPlugin({ pageDir, resetPageState }),
