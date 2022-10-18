@@ -143,17 +143,11 @@ export default class Generator {
       registerKey,
       Array.isArray(exportData) ? exportData.map((data) => data.source) : exportData.source);
     this.addContent(registerKey, exportData);
-    if (this.rerender) {
-      this.debounceRender();
-    }
   };
 
   public removeExport: RemoveExport = (registerKey, removeSource) => {
     const exportList = this.contentRegistration[registerKey] || [];
     this.contentRegistration[registerKey] = removeExportData(exportList, removeSource);
-    if (this.rerender) {
-      this.debounceRender();
-    }
   };
 
   public addContent: AddContent = (apiName, ...args) => {

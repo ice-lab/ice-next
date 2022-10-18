@@ -36,12 +36,14 @@ const plugin: Plugin<Options> = (options) => ({
       async (event) => {
         if (event === 'unlink') {
           generator.removeRuntimeOptions('@/store');
+          generator.render();
         }
         if (event === 'add') {
           generator.addRuntimeOptions({
             source: '@/store',
             specifier: 'appStore',
           });
+          generator.render();
         }
       },
     ]);
