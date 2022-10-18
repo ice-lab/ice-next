@@ -35,6 +35,8 @@ import dataLoader from './dataLoader.js';
 import getAppConfig, { defineAppConfig } from './appConfig.js';
 import { routerHistory as history } from './history.js';
 import KeepAliveOutlet from './KeepAliveOutlet.js';
+import ClientOnly from './ClientOnly.js';
+import useMounted from './useMounted.js';
 
 export {
   getAppConfig,
@@ -63,6 +65,8 @@ export {
 
   // eslint-disable-next-line camelcase
   KeepAliveOutlet as unstable_KeepAliveOutlet,
+  ClientOnly,
+  useMounted,
 };
 
 export type {
