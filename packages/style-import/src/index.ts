@@ -82,10 +82,10 @@ export default function importStylePlugin(options: TransformOptions) {
     // Add plugin as a post plugin, so we do not need to deal with ts language.
     enforce: 'post',
     transformInclude(id: string) {
+      // Only transform source code.
       return id.match(/\.(js|jsx|ts|tsx)$/) && !id.match(/node_modules/);
     },
     async transform(code: string, id: string, transformOption: { isServer: Boolean }) {
-      // Only transform source code.
       if (transformOption.isServer || !code) {
         return null;
       }
