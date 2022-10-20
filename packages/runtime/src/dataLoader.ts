@@ -31,7 +31,10 @@ function loadInitialData(loaders: Loaders) {
       return dataFromSSR;
     }
 
-    const getData = loaders[id];
+    // If getData is an object, it is wrapped with a function.
+    const getData = typeof loaders[id] === 'function' ? loaders[id] : () => {
+      return window.fetch((loaders[id] as any).api);
+    };
 
     if (getData) {
       const requestContext = getRequestContext(window.location);
