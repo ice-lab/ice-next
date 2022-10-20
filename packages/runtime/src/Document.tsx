@@ -63,7 +63,7 @@ export function Links(props: React.LinkHTMLAttributes<HTMLLinkElement>) {
 }
 
 export function Scripts(props: React.ScriptHTMLAttributes<HTMLScriptElement>) {
-  const { routesData, routesConfig, matches, assetsManifest, documentOnly, downgrade, matchedIds } = useAppContext();
+  const { routesData, routesConfig, matches, assetsManifest, documentOnly, downgrade } = useAppContext();
   const appData = useAppData();
 
   const routeScripts = getScripts(matches, routesConfig);
@@ -76,6 +76,7 @@ export function Scripts(props: React.ScriptHTMLAttributes<HTMLScriptElement>) {
     scripts.unshift(`${assetsManifest.publicPath}${assetsManifest.dataLoader}`);
   }
 
+  const matchedIds = matches.map(match => match.route.id);
   const routePath = getCurrentRoutePath(matches);
   const windowContext: WindowContext = {
     appData,
