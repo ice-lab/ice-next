@@ -36,11 +36,11 @@ const plugin: Plugin<PluginOptions> = (options) => ({
     let getAppConfig: GetAppConfig;
     let getRoutesConfig: GetRoutesConfig;
 
-    /* generator.addRouteTypes({
+    generator.addRouteTypes({
       specifier: ['PageConfig'],
       type: true,
       source: '@ice/plugin-pha/esm/types',
-    }); */
+    });
     // Get server compiler by hooks
     onHook(`before.${command as 'start' | 'build'}.run`, async ({ serverCompiler, taskConfigs, urls, ...restAPI }) => {
       const taskConfig = taskConfigs.find(({ name }) => name === 'web').config;
