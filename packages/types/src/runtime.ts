@@ -182,7 +182,10 @@ export interface CommonJsRuntime {
   default: RuntimePlugin;
 }
 
-export type RuntimeModules = (RuntimePlugin | CommonJsRuntime)[];
+export interface RuntimeModules {
+  statics?: (RuntimePlugin | CommonJsRuntime)[];
+  commons?: (RuntimePlugin | CommonJsRuntime)[];
+}
 
 export interface AppRouterProps {
   action: Action;
