@@ -71,7 +71,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
   runtime.setAppRouter(DefaultAppRouter);
   // Load static module before getAppData,
   // so we can call request in in getAppData which provide by `plugin-request`.
-  await Promise.all(runtimeModules?.statics.map(m => runtime.loadModule(m)).filter(Boolean));
+  await Promise.all(runtimeModules.statics?.map(m => runtime.loadModule(m)).filter(Boolean));
 
   if (!appData) {
     appData = await getAppData(app, requestContext);
@@ -98,7 +98,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
   }
   // Reset app context after app context is updated.
   runtime.setAppContext({ ...appContext, matches, routeModules, routesData, routesConfig });
-  await Promise.all(runtimeModules?.commons.map(m => runtime.loadModule(m)).filter(Boolean));
+  await Promise.all(runtimeModules.commons?.map(m => runtime.loadModule(m)).filter(Boolean));
 
   render({ runtime, history });
 }

@@ -17,14 +17,14 @@ export default async function runClientApp(options: RunClientAppOptions) {
     appData: null,
   };
   const runtime = new Runtime(appContext);
-  await Promise.all(runtimeModules?.statics.map(m => runtime.loadModule(m)).filter(Boolean));
+  await Promise.all(runtimeModules.statics?.map(m => runtime.loadModule(m)).filter(Boolean));
   const appData = await getAppData(app);
   const { miniappManifest } = app;
 
   setHistory(miniappManifest.routes);
   runtime.setAppContext({ ...appContext, appData });
   // TODO: to be tested
-  await Promise.all(runtimeModules?.commons.map(m => runtime.loadModule(m)).filter(Boolean));
+  await Promise.all(runtimeModules.commons?.map(m => runtime.loadModule(m)).filter(Boolean));
   render(runtime);
   // TODO: transform routes to pages in miniappManifest
   createMiniApp(miniappManifest);

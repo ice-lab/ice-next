@@ -170,7 +170,7 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
   const runtime = new Runtime(appContext);
   runtime.setAppRouter(DefaultAppRouter);
   // Load static module before getAppData.
-  await Promise.all(runtimeModules?.statics.map(m => runtime.loadModule(m)).filter(Boolean));
+  await Promise.all(runtimeModules.statics?.map(m => runtime.loadModule(m)).filter(Boolean));
 
   // don't need to execute getAppData in CSR
   if (!documentOnly) {
@@ -200,7 +200,7 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
     const routesData = await loadRoutesData(matches, requestContext, routeModules, renderMode);
     const routesConfig = getRoutesConfig(matches, routesData, routeModules);
     runtime.setAppContext({ ...appContext, routeModules, routesData, routesConfig, routePath, matches });
-    await Promise.all(runtimeModules?.commons.map(m => runtime.loadModule(m)).filter(Boolean));
+    await Promise.all(runtimeModules.commons?.map(m => runtime.loadModule(m)).filter(Boolean));
     return await renderServerEntry({
       runtime,
       matches,
