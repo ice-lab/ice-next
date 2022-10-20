@@ -11,7 +11,7 @@ const runtime: RuntimePlugin = async ({ appContext, addWrapper, addProvider, use
 
   // Add app store <Provider />.
   const StoreProvider: AppProvider = ({ children }) => {
-    if (runtimeOptions?.appStore && runtimeOptions?.appStore?.Provider) {
+    if (runtimeOptions?.appStore?.Provider) {
       const { Provider } = runtimeOptions.appStore;
       return (
         <Provider initialStates={initialStates}>

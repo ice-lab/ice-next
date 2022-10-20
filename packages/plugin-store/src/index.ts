@@ -33,16 +33,17 @@ const plugin: Plugin<Options> = (options) => ({
 
     watch.addEvent([
       /src\/store.(js|ts)$/,
-      async (event) => {
+      (event) => {
         if (event === 'unlink') {
           generator.removeRuntimeOptions('@/store');
-          generator.render();
         }
         if (event === 'add') {
           generator.addRuntimeOptions({
             source: '@/store',
             specifier: 'appStore',
           });
+        }
+        if (['add', 'unlink'].includes(event)) {
           generator.render();
         }
       },
