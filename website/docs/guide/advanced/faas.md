@@ -1,6 +1,5 @@
 ---
-title: 国际化
-order: 6
+title: 一体化
 hide: true
 ---
 

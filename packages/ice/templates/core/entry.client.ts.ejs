@@ -14,9 +14,7 @@ const getRouterBasename = () => {
 runClientApp({
   app,
   runtimeModules,
-<% if (enableRoutes) { -%>
-  routes,
-<% } -%>
+<% if (enableRoutes) { %>routes,<% } %>
 <% if (runtimeOptions.exports) { -%>
   runtimeOptions: {
     <%- runtimeOptions.exports %>

@@ -28,6 +28,7 @@ import type { NodeWritablePiper } from './server/streamRender.js';
 import getRequestContext from './requestContext.js';
 import matchRoutes from './matchRoutes.js';
 import getCurrentRoutePath from './utils/getCurrentRoutePath.js';
+import DefaultAppRouter from './AppRouter.js';
 
 interface RenderOptions {
   app: AppExport;
@@ -261,6 +262,7 @@ async function renderServerEntry(
   };
 
   const runtime = new Runtime(appContext, runtimeOptions);
+  runtime.setAppRouter(DefaultAppRouter);
   await Promise.all(runtimeModules.map(m => runtime.loadModule(m)).filter(Boolean));
 
   const staticNavigator = createStaticNavigator();

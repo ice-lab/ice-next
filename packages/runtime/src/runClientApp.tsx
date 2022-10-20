@@ -17,12 +17,13 @@ import { updateRoutesConfig } from './routesConfig.js';
 import getRequestContext from './requestContext.js';
 import getAppConfig from './appConfig.js';
 import matchRoutes from './matchRoutes.js';
+import DefaultAppRouter from './AppRouter.js';
 
-interface RunClientAppOptions {
+export interface RunClientAppOptions {
   app: AppExport;
-  routes: RouteItem[];
   runtimeModules: RuntimeModules;
-  hydrate: boolean;
+  routes?: RouteItem[];
+  hydrate?: boolean;
   basename?: string;
   memoryRouter?: boolean;
   runtimeOptions?: Record<string, any>;
@@ -90,6 +91,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
   };
 
   const runtime = new Runtime(appContext, runtimeOptions);
+  runtime.setAppRouter(DefaultAppRouter);
 
   if (hydrate && !downgrade) {
     runtime.setRender((container, element) => {
