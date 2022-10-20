@@ -31,10 +31,7 @@ function loadInitialData(loaders: Loaders) {
       return dataFromSSR;
     }
 
-    // If getData is an object, it is wrapped with a function.
-    const getData = typeof loaders[id] === 'function' ? loaders[id] : () => {
-      return window.fetch((loaders[id] as any).api);
-    };
+    const getData = loaders[id];
 
     if (getData) {
       const requestContext = getRequestContext(window.location);
@@ -92,10 +89,27 @@ async function load(id: string, loader: GetData) {
 }
 
 /**
+ * transform loaders.
+ */
+function transformLoaders(loaders: Loaders, fetcher: Function) {
+  const context = (window as any).__ICE_APP_CONTEXT__ || {};
+  const matchedIds = context.matchedIds || [];
+
+  matchedIds.forEach(id => {
+    // If getData is an object, it is wrapped with a function.
+    loaders[id] = typeof loaders[id] === 'function' ? loaders[id] : () => {
+      return fetcher(loaders[id]);
+    };
+  });
+}
+
+/**
  * Load initial data and register global loader.
  * In order to load data, JavaScript modules, CSS and other assets in parallel.
  */
-function init(loaders: Loaders) {
+function init(loaders: Loaders, fetcher: Function) {
+  transformLoaders(loaders, fetcher);
+
   try {
     loadInitialData(loaders);
   } catch (error) {
