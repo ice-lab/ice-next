@@ -6,7 +6,7 @@ order: 1
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-ICE 提供了插件机制，在提供丰富的框架能力的基础上也可以让开发者可以在框架能力不满足诉求的情况下进行定制：
+ice.js 提供了插件机制，在提供丰富的框架能力的基础上也可以让开发者可以在框架能力不满足诉求的情况下进行定制：
 
 - 定制修改框架构建配置
 - 支持在整个构建生命周期定制行为，比如项目启动前拉取某些资源
@@ -14,7 +14,7 @@ ICE 提供了插件机制，在提供丰富的框架能力的基础上也可以�
 
 ## 插件规范
 
-ICE 插件本质是一个 JS 模块，官方推荐以 TS 进行开发以获得良好的类型提示：
+ice.js 插件本质是一个 JS 模块，官方推荐以 TS 进行开发以获得良好的类型提示：
 
 ```ts
 import type { Plugin } from '@ice/types';
@@ -377,7 +377,7 @@ export default () => ({
 
 #### `addExport`
 
-向 ice 里注册模块，实现 `import { request } from 'ice';` 的能力：
+向 ice.js 里注册模块，实现 `import { request } from 'ice';` 的能力：
 
 ```ts
 export default () => ({
@@ -393,7 +393,7 @@ export default () => ({
 
 #### `addExportTypes`
 
-向 ice 里注册类型，实现 `import type { Request } from 'ice';` 的能力：
+向 ice.js 里注册类型，实现 `import type { Request } from 'ice';` 的能力：
 
 ```ts
 export default () => ({
@@ -469,7 +469,7 @@ export default runtime;
 
 appContext 上包含框架相关上下文配置信息，主要包括：
 
-- `appConfig`：应用配置，详细内容可以参考 [应用入口](/)
+- `appConfig`：应用配置，详细内容可以参考 [应用入口](../basic/app)
 - `assetsManifest`：应用资讯配置信息
 - `routesData`：路由信息
 

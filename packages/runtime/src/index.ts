@@ -20,9 +20,10 @@ import type {
 import Runtime from './runtime.js';
 import App from './App.js';
 import runClientApp from './runClientApp.js';
-import { useAppContext } from './AppContext.js';
-import { useAppData } from './AppData.js';
-import { useData, useConfig } from './RouteContext.js';
+import type { RunClientAppOptions } from './runClientApp.js';
+import { useAppContext, AppContextProvider } from './AppContext.js';
+import { useAppData, AppDataProvider, getAppData } from './AppData.js';
+import { useData, useConfig, DataProvider, ConfigProvider } from './RouteContext.js';
 import {
   Meta,
   Title,
@@ -32,6 +33,8 @@ import {
   Data,
 } from './Document.js';
 import dataLoader from './dataLoader.js';
+import AppRouter from './AppRouter.js';
+import AppErrorBoundary from './AppErrorBoundary.js';
 import getAppConfig, { defineAppConfig } from './appConfig.js';
 import { routerHistory as history } from './history.js';
 import KeepAliveOutlet from './KeepAliveOutlet.js';
@@ -44,9 +47,14 @@ export {
   Runtime,
   App,
   runClientApp,
+  AppContextProvider,
   useAppContext,
+  AppDataProvider,
   useAppData,
   useData,
+  getAppData,
+  DataProvider,
+  ConfigProvider,
   useConfig,
   Meta,
   Title,
@@ -65,6 +73,8 @@ export {
 
   // eslint-disable-next-line camelcase
   KeepAliveOutlet as unstable_KeepAliveOutlet,
+  AppRouter,
+  AppErrorBoundary,
   ClientOnly,
   useMounted,
 };
@@ -80,4 +90,5 @@ export type {
   RouteWrapper,
   RenderMode,
   GetAppData,
+  RunClientAppOptions,
 };
