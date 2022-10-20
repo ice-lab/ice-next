@@ -132,3 +132,21 @@ export default {
 ```
 
 完整的语法请参考 [Mock.js 文档](http://mockjs.com/examples.html)。
+
+## 处理请求数据
+
+如果用户希望使用一些的中间件来处理请求的数据（`req` 对象），可以参考以下的示例代码：
+
+```ts
+import bodyParser from 'body-parser';
+
+export default {
+  'POST /api/login': (req, res) => {
+    bodyParser.json({ limit: '5mb', strict: false })(req, res, async () => {
+      console.log(req.body);
+
+      res.send({});
+    })
+  },
+}
+```
