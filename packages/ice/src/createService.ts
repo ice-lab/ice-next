@@ -57,19 +57,19 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
 
   const generatorAPI = {
     addExport: (identifierData: IdentifierData) => {
-      generator.addExport('framework', identifierData);
+      generator.addIdentifier('framework', identifierData);
     },
     addExportTypes: (identifierData: IdentifierData) => {
-      generator.addExport('frameworkTypes', identifierData);
+      generator.addIdentifier('frameworkTypes', identifierData);
     },
     addRouteTypes: (identifierData: IdentifierData) => {
-      generator.addExport('routeConfigTypes', identifierData);
+      generator.addIdentifier('routeConfigTypes', identifierData);
     },
     addRenderFile: generator.addRenderFile,
     addRenderTemplate: generator.addTemplateFiles,
     modifyRenderData: generator.modifyRenderData,
     addDataLoaderImport: (identifierData: IdentifierData) => {
-      generator.addExport('dataLoaderImport', identifierData);
+      generator.addIdentifier('dataLoaderImport', identifierData);
     },
   };
 
