@@ -65,6 +65,9 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     addRenderFile: generator.addRenderFile,
     addRenderTemplate: generator.addTemplateFiles,
     modifyRenderData: generator.modifyRenderData,
+    addDataLoaderExport: (exportData: ExportData) => {
+      generator.addExport('dataLoaderExport', exportData);
+    },
   };
 
   const serverCompileTask = new ServerCompileTask();

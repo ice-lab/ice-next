@@ -43,7 +43,7 @@ export function generateExports(exportList: ExportData[]) {
     const isDefaultImport = !Array.isArray(specifier);
     const specifiers = isDefaultImport ? [specifier] : specifier;
     const symbol = type ? ';' : ',';
-    importStatements.push(`import ${type ? 'type ' : ''}${isDefaultImport ? specifier : `{ ${specifier.join(', ')} }`} from '${source}';`);
+    importStatements.push(`import ${type ? 'type ' : ''}${isDefaultImport ? specifier : `{ ${specifiers.map(specifierStr => ((exportAlias && exportAlias[specifierStr]) ? `${specifierStr} as ${exportAlias[specifierStr]}` : specifierStr)).join(', ')} }`} from '${source}';`);
     specifiers.forEach((specifierStr) => {
       if (exportAlias && exportAlias[specifierStr]) {
         exportStatements.push(`${exportAlias[specifierStr]}: ${specifierStr}${symbol}`);
@@ -118,7 +118,7 @@ export default class Generator {
     this.rerender = false;
     this.renderTemplates = [];
     this.renderDataRegistration = [];
-    this.contentTypes = ['framework', 'frameworkTypes', 'configTypes'];
+    this.contentTypes = ['framework', 'frameworkTypes', 'configTypes', 'dataLoaderExport'];
     // empty .ice before render
     fse.emptyDirSync(path.join(rootDir, targetDir));
     // add initial templates
