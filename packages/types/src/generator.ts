@@ -1,4 +1,4 @@
-export interface ExportData {
+export interface IdentifierData {
   specifier: string | string[];
   source: string;
   type?: boolean;
@@ -21,7 +21,7 @@ export interface Registration {
 }
 
 export type SetPlugins = (plugins: any) => void;
-export type AddExport = (registerKey: string, exportData: ExportData | ExportData[]) => void;
+export type AddExport = (registerKey: string, exportData: IdentifierData | IdentifierData[]) => void;
 export type RemoveExport = (registerKey: string, removeSource: string | string[]) => void;
 export type AddContent = (apiName: string, ...args: any) => void;
 export type GetExportData = (registerKey: string, dataKeys: string[]) => {

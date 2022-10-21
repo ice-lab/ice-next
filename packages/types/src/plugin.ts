@@ -5,10 +5,10 @@ import type WebpackDevServer from 'webpack-dev-server';
 import type { BuildOptions, BuildResult } from 'esbuild';
 import type { NestedRouteManifest } from '@ice/route-manifest';
 import type { Config } from './config.js';
-import type { ExportData, AddRenderFile, AddTemplateFiles, ModifyRenderData } from './generator.js';
+import type { IdentifierData, AddRenderFile, AddTemplateFiles, ModifyRenderData } from './generator.js';
 import type { AssetsManifest } from './runtime.js';
 
-type AddExport = (exportData: ExportData) => void;
+type AddExport = (exportData: IdentifierData) => void;
 type EventName = 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir';
 
 type ServerCompilerBuildOptions = Pick<BuildOptions, 'write' |

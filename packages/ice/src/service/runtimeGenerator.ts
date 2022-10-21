@@ -18,7 +18,7 @@ import type {
   RenderDataRegistration,
   RenderTemplate,
   RenderData,
-  ExportData,
+  IdentifierData,
   Registration,
   TemplateOptions,
 } from '@ice/types/esm/generator.js';
@@ -35,7 +35,7 @@ interface Options {
   templates?: (string | TemplateOptions)[];
 }
 
-export function generateExports(exportList: ExportData[]) {
+export function generateExports(exportList: IdentifierData[]) {
   const importStatements = [];
   let exportStatements = [];
   let exportNames: string[] = [];
@@ -68,7 +68,11 @@ export function generateExports(exportList: ExportData[]) {
   };
 }
 
-export function checkExportData(currentList: ExportData[], exportData: ExportData | ExportData[], apiName: string) {
+export function checkExportData(
+  currentList: IdentifierData[],
+  exportData: IdentifierData | IdentifierData[],
+  apiName: string,
+) {
   (Array.isArray(exportData) ? exportData : [exportData]).forEach((data) => {
     const exportNames = (Array.isArray(data.specifier) ? data.specifier : [data.specifier]).map((specifierStr) => {
       return data?.exportAlias?.[specifierStr] || specifierStr;
@@ -87,7 +91,7 @@ export function checkExportData(currentList: ExportData[], exportData: ExportDat
   });
 }
 
-export function removeExportData(exportList: ExportData[], removeSource: string | string[]) {
+export function removeExportData(exportList: IdentifierData[], removeSource: string | string[]) {
   const removeSourceNames = Array.isArray(removeSource) ? removeSource : [removeSource];
   return exportList.filter(({ source }) => {
     const needRemove = removeSourceNames.includes(source);

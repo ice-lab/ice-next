@@ -5,7 +5,7 @@ import { Context } from 'build-scripts';
 import consola from 'consola';
 import type { CommandArgs, CommandName } from 'build-scripts';
 import type { AppConfig, Config, PluginData } from '@ice/types';
-import type { ExportData } from '@ice/types/esm/generator.js';
+import type { IdentifierData } from '@ice/types/esm/generator.js';
 import type { ExtendsPluginAPI } from '@ice/types/esm/plugin.js';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
 import Generator from './service/runtimeGenerator.js';
@@ -56,20 +56,20 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   });
 
   const generatorAPI = {
-    addExport: (exportData: ExportData) => {
+    addExport: (exportData: IdentifierData) => {
       generator.addExport('framework', exportData);
     },
-    addExportTypes: (exportData: ExportData) => {
+    addExportTypes: (exportData: IdentifierData) => {
       generator.addExport('frameworkTypes', exportData);
     },
-    addRouteTypes: (exportData: ExportData) => {
+    addRouteTypes: (exportData: IdentifierData) => {
       generator.addExport('routeConfigTypes', exportData);
     },
     addRenderFile: generator.addRenderFile,
     addRenderTemplate: generator.addTemplateFiles,
     modifyRenderData: generator.modifyRenderData,
-    addDataLoaderImport: (exportData: ExportData) => {
-      generator.addExport('dataLoaderImport', exportData);
+    addDataLoaderImport: (identifierData: IdentifierData) => {
+      generator.addExport('dataLoaderImport', identifierData);
     },
   };
 
