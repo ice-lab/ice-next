@@ -37,7 +37,7 @@ const plugin: Plugin = () => ({
         'Data',
         'Main',
         'history',
-        'unstable_KeepAliveOutlet',
+        'KeepAliveOutlet',
         'useMounted',
         'ClientOnly',
       ],

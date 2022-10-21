@@ -71,8 +71,7 @@ export {
   useLocation,
   history,
 
-  // eslint-disable-next-line camelcase
-  KeepAliveOutlet as unstable_KeepAliveOutlet,
+  KeepAliveOutlet,
   AppRouter,
   AppErrorBoundary,
   ClientOnly,

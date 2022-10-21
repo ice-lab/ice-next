@@ -1,4 +1,4 @@
-import { unstable_KeepAliveOutlet as KeepAliveOutlet } from 'ice';
+import { KeepAliveOutlet } from 'ice';
 
 export default function Layout() {
   return (

@@ -27,13 +27,13 @@ ice.js 提供 `<KeepAliveOutlet />` 组件，用于在路由切换时缓存被�
 
 :::caution
 
-`<KeepAliveOutlet />` 是基于 React 18 实验特性的 [`<Offscreen />`](https://github.com/reactwg/react-18/discussions/19) 组件实现的路由级别 Keep Alive 能力，可能会存在不稳定性，请谨慎使用。
+`<KeepAliveOutlet />` 目前是实验性的组件，可能会存在不稳定性。
 :::
 
 在 `src/pages/layout.tsx` 文件中引入 `<KeepAliveOutlet />` 组件后，即可缓存所有的路由组件：
 
 ```tsx title="src/pages/layout.tsx"
-import { unstable_KeepAliveOutlet as KeepAliveOutlet } from 'ice';
+import { KeepAliveOutlet } from 'ice';
 
 export default function Layout() {
   return (
