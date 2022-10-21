@@ -33,6 +33,7 @@ export type GetExportData = (registerKey: string, dataKeys: string[]) => {
 export type ParseRenderData = () => Record<string, unknown>;
 export type Render = () => void;
 export type ModifyRenderData = (registration: RenderDataRegistration) => void;
+export type AddDataLoaderImport = (identifierData: IdentifierData) => void;
 export type AddRenderFile = (templatePath: string, targetPath: string, extraData?: ExtraData) => void;
 export type AddTemplateFiles = (templateOptions: string | TemplateOptions, extraData?: ExtraData) => void;
 export type RenderFile = (templatePath: string, targetPath: string, extraData?: ExtraData) => void;

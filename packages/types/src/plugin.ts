@@ -108,6 +108,7 @@ export interface ExtendsPluginAPI {
     addRenderFile: AddRenderFile;
     addRenderTemplate: AddTemplateFiles;
     modifyRenderData: ModifyRenderData;
+    addDataLoaderImport: AddDataLoaderImport;
   };
   watch: {
     addEvent?: (watchEvent: WatchEvent) => void;
