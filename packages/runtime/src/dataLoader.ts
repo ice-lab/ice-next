@@ -89,7 +89,7 @@ async function load(id: string, loader: GetData) {
 }
 
 /**
- * transform loaders.
+ * Transform loaders.
  */
 function transformLoaders(loaders: Loaders, fetcher: Function) {
   const context = (window as any).__ICE_APP_CONTEXT__ || {};
