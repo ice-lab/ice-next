@@ -135,14 +135,15 @@ export default {
 
 ## 处理请求数据
 
-如果用户希望使用一些的中间件来处理请求的数据（`req` 对象），可以参考以下的示例代码：
+如果用户希望使用一些中间件来处理请求的数据（`req` 对象），可以参考以下的示例代码：
 
 ```ts
 import bodyParser from 'body-parser';
+import { Request, Response } from 'express';
 
 export default {
-  'POST /api/login': (req, res) => {
-    bodyParser.json({ limit: '5mb', strict: false })(req, res, async () => {
+  'POST /api/login': (req: Request, res: Response) => {
+    bodyParser.json({ limit: '5mb', strict: false })(req, res, () => {
       console.log(req.body);
 
       res.send({});
