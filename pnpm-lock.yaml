@@ -746,6 +746,7 @@ importers:
       '@ice/bundles': link:../bundles
       '@ice/route-manifest': link:../route-manifest
       '@ice/runtime': link:../runtime
+      '@ice/types': link:../types
       '@ice/webpack-config': link:../webpack-config
       address: 1.2.1
       build-scripts: 2.0.0-26
@@ -771,7 +772,6 @@ importers:
       semver: 7.3.7
       temp: 0.9.4
     devDependencies:
-      '@ice/types': link:../types
       '@types/babel__generator': 7.6.4
       '@types/babel__traverse': 7.18.2
       '@types/cross-spawn': 6.0.2
