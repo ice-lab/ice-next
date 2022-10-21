@@ -1,5 +1,5 @@
 import { expect, it, describe } from 'vitest';
-import { generateExports, checkExportData, removeExportData } from '../src/service/runtimeGenerator';
+import { generateExports, checkExportData, removeIdentifierData } from '../src/service/runtimeGenerator';
 
 describe('generateExports', () => {
   it('basic usage', () => {
@@ -68,18 +68,18 @@ describe('checkExportData', () => {
   });
 });
 
-describe('removeExportData', () => {
+describe('removeIdentifierData', () => {
   it('basic usage', () => {
-    const removed = removeExportData(defaultExportData, 'react-router');
+    const removed = removeIdentifierData(defaultExportData, 'react-router');
     expect(removed.length).toBe(1);
     expect(removed[0].source).toBe('react-helmet');
   });
   it('fail to remove', () => {
-    const removed = removeExportData(defaultExportData, ['react-dom']);
+    const removed = removeIdentifierData(defaultExportData, ['react-dom']);
     expect(removed.length).toBe(2);
   });
   it('remove exports', () => {
-    const removed = removeExportData(defaultExportData, ['react-router', 'react-helmet']);
+    const removed = removeIdentifierData(defaultExportData, ['react-router', 'react-helmet']);
     expect(removed.length).toBe(0);
   });
 });

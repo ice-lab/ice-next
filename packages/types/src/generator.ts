@@ -21,8 +21,8 @@ export interface Registration {
 }
 
 export type SetPlugins = (plugins: any) => void;
-export type AddExport = (registerKey: string, exportData: IdentifierData | IdentifierData[]) => void;
-export type RemoveExport = (registerKey: string, removeSource: string | string[]) => void;
+export type AddIdentifier = (registerKey: string, identifierData: IdentifierData | IdentifierData[]) => void;
+export type RemoveIdentifier = (registerKey: string, removeSource: string | string[]) => void;
 export type AddContent = (apiName: string, ...args: any) => void;
 export type GetExportData = (registerKey: string, dataKeys: string[]) => {
   imports?: string;

@@ -5,8 +5,8 @@ import fg from 'fast-glob';
 import ejs from 'ejs';
 import lodash from '@ice/bundles/compiled/lodash/index.js';
 import type {
-  AddExport,
-  RemoveExport,
+  AddIdentifier,
+  RemoveIdentifier,
   AddContent,
   GetExportData,
   ParseRenderData,
@@ -91,7 +91,7 @@ export function checkExportData(
   });
 }
 
-export function removeExportData(exportList: IdentifierData[], removeSource: string | string[]) {
+export function removeIdentifierData(exportList: IdentifierData[], removeSource: string | string[]) {
   const removeSourceNames = Array.isArray(removeSource) ? removeSource : [removeSource];
   return exportList.filter(({ source }) => {
     const needRemove = removeSourceNames.includes(source);
@@ -142,19 +142,19 @@ export default class Generator {
     this.render();
   }, RENDER_WAIT);
 
-  public addExport: AddExport = (registerKey, exportData) => {
+  public addIdentifier: AddIdentifier = (registerKey, exportData) => {
     const exportList = this.contentRegistration[registerKey] || [];
     checkExportData(exportList, exportData, registerKey);
     // remove export before add
-    this.removeExport(
+    this.removeIdentifier(
       registerKey,
       Array.isArray(exportData) ? exportData.map((data) => data.source) : exportData.source);
     this.addContent(registerKey, exportData);
   };
 
-  public removeExport: RemoveExport = (registerKey, removeSource) => {
+  public removeIdentifier: RemoveIdentifier = (registerKey, removeSource) => {
     const exportList = this.contentRegistration[registerKey] || [];
-    this.contentRegistration[registerKey] = removeExportData(exportList, removeSource);
+    this.contentRegistration[registerKey] = removeIdentifierData(exportList, removeSource);
   };
 
   public addContent: AddContent = (apiName, ...args) => {

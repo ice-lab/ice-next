@@ -56,14 +56,14 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   });
 
   const generatorAPI = {
-    addExport: (exportData: IdentifierData) => {
-      generator.addExport('framework', exportData);
+    addExport: (identifierData: IdentifierData) => {
+      generator.addExport('framework', identifierData);
     },
-    addExportTypes: (exportData: IdentifierData) => {
-      generator.addExport('frameworkTypes', exportData);
+    addExportTypes: (identifierData: IdentifierData) => {
+      generator.addExport('frameworkTypes', identifierData);
     },
-    addRouteTypes: (exportData: IdentifierData) => {
-      generator.addExport('routeConfigTypes', exportData);
+    addRouteTypes: (identifierData: IdentifierData) => {
+      generator.addExport('routeConfigTypes', identifierData);
     },
     addRenderFile: generator.addRenderFile,
     addRenderTemplate: generator.addTemplateFiles,
