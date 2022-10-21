@@ -37,6 +37,7 @@
     "@ice/bundles": "^0.1.0",
     "@ice/route-manifest": "^1.0.0",
     "@ice/runtime": "^1.0.0",
+    "@ice/types": "^1.0.0",
     "@ice/webpack-config": "^1.0.0",
     "address": "^1.1.2",
     "build-scripts": "^2.0.0-26",
@@ -63,7 +64,6 @@
     "temp": "^0.9.4"
   },
   "devDependencies": {
-    "@ice/types": "^1.0.0",
     "@types/babel__generator": "^7.6.4",
     "@types/babel__traverse": "^7.17.1",
     "@types/cross-spawn": "^6.0.2",
