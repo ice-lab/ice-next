@@ -4,7 +4,6 @@ import type { Options as SwcConfig, ReactConfig } from '@swc/core';
 import type { UnpluginOptions } from '@ice/bundles/compiled/unplugin/index.js';
 import lodash from '@ice/bundles/compiled/lodash/index.js';
 import type { Config } from '@ice/types';
-import consola from 'consola';
 
 const { merge } = lodash;
 const require = createRequire(import.meta.url);
@@ -138,8 +137,15 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
         let { map } = output;
         return { code, map };
       } catch (error) {
-        consola.error(error.stack);
-        return { code: null, map: null };
+        // Catch error for unhandled promise rejection.
+        if (this) {
+          // Handled by unplugin.
+          this.error(error);
+          return { code: null, map: null };
+        } else {
+          // Handled by webpack.
+          throw error;
+        }
       }
     },
   };
