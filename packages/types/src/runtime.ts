@@ -37,12 +37,14 @@ export interface AppExport {
   getAppData?: GetAppData;
 }
 
-export type GetAppData = (ctx: RequestContext) => Promise<AppData> | AppData;
+export type GetAppData = (ctx: RequestContext) => (Promise<AppData> | AppData);
+
+export type GetDataConfig = (ctx: RequestContext) => (Promise<RouteData> | RouteData) | RouteData;
 
 // app.getData & route.getData
-export type GetData = (ctx: RequestContext) => Promise<RouteData> | RouteData;
-export type GetServerData = (ctx: RequestContext) => Promise<RouteData> | RouteData;
-export type GetStaticData = (ctx: RequestContext) => Promise<RouteData> | RouteData;
+export type GetData = (ctx: RequestContext) => (Promise<RouteData> | RouteData);
+export type GetServerData = (ctx: RequestContext) => (Promise<RouteData> | RouteData);
+export type GetStaticData = (ctx: RequestContext) => (Promise<RouteData> | RouteData);
 // route.getConfig
 export type GetConfig = (args: { data?: RouteData }) => RouteConfig;
 
