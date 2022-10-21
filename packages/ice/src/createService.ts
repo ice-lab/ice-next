@@ -62,6 +62,9 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     addExportTypes: (exportData: ExportData) => {
       generator.addExport('frameworkTypes', exportData);
     },
+    addRouteTypes: (exportData: ExportData) => {
+      generator.addExport('routeConfigTypes', exportData);
+    },
     addRenderFile: generator.addRenderFile,
     addRenderTemplate: generator.addTemplateFiles,
     modifyRenderData: generator.modifyRenderData,
@@ -140,10 +143,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   // merge task config with built-in config
   taskConfigs = mergeTaskConfig(taskConfigs, {
     port: commandArgs.port,
-    alias: {
-      // Get absolute path of `regenerator-runtime`, so it's unnecessary to add it to project dependencies
-      'regenerator-runtime': require.resolve('regenerator-runtime'),
-    },
   });
 
   // Get first task config as default platform config.
