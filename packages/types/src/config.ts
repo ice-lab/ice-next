@@ -15,6 +15,7 @@ import type Server from 'webpack-dev-server';
 import type { ECMA } from 'terser';
 import type { Config as SWCCompilationConfig } from '@swc/core';
 import type { BuildOptions } from 'esbuild';
+import type { ProcessOptions } from 'postcss';
 import type { UserConfig } from './userConfig';
 
 // get type definitions from terser-webpack-plugin
@@ -32,6 +33,7 @@ interface ConfigurationCtx extends Config {
   supportedBrowsers: string[];
   hashKey: string;
   webpack: typeof webpack;
+  rootDir: string;
 }
 
 type Experimental = Configuration['experiments'];
@@ -161,6 +163,7 @@ export interface Config {
 
   cssChunkFilename?: string;
 
+  postcss?: ProcessOptions & { plugins?: (string | [string, Record<string, any>?])[] };
   enableCopyPlugin?: boolean;
 
   getAppConfig?: (exportNamse?: string[]) => Promise<any>;

@@ -3,19 +3,24 @@ import { createHash } from 'crypto';
 // FIXME when resolve mini-css-extract-plugin symbol in test
 import MiniCssExtractPlugin from '@ice/bundles/compiled/mini-css-extract-plugin/dist/index.js';
 import { sass, less, postcss } from '@ice/bundles';
-import type { ModifyWebpackConfig } from '@ice/types/esm/config';
+import type { ModifyWebpackConfig, Config } from '@ice/types/esm/config';
 import type { LoaderContext } from 'webpack';
+import lodash from '@ice/bundles/compiled/lodash/index.js';
+
+const { mergeWith, isArray } = lodash;
 
 type CSSRuleConfig = [string, string?, Record<string, any>?];
 interface Options {
   publicPath: string;
   browsers: string[];
+  postcssOptions: Config['postcss'];
+  rootDir: string;
 }
 
 const require = createRequire(import.meta.url);
 
 function configCSSRule(config: CSSRuleConfig, options: Options) {
-  const { publicPath, browsers } = options;
+  const { publicPath, browsers, rootDir } = options;
   const [style, loader, loaderOptions] = config;
   const cssLoaderOpts = {
     sourceMap: true,
@@ -39,7 +44,7 @@ function configCSSRule(config: CSSRuleConfig, options: Options) {
       },
     },
   };
-  const postcssOpts = {
+  const defaultPostcssOpts = {
     // lock postcss version
     implementation: postcss,
     postcssOptions: {
@@ -62,6 +67,16 @@ function configCSSRule(config: CSSRuleConfig, options: Options) {
       ],
     },
   };
+  // TODO: if postcss.config.js exists, set the postcssOptions.config to true
+  const postcssOpts = mergeWith(
+    defaultPostcssOpts,
+    { postcssOptions: options.postcssOptions },
+    (objValue, srcValue) => {
+      if (isArray(objValue)) {
+        return objValue.concat(srcValue);
+      }
+    },
+  );
   return {
     test: new RegExp(`\\.${style}$`),
     use: [
@@ -93,7 +108,7 @@ function configCSSRule(config: CSSRuleConfig, options: Options) {
 }
 
 const css: ModifyWebpackConfig = (config, ctx) => {
-  const { supportedBrowsers, publicPath, hashKey, cssFilename, cssChunkFilename } = ctx;
+  const { supportedBrowsers, publicPath, hashKey, cssFilename, cssChunkFilename, postcss, rootDir } = ctx;
   const cssOutputFolder = 'css';
   config.module.rules.push(...([
     ['css'],
@@ -104,7 +119,10 @@ const css: ModifyWebpackConfig = (config, ctx) => {
     ['scss', require.resolve('@ice/bundles/compiled/sass-loader'), {
       implementation: sass,
     }],
-  ] as CSSRuleConfig[]).map((config) => configCSSRule(config, { publicPath, browsers: supportedBrowsers })));
+  ] as CSSRuleConfig[]).map((config) => {
+    return configCSSRule(config, { publicPath, browsers: supportedBrowsers, postcssOptions: postcss, rootDir });
+  },
+  ));
   config.plugins.push(
     new MiniCssExtractPlugin({
       filename: cssFilename || `${cssOutputFolder}/${hashKey ? `[name]-[${hashKey}].css` : '[name].css'}`,

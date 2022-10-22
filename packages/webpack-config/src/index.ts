@@ -397,6 +397,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
   // pipe webpack by built-in functions and custom functions
   const ctx = {
     ...config,
+    rootDir,
     supportedBrowsers,
     hashKey,
     webpack,

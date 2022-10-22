@@ -1,6 +1,7 @@
 import type { DefineRouteFunction } from '@ice/route-manifest';
 import type { PluginList } from 'build-scripts';
 import type { UnpluginOptions } from 'unplugin';
+import type { ProcessOptions } from 'postcss';
 import type { Config, ModifyWebpackConfig, MinimizerOptions } from './config';
 import type { OverwritePluginAPI } from './plugin';
 
@@ -35,6 +36,7 @@ export interface UserConfig {
   proxy?: Config['proxy'];
   filename?: string;
   webpack?: ModifyWebpackConfig;
+  postcss?: ProcessOptions & { plugins?: (string | [string, Record<string, any>?])[] };
   routes?: {
     ignoreFiles?: string[];
     defineRoutes?: (defineRoute: DefineRouteFunction) => void;
