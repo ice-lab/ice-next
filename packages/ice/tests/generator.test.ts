@@ -1,9 +1,9 @@
 import { expect, it, describe } from 'vitest';
-import { generateIdentifier, checkExportData, removeIdentifierData } from '../src/service/runtimeGenerator';
+import { transformIdentifierToDeclaration, checkExportData, removeIdentifierData } from '../src/service/runtimeGenerator';
 
-describe('generateIdentifier', () => {
+describe('transformIdentifierToDeclaration', () => {
   it('basic usage', () => {
-    const { importStr, exportStr } = generateIdentifier([{
+    const { importStr, exportStr } = transformIdentifierToDeclaration([{
       source: 'react-router',
       specifier: 'Router',
       type: false,
@@ -12,7 +12,7 @@ describe('generateIdentifier', () => {
     expect(exportStr).toBe('Router,');
   });
   it('type export', () => {
-    const { importStr, exportStr } = generateIdentifier([{
+    const { importStr, exportStr } = transformIdentifierToDeclaration([{
       source: 'react-router',
       specifier: 'Router',
       type: true,
@@ -21,7 +21,7 @@ describe('generateIdentifier', () => {
     expect(exportStr).toBe('Router;');
   });
   it('named exports', () => {
-    const { importStr, exportStr } = generateIdentifier([{
+    const { importStr, exportStr } = transformIdentifierToDeclaration([{
       source: 'react-router',
       specifier: ['Switch', 'Route'],
     }]);
@@ -30,7 +30,7 @@ describe('generateIdentifier', () => {
   });
 
   it('aliased exports', () => {
-    const { importStr, exportStr } = generateIdentifier([{
+    const { importStr, exportStr } = transformIdentifierToDeclaration([{
       source: 'react-helmet',
       specifier: 'Helmet',
       alias: {

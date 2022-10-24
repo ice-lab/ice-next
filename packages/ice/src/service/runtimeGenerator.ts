@@ -8,7 +8,7 @@ import type {
   AddIdentifier,
   RemoveIdentifier,
   AddContent,
-  GetExportData,
+  GetIdentifierData,
   ParseRenderData,
   Render,
   RenderFile,
@@ -35,7 +35,7 @@ interface Options {
   templates?: (string | TemplateOptions)[];
 }
 
-export function generateIdentifier(exportList: IdentifierData[]) {
+export function transformIdentifierToDeclaration(exportList: IdentifierData[]) {
   const importStatements = [];
   let exportStatements = [];
   let exportNames: string[] = [];
@@ -173,9 +173,9 @@ export default class Generator {
     this.contentRegistration[registerKey].push(...content);
   };
 
-  private getExportData: GetExportData = (registerKey, dataKeys) => {
+  private getIdentifierData: GetIdentifierData = (registerKey, dataKeys) => {
     const exportList = this.contentRegistration[registerKey] || [];
-    const { importStr, exportStr, exportNames } = generateIdentifier(exportList);
+    const { importStr, exportStr, exportNames } = transformIdentifierToDeclaration(exportList);
     const [importStrKey, exportStrKey] = dataKeys;
     return {
       [importStrKey]: importStr,
@@ -189,7 +189,7 @@ export default class Generator {
     const globalStyles = fg.sync([getGlobalStyleGlobPattern()], { cwd: this.rootDir });
     let exportsData = {};
     this.contentTypes.forEach(item => {
-      const data = this.getExportData(item, ['imports', 'exports']);
+      const data = this.getIdentifierData(item, ['imports', 'exports']);
       exportsData = Object.assign({}, exportsData, {
         [`${item}`]: data,
       });
