@@ -166,11 +166,11 @@ function Home() {
 
 ### useData
 
-useData 返回路由组件数据，需要搭配在路由组件中定义数据获取方法进行使用。参考[页面数据请求文档](./guide/basic/request)
+useData 返回路由组件数据，需要搭配在路由组件中定义数据获取方法进行使用。参考[页面数据请求文档](./request)
 
 ### useConfig
 
-useConfig 返回路由组件配置，搭配 [defineGetConfig](./guide/basic/api#definegetconfig)。
+useConfig 返回路由组件配置，搭配 [defineGetConfig](./api#definegetconfig)。
 
 ```tsx title="src/pages/home.tsx"
 import { defineGetConfig, useConfig } from 'ice';
@@ -311,7 +311,7 @@ import type { AppConfig } from 'ice';
 
 :::caution
 
-推荐通过 [defineAppConfig](./guide/basic/api#defineappconfig) 的方式在入口定义应用类型，如果涉及到类型拓展和泛型的应用可以通过上述方式导入该类型。
+推荐通过 [defineAppConfig](./api#defineappconfig) 的方式在入口定义应用类型，如果涉及到类型拓展和泛型的应用可以通过上述方式导入该类型。
 :::
 
 ### RouteConfig
@@ -324,10 +324,10 @@ import type { RouteConfig } from 'ice';
 
 :::caution
 
-推荐通过 [defineGetConfig](./guide/basic/api#definegetconfig) 的方式在路由组件中定义类型，如果涉及到类型拓展和泛型的应用可以通过上述方式导入该类型。
+推荐通过 [defineGetConfig](./api#definegetconfig) 的方式在路由组件中定义类型，如果涉及到类型拓展和泛型的应用可以通过上述方式导入该类型。
 :::
 
 ### Document 组件
 
-`Meta`、`Title`、`Links`、`Scripts` 和 `Main` 组件仅支持在 `src/document.tsx` 中使用，使用场景参考 [Document 文档](./document)
+`Meta`、`Title`、`Links`、`Scripts` 和 `Main` 组件仅支持在 `src/document.tsx` 中使用，使用场景参考 Document 文档](./document)
 
