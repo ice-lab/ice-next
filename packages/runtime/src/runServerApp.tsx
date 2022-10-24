@@ -148,7 +148,6 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
     assetsManifest,
     runtimeModules,
     renderMode,
-    Document,
   } = renderOptions;
 
   const location = getLocation(req.url);

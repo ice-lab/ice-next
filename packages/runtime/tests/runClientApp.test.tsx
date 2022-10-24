@@ -52,6 +52,12 @@ describe('run client app', () => {
     });
   };
 
+  let staticMsg = '';
+
+  const staticRuntime = async () => {
+    staticMsg = 'static';
+  };
+
   const wrapperRuntime = async ({ addWrapper }) => {
     const RouteWrapper = ({ children }) => {
       return <div>{children}</div>;
@@ -86,6 +92,20 @@ describe('run client app', () => {
       }),
     },
   ];
+
+  it('run with static runtime', async () => {
+    await runClientApp({
+      app: {
+        getAppData: async () => {
+          return { msg: staticMsg };
+        },
+      },
+      routes: basicRoutes,
+      runtimeModules: { commons: [serverRuntime], statics: [staticRuntime] },
+      hydrate: false,
+    });
+    expect(domstring).toBe('<div>home<!-- -->static</div>');
+  });
 
   it('run client basic', async () => {
     windowSpy.mockImplementation(() => ({
