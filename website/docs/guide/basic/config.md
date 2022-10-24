@@ -84,10 +84,10 @@ console.log(process.env.TEST);
 
 #### dataLoader
 
-是否启用内置的数据预加载能力
-
 - 类型 `boolean`
 - 默认值 `true`
+
+是否启用内置的数据预加载能力。
 
 ### publicPath
 
@@ -105,8 +105,8 @@ console.log(process.env.TEST);
 
 ### hash
 
-类型：`boolean | string`
-默认值：`false`
+- 类型：`boolean | string`
+- 默认值：`false`
 
 如果希望构建后的资源带 hash 版本，可以将 hash 设置为 `true`，也可以设置为 `contenthash` 按文件内容生成 hash 值：
 
@@ -120,8 +120,8 @@ export default defineConfig({
 
 ### externals
 
-类型：`Record<string, string>`
-默认值：`{}`
+- 类型：`Record<string, string>`
+- 默认值：`{}`
 
 设置哪些模块不打包，转而通过 `<script>` 或其他方式引入，比如：
 
@@ -157,8 +157,8 @@ export default Document;
 
 ### outputDir
 
-类型：`string`
-默认值：`build`
+- 类型：`string`
+- 默认值：`build`
 
 构建产物输出目录，默认为 `build` 目录
 
@@ -298,8 +298,9 @@ export default defineConfig({
 ```
 
 其中：
-* resourceRegExp 对应文件的匹配路径
-* contextRegExp （可选）对应文件内容的匹配规则
+
+- resourceRegExp 对应文件的匹配路径
+- contextRegExp （可选）对应文件内容的匹配规则
 
 ### routes
 
@@ -405,6 +406,10 @@ export default defineConfig({
 
 ### webpack
 
+:::tip
+ice.js 对 webpack 构建配置进行了定制，并借助 esbuild 等工具提升用户开发体验，直接修改 webpack 配置的方式并不推荐。
+:::
+
 - 类型：`(config: WebpackConfig, taskConfig: TaskConfig) => WebpackConfig`
 - 默认值：`true`
 
@@ -425,5 +430,4 @@ export default defineConfig({
 });
 ```
 
-> ice.js 对 webpack 构建配置进行了定制，并借助 esbuild 等工具提升用户开发体验，直接修改 webpack 配置的方式并不推荐。
 > 如有定制需求欢迎👏 PR 或反馈：<https://github.com/alibaba/ice/issues>
