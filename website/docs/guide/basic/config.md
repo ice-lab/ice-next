@@ -224,6 +224,31 @@ export default defineConfig({
 });
 ```
 
+### postcss
+
+- 类型：`ProcessOptions & { plugins?: (string | [string, Record<string, any>?])[] };`
+- 默认值：`{}`
+
+用于添加 postcss 自定义配置。示例如下：
+
+```ts
+import { defineConfig } from '@ice/app';
+
+export default defineConfig({
+  postcss: {
+    plugins: [
+      'postcss-px-to-viewport-8-plugin',
+      {
+        // ...
+      },
+    ],
+    syntax: 'sugarss',
+  }
+});
+```
+
+如果需要完全重写 postcss 配置，可以在项目根目录下添加 `postcss.config.js` 文件并加入配置，工程上会清空内置的 postcss 配置。
+
 ### transform
 
 - 类型：`(code:string, id: string) => string | {code: string; map?: SourceMap | null;}`
