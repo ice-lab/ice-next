@@ -3,10 +3,37 @@ title: API
 order: 15
 ---
 
+### defineAppConfig
 
-## Hooks
+```ts
+import { defineAppConfig } from 'ice';
 
-### `useMounted`
+export default defineAppConfig(() => ({
+  app: {
+    rootId: 'ice-container',
+  }
+}));
+```
+
+### defineGetConfig
+
+### history
+
+### useParams
+
+### useSearchParams
+
+### useNavigate
+
+### useLocation
+
+### useAppData
+
+### useData
+
+### useConfig
+
+### useMounted
 
 该方法会在 React Hydrate 完成后返回 `true`，一般在开启 SSR/SSG 的应用中，用于控制在不同端中渲染不同的组件。
 
@@ -27,8 +54,6 @@ const Home = () => {
   return <div>{mounted ? 'Client' : 'Server'}</div>;
 };
 ```
-
-## 组件
 
 ### `<ClientOnly />`
 
@@ -72,3 +97,17 @@ export function Home () {
   );
 };
 ```
+
+### `<Link />`
+
+### `<Outlet />`
+
+### AppConfig
+
+### GetAppData
+
+### RouteConfig
+
+### Document 组件
+
+`Meta`、`Title`、`Links`、`Scripts` 和 `Main` 组件仅支持在 `src/document.tsx` 中使用，使用场景参考 [Document 文档](./document)
