@@ -40,14 +40,14 @@ export function generateExports(exportList: IdentifierData[]) {
   let exportStatements = [];
   let exportNames: string[] = [];
   exportList.forEach(data => {
-    const { specifier, source, exportAlias, type } = data;
+    const { specifier, source, alias, type } = data;
     const isDefaultImport = !Array.isArray(specifier);
     const specifiers = isDefaultImport ? [specifier] : specifier;
     const symbol = type ? ';' : ',';
-    importStatements.push(`import ${type ? 'type ' : ''}${isDefaultImport ? specifier : `{ ${specifiers.map(specifierStr => ((exportAlias && exportAlias[specifierStr]) ? `${specifierStr} as ${exportAlias[specifierStr]}` : specifierStr)).join(', ')} }`} from '${source}';`);
+    importStatements.push(`import ${type ? 'type ' : ''}${isDefaultImport ? specifier : `{ ${specifiers.map(specifierStr => ((alias && alias[specifierStr]) ? `${specifierStr} as ${alias[specifierStr]}` : specifierStr)).join(', ')} }`} from '${source}';`);
     specifiers.forEach((specifierStr) => {
-      if (exportAlias && exportAlias[specifierStr]) {
-        exportStatements.push(`${exportAlias[specifierStr]}: ${specifierStr}${symbol}`);
+      if (alias && alias[specifierStr]) {
+        exportStatements.push(`${alias[specifierStr]}: ${specifierStr}${symbol}`);
       } else {
         exportStatements.push(`${specifierStr}${symbol}`);
       }
@@ -75,15 +75,15 @@ export function checkExportData(
 ) {
   (Array.isArray(exportData) ? exportData : [exportData]).forEach((data) => {
     const exportNames = (Array.isArray(data.specifier) ? data.specifier : [data.specifier]).map((specifierStr) => {
-      return data?.exportAlias?.[specifierStr] || specifierStr;
+      return data?.alias?.[specifierStr] || specifierStr;
     });
-    currentList.forEach(({ specifier, exportAlias }) => {
+    currentList.forEach(({ specifier, alias }) => {
       // check exportName and specifier
       const currentExportNames = (Array.isArray(specifier) ? specifier : [specifier]).map((specifierStr) => {
-        return exportAlias?.[specifierStr] || specifierStr;
+        return alias?.[specifierStr] || specifierStr;
       });
       if (currentExportNames.some((name) => exportNames.includes(name))) {
-        consola.error('specifier:', specifier, 'exportAlias:', exportAlias);
+        consola.error('specifier:', specifier, 'alias:', alias);
         consola.error('duplicate with', data);
         throw new Error(`duplicate export data added by ${apiName}`);
       }

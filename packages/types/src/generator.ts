@@ -2,7 +2,7 @@ export interface IdentifierData {
   specifier: string | string[];
   source: string;
   type?: boolean;
-  exportAlias?: Record<string, string>;
+  alias?: Record<string, string>;
 }
 
 export type RenderData = Record<string, unknown>;

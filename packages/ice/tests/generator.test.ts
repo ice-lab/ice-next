@@ -33,7 +33,7 @@ describe('generateExports', () => {
     const { importStr, exportStr } = generateExports([{
       source: 'react-helmet',
       specifier: 'Helmet',
-      exportAlias: {
+      alias: {
         Helmet: 'Head',
       },
     }]);

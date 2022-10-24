@@ -42,9 +42,8 @@ const ICE_REG_EXP = /import\s?(?:type)?\s?\{([\w*\s{},]*)\}\s+from\s+['"](.*)['"
 
 export function parseRedirectData(data: IdentifierData[]): RedirectData {
   const redirectData: RedirectData = {};
-  data.forEach(({ specifier, exportAlias, type, source }) => {
+  data.forEach(({ specifier, alias = {}, type, source }) => {
     const isDefault = typeof specifier === 'string';
-    const alias = exportAlias || {};
     (isDefault ? [specifier] : specifier).forEach((str) => {
       redirectData[str] = {
         type,
