@@ -260,6 +260,10 @@ export function Home () {
 };
 ```
 
+### `<KeepAliveOutlet />`
+
+缓存所有路由组件的状态。详细使用方式参考 [Keep Alive 文档](../advanced/keep-alive/#缓存路由组件)。
+
 ### `<Link />`
 
 `<Link>` 是 React 组件，用于渲染带路由跳转功能的 `<a>` 元素。
@@ -326,3 +330,4 @@ import type { RouteConfig } from 'ice';
 ### Document 组件
 
 `Meta`、`Title`、`Links`、`Scripts` 和 `Main` 组件仅支持在 `src/document.tsx` 中使用，使用场景参考 [Document 文档](./document)
+
