@@ -35,7 +35,7 @@ interface Options {
   templates?: (string | TemplateOptions)[];
 }
 
-export function generateExports(exportList: IdentifierData[]) {
+export function generateIdentifier(exportList: IdentifierData[]) {
   const importStatements = [];
   let exportStatements = [];
   let exportNames: string[] = [];
@@ -175,7 +175,7 @@ export default class Generator {
 
   private getExportData: GetExportData = (registerKey, dataKeys) => {
     const exportList = this.contentRegistration[registerKey] || [];
-    const { importStr, exportStr, exportNames } = generateExports(exportList);
+    const { importStr, exportStr, exportNames } = generateIdentifier(exportList);
     const [importStrKey, exportStrKey] = dataKeys;
     return {
       [importStrKey]: importStr,

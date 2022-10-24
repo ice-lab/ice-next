@@ -1,9 +1,9 @@
 import { expect, it, describe } from 'vitest';
-import { generateExports, checkExportData, removeIdentifierData } from '../src/service/runtimeGenerator';
+import { generateIdentifier, checkExportData, removeIdentifierData } from '../src/service/runtimeGenerator';
 
-describe('generateExports', () => {
+describe('generateIdentifier', () => {
   it('basic usage', () => {
-    const { importStr, exportStr } = generateExports([{
+    const { importStr, exportStr } = generateIdentifier([{
       source: 'react-router',
       specifier: 'Router',
       type: false,
@@ -12,7 +12,7 @@ describe('generateExports', () => {
     expect(exportStr).toBe('Router,');
   });
   it('type export', () => {
-    const { importStr, exportStr } = generateExports([{
+    const { importStr, exportStr } = generateIdentifier([{
       source: 'react-router',
       specifier: 'Router',
       type: true,
@@ -21,7 +21,7 @@ describe('generateExports', () => {
     expect(exportStr).toBe('Router;');
   });
   it('named exports', () => {
-    const { importStr, exportStr } = generateExports([{
+    const { importStr, exportStr } = generateIdentifier([{
       source: 'react-router',
       specifier: ['Switch', 'Route'],
     }]);
@@ -30,7 +30,7 @@ describe('generateExports', () => {
   });
 
   it('aliased exports', () => {
-    const { importStr, exportStr } = generateExports([{
+    const { importStr, exportStr } = generateIdentifier([{
       source: 'react-helmet',
       specifier: 'Helmet',
       alias: {
