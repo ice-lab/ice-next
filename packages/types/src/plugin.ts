@@ -107,6 +107,7 @@ export interface ExtendsPluginAPI {
     addExportTypes: AddExport;
     addRuntimeOptions: AddExport;
     removeRuntimeOptions: RemoveExport;
+    addRouteTypes: AddExport;
     addRenderFile: AddRenderFile;
     addRenderTemplate: AddTemplateFiles;
     modifyRenderData: ModifyRenderData;

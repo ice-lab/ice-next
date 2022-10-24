@@ -68,10 +68,16 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     removeRuntimeOptions: (removeSource: string | string[]) => {
       generator.removeExport('runtimeOptions', removeSource);
     },
+    addRouteTypes: (exportData: ExportData) => {
+      generator.addExport('routeConfigTypes', exportData);
+    },
     addRenderFile: generator.addRenderFile,
     addRenderTemplate: generator.addTemplateFiles,
     modifyRenderData: generator.modifyRenderData,
     render: generator.render,
+    addDataLoaderImport: (exportData: ExportData) => {
+      generator.addExport('dataLoaderImport', exportData);
+    },
   };
 
   const serverCompileTask = new ServerCompileTask();

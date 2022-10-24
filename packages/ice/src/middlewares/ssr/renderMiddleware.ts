@@ -39,7 +39,9 @@ export default function createRenderMiddleware(options: Options): Middleware {
       let serverModule;
       try {
         delete require.cache[serverEntry];
+        console.time('a');
         serverModule = await dynamicImport(serverEntry, true);
+        console.timeEnd('a');
       } catch (err) {
         // make error clearly, notice typeof err === 'string'
         consola.error(`import ${serverEntry} error: ${err}`);
@@ -49,10 +51,13 @@ export default function createRenderMiddleware(options: Options): Middleware {
         req,
         res,
       };
-      serverModule.renderToResponse(requestContext, {
+      console.time('b');
+      const { value } = await serverModule.renderToHTML(requestContext, {
         renderMode,
         documentOnly,
       });
+      console.timeEnd('b');
+      res.send(value);
     } else {
       next();
     }
