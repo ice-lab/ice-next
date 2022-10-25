@@ -5,7 +5,7 @@ import { Context } from 'build-scripts';
 import consola from 'consola';
 import type { CommandArgs, CommandName } from 'build-scripts';
 import type { AppConfig, Config, PluginData } from '@ice/types';
-import type { IdentifierData } from '@ice/types/esm/generator.js';
+import type { DeclarationData } from '@ice/types/esm/generator.js';
 import type { ExtendsPluginAPI } from '@ice/types/esm/plugin.js';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
 import Generator from './service/runtimeGenerator.js';
@@ -56,20 +56,20 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   });
 
   const generatorAPI = {
-    addExport: (identifierData: IdentifierData) => {
-      generator.addIdentifier('framework', identifierData);
+    addExport: (declarationData: DeclarationData) => {
+      generator.addIdentifier('framework', declarationData);
     },
-    addExportTypes: (identifierData: IdentifierData) => {
-      generator.addIdentifier('frameworkTypes', identifierData);
+    addExportTypes: (declarationData: DeclarationData) => {
+      generator.addIdentifier('frameworkTypes', declarationData);
     },
-    addRouteTypes: (identifierData: IdentifierData) => {
-      generator.addIdentifier('routeConfigTypes', identifierData);
+    addRouteTypes: (declarationData: DeclarationData) => {
+      generator.addIdentifier('routeConfigTypes', declarationData);
     },
     addRenderFile: generator.addRenderFile,
     addRenderTemplate: generator.addTemplateFiles,
     modifyRenderData: generator.modifyRenderData,
-    addDataLoaderImport: (identifierData: IdentifierData) => {
-      generator.addIdentifier('dataLoaderImport', identifierData);
+    addDataLoaderImport: (declarationData: DeclarationData) => {
+      generator.addIdentifier('dataLoaderImport', declarationData);
     },
   };
 

@@ -1,4 +1,4 @@
-export interface IdentifierData {
+export interface DeclarationData {
   specifier: string | string[];
   source: string;
   type?: boolean;
@@ -21,10 +21,10 @@ export interface Registration {
 }
 
 export type SetPlugins = (plugins: any) => void;
-export type AddIdentifier = (registerKey: string, identifierData: IdentifierData | IdentifierData[]) => void;
+export type AddIdentifier = (registerKey: string, declarationData: DeclarationData | DeclarationData[]) => void;
 export type RemoveIdentifier = (registerKey: string, removeSource: string | string[]) => void;
 export type AddContent = (apiName: string, ...args: any) => void;
-export type GetIdentifierData = (registerKey: string, dataKeys: string[]) => {
+export type GetDeclarations = (registerKey: string, dataKeys: string[]) => {
   imports?: string;
   exports?: string;
   exportNames?: string[];
@@ -33,7 +33,7 @@ export type GetIdentifierData = (registerKey: string, dataKeys: string[]) => {
 export type ParseRenderData = () => Record<string, unknown>;
 export type Render = () => void;
 export type ModifyRenderData = (registration: RenderDataRegistration) => void;
-export type AddDataLoaderImport = (identifierData: IdentifierData) => void;
+export type AddDataLoaderImport = (declarationData: DeclarationData) => void;
 export type AddRenderFile = (templatePath: string, targetPath: string, extraData?: ExtraData) => void;
 export type AddTemplateFiles = (templateOptions: string | TemplateOptions, extraData?: ExtraData) => void;
 export type RenderFile = (templatePath: string, targetPath: string, extraData?: ExtraData) => void;

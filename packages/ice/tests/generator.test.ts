@@ -1,9 +1,9 @@
 import { expect, it, describe } from 'vitest';
-import { transformIdentifierToDeclaration, checkExportData, removeIdentifierData } from '../src/service/runtimeGenerator';
+import { generateDeclaration, checkExportData, removeDeclarations } from '../src/service/runtimeGenerator';
 
-describe('transformIdentifierToDeclaration', () => {
+describe('generateDeclaration', () => {
   it('basic usage', () => {
-    const { importStr, exportStr } = transformIdentifierToDeclaration([{
+    const { importStr, exportStr } = generateDeclaration([{
       source: 'react-router',
       specifier: 'Router',
       type: false,
@@ -12,7 +12,7 @@ describe('transformIdentifierToDeclaration', () => {
     expect(exportStr).toBe('Router,');
   });
   it('type export', () => {
-    const { importStr, exportStr } = transformIdentifierToDeclaration([{
+    const { importStr, exportStr } = generateDeclaration([{
       source: 'react-router',
       specifier: 'Router',
       type: true,
@@ -21,7 +21,7 @@ describe('transformIdentifierToDeclaration', () => {
     expect(exportStr).toBe('Router;');
   });
   it('named exports', () => {
-    const { importStr, exportStr } = transformIdentifierToDeclaration([{
+    const { importStr, exportStr } = generateDeclaration([{
       source: 'react-router',
       specifier: ['Switch', 'Route'],
     }]);
@@ -30,7 +30,7 @@ describe('transformIdentifierToDeclaration', () => {
   });
 
   it('aliased exports', () => {
-    const { importStr, exportStr } = transformIdentifierToDeclaration([{
+    const { importStr, exportStr } = generateDeclaration([{
       source: 'react-helmet',
       specifier: 'Helmet',
       alias: {
@@ -68,18 +68,18 @@ describe('checkExportData', () => {
   });
 });
 
-describe('removeIdentifierData', () => {
+describe('removeDeclarations', () => {
   it('basic usage', () => {
-    const removed = removeIdentifierData(defaultExportData, 'react-router');
+    const removed = removeDeclarations(defaultExportData, 'react-router');
     expect(removed.length).toBe(1);
     expect(removed[0].source).toBe('react-helmet');
   });
   it('fail to remove', () => {
-    const removed = removeIdentifierData(defaultExportData, ['react-dom']);
+    const removed = removeDeclarations(defaultExportData, ['react-dom']);
     expect(removed.length).toBe(2);
   });
   it('remove exports', () => {
-    const removed = removeIdentifierData(defaultExportData, ['react-router', 'react-helmet']);
+    const removed = removeDeclarations(defaultExportData, ['react-router', 'react-helmet']);
     expect(removed.length).toBe(0);
   });
 });

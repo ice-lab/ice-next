@@ -8,7 +8,7 @@ import type {
   AddIdentifier,
   RemoveIdentifier,
   AddContent,
-  GetIdentifierData,
+  GetDeclarations,
   ParseRenderData,
   Render,
   RenderFile,
@@ -18,7 +18,7 @@ import type {
   RenderDataRegistration,
   RenderTemplate,
   RenderData,
-  IdentifierData,
+  DeclarationData,
   Registration,
   TemplateOptions,
 } from '@ice/types/esm/generator.js';
@@ -35,27 +35,27 @@ interface Options {
   templates?: (string | TemplateOptions)[];
 }
 
-export function transformIdentifierToDeclaration(exportList: IdentifierData[]) {
-  const importStatements = [];
-  let exportStatements = [];
+export function generateDeclaration(exportList: DeclarationData[]) {
+  const importDeclarations = [];
+  let exportDeclarations = [];
   let exportNames: string[] = [];
   exportList.forEach(data => {
     const { specifier, source, alias, type } = data;
     const isDefaultImport = !Array.isArray(specifier);
     const specifiers = isDefaultImport ? [specifier] : specifier;
     const symbol = type ? ';' : ',';
-    importStatements.push(`import ${type ? 'type ' : ''}${isDefaultImport ? specifier : `{ ${specifiers.map(specifierStr => ((alias && alias[specifierStr]) ? `${specifierStr} as ${alias[specifierStr]}` : specifierStr)).join(', ')} }`} from '${source}';`);
+    importDeclarations.push(`import ${type ? 'type ' : ''}${isDefaultImport ? specifier : `{ ${specifiers.map(specifierStr => ((alias && alias[specifierStr]) ? `${specifierStr} as ${alias[specifierStr]}` : specifierStr)).join(', ')} }`} from '${source}';`);
     specifiers.forEach((specifierStr) => {
       if (alias && alias[specifierStr]) {
-        exportStatements.push(`${alias[specifierStr]}: ${specifierStr}${symbol}`);
+        exportDeclarations.push(`${alias[specifierStr]}: ${specifierStr}${symbol}`);
       } else {
-        exportStatements.push(`${specifierStr}${symbol}`);
+        exportDeclarations.push(`${specifierStr}${symbol}`);
       }
       exportNames.push(specifierStr);
     });
   });
   return {
-    importStr: importStatements.join('\n'),
+    importStr: importDeclarations.join('\n'),
     /**
      * Add two whitespace character in order to get the formatted code. For example:
      *  export {
@@ -63,14 +63,14 @@ export function transformIdentifierToDeclaration(exportList: IdentifierData[]) {
           useAuth,
         };
      */
-    exportStr: exportStatements.join('\n  '),
+    exportStr: exportDeclarations.join('\n  '),
     exportNames,
   };
 }
 
 export function checkExportData(
-  currentList: IdentifierData[],
-  exportData: IdentifierData | IdentifierData[],
+  currentList: DeclarationData[],
+  exportData: DeclarationData | DeclarationData[],
   apiName: string,
 ) {
   (Array.isArray(exportData) ? exportData : [exportData]).forEach((data) => {
@@ -91,7 +91,7 @@ export function checkExportData(
   });
 }
 
-export function removeIdentifierData(exportList: IdentifierData[], removeSource: string | string[]) {
+export function removeDeclarations(exportList: DeclarationData[], removeSource: string | string[]) {
   const removeSourceNames = Array.isArray(removeSource) ? removeSource : [removeSource];
   return exportList.filter(({ source }) => {
     const needRemove = removeSourceNames.includes(source);
@@ -154,7 +154,7 @@ export default class Generator {
 
   public removeIdentifier: RemoveIdentifier = (registerKey, removeSource) => {
     const exportList = this.contentRegistration[registerKey] || [];
-    this.contentRegistration[registerKey] = removeIdentifierData(exportList, removeSource);
+    this.contentRegistration[registerKey] = removeDeclarations(exportList, removeSource);
   };
 
   public addContent: AddContent = (apiName, ...args) => {
@@ -173,9 +173,9 @@ export default class Generator {
     this.contentRegistration[registerKey].push(...content);
   };
 
-  private getIdentifierData: GetIdentifierData = (registerKey, dataKeys) => {
+  private getDeclarations: GetDeclarations = (registerKey, dataKeys) => {
     const exportList = this.contentRegistration[registerKey] || [];
-    const { importStr, exportStr, exportNames } = transformIdentifierToDeclaration(exportList);
+    const { importStr, exportStr, exportNames } = generateDeclaration(exportList);
     const [importStrKey, exportStrKey] = dataKeys;
     return {
       [importStrKey]: importStr,
@@ -189,7 +189,7 @@ export default class Generator {
     const globalStyles = fg.sync([getGlobalStyleGlobPattern()], { cwd: this.rootDir });
     let exportsData = {};
     this.contentTypes.forEach(item => {
-      const data = this.getIdentifierData(item, ['imports', 'exports']);
+      const data = this.getDeclarations(item, ['imports', 'exports']);
       exportsData = Object.assign({}, exportsData, {
         [`${item}`]: data,
       });
