@@ -5,7 +5,7 @@ import fg from 'fast-glob';
 import ejs from 'ejs';
 import lodash from '@ice/bundles/compiled/lodash/index.js';
 import type {
-  AddIdentifier,
+  AddDeclaration,
   RemoveIdentifier,
   AddContent,
   GetDeclarations,
@@ -142,7 +142,7 @@ export default class Generator {
     this.render();
   }, RENDER_WAIT);
 
-  public addIdentifier: AddIdentifier = (registerKey, exportData) => {
+  public addDeclaration: AddDeclaration = (registerKey, exportData) => {
     const exportList = this.contentRegistration[registerKey] || [];
     checkExportData(exportList, exportData, registerKey);
     // remove export before add
