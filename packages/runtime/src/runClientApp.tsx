@@ -94,7 +94,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
     routesConfig = getRoutesConfig(matches, routesData, routeModules);
   }
 
-  if ((hydrate && !downgrade) || !documentOnly) {
+  if (hydrate && !downgrade && !documentOnly) {
     runtime.setRender((container, element) => {
       ReactDOM.hydrateRoot(container, element);
     });
