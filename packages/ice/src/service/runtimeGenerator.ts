@@ -6,7 +6,7 @@ import ejs from 'ejs';
 import lodash from '@ice/bundles/compiled/lodash/index.js';
 import type {
   AddDeclaration,
-  RemoveIdentifier,
+  RemoveDeclaration,
   AddContent,
   GetDeclarations,
   ParseRenderData,
@@ -146,13 +146,13 @@ export default class Generator {
     const exportList = this.contentRegistration[registerKey] || [];
     checkExportData(exportList, exportData, registerKey);
     // remove export before add
-    this.removeIdentifier(
+    this.removeDeclaration(
       registerKey,
       Array.isArray(exportData) ? exportData.map((data) => data.source) : exportData.source);
     this.addContent(registerKey, exportData);
   };
 
-  public removeIdentifier: RemoveIdentifier = (registerKey, removeSource) => {
+  public removeDeclaration: RemoveDeclaration = (registerKey, removeSource) => {
     const exportList = this.contentRegistration[registerKey] || [];
     this.contentRegistration[registerKey] = removeDeclarations(exportList, removeSource);
   };
