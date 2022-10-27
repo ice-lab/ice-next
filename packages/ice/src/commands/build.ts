@@ -26,7 +26,6 @@ const build = async (
   const webpackConfigs = taskConfigs.map(({ config }) => getWebpackConfig({
     config,
     rootDir,
-    // @ts-expect-error fix type error of compiled webpack
     webpack,
     runtimeTmpDir: RUNTIME_TMP_DIR,
   }));
