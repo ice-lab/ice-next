@@ -14,7 +14,8 @@
     "./matchRoutes": "./esm/matchRoutes.js",
     "./router": "./esm/router.js",
     "./single-router": "./esm/single-router.js",
-    "./types": "./esm/types.js"
+    "./types": "./esm/types.js",
+    "./package.json": "./package.json"
   },
   "files": [
     "esm",
