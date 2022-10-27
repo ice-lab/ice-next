@@ -1,7 +1,7 @@
 import React from 'react';
 import type {
   AppContext, RouteWrapperConfig,
-} from '@ice/types';
+} from '@ice/runtime';
 import { AppContextProvider, AppDataProvider, getAppData, getAppConfig, Runtime } from '@ice/runtime';
 import type { RunClientAppOptions } from '@ice/runtime';
 import App from './App.js';
