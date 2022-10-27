@@ -64,7 +64,6 @@ const getSplitChunksConfig = (rootDir: string): webpack.Configuration['optimizat
         name: 'framework',
         test(module: TestModule) {
           const resource = module.nameForCondition?.();
-          console.log('resource', resource);
           return resource ? frameworkPaths.some((pkgPath) => resource.startsWith(pkgPath)) : false;
         },
         priority: 40,
