@@ -36,7 +36,7 @@ export interface AppExport {
 
 export type GetAppData = (ctx: RequestContext) => (Promise<AppData> | AppData);
 
-export type GetDataConfig = (ctx: RequestContext) => (Promise<RouteData> | RouteData) | RouteData;
+export type DataLoader = (ctx: RequestContext) => (Promise<RouteData> | RouteData) | RouteData;
 
 // app.getData & route.getData
 export type GetData = (ctx: RequestContext) => (Promise<RouteData> | RouteData);

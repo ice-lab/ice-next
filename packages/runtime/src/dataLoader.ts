@@ -1,12 +1,12 @@
-import type { GetData, GetDataConfig } from '@ice/types';
+import type { DataLoader } from '@ice/types';
 import getRequestContext from './requestContext.js';
 
 interface Loaders {
-  [routeId: string]: GetData;
+  [routeId: string]: Array<DataLoader> | DataLoader;
 }
 
-interface LoadersConfig {
-  [routeId: string]: GetDataConfig;
+interface DataLoadersConfig {
+  [routeId: string]: Array<DataLoader> | DataLoader;
 }
 
 interface Result {
@@ -95,18 +95,28 @@ async function load(id: string, loader: GetData) {
 /**
  * Get loaders by config of loaders.
  */
-function getLoaders(loadersConfig: LoadersConfig, fetcher: Function): Loaders {
+function getLoaders(loadersConfig: DataLoadersConfig, fetcher: Function): Loaders {
   const context = (window as any).__ICE_APP_CONTEXT__ || {};
   const matchedIds = context.matchedIds || [];
+
+  function getDataLoaderByConfig(config): DataLoader {
+    // If dataLoader is an object, it is wrapped with a function.
+    return typeof config === 'function' ? config : () => {
+      return fetcher(config);
+    };
+  }
 
   const loaders: Loaders = {};
   matchedIds.forEach(id => {
     const loaderConfig = loadersConfig[id];
-    if (loaderConfig) {
-      // If getData is an object, it is wrapped with a function.
-      loaders[id] = typeof loaderConfig === 'function' ? loadersConfig[id] : () => {
-        return fetcher(loaderConfig);
-      };
+    if (!loaderConfig) return;
+
+    if (Array.isArray(loaderConfig)) {
+      loaders[id] = loaderConfig.map((config: DataLoader) => {
+        return getDataLoaderByConfig(config);
+      });
+    } else {
+      loaders[id] = getDataLoaderByConfig(loadersConfig[id]);
     }
   });
 
@@ -117,8 +127,8 @@ function getLoaders(loadersConfig: LoadersConfig, fetcher: Function): Loaders {
  * Load initial data and register global loader.
  * In order to load data, JavaScript modules, CSS and other assets in parallel.
  */
-function init(loadersConfig: LoadersConfig, fetcher: Function) {
-  const loaders = getLoaders(loadersConfig, fetcher);
+function init(loadersConfig: DataLoadersConfig, fetcher: Function) {
+  const loaders: Loaders = getLoaders(loadersConfig, fetcher);
 
   try {
     loadInitialData(loaders);
