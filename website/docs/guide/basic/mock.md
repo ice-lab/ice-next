@@ -139,7 +139,7 @@ export default {
 
 ```ts
 import bodyParser from 'body-parser';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 export default {
   'POST /api/login': (req: Request, res: Response) => {
