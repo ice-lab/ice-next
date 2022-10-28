@@ -1,12 +1,9 @@
-import type { DataLoader } from '@ice/types';
+import type { DataLoader, DataLoaderConfig } from '@ice/types';
 import getRequestContext from './requestContext.js';
 
-interface Loaders {
-  [routeId: string]: Array<DataLoader> | DataLoader;
-}
-
-interface DataLoadersConfig {
-  [routeId: string]: Array<DataLoader> | DataLoader;
+type Loaders = Array<DataLoader> | DataLoader;
+interface RouteIdToLoaders {
+  [routeId: string]: Loaders;
 }
 
 interface Result {
@@ -17,17 +14,24 @@ interface Result {
 const cache = new Map<string, Result>();
 
 /**
+ * Get cache id by route id and number.
+ */
+function getCacheId(routeId: string, number?: Number) {
+  return number ? `${routeId}-${number}` : routeId;
+}
+
+/**
  * Start getData once loader is ready, and set to cache.
  */
-function loadInitialData(loaders: Loaders) {
+function loadInitialData(routeIdToLoaders: RouteIdToLoaders) {
   const context = (window as any).__ICE_APP_CONTEXT__ || {};
   const matchedIds = context.matchedIds || [];
   const routesData = context.routesData || {};
 
-  matchedIds.forEach(id => {
-    const dataFromSSR = routesData[id];
+  matchedIds.forEach(routeId => {
+    const dataFromSSR = routesData[routeId];
     if (dataFromSSR) {
-      cache.set(id, {
+      cache.set(routeId, {
         value: dataFromSSR,
         status: 'RESOLVED',
       });
@@ -35,67 +39,82 @@ function loadInitialData(loaders: Loaders) {
       return dataFromSSR;
     }
 
-    const getData = loaders[id];
+    const requestContext = getRequestContext(window.location);
+    function runLoaderSaveCache(loader?: DataLoader, index?: Number) {
+      if (!loader) return;
+      const chacheId = getCacheId(routeId, index);
 
-    if (getData) {
-      const requestContext = getRequestContext(window.location);
-
-      const loader = getData(requestContext).then(data => {
-        cache.set(id, {
+      loader(requestContext).then(data => {
+        cache.set(chacheId, {
           value: data,
           status: 'RESOLVED',
         });
         return data;
       }).catch(err => {
-        cache.set(id, {
+        cache.set(chacheId, {
           value: err,
           status: 'REJECTED',
         });
       });
 
-      cache.set(id, {
+      cache.set(chacheId, {
         value: loader,
         status: 'PENDING',
       });
+    }
+
+    const loaders: Loaders = routeIdToLoaders[routeId];
+
+    if (Array.isArray(loaders)) {
+      loaders.forEach(runLoaderSaveCache);
+    } else {
+      runLoaderSaveCache(loaders);
     }
   });
 }
 
 /**
- * getData from cache or run it.
+ * Load data from cache or fetch it.
  */
-async function load(id: string, loader: GetData) {
-  if (!loader) {
-    return null;
+async function load(routeId: string, loaders: Loaders) {
+  const requestContext = getRequestContext(window.location);
+
+  async function runLoaderGetFromCache(loader: DataLoader, index?: Number) {
+    const cacheId = getCacheId(routeId, index);
+    const result = cache.get(cacheId);
+
+    // Get from cache first.
+    if (result) {
+      const { value, status } = result;
+
+      if (status === 'RESOLVED') {
+        return value;
+      }
+
+      if (status === 'REJECTED') {
+        throw value;
+      }
+
+      // PENDING
+      return await value;
+    } else {
+      // if no cache, call the loader
+      const requestContext = getRequestContext(window.location);
+      return await loader(requestContext);
+    }
   }
 
-  const result = cache.get(id);
-
-  // get from cache first
-  if (result) {
-    const { value, status } = result;
-
-    if (status === 'RESOLVED') {
-      return value;
-    }
-
-    if (status === 'REJECTED') {
-      throw value;
-    }
-
-    // PENDING
-    return await value;
+  if (Array.isArray(loaders)) {
+    return await Promise.all(loaders.map(runLoaderGetFromCache));
   } else {
-    // if no cache, call the loader
-    const requestContext = getRequestContext(window.location);
-    return await loader(requestContext);
+    return await runLoaderGetFromCache(loaders);
   }
 }
 
 /**
  * Get loaders by config of loaders.
  */
-function getLoaders(loadersConfig: DataLoadersConfig, fetcher: Function): Loaders {
+function getLoaders(loadersConfig: DataLoaderConfig, fetcher: Function): RouteIdToLoaders {
   const context = (window as any).__ICE_APP_CONTEXT__ || {};
   const matchedIds = context.matchedIds || [];
 
@@ -106,7 +125,7 @@ function getLoaders(loadersConfig: DataLoadersConfig, fetcher: Function): Loader
     };
   }
 
-  const loaders: Loaders = {};
+  const loaders: RouteIdToLoaders = {};
   matchedIds.forEach(id => {
     const loaderConfig = loadersConfig[id];
     if (!loaderConfig) return;
@@ -116,7 +135,7 @@ function getLoaders(loadersConfig: DataLoadersConfig, fetcher: Function): Loader
         return getDataLoaderByConfig(config);
       });
     } else {
-      loaders[id] = getDataLoaderByConfig(loadersConfig[id]);
+      loaders[id] = getDataLoaderByConfig(loaderConfig[id]);
     }
   });
 
@@ -127,18 +146,18 @@ function getLoaders(loadersConfig: DataLoadersConfig, fetcher: Function): Loader
  * Load initial data and register global loader.
  * In order to load data, JavaScript modules, CSS and other assets in parallel.
  */
-function init(loadersConfig: DataLoadersConfig, fetcher: Function) {
-  const loaders: Loaders = getLoaders(loadersConfig, fetcher);
+function init(loadersConfig: DataLoaderConfig, fetcher: Function) {
+  const routeIdToLoaders: RouteIdToLoaders = getLoaders(loadersConfig, fetcher);
 
   try {
-    loadInitialData(loaders);
+    loadInitialData(routeIdToLoaders);
   } catch (error) {
     console.error('Load initial data error: ', error);
   }
 
-  (window as any).__ICE_DATA_LOADER__ = async (id) => {
-    const loader = loaders[id];
-    return await load(id, loader);
+  (window as any).__ICE_DATA_LOADER__ = async (routeId) => {
+    const loader: Loaders = routeIdToLoaders[routeId];
+    return await load(routeId, loader);
   };
 }
 

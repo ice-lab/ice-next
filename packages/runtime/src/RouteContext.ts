@@ -19,9 +19,14 @@ function useConfig<T = {}>(): RouteConfig<T> {
 }
 const ConfigProvider = ConfigContext.Provider;
 
+function defineDataLoader(dataLoaderConfig: DataLoaderConfig): DataLoaderConfig {
+  return dataLoaderConfig;
+}
+
 export {
   useData,
   DataProvider,
   useConfig,
   ConfigProvider,
+  defineDataLoader,
 };
