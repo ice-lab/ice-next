@@ -16,6 +16,7 @@ function Home() {
         <button type="button" id="dec" onClick={() => countDispatcher.dec()}>-</button>
       </div>
       <Link to="/blog">Blog</Link>
+      <Link to="/login">Login</Link>
     </>
   );
 }
