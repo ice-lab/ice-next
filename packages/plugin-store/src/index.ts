@@ -73,7 +73,7 @@ function exportStoreProviderPlugin({ pageDir, resetPageState }: { pageDir: strin
     enforce: 'post',
     transformInclude: (id) => {
       return (
-        micromatch.isMatch(id, '**/*.{js,jsx,tsx}') &&
+        /\.[jt]sx?$/i.test(id) &&
         id.startsWith(pageDir.split(path.sep).join('/')) &&
         !micromatch.isMatch(id, ignoreStoreFilePatterns)
       );
