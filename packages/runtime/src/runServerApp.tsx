@@ -260,20 +260,21 @@ async function renderServerEntry(
       location={location}
       navigator={staticNavigator}
       static
-      AppProvider={AppProvider}
       RouteWrappers={RouteWrappers}
       AppRouter={AppRouter}
     />,
   };
 
   const element = (
-    <AppContextProvider value={appContext}>
-      <AppDataProvider value={appData}>
-        <DocumentContextProvider value={documentContext}>
-          <Document pagePath={routePath} />
-        </DocumentContextProvider>
-      </AppDataProvider>
-    </AppContextProvider>
+    <AppDataProvider value={appData}>
+      <AppProvider>
+        <AppContextProvider value={appContext}>
+          <DocumentContextProvider value={documentContext}>
+            <Document pagePath={routePath} />
+          </DocumentContextProvider>
+        </AppContextProvider>
+      </AppProvider>
+    </AppDataProvider>
   );
 
   const pipe = renderToNodeStream(element, false);

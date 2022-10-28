@@ -98,6 +98,8 @@ async function load(id: string, loader: GetData) {
 function getLoaders(loadersConfig: LoadersConfig, fetcher: Function): Loaders {
   const context = (window as any).__ICE_APP_CONTEXT__ || {};
   const matchedIds = context.matchedIds || [];
+  // Should add default id.
+  matchedIds.push('__app');
 
   const loaders: Loaders = {};
   matchedIds.forEach(id => {
