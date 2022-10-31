@@ -185,7 +185,7 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
 
   let matches = [];
   let routePath: string | undefined;
-  if (appConfig?.router?.type !== 'hash') {
+  if (!documentOnly) {
     matches = matchRoutes(routes, location, serverOnlyBasename || basename);
     if (!matches.length) {
       return render404();
