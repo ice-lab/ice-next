@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { RouteData, RouteConfig } from '@ice/types';
+import type { RouteData, RouteConfig, DataLoaderConfig } from '@ice/types';
 
 const DataContext = React.createContext<RouteData | undefined>(undefined);
 DataContext.displayName = 'Data';

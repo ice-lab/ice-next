@@ -38,6 +38,17 @@ export type GetAppData = (ctx: RequestContext) => (Promise<AppData> | AppData);
 
 export type DataLoader = (ctx: RequestContext) => (Promise<RouteData> | RouteData) | RouteData;
 
+interface StaticDataLoader {
+  key?: string;
+  prefetch_type?: string;
+  api: string;
+  v: string;
+  data: any;
+  ext_headers: Object;
+}
+
+export type DataLoaderConfig = DataLoader | StaticDataLoader | Array<DataLoader | StaticDataLoader>;
+
 // app.getData & route.getData
 export type GetData = (ctx: RequestContext) => (Promise<RouteData> | RouteData);
 export type GetServerData = (ctx: RequestContext) => (Promise<RouteData> | RouteData);
