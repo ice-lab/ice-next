@@ -40,6 +40,7 @@ const plugin: Plugin = () => ({
         'KeepAliveOutlet',
         'useMounted',
         'ClientOnly',
+        'defineDataLoader',
       ],
       source: '@ice/runtime',
     });

@@ -9,13 +9,8 @@ function defineGetConfig(getConfig: GetConfig): GetConfig {
   return getConfig;
 }
 
-function defineDataLoader(dataLoaderConfig: DataLoaderConfig): DataLoaderConfig {
-  return dataLoaderConfig;
-}
-
 export {
   defineGetConfig,
-  defineDataLoader,
   <% if (framework.exports) { -%><%- framework.exports %><% } -%>
 };
 
