@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { RouteData, RouteConfig, DataLoaderConfig } from '@ice/types';
+import type { RouteData, RouteConfig } from '@ice/types';
 
 const DataContext = React.createContext<RouteData | undefined>(undefined);
 DataContext.displayName = 'Data';
@@ -19,14 +19,9 @@ function useConfig<T = {}>(): RouteConfig<T> {
 }
 const ConfigProvider = ConfigContext.Provider;
 
-function defineDataLoader(dataLoaderConfig: DataLoaderConfig): DataLoaderConfig {
-  return dataLoaderConfig;
-}
-
 export {
   useData,
   DataProvider,
   useConfig,
   ConfigProvider,
-  defineDataLoader,
 };

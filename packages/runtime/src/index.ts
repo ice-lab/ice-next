@@ -16,6 +16,7 @@ import type {
   RouteWrapper,
   RenderMode,
   GetAppData,
+  DataLoaderConfig,
 } from '@ice/types';
 import Runtime from './runtime.js';
 import App from './App.js';
@@ -23,7 +24,7 @@ import runClientApp from './runClientApp.js';
 import type { RunClientAppOptions } from './runClientApp.js';
 import { useAppContext, AppContextProvider } from './AppContext.js';
 import { useAppData, AppDataProvider, getAppData } from './AppData.js';
-import { defineDataLoader, useData, useConfig, DataProvider, ConfigProvider } from './RouteContext.js';
+import { useData, useConfig, DataProvider, ConfigProvider } from './RouteContext.js';
 import {
   Meta,
   Title,
@@ -51,9 +52,9 @@ export {
   useAppContext,
   AppDataProvider,
   useAppData,
-  defineDataLoader,
   useData,
   getAppData,
+  DataLoaderConfig,
   DataProvider,
   ConfigProvider,
   useConfig,
