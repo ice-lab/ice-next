@@ -142,6 +142,7 @@ describe('run server app', () => {
       runtimeModules: { commons: [] },
       routes: basicRoutes,
       Document,
+      documentOnly: true,
     });
     // @ts-ignore
     expect(html?.statusCode).toBe(200);
