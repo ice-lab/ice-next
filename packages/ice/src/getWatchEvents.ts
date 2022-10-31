@@ -8,6 +8,7 @@ import type Generator from './service/runtimeGenerator';
 import getGlobalStyleGlobPattern from './utils/getGlobalStyleGlobPattern.js';
 import renderExportsTemplate from './utils/renderExportsTemplate.js';
 import { getFileExports } from './service/analyze.js';
+import showHashRouterError from './utils/showHashRouterError.js';
 
 interface Options {
   targetDir: string;
@@ -16,11 +17,13 @@ interface Options {
   cache: Map<string, string>;
   ctx: Context<Config>;
   serverCompiler: ServerCompiler;
+  getAppConfig: any;
 }
 
 const getWatchEvents = (options: Options): WatchEvent[] => {
-  const { generator, targetDir, templateDir, cache, ctx } = options;
-  const { userConfig: { routes: routesConfig, dataLoader }, configFile, rootDir } = ctx;
+  const { generator, targetDir, templateDir, cache, ctx, getAppConfig } = options;
+  const { userConfig, configFile, rootDir } = ctx;
+  const { routes: routesConfig, dataLoader } = userConfig;
   const watchRoutes: WatchEvent = [
     /src\/pages\/?[\w*-:.$]+$/,
     async (eventName: string) => {
@@ -95,15 +98,24 @@ const getWatchEvents = (options: Options): WatchEvent[] => {
         const hasExportAppData = (await getFileExports({ rootDir, file: 'src/app' })).includes('getAppData');
         if (hasExportAppData !== !!cache.get('hasExportAppData')) {
           cache.set('hasExportAppData', hasExportAppData ? 'true' : '');
-          renderExportsTemplate({
-            ...JSON.parse(cache.get('routes')),
-            hasExportAppData,
-          }, generator.renderFile, {
-            rootDir,
-            runtimeDir: targetDir,
-            templateDir: path.join(templateDir, '../exports'),
-            dataLoader,
-          });
+          renderExportsTemplate(
+            {
+              ...JSON.parse(cache.get('routes')),
+              hasExportAppData,
+            },
+            generator.renderFile,
+            {
+              rootDir,
+              runtimeDir: targetDir,
+              templateDir: path.join(templateDir, '../exports'),
+              dataLoader,
+            },
+          );
+        }
+
+        const appConfig = (await getAppConfig()).default;
+        if (appConfig?.router?.type === 'hash') {
+          showHashRouterError(userConfig);
         }
       }
     },

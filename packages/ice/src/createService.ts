@@ -28,6 +28,7 @@ import ServerCompileTask from './utils/ServerCompileTask.js';
 import { getAppExportConfig, getRouteExportConfig } from './service/config.js';
 import renderExportsTemplate from './utils/renderExportsTemplate.js';
 import { getFileExports } from './service/analyze.js';
+import showHashRouterError from './utils/showHashRouterError.js';
 
 const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -202,6 +203,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   addWatchEvent(
     ...getWatchEvents({
       generator,
+      getAppConfig,
       targetDir: RUNTIME_TMP_DIR,
       templateDir,
       cache: dataCache,
@@ -217,6 +219,9 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   } catch (err) {
     consola.warn('Failed to get app config:', err.message);
     consola.debug(err);
+  }
+  if (appConfig?.router?.type === 'hash') {
+    showHashRouterError(userConfig);
   }
 
   updateRuntimeEnv(appConfig, { disableRouter });
