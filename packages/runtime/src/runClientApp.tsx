@@ -98,7 +98,11 @@ export default async function runClientApp(options: RunClientAppOptions) {
 
   if (hydrate && !downgrade && !documentOnly) {
     runtime.setRender((container, element) => {
-      ReactDOM.hydrateRoot(container, element);
+      ReactDOM.hydrateRoot(container, element, {
+        onRecoverableError: (error) => {
+          console.error(error);
+        },
+      });
     });
   }
   // Reset app context after app context is updated.
