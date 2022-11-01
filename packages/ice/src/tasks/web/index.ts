@@ -21,8 +21,8 @@ const getWebTask = ({ rootDir, command, dataCache }): Config => {
       'regenerator-runtime': require.resolve('regenerator-runtime'),
     },
     swcOptions: {
-      // getData is built by data-loader
-      removeExportExprs: ['getData', 'getServerData', 'getStaticData'],
+      // The dataLoader is built by data-loader
+      removeExportExprs: ['dataLoader', 'getServerData', 'getStaticData'],
       keepPlatform: 'web',
       getRoutePaths: () => {
         return getRoutePathsFromCache(dataCache);

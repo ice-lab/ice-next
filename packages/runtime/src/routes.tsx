@@ -180,7 +180,7 @@ export function filterMatchesToLoad(prevMatches: RouteMatch[], currentMatches: R
       // splat param changed, which is not present in match.path
       // e.g. /files/images/avatar.jpg -> files/finances.xls
       (prevMatches[index].route.path?.endsWith('*') &&
-      prevMatches[index].params['*'] !== match.params['*'])
+        prevMatches[index].params['*'] !== match.params['*'])
     );
   };
 

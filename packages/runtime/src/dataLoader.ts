@@ -21,7 +21,7 @@ function getCacheId(routeId: string, number?: Number) {
 }
 
 /**
- * Start getData once loader is ready, and set to cache.
+ * Start get data once loader is ready, and set to cache.
  */
 function loadInitialData(routeIdToLoaders: RouteIdToLoaders) {
   const context = (window as any).__ICE_APP_CONTEXT__ || {};
