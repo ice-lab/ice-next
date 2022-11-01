@@ -39,29 +39,29 @@ async function render(
   const appContext = runtime.getAppContext();
   const { appConfig } = appContext;
   const render = runtime.getRender();
-  const AppProvider = runtime.composeAppProvider() || React.Fragment;
+  const AppRuntimeProvider = runtime.composeAppProvider() || React.Fragment;
   const RouteWrappers = runtime.getWrappers();
 
   // TODO:支持设置 rootId (在 miniapp-runtime 中修改)
   render(
     document.getElementById(appConfig.app.rootId || 'app'),
-    <BrowserEntry
-      appContext={appContext}
-      AppProvider={AppProvider}
-      RouteWrappers={RouteWrappers}
-    />,
+    <AppRuntimeProvider>
+      <BrowserEntry
+        appContext={appContext}
+        RouteWrappers={RouteWrappers}
+      />
+    </AppRuntimeProvider>,
   );
 }
 
 interface BrowserEntryProps {
   appContext: AppContext;
-  AppProvider: React.ComponentType<any>;
+  // TODO: miniapp-runtime needs it?
   RouteWrappers: RouteWrapperConfig[];
 }
 
 function BrowserEntry({
   appContext,
-  ...rest
 }: BrowserEntryProps) {
   const {
     appData,
@@ -70,9 +70,7 @@ function BrowserEntry({
   return (
     <AppContextProvider value={appContext}>
       <AppDataProvider value={appData}>
-        <App
-          {...rest}
-        />
+        <App />
       </AppDataProvider>
     </AppContextProvider>
   );
