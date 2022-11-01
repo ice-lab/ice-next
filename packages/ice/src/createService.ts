@@ -63,6 +63,12 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     addExportTypes: (declarationData: DeclarationData) => {
       generator.addDeclaration('frameworkTypes', declarationData);
     },
+    addRuntimeOptions: (declarationData: DeclarationData) => {
+      generator.addDeclaration('runtimeOptions', declarationData);
+    },
+    removeRuntimeOptions: (removeSource: string | string[]) => {
+      generator.removeDeclaration('runtimeOptions', removeSource);
+    },
     addRouteTypes: (declarationData: DeclarationData) => {
       generator.addDeclaration('routeConfigTypes', declarationData);
     },
@@ -72,6 +78,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     addDataLoaderImport: (declarationData: DeclarationData) => {
       generator.addDeclaration('dataLoaderImport', declarationData);
     },
+    render: generator.render,
   };
 
   const serverCompileTask = new ServerCompileTask();
