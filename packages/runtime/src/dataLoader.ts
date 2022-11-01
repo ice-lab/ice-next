@@ -117,7 +117,7 @@ function getLoaders(loadersConfig: DataLoaderConfig, fetcher: Function): RouteId
   const context = (window as any).__ICE_APP_CONTEXT__ || {};
   const matchedIds = context.matchedIds || [];
 
-  function getDataLoaderByConfig(config): DataLoader {
+  function getDataLoaderByConfig(config: DataLoader): DataLoader {
     // If dataLoader is an object, it is wrapped with a function.
     return typeof config === 'function' ? config : () => {
       return fetcher(config);
@@ -134,7 +134,7 @@ function getLoaders(loadersConfig: DataLoaderConfig, fetcher: Function): RouteId
         return getDataLoaderByConfig(config);
       });
     } else {
-      loaders[id] = getDataLoaderByConfig(loaderConfig[id]);
+      loaders[id] = getDataLoaderByConfig(loaderConfig);
     }
   });
 
