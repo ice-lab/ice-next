@@ -132,7 +132,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
 
   // get userConfig after setup because of userConfig maybe modified by plugins
   const { userConfig } = ctx;
-  const { routes: routesConfig, server, syntaxFeatures } = userConfig;
+  const { routes: routesConfig, server, syntaxFeatures, polyfill } = userConfig;
 
   await setEnv(rootDir, commandArgs);
   const coreEnvKeys = getCoreEnvKeys();
@@ -169,6 +169,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
     basename: platformTaskConfig.config.basename || '/',
     memoryRouter: platformTaskConfig.config.memoryRouter,
     hydrate: !csr,
+    importCoreJs: polyfill === 'entry',
   });
   dataCache.set('routes', JSON.stringify(routesInfo));
   dataCache.set('hasExportAppData', hasExportAppData ? 'true' : '');

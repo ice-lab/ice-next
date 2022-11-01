@@ -67,6 +67,8 @@ export function createServerCompiler(options: Options) {
     const transformPlugins = getCompilerPlugins({
       ...task.config,
       fastRefresh: false,
+      env: false,
+      polyfill: false,
       swcOptions,
     }, 'esbuild');
 

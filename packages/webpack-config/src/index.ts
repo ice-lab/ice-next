@@ -95,13 +95,18 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     optimization = {},
     performance,
     enableCopyPlugin,
+    polyfill,
   } = config;
   const absoluteOutputDir = path.isAbsolute(outputDir) ? outputDir : path.join(rootDir, outputDir);
   const dev = mode !== 'production';
   const supportedBrowsers = getSupportedBrowsers(rootDir, dev);
   const hashKey = hash === true ? 'hash:8' : (hash || '');
   // formate alias
-  const aliasWithRoot = {};
+  const aliasWithRoot = {
+    // Lock package path of @swc/helpers and core-js.
+    '@swc/helpers': path.join(require.resolve('@swc/helpers/package.json'), '../'),
+    'core-js': path.join(require.resolve('core-js/package.json'), '../'),
+  };
   Object.keys(alias).forEach((key) => {
     const aliasValue = alias[key];
     aliasWithRoot[key] = (aliasValue && typeof aliasValue === 'string' && aliasValue.startsWith('.')) ? path.join(rootDir, aliasValue) : aliasValue;
@@ -165,6 +170,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     compileIncludes,
     compileExcludes,
     swcOptions,
+    polyfill,
+    env: true,
   });
   const webpackConfig: Configuration = {
     mode,
