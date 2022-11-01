@@ -250,7 +250,7 @@ async function renderServerEntry(
   const appContext = runtime.getAppContext();
   const { appData, routePath } = appContext;
   const staticNavigator = createStaticNavigator();
-  const AppProvider = runtime.composeAppProvider() || React.Fragment;
+  const AppRuntimeProvider = runtime.composeAppProvider() || React.Fragment;
   const RouteWrappers = runtime.getWrappers();
   const AppRouter = runtime.getAppRouter();
 
@@ -267,13 +267,13 @@ async function renderServerEntry(
 
   const element = (
     <AppDataProvider value={appData}>
-      <AppProvider>
+      <AppRuntimeProvider>
         <AppContextProvider value={appContext}>
           <DocumentContextProvider value={documentContext}>
             <Document pagePath={routePath} />
           </DocumentContextProvider>
         </AppContextProvider>
-      </AppProvider>
+      </AppRuntimeProvider>
     </AppDataProvider>
   );
 

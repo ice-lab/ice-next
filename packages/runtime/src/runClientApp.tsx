@@ -118,7 +118,7 @@ async function render({ history, runtime }: RenderOptions) {
   const appContext = runtime.getAppContext();
   const { appConfig, appData } = appContext;
   const render = runtime.getRender();
-  const AppProvider = runtime.composeAppProvider() || React.Fragment;
+  const AppRuntimeProvider = runtime.composeAppProvider() || React.Fragment;
   const RouteWrappers = runtime.getWrappers();
   const AppRouter = runtime.getAppRouter();
 
@@ -134,14 +134,14 @@ async function render({ history, runtime }: RenderOptions) {
   render(
     root,
     <AppDataProvider value={appData}>
-      <AppProvider>
+      <AppRuntimeProvider>
         <BrowserEntry
           history={history}
           appContext={appContext}
           RouteWrappers={RouteWrappers}
           AppRouter={AppRouter}
         />
-      </AppProvider>
+      </AppRuntimeProvider>
     </AppDataProvider>,
   );
 }
