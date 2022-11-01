@@ -8,7 +8,7 @@ import { dataLoader } from '@ice/runtime';
 
 <% if(!dataLoaderImport.imports) {-%>
 let fetcher = (options) => {
-  return window.fetch(options.url, options);
+  return window.fetch(options.key, options);
 }  
 <% } -%>
 

@@ -76,10 +76,9 @@ function loadInitialData(routeIdToLoaders: RouteIdToLoaders) {
 /**
  * Load data from cache or fetch it.
  */
-async function load(routeId: string, loaders: Loaders) {
-  const requestContext = getRequestContext(window.location);
-
-  async function runLoaderGetFromCache(loader: DataLoader, index?: Number) {
+async function load(routeId: string, loaders?: Loaders) {
+  async function runLoaderGetFromCache(loader?: DataLoader, index?: Number) {
+    if (!loader) return;
     const cacheId = getCacheId(routeId, index);
     const result = cache.get(cacheId);
 
@@ -98,7 +97,7 @@ async function load(routeId: string, loaders: Loaders) {
       // PENDING
       return await value;
     } else {
-      // if no cache, call the loader
+      // If no cache, call the loader.
       const requestContext = getRequestContext(window.location);
       return await loader(requestContext);
     }
