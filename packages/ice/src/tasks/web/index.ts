@@ -17,7 +17,8 @@ const getWebTask = ({ rootDir, command, dataCache }): Config => {
       '@': path.join(rootDir, 'src'),
       // set alias for webpack/hot while webpack has been prepacked
       'webpack/hot': '@ice/bundles/compiled/webpack/hot',
-      // Get absolute path of `regenerator-runtime`, `@swc/helpers`, `core-js` so it's unnecessary to add it to project dependencies
+      // Get absolute path of `regenerator-runtime`, `@swc/helpers`, `core-js`
+      // so it's unnecessary to add it to project dependencies.
       'regenerator-runtime': require.resolve('regenerator-runtime'),
       '@swc/helpers': path.dirname(
         require.resolve('@swc/helpers/package.json'),
