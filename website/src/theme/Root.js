@@ -39,12 +39,12 @@ function Root({ children }) {
       {noticeVisible && (
         <div className={styles.wrapper}>
           <div className={styles.container}>
-            <p className={styles.content}>检测到您是内网用户，建议前往内部官网 ice.alibaba-inc.com 以获取更多信息？</p>
+            <p className={styles.content}>检测到您是内网用户，建议前往内部官网 ice3.alibaba-inc.com 以获取更多信息？</p>
             <div className={styles.action}>
               <div
                 className={clsx(styles.btn, styles.primaryBtn)}
                 onClick={() => {
-                  location.href = 'https://ice.alibaba-inc.com';
+                  location.href = 'https://ice3.alibaba-inc.com';
                 }}
               >
                 去内部官网（推荐）
