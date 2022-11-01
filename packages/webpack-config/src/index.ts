@@ -102,11 +102,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
   const supportedBrowsers = getSupportedBrowsers(rootDir, dev);
   const hashKey = hash === true ? 'hash:8' : (hash || '');
   // formate alias
-  const aliasWithRoot = {
-    // Lock package path of @swc/helpers and core-js.
-    '@swc/helpers': path.join(require.resolve('@swc/helpers/package.json'), '../'),
-    'core-js': path.join(require.resolve('core-js/package.json'), '../'),
-  };
+  const aliasWithRoot = {};
   Object.keys(alias).forEach((key) => {
     const aliasValue = alias[key];
     aliasWithRoot[key] = (aliasValue && typeof aliasValue === 'string' && aliasValue.startsWith('.')) ? path.join(rootDir, aliasValue) : aliasValue;
