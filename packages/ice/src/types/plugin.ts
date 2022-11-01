@@ -122,6 +122,7 @@ export interface ExtendsPluginAPI {
     get: () => ReturnType<ServerCompiler>;
   };
   dataCache: Map<string, string>;
+  getRouteManifest: () => Record<string, any>;
 }
 
 export interface OverwritePluginAPI extends ExtendsPluginAPI {
