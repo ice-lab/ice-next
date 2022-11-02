@@ -182,21 +182,21 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
       console.error('Error: get app data error when SSR.', err);
     }
   }
-
-  let matches = [];
-  let routePath: string | undefined;
-  if (!documentOnly) {
-    matches = matchRoutes(routes, location, serverOnlyBasename || basename);
-    if (!matches.length) {
-      return render404();
-    }
-    routePath = getCurrentRoutePath(matches);
+  // HashRouter loads route modules by the CSR.
+  if (appConfig?.router?.type === 'hash') {
+    return renderDocument({ matches: [], renderOptions });
   }
+
+  const matches = matchRoutes(routes, location, serverOnlyBasename || basename);
+  if (!matches.length) {
+    return render404();
+  }
+
+  const routePath = getCurrentRoutePath(matches);
 
   if (documentOnly) {
     return renderDocument({ matches, routePath, renderOptions });
   }
-
   try {
     const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
     const routesData = await loadRoutesData(matches, requestContext, routeModules, renderMode);
