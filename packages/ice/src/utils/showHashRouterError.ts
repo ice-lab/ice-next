@@ -1,5 +1,5 @@
 import consola from 'consola';
-import type { UserConfig } from '@ice/types';
+import type { UserConfig } from '../types/userConfig';
 
 export default function showHashRouterError(userConfig: UserConfig) {
   if (userConfig.ssr || userConfig.ssg) {
