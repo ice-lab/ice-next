@@ -1,4 +1,4 @@
-import type { DataLoader, DataLoaderConfig } from '@ice/types';
+import type { DataLoader, DataLoaderConfig } from './types.js';
 import getRequestContext from './requestContext.js';
 
 type Loaders = Array<DataLoader> | DataLoader;
@@ -114,9 +114,6 @@ async function load(routeId: string, loaders?: Loaders) {
  * Get loaders by config of loaders.
  */
 function getLoaders(loadersConfig: DataLoaderConfig, fetcher: Function): RouteIdToLoaders {
-  const context = (window as any).__ICE_APP_CONTEXT__ || {};
-  const matchedIds = context.matchedIds || [];
-
   function getDataLoaderByConfig(config: DataLoader): DataLoader {
     // If dataLoader is an object, it is wrapped with a function.
     return typeof config === 'function' ? config : () => {
@@ -125,10 +122,12 @@ function getLoaders(loadersConfig: DataLoaderConfig, fetcher: Function): RouteId
   }
 
   const loaders: RouteIdToLoaders = {};
-  matchedIds.forEach(id => {
+
+  Object.keys(loadersConfig).forEach(id => {
     const loaderConfig = loadersConfig[id];
     if (!loaderConfig) return;
 
+    // If getData is an object, it is wrapped with a function.
     if (Array.isArray(loaderConfig)) {
       loaders[id] = loaderConfig.map((config: DataLoader) => {
         return getDataLoaderByConfig(config);

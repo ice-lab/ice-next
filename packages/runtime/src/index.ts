@@ -17,7 +17,8 @@ import type {
   RenderMode,
   GetAppData,
   DataLoaderConfig,
-} from '@ice/types';
+  RouteWrapperConfig,
+} from './types.js';
 import Runtime from './runtime.js';
 import App from './App.js';
 import runClientApp from './runClientApp.js';
@@ -85,6 +86,7 @@ export type {
   AppContext,
   AppConfig,
   RouteConfig,
+  RouteWrapperConfig,
   RouteItem,
   ServerContext,
   AppProvider,
