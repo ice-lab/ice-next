@@ -2,6 +2,7 @@ import * as path from 'path';
 import consola from 'consola';
 import type { Context } from 'build-scripts';
 import type { Config } from '@ice/webpack-config/esm/types';
+import type { AppConfig } from '@ice/runtime';
 import type { ServerCompiler, WatchEvent } from './types/plugin.js';
 import { generateRoutesInfo } from './routes.js';
 import type Generator from './service/runtimeGenerator';
@@ -17,7 +18,7 @@ interface Options {
   cache: Map<string, string>;
   ctx: Context<Config>;
   serverCompiler: ServerCompiler;
-  getAppConfig: any;
+  getAppConfig: () => Promise<{ default: AppConfig }>;
 }
 
 const getWatchEvents = (options: Options): WatchEvent[] => {
