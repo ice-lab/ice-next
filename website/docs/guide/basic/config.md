@@ -247,7 +247,42 @@ export default defineConfig({
 });
 ```
 
-如果需要完全重写 postcss 配置，可以在项目根目录下添加 `postcss.config.js` 文件并加入配置，工程上会清空内置的 postcss 配置。
+ice.js 内置的 postcss 配置是：
+
+```json
+{
+  "plugins": [
+    ["postcss-nested"],
+    ["postcss-preset-env", {
+      "stage": 3,
+      "autoprefixer": {
+        "flexbox": "no-2009",
+      },
+      "features": {
+        "custom-properties": false,
+      },
+      browsers,
+    }],
+    ["postcss-plugin-rpx2vw"],
+  ],
+}
+```
+
+如果需要完全重写 postcss 配置或修改内置的 postcss 配置，需要在项目根目录下新增 `postcss.config.js` 文件并加入配置，工程上会清空内置的 postcss 配置。
+
+```js title="postcss.config.js"
+module.exports = {
+  plugins: [
+    [
+      'postcss-preset-env',
+      // 修改 postcss-preset-env 的选项
+      {
+        stage: 2,
+      }
+    ]
+  ],
+}
+```
 
 ### transform
 
