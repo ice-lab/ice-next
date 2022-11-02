@@ -97,7 +97,7 @@ const plugin: Plugin = () => ({
         // only ssg need to generate the whole page html when build time.
         documentOnly: !ssg,
         renderMode,
-        routeType: appConfig.router.type,
+        routeType: appConfig?.router?.type,
       });
     });
 
