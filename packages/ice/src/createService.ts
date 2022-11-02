@@ -4,10 +4,11 @@ import { createRequire } from 'module';
 import { Context } from 'build-scripts';
 import consola from 'consola';
 import type { CommandArgs, CommandName } from 'build-scripts';
-import type { AppConfig, Config, PluginData } from '@ice/types';
-import type { ExportData } from '@ice/types/esm/generator.js';
-import type { ExtendsPluginAPI } from '@ice/types/esm/plugin.js';
+import type { Config } from '@ice/webpack-config/esm/types';
+import type { AppConfig } from '@ice/runtime/esm/types';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
+import type { DeclarationData } from './types/generator.js';
+import type { PluginData, ExtendsPluginAPI } from './types/plugin.js';
 import Generator from './service/runtimeGenerator.js';
 import { createServerCompiler } from './service/serverCompiler.js';
 import createWatch from './service/watchSource.js';
@@ -56,21 +57,28 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   });
 
   const generatorAPI = {
-    addExport: (exportData: ExportData) => {
-      generator.addExport('framework', exportData);
+    addExport: (declarationData: DeclarationData) => {
+      generator.addDeclaration('framework', declarationData);
     },
-    addExportTypes: (exportData: ExportData) => {
-      generator.addExport('frameworkTypes', exportData);
+    addExportTypes: (declarationData: DeclarationData) => {
+      generator.addDeclaration('frameworkTypes', declarationData);
     },
-    addRouteTypes: (exportData: ExportData) => {
-      generator.addExport('routeConfigTypes', exportData);
+    addRuntimeOptions: (declarationData: DeclarationData) => {
+      generator.addDeclaration('runtimeOptions', declarationData);
+    },
+    removeRuntimeOptions: (removeSource: string | string[]) => {
+      generator.removeDeclaration('runtimeOptions', removeSource);
+    },
+    addRouteTypes: (declarationData: DeclarationData) => {
+      generator.addDeclaration('routeConfigTypes', declarationData);
     },
     addRenderFile: generator.addRenderFile,
     addRenderTemplate: generator.addTemplateFiles,
     modifyRenderData: generator.modifyRenderData,
-    addDataLoaderImport: (exportData: ExportData) => {
-      generator.addExport('dataLoaderImport', exportData);
+    addDataLoaderImport: (declarationData: DeclarationData) => {
+      generator.addDeclaration('dataLoaderImport', declarationData);
     },
+    render: generator.render,
   };
 
   const serverCompileTask = new ServerCompileTask();
@@ -89,7 +97,6 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
         removeEvent: removeWatchEvent,
       },
       context: {
-        // @ts-expect-error repack type can not match with original type
         webpack,
       },
       serverCompileTask,

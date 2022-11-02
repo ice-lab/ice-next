@@ -82,7 +82,7 @@ export interface AppContext {
 
 export type WindowContext = Pick<
   AppContext,
-  'appData' | 'routesData' | 'routesConfig' | 'routePath' | 'downgrade' | 'matchedIds'
+  'appData' | 'routesData' | 'routesConfig' | 'routePath' | 'downgrade' | 'matchedIds' | 'documentOnly'
 >;
 
 export type Renderer = (
@@ -173,7 +173,8 @@ export interface RuntimeAPI {
 
 export interface RuntimePlugin {
   (
-    apis: RuntimeAPI
+    apis: RuntimeAPI,
+    runtimeOptions?: Record<string, any>,
   ): Promise<void> | void;
 }
 
@@ -181,7 +182,10 @@ export interface CommonJsRuntime {
   default: RuntimePlugin;
 }
 
-export type RuntimeModules = (RuntimePlugin | CommonJsRuntime)[];
+export interface RuntimeModules {
+  statics?: (RuntimePlugin | CommonJsRuntime)[];
+  commons?: (RuntimePlugin | CommonJsRuntime)[];
+}
 
 export interface AppRouterProps {
   action: Action;

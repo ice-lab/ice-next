@@ -1,9 +1,9 @@
-import type { Plugin } from '@ice/types';
+import type { Plugin } from '@ice/app/esm/types';
 import type { Request, Interceptors, InterceptorRequest, InterceptorResponse } from './types';
 
 // @ts-ignore
 // eslint-disable-next-line
-interface PluginRequestOptions {}
+interface PluginRequestOptions { }
 
 const PLUGIN_NAME = '@ice/plugin-request';
 
@@ -25,6 +25,7 @@ const plugin: Plugin<PluginRequestOptions | void> = () => ({
     });
   },
   runtime: `${PLUGIN_NAME}/esm/runtime`,
+  staticRuntime: true,
 });
 
 export type {

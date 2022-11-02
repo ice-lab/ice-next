@@ -5,9 +5,10 @@ import * as fs from 'fs';
 // FIXME when resolve mini-css-extract-plugin symbol in test
 import MiniCssExtractPlugin from '@ice/bundles/compiled/mini-css-extract-plugin/dist/index.js';
 import { sass, less, postcss } from '@ice/bundles';
-import type { ModifyWebpackConfig, Config } from '@ice/types/esm/config';
-import type { LoaderContext } from 'webpack';
+import type webpack from 'webpack';
+import type { LoaderContext, Configuration } from 'webpack';
 import lodash from '@ice/bundles/compiled/lodash/index.js';
+import type { ModifyWebpackConfig, Config } from '../types.js';
 
 const { mergeWith, isArray } = lodash;
 
@@ -77,7 +78,7 @@ function configCSSRule(config: CSSRuleConfig, options: Options) {
   };
 }
 
-const css: ModifyWebpackConfig = (config, ctx) => {
+const css: ModifyWebpackConfig<Configuration, typeof webpack> = (config, ctx) => {
   const { supportedBrowsers, publicPath, hashKey, cssFilename, cssChunkFilename, postcss, rootDir } = ctx;
   const cssOutputFolder = 'css';
   config.module.rules.push(...([
