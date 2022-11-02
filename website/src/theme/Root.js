@@ -23,12 +23,16 @@ function Root({ children }) {
   const [noticeVisible, setNoticeVisible] = useState(false);
 
   useEffect(() => {
-    if (/alibaba-inc\.com/.test(window.location.href) || storage.get(NO_REDIRECT_KEY) === 'TRUE') {
-      // Ignore op.
-    } else {
-      isIntranet().then(() => {
-        setNoticeVisible(true);
-      });
+    if (
+      // In case of redirect for internal site.
+      !/alibaba-inc\.com/.test(window.location.href) &&
+      // If ignored by user, then skip.
+      storage.get(NO_REDIRECT_KEY) !== 'TRUE'
+    ) {
+      isIntranet()
+        .then(() => {
+          setNoticeVisible(true);
+        });
     }
   }, []);
 
