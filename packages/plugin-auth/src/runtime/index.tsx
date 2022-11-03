@@ -11,6 +11,7 @@ const runtime: RuntimePlugin = async ({ appContext, useConfig, addProvider, addW
   const authConfig: AuthConfig = (typeof appExport.auth === 'function'
     ? (await appExport.auth(appData)) : appExport.auth) || {};
   const initialAuth = authConfig.initialAuth || {};
+
   const AuthProviderWrapper: AppProvider = ({ children }) => {
     const [state, setState] = React.useState<AuthType>(initialAuth);
 
@@ -22,6 +23,7 @@ const runtime: RuntimePlugin = async ({ appContext, useConfig, addProvider, addW
     };
     return <AuthProvider value={[state, updateState]}>{children}</AuthProvider>;
   };
+  addProvider(AuthProviderWrapper);
 
   const AuthRouteWrapper: RouteWrapper = ({ children }) => {
     const [auth] = useAuth();
@@ -49,9 +51,6 @@ const runtime: RuntimePlugin = async ({ appContext, useConfig, addProvider, addW
 
     return <>{children}</>;
   };
-
-  addProvider(AuthProviderWrapper);
-
   addWrapper(AuthRouteWrapper);
 };
 
