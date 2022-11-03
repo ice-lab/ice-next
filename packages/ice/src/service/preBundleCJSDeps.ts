@@ -8,11 +8,15 @@ import { resolve as resolveExports } from 'resolve.exports';
 import moduleLexer from '@ice/bundles/compiled/es-module-lexer/index.js';
 import type { Config } from '@ice/webpack-config/esm/types';
 import type { TaskConfig } from 'build-scripts';
+import { getCSSModuleLocalIdent } from '@ice/webpack-config';
 import flattenId from '../utils/flattenId.js';
 import formatPath from '../utils/formatPath.js';
 import { BUILDIN_CJS_DEPS, BUILDIN_ESM_DEPS } from '../constant.js';
 import type { DepScanData } from '../esbuild/scan.js';
 import aliasPlugin from '../esbuild/alias.js';
+import emptyCSSPlugin from '../esbuild/emptyCSS.js';
+import cssModulesPlugin from '../esbuild/cssModules.js';
+import escapeLocalIdent from '../utils/escapeLocalIdent.js';
 
 interface DepInfo {
   file: string;
@@ -91,7 +95,15 @@ export default async function preBundleCJSDeps(options: PreBundleDepsOptions): P
       loader: { '.js': 'jsx' },
       ignoreAnnotations: true,
       plugins: [
+        emptyCSSPlugin(),
         aliasPlugin({ alias, format: 'cjs', externalDependencies: false }),
+        cssModulesPlugin({
+          extract: false,
+          generateLocalIdentName: function (name: string, filename: string) {
+            // Compatible with webpack css-loader.
+            return escapeLocalIdent(getCSSModuleLocalIdent(filename, name));
+          },
+        }),
         ...plugins,
       ],
       external: [...BUILDIN_CJS_DEPS, ...BUILDIN_ESM_DEPS],

@@ -1,11 +1,11 @@
 import { createRequire } from 'module';
-import { createHash } from 'crypto';
 // FIXME when resolve mini-css-extract-plugin symbol in test
 import MiniCssExtractPlugin from '@ice/bundles/compiled/mini-css-extract-plugin/dist/index.js';
 import { sass, less, postcss } from '@ice/bundles';
 import type webpack from 'webpack';
 import type { LoaderContext, Configuration } from 'webpack';
 import type { ModifyWebpackConfig } from '../types.js';
+import { getCSSModuleLocalIdent } from '../utils/getCSSModuleLocalIdent.js';
 
 type CSSRuleConfig = [string, string?, Record<string, any>?];
 interface Options {
@@ -26,17 +26,7 @@ function configCSSRule(config: CSSRuleConfig, options: Options) {
     modules: {
       auto: (resourcePath: string) => resourcePath.endsWith(`.module.${style}`),
       getLocalIdent: (context: LoaderContext<any>, localIdentName: string, localName: string) => {
-        const hash = createHash('md4');
-        hash.update(Buffer.from(context.resourcePath + localName, 'utf8'));
-        const localIdentHash = hash.digest('base64')
-          // Remove all leading digits
-          .replace(/^\d+/, '')
-          // Replace all slashes with underscores (same as in base64url)
-          .replace(/\//g, '_')
-          // Remove everything that is not an alphanumeric or underscore
-          .replace(/[^A-Za-z0-9_]+/g, '')
-          .slice(0, 8);
-        return `${localName}--${localIdentHash}`;
+        return getCSSModuleLocalIdent(context.resourcePath, localName);
       },
     },
   };
