@@ -261,7 +261,6 @@ ice.js 内置的 postcss 配置是：
       "features": {
         "custom-properties": false,
       },
-      browsers,
     }],
     ["postcss-plugin-rpx2vw"],
   ],
@@ -278,6 +277,9 @@ module.exports = {
       // 修改 postcss-preset-env 的选项
       {
         stage: 2,
+        // 注意，在自定义或修改 postcss 配置时，需要手动指定 browsers 的值（https://github.com/browserslist/browserslist#readme）。
+        // Post: 框架内置的 postcss 配置会自动读取 .browserslistrc 配置文件中的值
+        browsers: 'last 2 versions',
       }
     ]
   ],
