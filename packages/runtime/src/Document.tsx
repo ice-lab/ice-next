@@ -76,7 +76,7 @@ export function Scripts(props: React.ScriptHTMLAttributes<HTMLScriptElement>) {
     scripts.unshift(`${assetsManifest.publicPath}${assetsManifest.dataLoader}`);
   }
 
-  // Unique scripts for duplicate chuns.
+  // Unique scripts for duplicate chunks.
   const jsSet = {};
   scripts = scripts.filter((script) => {
     if (jsSet[script]) return false;
