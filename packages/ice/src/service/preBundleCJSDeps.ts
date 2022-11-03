@@ -29,7 +29,7 @@ export interface DepsMetaData {
 }
 
 interface PreBundleDepsResult {
-  metadata: DepsMetaData;
+  metadata?: DepsMetaData;
 }
 
 interface PreBundleDepsOptions {
@@ -111,6 +111,7 @@ export default async function preBundleCJSDeps(options: PreBundleDepsOptions): P
   } catch (error) {
     consola.error('Failed to bundle dependencies.');
     consola.debug(error);
+    return {};
   }
 
   await fse.writeJSON(metadataJSONPath, metadata, { spaces: 2 });

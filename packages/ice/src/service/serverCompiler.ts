@@ -138,7 +138,7 @@ export function createServerCompiler(options: Options) {
           plugins: [
             ...transformPlugins,
             // Plugin transformImportPlugin need after transformPlugins in case of it has onLoad lifecycle.
-            dev && preBundle && transformImportPlugin(
+            dev && preBundle && depsMetadata && transformImportPlugin(
               depsMetadata,
               path.join(rootDir, task.config.outputDir, SERVER_OUTPUT_DIR),
             ),
