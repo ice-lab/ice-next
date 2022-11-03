@@ -8,7 +8,6 @@ import './index.css';
 import styles from './index.module.css';
 import lessStyles from './index.module.less';
 import sassStyles from './index.module.scss';
-import CustomAuth from '@/components/CustomAuth';
 
 const Bar = lazy(() => import('../components/bar'));
 
@@ -32,9 +31,6 @@ export default function Home(props) {
       <h2 className={styles.title}>Home Page</h2>
       <Link to="/about">about</Link>
       <div>count: {data.count}</div>
-      <CustomAuth authKey={'guest'} fallback={null}>
-        11111
-      </CustomAuth>
       <Suspense fallback={<div>hello</div>}>
         <Bar />
       </Suspense>
@@ -61,7 +57,6 @@ export function getConfig() {
         content: '#f00',
       },
     ],
-    auth: ['admin'],
   };
 }
 
