@@ -135,7 +135,8 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   // get userConfig after setup because of userConfig maybe modified by plugins
   const { userConfig } = ctx;
   const { routes: routesConfig, server, syntaxFeatures } = userConfig;
-  const userConfigHash = await getFileHash(fg.sync(configFile)[0]);
+  const userConfigPath = path.join(rootDir, fg.sync(configFile, { cwd: rootDir })[0]);
+  const userConfigHash = await getFileHash(userConfigPath);
 
   await setEnv(rootDir, commandArgs);
   const coreEnvKeys = getCoreEnvKeys();
