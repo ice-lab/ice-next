@@ -2,8 +2,7 @@ import { Link, useAuth, defineGetConfig } from 'ice';
 import CustomAuth from '@/components/CustomAuth';
 
 export default function Index() {
-  const [auth, setAuth] = useAuth();
-  console.log(auth);
+  const [, setAuth] = useAuth();
   return (
     <>
       <ul style={{ listStyleType: 'none' }}>

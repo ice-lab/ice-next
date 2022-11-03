@@ -13,7 +13,7 @@ export const auth = defineAuthConfig((data) => {
     NoAuthFallback: () => {
       return (
         <>
-          <div>无权限访问</div>
+          <div id="no-auth">无权限访问</div>
           <Link to="/">Home</Link>
         </>
       );
