@@ -11,6 +11,17 @@ interface Result {
   status: string;
 }
 
+interface RouteIdToLoaderConfigs {
+  [routeId: string]: DataLoaderConfig;
+}
+
+export interface DataLoaderInitOptions {
+  loaders: RouteIdToLoaderConfigs;
+  fetcher?: Function;
+}
+
+let routeIdToLoaders: RouteIdToLoaders;
+
 const cache = new Map<string, Result>();
 
 /**
@@ -23,7 +34,7 @@ function getCacheId(routeId: string, number?: Number) {
 /**
  * Start get data once loader is ready, and set to cache.
  */
-function loadInitialData(routeIdToLoaders: RouteIdToLoaders) {
+function loadInitialData() {
   const context = (window as any).__ICE_APP_CONTEXT__ || {};
   const matchedIds = context.matchedIds || [];
   const routesData = context.routesData || {};
@@ -113,8 +124,8 @@ async function load(routeId: string, loaders?: Loaders) {
 /**
  * Get loaders by config of loaders.
  */
-function getLoaders(loadersConfig: DataLoaderConfig, fetcher: Function): RouteIdToLoaders {
-  function getDataLoaderByConfig(config: DataLoader): DataLoader {
+function getLoaders(loadersConfig: RouteIdToLoaderConfigs, fetcher: Function): RouteIdToLoaders {
+  function getDataLoaderByConfig(config: DataLoaderConfig): DataLoader {
     // If dataLoader is an object, it is wrapped with a function.
     return typeof config === 'function' ? config : () => {
       return fetcher(config);
@@ -124,7 +135,7 @@ function getLoaders(loadersConfig: DataLoaderConfig, fetcher: Function): RouteId
   const loaders: RouteIdToLoaders = {};
 
   Object.keys(loadersConfig).forEach(id => {
-    const loaderConfig = loadersConfig[id];
+    const loaderConfig: DataLoaderConfig = loadersConfig[id];
     if (!loaderConfig) return;
 
     // If getData is an object, it is wrapped with a function.
@@ -140,15 +151,26 @@ function getLoaders(loadersConfig: DataLoaderConfig, fetcher: Function): RouteId
   return loaders;
 }
 
+function defaultFetcher(options: any) {
+  return window.fetch(options.key, options);
+}
+
 /**
  * Load initial data and register global loader.
  * In order to load data, JavaScript modules, CSS and other assets in parallel.
  */
-function init(loadersConfig: DataLoaderConfig, fetcher: Function) {
-  const routeIdToLoaders: RouteIdToLoaders = getLoaders(loadersConfig, fetcher);
+function init(options: DataLoaderInitOptions) {
+  const {
+    loaders,
+    fetcher,
+  } = options;
+
+  if (routeIdToLoaders) return;
+
+  routeIdToLoaders = getLoaders(loaders, fetcher || defaultFetcher);
 
   try {
-    loadInitialData(routeIdToLoaders);
+    loadInitialData();
   } catch (error) {
     console.error('Load initial data error: ', error);
   }

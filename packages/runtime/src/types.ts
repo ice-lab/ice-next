@@ -50,7 +50,6 @@ interface StaticDataLoader {
 export type DataLoaderConfig = DataLoader | StaticDataLoader | Array<DataLoader | StaticDataLoader>;
 
 // app.getData & route.getData
-export type GetData = (ctx: RequestContext) => (Promise<RouteData> | RouteData);
 export type GetServerData = (ctx: RequestContext) => (Promise<RouteData> | RouteData);
 export type GetStaticData = (ctx: RequestContext) => (Promise<RouteData> | RouteData);
 // route.getConfig
@@ -116,7 +115,7 @@ export interface RouteComponent {
   default: ComponentType<any>;
   getStaticData?: GetStaticData;
   getServerData?: GetServerData;
-  getData?: GetData;
+  dataLoader?: DataLoaderConfig;
   getConfig?: GetConfig;
   [key: string]: any;
 }

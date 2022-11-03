@@ -11,10 +11,7 @@ const loaders = {};
 
 <% if(hasExportAppData) {-%>loaders['__app'] = getAppData;<% } -%>
 
-<% if(!dataLoaderImport.imports) {-%>
-let fetcher = (options) => {
-  return window.fetch(options.key, options);
-}  
-<% } -%>
-
-dataLoader.init(loaders, fetcher);
+dataLoader.init({
+  loaders,
+  <% if(dataLoaderImport.imports) {-%>fetcher<% } -%>
+});
