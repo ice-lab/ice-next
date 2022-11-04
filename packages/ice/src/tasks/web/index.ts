@@ -22,7 +22,7 @@ const getWebTask = ({ rootDir, command, dataCache }): Config => {
     },
     swcOptions: {
       // The dataLoader is built by data-loader
-      removeExportExprs: ['dataLoader', 'getServerData', 'getStaticData'],
+      removeExportExprs: ['dataLoader', 'serverDataLoader', 'staticDataLoader'],
       keepPlatform: 'web',
       getRoutePaths: () => {
         return getRoutePathsFromCache(dataCache);

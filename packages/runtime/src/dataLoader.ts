@@ -151,11 +151,9 @@ function init(loaders: RouteIdToLoaderConfigs, options?: DataLoaderInitOptions) 
     }
   }
 
-  if (typeof window !== 'undefined') {
-    (window as any).__ICE_DATA_LOADER__ = async (routeId) => {
-      return await loadDataByRouteId(routeId);
-    };
-  }
+  typeof window !== 'undefined' && ((window as any).__ICE_DATA_LOADER__ = async (routeId) => {
+    return await loadDataByRouteId(routeId);
+  });
 }
 
 export default {

@@ -113,8 +113,8 @@ export interface RequestContext extends ServerContext {
 
 export interface RouteComponent {
   default: ComponentType<any>;
-  getStaticData?: GetStaticData;
-  getServerData?: GetServerData;
+  staticDataLoader?: GetStaticData;
+  serverDataLoader?: GetServerData;
   dataLoader?: DataLoaderConfig;
   getConfig?: GetConfig;
   [key: string]: any;

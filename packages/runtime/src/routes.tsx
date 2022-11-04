@@ -1,4 +1,5 @@
 import React from 'react';
+import { RouteComponent } from './types.js';
 import type { RouteItem, RouteModules, RouteWrapperConfig, RouteMatch, RequestContext, RoutesConfig, RoutesData, RenderMode } from './types.js';
 import RouteWrapper from './RouteWrapper.js';
 import { useAppContext } from './AppContext.js';
@@ -67,33 +68,28 @@ export async function loadRoutesData(
     );
 
     return routesData;
-  } else {
-    // If the DataLoader is not initialized, it needs to be initialized.
-    const routeIdToLoaderConfigs: RouteIdToLoaderConfigs = {};
-    Object.keys(routeModules).forEach((routeId) => {
-      routeIdToLoaderConfigs[routeId] = (routeModules[routeId] || {}).dataLoader;
-    });
-    DataLoader.init(routeIdToLoaderConfigs, {
-      dataLoaderFetcher,
-    });
   }
 
+  // If the DataLoader is not initialized, it needs to be initialized.
+  const routeIdToLoaderConfigs: RouteIdToLoaderConfigs = {};
+  Object.keys(routeModules).forEach((routeId) => {
+    const routeModule = routeModules[routeId];
+    if (renderMode === 'SSG') {
+      routeIdToLoaderConfigs[routeId] = routeModule.staticDataLoader;
+    } else if (renderMode === 'SSR') {
+      routeIdToLoaderConfigs[routeId] = routeModule.serverDataLoader;
+    } else {
+      routeIdToLoaderConfigs[routeId] = routeModule.dataLoader;
+    }
+  });
+  DataLoader.init(routeIdToLoaderConfigs, {
+    dataLoaderFetcher,
+  });
+
+  // Load data by route id.
   await Promise.all(
     matches.map(async (match) => {
-      const { id } = match.route;
-      const routeModule = routeModules[id];
-      const { dataLoader, getServerData, getStaticData } = routeModule ?? {};
-
-      // SSG -> getStaticData
-      // SSR -> getServerData || getData
-      // CSR -> getData
-      if (renderMode === 'SSG') {
-        // dataLoader = getStaticData;
-      } else if (renderMode === 'SSR') {
-        // dataLoader = getServerData || getData;
-      } else {
-        DataLoader.loadDataByRouteId(id);
-      }
+      DataLoader.loadDataByRouteId(match.route.id);
     }),
   );
 
