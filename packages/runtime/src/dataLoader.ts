@@ -112,7 +112,7 @@ function getLoaders(loadersConfig: LoadersConfig, fetcher: Function): Loaders {
 
 interface Options {
   fetcher: Function;
-  runtimeModules: RuntimeModules['static'];
+  runtimeModules: RuntimeModules['statics'];
   appExport: AppExport;
 }
 
