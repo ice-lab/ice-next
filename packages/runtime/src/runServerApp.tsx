@@ -5,15 +5,13 @@ import { Action, parsePath } from 'history';
 import type { Location } from 'history';
 import type {
   AppContext, RouteItem, ServerContext,
-  AppData,
-  AppExport, RuntimePlugin, CommonJsRuntime, AssetsManifest,
+  AppExport, AssetsManifest,
   RouteMatch,
-  RequestContext,
-  AppConfig,
-  RouteModules,
+  GetConfig,
   RenderMode,
   DocumentComponent,
-} from '@ice/types';
+  RuntimeModules,
+} from './types.js';
 import Runtime from './runtime.js';
 import App from './App.js';
 import { AppContextProvider } from './AppContext.js';
@@ -27,12 +25,13 @@ import type { NodeWritablePiper } from './server/streamRender.js';
 import getRequestContext from './requestContext.js';
 import matchRoutes from './matchRoutes.js';
 import getCurrentRoutePath from './utils/getCurrentRoutePath.js';
+import DefaultAppRouter from './AppRouter.js';
 
 interface RenderOptions {
   app: AppExport;
   assetsManifest: AssetsManifest;
   routes: RouteItem[];
-  runtimeModules: (RuntimePlugin | CommonJsRuntime)[];
+  runtimeModules: RuntimeModules;
   Document: DocumentComponent;
   documentOnly?: boolean;
   renderMode?: RenderMode;
@@ -42,6 +41,10 @@ interface RenderOptions {
   serverOnlyBasename?: string;
   routePath?: string;
   disableFallback?: boolean;
+  routesConfig: {
+    [key: string]: GetConfig;
+  };
+  runtimeOptions?: Record<string, any>;
 }
 
 interface Piper {
@@ -136,22 +139,52 @@ function pipeToResponse(res: ServerResponse, pipe: NodeWritablePiper) {
 
 async function doRender(serverContext: ServerContext, renderOptions: RenderOptions): Promise<RenderResult> {
   const { req } = serverContext;
-  const { routes, documentOnly, app, basename, serverOnlyBasename, disableFallback } = renderOptions;
+  const {
+    app,
+    basename,
+    serverOnlyBasename,
+    routes,
+    documentOnly,
+    disableFallback,
+    assetsManifest,
+    runtimeModules,
+    renderMode,
+    runtimeOptions,
+  } = renderOptions;
 
   const location = getLocation(req.url);
 
   const requestContext = getRequestContext(location, serverContext);
-
-  let appData;
+  const appConfig = getAppConfig(app);
+  let appData: any;
+  const appContext: AppContext = {
+    appExport: app,
+    routes,
+    appConfig,
+    appData,
+    routesData: null,
+    routesConfig: null,
+    assetsManifest,
+    basename,
+    matches: [],
+  };
+  const runtime = new Runtime(appContext, runtimeOptions);
+  runtime.setAppRouter(DefaultAppRouter);
+  // Load static module before getAppData.
+  if (runtimeModules.statics) {
+    await Promise.all(runtimeModules.statics.map(m => runtime.loadModule(m)).filter(Boolean));
+  }
   // don't need to execute getAppData in CSR
   if (!documentOnly) {
-    appData = await getAppData(app, requestContext);
+    try {
+      appData = await getAppData(app, requestContext);
+    } catch (err) {
+      console.error('Error: get app data error when SSR.', err);
+    }
   }
-
-  const appConfig = getAppConfig(app);
   // HashRouter loads route modules by the CSR.
   if (appConfig?.router?.type === 'hash') {
-    return renderDocument({ matches: [], renderOptions, routeModules: {} });
+    return renderDocument({ matches: [], renderOptions });
   }
 
   const matches = matchRoutes(routes, location, serverOnlyBasename || basename);
@@ -161,31 +194,29 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
 
   const routePath = getCurrentRoutePath(matches);
 
-  const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
-
   if (documentOnly) {
-    return renderDocument({ matches, routePath, renderOptions, routeModules });
+    return renderDocument({ matches, routePath, renderOptions });
   }
-
   try {
+    const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
+    const routesData = await loadRoutesData(matches, requestContext, routeModules, renderMode);
+    const routesConfig = getRoutesConfig(matches, routesData, routeModules);
+    runtime.setAppContext({ ...appContext, routeModules, routesData, routesConfig, routePath, matches, appData });
+    if (runtimeModules.commons) {
+      await Promise.all(runtimeModules.commons.map(m => runtime.loadModule(m)).filter(Boolean));
+    }
     return await renderServerEntry({
-      appExport: app,
-      requestContext,
-      renderOptions,
+      runtime,
       matches,
       location,
-      appConfig,
-      appData,
-      routeModules,
-      basename: serverOnlyBasename || basename,
-      routePath,
+      renderOptions,
     });
   } catch (err) {
     if (disableFallback) {
       throw err;
     }
     console.error('Warning: render server entry error, downgrade to csr.', err);
-    return renderDocument({ matches, routePath, renderOptions, routeModules: {}, downgrade: true });
+    return renderDocument({ matches, routePath, renderOptions, downgrade: true });
   }
 }
 
@@ -197,17 +228,11 @@ function render404(): RenderResult {
   };
 }
 
-interface renderServerEntry {
-  appExport: AppExport;
-  requestContext: RequestContext;
-  renderOptions: RenderOptions;
+interface RenderServerEntry {
+  runtime: Runtime;
   matches: RouteMatch[];
   location: Location;
-  appConfig: AppConfig;
-  appData: AppData;
-  routeModules: RouteModules;
-  routePath?: string;
-  basename?: string;
+  renderOptions: RenderOptions;
 }
 
 /**
@@ -215,48 +240,17 @@ interface renderServerEntry {
  */
 async function renderServerEntry(
   {
-    appExport,
-    requestContext,
+    runtime,
     matches,
     location,
-    appConfig,
-    appData,
     renderOptions,
-    routeModules,
-    basename,
-    routePath,
-  }: renderServerEntry,
+  }: RenderServerEntry,
 ): Promise<RenderResult> {
-  const {
-    assetsManifest,
-    runtimeModules,
-    routes,
-    renderMode,
-    Document,
-  } = renderOptions;
-
-  const routesData = await loadRoutesData(matches, requestContext, routeModules, renderMode);
-  const routesConfig = getRoutesConfig(matches, routesData, routeModules);
-
-  const appContext: AppContext = {
-    appExport,
-    assetsManifest,
-    appConfig,
-    appData,
-    routesData,
-    routesConfig,
-    matches,
-    routes,
-    routeModules,
-    basename,
-    routePath,
-  };
-
-  const runtime = new Runtime(appContext);
-  await Promise.all(runtimeModules.map(m => runtime.loadModule(m)).filter(Boolean));
-
+  const { Document } = renderOptions;
+  const appContext = runtime.getAppContext();
+  const { appData, routePath } = appContext;
   const staticNavigator = createStaticNavigator();
-  const AppProvider = runtime.composeAppProvider() || React.Fragment;
+  const AppRuntimeProvider = runtime.composeAppProvider() || React.Fragment;
   const RouteWrappers = runtime.getWrappers();
   const AppRouter = runtime.getAppRouter();
 
@@ -266,26 +260,27 @@ async function renderServerEntry(
       location={location}
       navigator={staticNavigator}
       static
-      AppProvider={AppProvider}
       RouteWrappers={RouteWrappers}
       AppRouter={AppRouter}
     />,
   };
 
   const element = (
-    <AppContextProvider value={appContext}>
-      <AppDataProvider value={appData}>
-        <DocumentContextProvider value={documentContext}>
-          <Document pagePath={routePath} />
-        </DocumentContextProvider>
-      </AppDataProvider>
-    </AppContextProvider>
+    <AppDataProvider value={appData}>
+      <AppRuntimeProvider>
+        <AppContextProvider value={appContext}>
+          <DocumentContextProvider value={documentContext}>
+            <Document pagePath={routePath} />
+          </DocumentContextProvider>
+        </AppContextProvider>
+      </AppRuntimeProvider>
+    </AppDataProvider>
   );
 
   const pipe = renderToNodeStream(element, false);
 
   const fallback = () => {
-    return renderDocument({ matches, routePath, renderOptions, routeModules, downgrade: true });
+    return renderDocument({ matches, routePath, renderOptions, downgrade: true });
   };
 
   return {
@@ -298,7 +293,6 @@ async function renderServerEntry(
 
 interface RenderDocumentOptions {
   matches: RouteMatch[];
-  routeModules: RouteModules;
   renderOptions: RenderOptions;
   routePath?: string;
   downgrade?: boolean;
@@ -307,7 +301,7 @@ interface RenderDocumentOptions {
  * Render Document for CSR.
  */
 function renderDocument(options: RenderDocumentOptions): RenderResult {
-  const { matches, routeModules, renderOptions, routePath, downgrade }: RenderDocumentOptions = options;
+  const { matches, renderOptions, routePath, downgrade }: RenderDocumentOptions = options;
 
   const {
     routes,
@@ -315,23 +309,30 @@ function renderDocument(options: RenderDocumentOptions): RenderResult {
     app,
     Document,
     basename,
+    routesConfig = {},
   } = renderOptions;
 
   const routesData = null;
   const appData = null;
   const appConfig = getAppConfig(app);
-  const routesConfig = getRoutesConfig(matches, {}, routeModules);
+
+  const matchedRoutesConfig = {};
+  matches.forEach(async (match) => {
+    const { id } = match.route;
+    const getConfig = routesConfig[id];
+
+    matchedRoutesConfig[id] = getConfig ? getConfig({}) : {};
+  });
 
   const appContext: AppContext = {
     assetsManifest,
     appConfig,
     appData,
     routesData,
-    routesConfig,
+    routesConfig: matchedRoutesConfig,
     matches,
     routes,
     documentOnly: true,
-    routeModules,
     routePath,
     basename,
     downgrade,

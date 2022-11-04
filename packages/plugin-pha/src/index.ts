@@ -1,8 +1,7 @@
 import * as path from 'path';
 import consola from 'consola';
 import chalk from 'chalk';
-import type { Plugin } from '@ice/types';
-import type { GetAppConfig, GetRoutesConfig } from '@ice/types/esm/plugin.js';
+import type { Plugin, GetAppConfig, GetRoutesConfig } from '@ice/app/esm/types';
 import generateManifest from './generateManifest.js';
 import createPHAMiddleware from './phaMiddleware.js';
 
@@ -24,7 +23,7 @@ function getDevPath(url: string): string {
 
 const plugin: Plugin<PluginOptions> = (options) => ({
   name: '@ice/plugin-pha',
-  setup: ({ onGetConfig, onHook, context, serverCompileTask }) => {
+  setup: ({ onGetConfig, onHook, context, serverCompileTask, generator }) => {
     const { template } = options || {};
     const { command, rootDir } = context;
 
@@ -36,6 +35,11 @@ const plugin: Plugin<PluginOptions> = (options) => ({
     let getAppConfig: GetAppConfig;
     let getRoutesConfig: GetRoutesConfig;
 
+    generator.addRouteTypes({
+      specifier: ['PageConfig'],
+      type: true,
+      source: '@ice/plugin-pha/esm/types',
+    });
     // Get server compiler by hooks
     onHook(`before.${command as 'start' | 'build'}.run`, async ({ serverCompiler, taskConfigs, urls, ...restAPI }) => {
       const taskConfig = taskConfigs.find(({ name }) => name === 'web').config;

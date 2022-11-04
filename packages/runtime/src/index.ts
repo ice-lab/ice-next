@@ -16,13 +16,15 @@ import type {
   RouteWrapper,
   RenderMode,
   GetAppData,
-} from '@ice/types';
+  RouteWrapperConfig,
+} from './types.js';
 import Runtime from './runtime.js';
 import App from './App.js';
 import runClientApp from './runClientApp.js';
-import { useAppContext } from './AppContext.js';
-import { useAppData } from './AppData.js';
-import { useData, useConfig } from './RouteContext.js';
+import type { RunClientAppOptions } from './runClientApp.js';
+import { useAppContext, AppContextProvider } from './AppContext.js';
+import { useAppData, AppDataProvider, getAppData } from './AppData.js';
+import { useData, useConfig, DataProvider, ConfigProvider } from './RouteContext.js';
 import {
   Meta,
   Title,
@@ -32,8 +34,13 @@ import {
   Data,
 } from './Document.js';
 import dataLoader from './dataLoader.js';
+import AppRouter from './AppRouter.js';
+import AppErrorBoundary from './AppErrorBoundary.js';
 import getAppConfig, { defineAppConfig } from './appConfig.js';
 import { routerHistory as history } from './history.js';
+import KeepAliveOutlet from './KeepAliveOutlet.js';
+import ClientOnly from './ClientOnly.js';
+import useMounted from './useMounted.js';
 
 export {
   getAppConfig,
@@ -41,9 +48,14 @@ export {
   Runtime,
   App,
   runClientApp,
+  AppContextProvider,
   useAppContext,
+  AppDataProvider,
   useAppData,
   useData,
+  getAppData,
+  DataProvider,
+  ConfigProvider,
   useConfig,
   Meta,
   Title,
@@ -59,6 +71,12 @@ export {
   useSearchParams,
   useLocation,
   history,
+
+  KeepAliveOutlet,
+  AppRouter,
+  AppErrorBoundary,
+  ClientOnly,
+  useMounted,
 };
 
 export type {
@@ -66,10 +84,12 @@ export type {
   AppContext,
   AppConfig,
   RouteConfig,
+  RouteWrapperConfig,
   RouteItem,
   ServerContext,
   AppProvider,
   RouteWrapper,
   RenderMode,
   GetAppData,
+  RunClientAppOptions,
 };

@@ -1,19 +1,19 @@
 import * as path from 'path';
 import { createHash } from 'crypto';
-import * as fs from 'fs';
 import consola from 'consola';
 import esbuild from 'esbuild';
-import type { Config, UserConfig } from '@ice/types';
-import type { ServerCompiler } from '@ice/types/esm/plugin.js';
+import type { Config } from '@ice/webpack-config/esm/types';
 import lodash from '@ice/bundles/compiled/lodash/index.js';
 import type { TaskConfig } from 'build-scripts';
 import { getCompilerPlugins } from '@ice/webpack-config';
+import type { ServerCompiler } from '../types/plugin.js';
+import type { UserConfig } from '../types/userConfig.js';
 import escapeLocalIdent from '../utils/escapeLocalIdent.js';
 import cssModulesPlugin from '../esbuild/cssModules.js';
 import aliasPlugin from '../esbuild/alias.js';
 import ignorePlugin from '../esbuild/ignore.js';
 import createAssetsPlugin from '../esbuild/assets.js';
-import { ASSETS_MANIFEST, CACHE_DIR, SERVER_OUTPUT_DIR } from '../constant.js';
+import { CACHE_DIR, SERVER_OUTPUT_DIR } from '../constant.js';
 import emptyCSSPlugin from '../esbuild/emptyCSS.js';
 import transformImportPlugin from '../esbuild/transformImport.js';
 import transformPipePlugin from '../esbuild/transformPipe.js';
@@ -38,7 +38,6 @@ export function createServerCompiler(options: Options) {
 
   const alias = task.config?.alias || {};
   const externals = task.config?.externals || {};
-  const assetsManifest = path.join(rootDir, ASSETS_MANIFEST);
   const define = task.config?.define || {};
   const sourceMap = task.config?.sourceMap;
   const dev = command === 'start';
@@ -54,6 +53,7 @@ export function createServerCompiler(options: Options) {
     swc,
     externalDependencies,
     transformEnv = true,
+    assetsManifest,
   } = {}) => {
     let depsMetadata: DepsMetaData;
     let swcOptions = merge({}, {
@@ -83,6 +83,7 @@ export function createServerCompiler(options: Options) {
         ] : [],
       });
     }
+
     // get runtime variable for server build
     const runtimeDefineVars = {};
     Object.keys(process.env).forEach((key) => {
@@ -142,7 +143,7 @@ export function createServerCompiler(options: Options) {
             return escapeLocalIdent(`${name}--${localIdentHash}`);
           },
         }),
-        fs.existsSync(assetsManifest) && createAssetsPlugin(assetsManifest, rootDir),
+        assetsManifest && createAssetsPlugin(assetsManifest, rootDir),
         transformPipePlugin({
           plugins: [
             ...transformPlugins,
@@ -161,7 +162,7 @@ export function createServerCompiler(options: Options) {
     }
 
     const startTime = new Date().getTime();
-    consola.debug('[esbuild]', `start compile for: ${buildOptions.entryPoints}`);
+    consola.debug('[esbuild]', `start compile for: ${JSON.stringify(buildOptions.entryPoints)}`);
 
     try {
       const esbuildResult = await esbuild.build(buildOptions);
@@ -178,8 +179,8 @@ export function createServerCompiler(options: Options) {
       };
     } catch (error) {
       consola.error('Server compile error.', `\nEntryPoints: ${JSON.stringify(buildOptions.entryPoints)}`);
-      consola.debug(buildOptions);
-      consola.debug(error);
+      consola.debug('Build options: ', buildOptions);
+      consola.debug(error.stack);
       return {
         error: error as Error,
       };

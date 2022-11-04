@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { ReactNode } from 'react';
-import type { AppContext, RouteMatch, AssetsManifest } from '@ice/types';
+import type { WindowContext, RouteMatch, AssetsManifest } from './types.js';
 import { useAppContext } from './AppContext.js';
 import { useAppData } from './AppData.js';
 import { getMeta, getTitle, getLinks, getScripts } from './routesConfig.js';
@@ -63,35 +63,37 @@ export function Links(props: React.LinkHTMLAttributes<HTMLLinkElement>) {
 }
 
 export function Scripts(props: React.ScriptHTMLAttributes<HTMLScriptElement>) {
-  const {
-    routesData, routesConfig, matches, assetsManifest, documentOnly, routeModules, basename, downgrade,
-  } = useAppContext();
+  const { routesData, routesConfig, matches, assetsManifest, documentOnly, downgrade } = useAppContext();
   const appData = useAppData();
 
   const routeScripts = getScripts(matches, routesConfig);
   const pageAssets = getPageAssets(matches, assetsManifest);
   const entryAssets = getEntryAssets(assetsManifest);
   // Page assets need to be load before entry assets, so when call dynamic import won't cause duplicate js chunk loaded.
-  const scripts = pageAssets.concat(entryAssets).filter(path => path.indexOf('.js') > -1);
+  let scripts = pageAssets.concat(entryAssets).filter(path => path.indexOf('.js') > -1);
 
   if (assetsManifest.dataLoader) {
     scripts.unshift(`${assetsManifest.publicPath}${assetsManifest.dataLoader}`);
   }
 
+  // Unique scripts for duplicate chunks.
+  const jsSet = {};
+  scripts = scripts.filter((script) => {
+    if (jsSet[script]) return false;
+    jsSet[script] = true;
+    return true;
+  });
+
   const matchedIds = matches.map(match => match.route.id);
   const routePath = getCurrentRoutePath(matches);
-
-  const appContext: AppContext = {
+  const windowContext: WindowContext = {
     appData,
     routesData,
     routesConfig,
-    assetsManifest,
-    appConfig: {},
-    matchedIds,
-    routeModules,
     routePath,
-    basename,
     downgrade,
+    matchedIds,
+    documentOnly,
   };
 
   return (
@@ -102,7 +104,7 @@ export function Scripts(props: React.ScriptHTMLAttributes<HTMLScriptElement>) {
        */}
       <script
         suppressHydrationWarning={documentOnly}
-        dangerouslySetInnerHTML={{ __html: `window.__ICE_APP_CONTEXT__=Object.assign(${JSON.stringify(appContext)}, window.__ICE_APP_CONTEXT__ || {})` }}
+        dangerouslySetInnerHTML={{ __html: `window.__ICE_APP_CONTEXT__=Object.assign(${JSON.stringify(windowContext)}, window.__ICE_APP_CONTEXT__ || {})` }}
       />
       {
         routeScripts.map(routeScriptProps => {

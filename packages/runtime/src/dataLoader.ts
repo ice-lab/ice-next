@@ -1,8 +1,12 @@
-import type { GetData } from '@ice/types';
+import type { GetData, GetDataConfig } from './types.js';
 import getRequestContext from './requestContext.js';
 
 interface Loaders {
   [routeId: string]: GetData;
+}
+
+interface LoadersConfig {
+  [routeId: string]: GetDataConfig;
 }
 
 interface Result {
@@ -89,10 +93,30 @@ async function load(id: string, loader: GetData) {
 }
 
 /**
+ * Get loaders by config of loaders.
+ */
+function getLoaders(loadersConfig: LoadersConfig, fetcher: Function): Loaders {
+  const loaders: Loaders = {};
+
+  Object.keys(loadersConfig).forEach(id => {
+    const loader = loadersConfig[id];
+
+    // If getData is an object, it is wrapped with a function.
+    loaders[id] = typeof loader === 'function' ? loader : () => {
+      return fetcher(loader);
+    };
+  });
+
+  return loaders;
+}
+
+/**
  * Load initial data and register global loader.
  * In order to load data, JavaScript modules, CSS and other assets in parallel.
  */
-function init(loaders: Loaders) {
+function init(loadersConfig: LoadersConfig, fetcher: Function) {
+  const loaders = getLoaders(loadersConfig, fetcher);
+
   try {
     loadInitialData(loaders);
   } catch (error) {

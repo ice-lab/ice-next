@@ -3,9 +3,9 @@ import * as ReactDOM from 'react-dom/client';
 import { createHashHistory, createBrowserHistory, createMemoryHistory } from 'history';
 import type { HashHistory, BrowserHistory, Action, Location, InitialEntry, MemoryHistory } from 'history';
 import type {
-  AppContext, AppExport, RouteItem, AppRouterProps, RoutesData, RoutesConfig,
-  RouteWrapperConfig, RuntimeModules, RouteMatch, RouteModules, AppConfig,
-} from '@ice/types';
+  AppContext, WindowContext, AppExport, RouteItem, AppRouterProps, RoutesData, RoutesConfig,
+  RouteWrapperConfig, RuntimeModules, RouteMatch, RouteModules, AppConfig, AssetsManifest,
+} from './types.js';
 import { createHistory as createHistorySingle } from './single-router.js';
 import { setHistory } from './history.js';
 import Runtime from './runtime.js';
@@ -17,14 +17,16 @@ import { updateRoutesConfig } from './routesConfig.js';
 import getRequestContext from './requestContext.js';
 import getAppConfig from './appConfig.js';
 import matchRoutes from './matchRoutes.js';
+import DefaultAppRouter from './AppRouter.js';
 
-interface RunClientAppOptions {
+export interface RunClientAppOptions {
   app: AppExport;
-  routes: RouteItem[];
   runtimeModules: RuntimeModules;
-  hydrate: boolean;
+  routes?: RouteItem[];
+  hydrate?: boolean;
   basename?: string;
   memoryRouter?: boolean;
+  runtimeOptions?: Record<string, any>;
 }
 
 type History = BrowserHistory | HashHistory | MemoryHistory;
@@ -37,27 +39,48 @@ export default async function runClientApp(options: RunClientAppOptions) {
     basename,
     hydrate,
     memoryRouter,
+    runtimeOptions,
   } = options;
-  const appContextFromServer: AppContext = (window as any).__ICE_APP_CONTEXT__ || {};
+  const windowContext: WindowContext = (window as any).__ICE_APP_CONTEXT__ || {};
+  const assetsManifest: AssetsManifest = (window as any).__ICE_ASSETS_MANIFEST__ || {};
   let {
     appData,
     routesData,
     routesConfig,
-    assetsManifest,
     routePath,
     downgrade,
-  } = appContextFromServer;
+    documentOnly,
+  } = windowContext;
 
   const requestContext = getRequestContext(window.location);
-
-  if (!appData) {
-    appData = await getAppData(app, requestContext);
-  }
-
   const appConfig = getAppConfig(app);
   const history = createHistory(appConfig, { memoryRouter, routePath });
   // Set history for import it from ice.
   setHistory(history);
+
+  const appContext: AppContext = {
+    appExport: app,
+    routes,
+    appConfig,
+    appData,
+    routesData,
+    routesConfig,
+    assetsManifest,
+    basename,
+    routePath,
+  };
+
+  const runtime = new Runtime(appContext, runtimeOptions);
+  runtime.setAppRouter(DefaultAppRouter);
+  // Load static module before getAppData,
+  // so we can call request in in getAppData which provide by `plugin-request`.
+  if (runtimeModules.statics) {
+    await Promise.all(runtimeModules.statics.map(m => runtime.loadModule(m)).filter(Boolean));
+  }
+
+  if (!appData) {
+    appData = await getAppData(app, requestContext);
+  }
 
   const matches = matchRoutes(
     routes,
@@ -73,29 +96,16 @@ export default async function runClientApp(options: RunClientAppOptions) {
     routesConfig = getRoutesConfig(matches, routesData, routeModules);
   }
 
-  const appContext: AppContext = {
-    appExport: app,
-    routes,
-    appConfig,
-    appData,
-    routesData,
-    routesConfig,
-    assetsManifest,
-    matches,
-    routeModules,
-    basename,
-    routePath,
-  };
-
-  const runtime = new Runtime(appContext);
-
-  if (hydrate && !downgrade) {
+  if (hydrate && !downgrade && !documentOnly) {
     runtime.setRender((container, element) => {
       ReactDOM.hydrateRoot(container, element);
     });
   }
-
-  await Promise.all(runtimeModules.map(m => runtime.loadModule(m)).filter(Boolean));
+  // Reset app context after app context is updated.
+  runtime.setAppContext({ ...appContext, matches, routeModules, routesData, routesConfig, appData });
+  if (runtimeModules.commons) {
+    await Promise.all(runtimeModules.commons.map(m => runtime.loadModule(m)).filter(Boolean));
+  }
 
   render({ runtime, history });
 }
@@ -106,28 +116,39 @@ interface RenderOptions {
 }
 async function render({ history, runtime }: RenderOptions) {
   const appContext = runtime.getAppContext();
-  const { appConfig } = appContext;
+  const { appConfig, appData } = appContext;
   const render = runtime.getRender();
-  const AppProvider = runtime.composeAppProvider() || React.Fragment;
+  const AppRuntimeProvider = runtime.composeAppProvider() || React.Fragment;
   const RouteWrappers = runtime.getWrappers();
   const AppRouter = runtime.getAppRouter();
 
+  const rootId = appConfig.app.rootId || 'app';
+  let root = document.getElementById(rootId);
+  if (!root) {
+    root = document.createElement('div');
+    root.id = rootId;
+    document.body.appendChild(root);
+    console.warn(`Root node #${rootId} is not found, current root is automatically created by the framework.`);
+  }
+
   render(
-    document.getElementById(appConfig.app.rootId),
-    <BrowserEntry
-      history={history}
-      appContext={appContext}
-      AppProvider={AppProvider}
-      RouteWrappers={RouteWrappers}
-      AppRouter={AppRouter}
-    />,
+    root,
+    <AppDataProvider value={appData}>
+      <AppRuntimeProvider>
+        <BrowserEntry
+          history={history}
+          appContext={appContext}
+          RouteWrappers={RouteWrappers}
+          AppRouter={AppRouter}
+        />
+      </AppRuntimeProvider>
+    </AppDataProvider>,
   );
 }
 
 interface BrowserEntryProps {
   history: HashHistory | BrowserHistory | null;
   appContext: AppContext;
-  AppProvider: React.ComponentType<any>;
   RouteWrappers: RouteWrapperConfig[];
   AppRouter: React.ComponentType<AppRouterProps>;
 }
@@ -156,7 +177,6 @@ function BrowserEntry({
     routesConfig: initialRoutesConfig,
     routeModules: initialRouteModules,
     basename,
-    appData,
   } = appContext;
 
   const [historyState, setHistoryState] = useState<HistoryState>({
@@ -210,14 +230,12 @@ function BrowserEntry({
 
   return (
     <AppContextProvider value={appContext}>
-      <AppDataProvider value={appData}>
-        <App
-          action={action}
-          location={location}
-          navigator={history}
-          {...rest}
-        />
-      </AppDataProvider>
+      <App
+        action={action}
+        location={location}
+        navigator={history}
+        {...rest}
+      />
     </AppContextProvider>
   );
 }

@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { formatNestedRouteManifest, generateRouteManifest } from '@ice/route-manifest';
 import type { NestedRouteManifest } from '@ice/route-manifest';
-import type { UserConfig } from '@ice/types';
+import type { UserConfig } from './types/userConfig.js';
 import { getFileExports } from './service/analyze.js';
 import formatPath from './utils/formatPath.js';
 
@@ -40,10 +40,10 @@ const loaders = {
 };` : '';
     }),
     routesConfig: generateRouteConfig(routes, 'getConfig', (str, imports) => {
-      return imports.length > 0 ? `${str}
+      return `${str}
 export default {
-  ${imports.map(([, importKey, routePath]) => `'${routePath}': ${importKey},`).join('\n  ')}
-};` : '';
+  ${imports.map(([routeId, importKey]) => `'${routeId}': ${importKey},`).join('\n  ')}
+};`;
     }),
   };
 }

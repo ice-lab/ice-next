@@ -3,8 +3,9 @@ import { createHash } from 'crypto';
 // FIXME when resolve mini-css-extract-plugin symbol in test
 import MiniCssExtractPlugin from '@ice/bundles/compiled/mini-css-extract-plugin/dist/index.js';
 import { sass, less, postcss } from '@ice/bundles';
-import type { ModifyWebpackConfig } from '@ice/types/esm/config';
-import type { LoaderContext } from 'webpack';
+import type webpack from 'webpack';
+import type { LoaderContext, Configuration } from 'webpack';
+import type { ModifyWebpackConfig } from '../types.js';
 
 type CSSRuleConfig = [string, string?, Record<string, any>?];
 interface Options {
@@ -92,7 +93,7 @@ function configCSSRule(config: CSSRuleConfig, options: Options) {
   };
 }
 
-const css: ModifyWebpackConfig = (config, ctx) => {
+const css: ModifyWebpackConfig<Configuration, typeof webpack> = (config, ctx) => {
   const { supportedBrowsers, publicPath, hashKey, cssFilename, cssChunkFilename } = ctx;
   const cssOutputFolder = 'css';
   config.module.rules.push(...([
@@ -108,7 +109,7 @@ const css: ModifyWebpackConfig = (config, ctx) => {
   config.plugins.push(
     new MiniCssExtractPlugin({
       filename: cssFilename || `${cssOutputFolder}/${hashKey ? `[name]-[${hashKey}].css` : '[name].css'}`,
-      chunkFilename: cssChunkFilename || '[name].css',
+      chunkFilename: cssChunkFilename || `${cssOutputFolder}/${hashKey ? `[name]-[${hashKey}].css` : '[name].css'}`,
       // If the warning is triggered, it seen to be unactionable for the user,
       ignoreOrder: true,
     }),

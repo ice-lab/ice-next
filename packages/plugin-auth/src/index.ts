@@ -1,17 +1,23 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
-import type { Plugin } from '@ice/types';
+import type { Plugin } from '@ice/app/esm/types';
+
+const PLUGIN_NAME = '@ice/plugin-auth';
 
 const plugin: Plugin = () => ({
-  name: '@ice/plugin-auth',
+  name: PLUGIN_NAME,
   setup: ({ generator }) => {
   // Register API: `import { useAuth, withAuth } from 'ice';`
     generator.addExport({
       specifier: ['withAuth', 'useAuth'],
       source: '@ice/plugin-auth/runtime/Auth',
     });
+
+    generator.addRouteTypes({
+      specifier: ['ConfigAuth'],
+      type: true,
+      source: '@ice/plugin-auth/esm/types',
+    });
   },
-  runtime: path.join(path.dirname(fileURLToPath(import.meta.url)), 'runtime', 'index.js'),
+  runtime: `${PLUGIN_NAME}/esm/runtime`,
 });
 
 export default plugin;

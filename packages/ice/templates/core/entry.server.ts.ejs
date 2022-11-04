@@ -1,11 +1,16 @@
 import './env.server';
 import * as runtime from '@ice/runtime/server';
+import { commons, statics } from './runtimeModules';
 import * as app from '@/app';
-import runtimeModules from './runtimeModules';
 import Document from '@/document';
 import type { RenderMode } from '@ice/runtime';
-import assetsManifest from './assets-manifest.json';
+// @ts-ignore
+import assetsManifest from 'virtual:assets-manifest.json';
 import routes from './routes';
+import routesConfig from './routes-config.bundle.mjs';
+<%- runtimeOptions.imports %>
+
+const runtimeModules = { commons, statics };
 
 const getRouterBasename = () => {
   const appConfig = runtime.getAppConfig(app);
@@ -45,6 +50,12 @@ export async function renderToHTML(requestContext, options: RenderOptions = {}) 
     renderMode,
     routePath,
     disableFallback,
+    routesConfig,
+<% if (runtimeOptions.exports) { -%>
+    runtimeOptions: {
+      <%- runtimeOptions.exports %>
+    },
+<% } -%>
   });
 }
 
@@ -63,5 +74,11 @@ export async function renderToResponse(requestContext, options: RenderOptions = 
     documentOnly,
     renderMode,
     disableFallback,
+    routesConfig,
+<% if (runtimeOptions.exports) { -%>
+    runtimeOptions: {
+      <%- runtimeOptions.exports %>
+    },
+<% } -%>
   });
 }

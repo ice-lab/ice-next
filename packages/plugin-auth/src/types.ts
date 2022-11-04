@@ -1,5 +1,6 @@
 import type * as React from 'react';
-import type { RouteConfig } from '@ice/types';
+import type { RouteConfig } from '@ice/runtime/esm/types';
+
 export interface AuthConfig {
   initialAuth: {
     [auth: string]: boolean;
@@ -13,4 +14,8 @@ export type Auth = (data?: any) => Promise<AuthConfig> | AuthConfig;
 
 export function defineAuthConfig(fn: Auth) {
   return fn;
+}
+
+export interface ConfigAuth {
+  auth?: string[];
 }

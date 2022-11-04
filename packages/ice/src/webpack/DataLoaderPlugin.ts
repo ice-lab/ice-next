@@ -1,8 +1,9 @@
 import * as path from 'path';
 import fse from 'fs-extra';
-import type { ServerCompiler } from '@ice/types/esm/plugin.js';
+import consola from 'consola';
 import type { Compiler } from 'webpack';
 import webpack from '@ice/bundles/compiled/webpack/index.js';
+import type { ServerCompiler } from '../types/plugin.js';
 import { RUNTIME_TMP_DIR } from '../constant.js';
 import { getRoutePathsFromCache } from '../utils/getRoutePaths.js';
 
@@ -34,24 +35,33 @@ export default class DataLoaderPlugin {
         // Check file data-loader.ts if it is exists.
         const filePath = path.join(this.rootDir, RUNTIME_TMP_DIR, 'data-loader.ts');
         if (fse.existsSync(filePath)) {
-          const { outputFiles } = await this.serverCompiler({
-            // Code will be transformed by @swc/core reset target to esnext make modern js syntax do not transformed.
-            target: 'esnext',
-            entryPoints: [filePath],
-            write: false,
-          }, {
-            swc: {
-              keepExports: ['getData', 'getAppData'],
-              keepPlatform: 'web',
-              getRoutePaths: () => {
-                return getRoutePathsFromCache(this.dataCache);
-              },
+          const { outputFiles, error } = await this.serverCompiler(
+            {
+              // Code will be transformed by @swc/core reset target to esnext make modern js syntax do not transformed.
+              target: 'esnext',
+              entryPoints: [filePath],
+              write: false,
+              logLevel: 'silent', // The main server compile process will log it.
             },
-            preBundle: false,
-            externalDependencies: false,
-            transformEnv: false,
-          });
-          compilation.emitAsset('js/data-loader.js', new RawSource(new TextDecoder('utf-8').decode(outputFiles[0].contents)));
+            {
+              swc: {
+                keepExports: ['getData', 'getAppData'],
+                keepPlatform: 'web',
+                getRoutePaths: () => {
+                  return getRoutePathsFromCache(this.dataCache);
+                },
+              },
+              preBundle: false,
+              externalDependencies: false,
+              transformEnv: false,
+            },
+          );
+          if (error) {
+            consola.error('Server compile error in DataLoaderPlugin.');
+            consola.debug(error.stack);
+          } else {
+            compilation.emitAsset('js/data-loader.js', new RawSource(new TextDecoder('utf-8').decode(outputFiles[0].contents)));
+          }
         } else {
           compilation.deleteAsset('js/data-loader.js');
         }
