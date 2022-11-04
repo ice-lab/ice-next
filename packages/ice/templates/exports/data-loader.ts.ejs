@@ -1,8 +1,15 @@
 import { dataLoader } from '@ice/runtime';
 <% if(hasExportAppData) {-%>import * as app from '@/app';<% } -%>
-
 <% if(dataLoaderImport.imports) {-%><%-dataLoaderImport.imports%><% } -%>
-import { statics } from './runtimeModules';
+<% const staticModuleNames = []; -%>
+<% if (runtimeModules.length) { -%>
+  <% runtimeModules.forEach((runtimeModule, index) => { -%>
+    <% if (runtimeModule.staticRuntime) { -%>
+      import module<%= index %> from '<%= runtimeModule.path %>';
+      <% staticModuleNames.push('module' + index) -%>
+    <% } -%>
+  <% }) -%>
+<% } -%>
 
 <% if (loaders) {-%>
 <%- loaders %>
@@ -17,6 +24,12 @@ let fetcher = (options) => {
   window.fetch(options.url, options);
 }  
 <% } -%>
+
+const statics = [
+<% staticModuleNames.forEach((moduleName, index) => { -%>
+  <%= moduleName %>,
+<% }) -%>
+];
 
 dataLoader.init(loaders, {
   fetcher,
