@@ -1,6 +1,7 @@
 import * as path from 'path';
 import consola from 'consola';
 import chalk from 'chalk';
+import lodash from '@ice/bundles/compiled/lodash/index.js';
 import type { Plugin } from '../../types/plugin.js';
 import ReCompilePlugin from '../../webpack/ReCompilePlugin.js';
 import DataLoaderPlugin from '../../webpack/DataLoaderPlugin.js';
@@ -11,6 +12,8 @@ import generateHTML from '../../utils/generateHTML.js';
 import openBrowser from '../../utils/openBrowser.js';
 import getServerCompilerPlugin from '../../utils/getServerCompilerPlugin.js';
 import type ServerCompilerPlugin from '../../webpack/ServerCompilerPlugin.js';
+
+const { debounce } = lodash;
 
 const plugin: Plugin = () => ({
   name: 'plugin-web',
@@ -80,15 +83,17 @@ const plugin: Plugin = () => ({
             return files.some((filePath) => routeFiles.some(routeFile => filePath.includes(routeFile)));
           }),
         );
-
+        const debounceCompile = debounce(() => {
+          console.log('Document updated, try to reload page for latest html content.');
+          if (serverCompilerPlugin) {
+            serverCompilerPlugin.compileTask();
+          }
+        }, 200);
         watch.addEvent([
           /src\/document(\/index)?(.js|.jsx|.tsx)/,
           (event: string) => {
             if (event === 'change') {
-              console.log('Document updated, try to reload page for latest html content.');
-              if (serverCompilerPlugin) {
-                serverCompilerPlugin.compileTask();
-              }
+              debounceCompile();
             }
           },
         ]);
