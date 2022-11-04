@@ -16,8 +16,7 @@ interface RouteIdToLoaderConfigs {
 }
 
 export interface DataLoaderInitOptions {
-  loaders: RouteIdToLoaderConfigs;
-  fetcher?: Function;
+  dataLoaderFetcher?: Function;
 }
 
 let routeIdToLoaders: RouteIdToLoaders;
@@ -124,11 +123,11 @@ async function load(routeId: string, loaders?: Loaders) {
 /**
  * Get loaders by config of loaders.
  */
-function getLoaders(loadersConfig: RouteIdToLoaderConfigs, fetcher: Function): RouteIdToLoaders {
+function getLoaders(loadersConfig: RouteIdToLoaderConfigs, dataLoaderFetcher: Function): RouteIdToLoaders {
   function getDataLoaderByConfig(config: DataLoaderConfig): DataLoader {
     // If dataLoader is an object, it is wrapped with a function.
     return typeof config === 'function' ? config : () => {
-      return fetcher(config);
+      return dataLoaderFetcher(config);
     };
   }
 
@@ -159,15 +158,14 @@ function defaultFetcher(options: any) {
  * Load initial data and register global loader.
  * In order to load data, JavaScript modules, CSS and other assets in parallel.
  */
-function init(options: DataLoaderInitOptions) {
+function init(loaders: RouteIdToLoaderConfigs, options: DataLoaderInitOptions) {
   const {
-    loaders,
-    fetcher,
+    dataLoaderFetcher,
   } = options;
 
   if (routeIdToLoaders) return;
 
-  routeIdToLoaders = getLoaders(loaders, fetcher || defaultFetcher);
+  routeIdToLoaders = getLoaders(loaders, dataLoaderFetcher || defaultFetcher);
 
   try {
     loadInitialData();
@@ -183,4 +181,5 @@ function init(options: DataLoaderInitOptions) {
 
 export default {
   init,
+  loadInitialData,
 };

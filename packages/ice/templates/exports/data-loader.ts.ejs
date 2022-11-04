@@ -11,7 +11,6 @@ const loaders = {};
 
 <% if(hasExportAppData) {-%>loaders['__app'] = getAppData;<% } -%>
 
-dataLoader.init({
-  loaders,
-  <% if(dataLoaderImport.imports) {-%>fetcher<% } -%>
+dataLoader.init(loaders, {
+  <% if(dataLoaderImport.imports) {-%>dataLoaderFetcher<% } -%>
 });

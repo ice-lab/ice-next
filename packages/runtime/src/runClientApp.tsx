@@ -27,6 +27,7 @@ export interface RunClientAppOptions {
   basename?: string;
   memoryRouter?: boolean;
   runtimeOptions?: Record<string, any>;
+  dataLoaderFetcher?: Function;
 }
 
 type History = BrowserHistory | HashHistory | MemoryHistory;
