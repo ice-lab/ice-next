@@ -11,12 +11,13 @@ interface Result {
   status: string;
 }
 
-interface RouteIdToLoaderConfigs {
+export interface RouteIdToLoaderConfigs {
   [routeId: string]: DataLoaderConfig;
 }
 
 export interface DataLoaderInitOptions {
   dataLoaderFetcher?: Function;
+  needLoadData?: boolean;
 }
 
 let routeIdToLoaders: RouteIdToLoaders;
@@ -31,14 +32,14 @@ function getCacheId(routeId: string, number?: Number) {
 }
 
 /**
- * Start get data once loader is ready, and set to cache.
+ * Load data by route id and set to cache.
  */
-function loadInitialData() {
-  const context = (window as any).__ICE_APP_CONTEXT__ || {};
-  const matchedIds = context.matchedIds || [];
-  const routesData = context.routesData || {};
+function loadDataByRouteId(routeId: string) {
+  // Try get data from ssr.
+  if (typeof window !== 'undefined') {
+    const context = (window as any).__ICE_APP_CONTEXT__ || {};
+    const routesData = context.routesData || {};
 
-  matchedIds.forEach(routeId => {
     const dataFromSSR = routesData[routeId];
     if (dataFromSSR) {
       cache.set(routeId, {
@@ -48,76 +49,51 @@ function loadInitialData() {
 
       return dataFromSSR;
     }
+  }
 
-    const requestContext = getRequestContext(window.location);
-    function runLoaderSaveCache(loader?: DataLoader, index?: Number) {
-      if (!loader) return;
-      const chacheId = getCacheId(routeId, index);
+  const requestContext = getRequestContext(window.location);
+  function runLoaderSaveCache(loader?: DataLoader, index?: Number) {
+    if (!loader) return;
+    const chacheId = getCacheId(routeId, index);
 
-      loader(requestContext).then(data => {
-        cache.set(chacheId, {
-          value: data,
-          status: 'RESOLVED',
-        });
-        return data;
-      }).catch(err => {
-        cache.set(chacheId, {
-          value: err,
-          status: 'REJECTED',
-        });
-      });
-
+    loader(requestContext).then(data => {
       cache.set(chacheId, {
-        value: loader,
-        status: 'PENDING',
+        value: data,
+        status: 'RESOLVED',
       });
-    }
+      return data;
+    }).catch(err => {
+      cache.set(chacheId, {
+        value: err,
+        status: 'REJECTED',
+      });
+    });
 
-    const loaders: Loaders = routeIdToLoaders[routeId];
+    cache.set(chacheId, {
+      value: loader,
+      status: 'PENDING',
+    });
+  }
 
-    if (Array.isArray(loaders)) {
-      loaders.forEach(runLoaderSaveCache);
-    } else {
-      runLoaderSaveCache(loaders);
-    }
-  });
+  const loaders: Loaders = routeIdToLoaders[routeId];
+
+  if (Array.isArray(loaders)) {
+    loaders.forEach(runLoaderSaveCache);
+  } else {
+    runLoaderSaveCache(loaders);
+  }
 }
 
 /**
  * Load data from cache or fetch it.
  */
-async function load(routeId: string, loaders?: Loaders) {
-  async function runLoaderGetFromCache(loader?: DataLoader, index?: Number) {
-    if (!loader) return;
-    const cacheId = getCacheId(routeId, index);
-    const result = cache.get(cacheId);
+function loadData() {
+  const context = (window as any).__ICE_APP_CONTEXT__ || {};
+  const matchedIds = context.matchedIds || [];
 
-    // Get from cache first.
-    if (result) {
-      const { value, status } = result;
-
-      if (status === 'RESOLVED') {
-        return value;
-      }
-
-      if (status === 'REJECTED') {
-        throw value;
-      }
-
-      // PENDING
-      return await value;
-    } else {
-      // If no cache, call the loader.
-      const requestContext = getRequestContext(window.location);
-      return await loader(requestContext);
-    }
-  }
-
-  if (Array.isArray(loaders)) {
-    return await Promise.all(loaders.map(runLoaderGetFromCache));
-  } else {
-    return await runLoaderGetFromCache(loaders);
-  }
+  matchedIds.forEach(routeId => {
+    loadDataByRouteId(routeId);
+  });
 }
 
 /**
@@ -137,7 +113,6 @@ function getLoaders(loadersConfig: RouteIdToLoaderConfigs, dataLoaderFetcher: Fu
     const loaderConfig: DataLoaderConfig = loadersConfig[id];
     if (!loaderConfig) return;
 
-    // If getData is an object, it is wrapped with a function.
     if (Array.isArray(loaderConfig)) {
       loaders[id] = loaderConfig.map((config: DataLoader) => {
         return getDataLoaderByConfig(config);
@@ -158,29 +133,33 @@ function defaultDataLoaderFetcher(options: any) {
  * Load initial data and register global loader.
  * In order to load data, JavaScript modules, CSS and other assets in parallel.
  */
-function init(loaders: RouteIdToLoaderConfigs, options: DataLoaderInitOptions) {
+function init(loaders: RouteIdToLoaderConfigs, options?: DataLoaderInitOptions) {
   const {
-    dataLoaderFetcher,
-  } = options;
+    dataLoaderFetcher = defaultDataLoaderFetcher,
+    needLoadData = false,
+  } = options || {};
 
   if (routeIdToLoaders) return;
 
-  routeIdToLoaders = getLoaders(loaders, dataLoaderFetcher || defaultDataLoaderFetcher);
+  routeIdToLoaders = getLoaders(loaders, dataLoaderFetcher);
 
-  try {
-    loadInitialData();
-  } catch (error) {
-    console.error('Load initial data error: ', error);
+  if (needLoadData) {
+    try {
+      loadData();
+    } catch (error) {
+      console.error('Load initial data error: ', error);
+    }
   }
 
-  (window as any).__ICE_DATA_LOADER__ = async (routeId) => {
-    const loader: Loaders = routeIdToLoaders[routeId];
-    return await load(routeId, loader);
-  };
+  if (typeof window !== 'undefined') {
+    (window as any).__ICE_DATA_LOADER__ = async (routeId) => {
+      return await loadDataByRouteId(routeId);
+    };
+  }
 }
 
 export default {
   init,
-  loadInitialData,
-  defaultDataLoaderFetcher,
+  loadData,
+  loadDataByRouteId,
 };

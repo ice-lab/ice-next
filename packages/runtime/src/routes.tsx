@@ -2,6 +2,8 @@ import React from 'react';
 import type { RouteItem, RouteModules, RouteWrapperConfig, RouteMatch, RequestContext, RoutesConfig, RoutesData, RenderMode } from './types.js';
 import RouteWrapper from './RouteWrapper.js';
 import { useAppContext } from './AppContext.js';
+import DataLoader from './dataLoader.js';
+import type { RouteIdToLoaderConfigs } from './dataLoader.js';
 
 type RouteModule = Pick<RouteItem, 'id' | 'load'>;
 
@@ -33,6 +35,11 @@ export async function loadRouteModules(routes: RouteModule[], originRouteModules
   return routeModules;
 }
 
+export interface LoadRoutesDataOptions {
+  renderMode?: RenderMode;
+  dataLoaderFetcher?: Function;
+}
+
 /**
 * get data for the matched routes.
 */
@@ -40,10 +47,13 @@ export async function loadRoutesData(
   matches: RouteMatch[],
   requestContext: RequestContext,
   routeModules: RouteModules,
-  renderMode?: RenderMode,
+  loadRoutesDataOptions?: LoadRoutesDataOptions,
 ): Promise<RoutesData> {
   const routesData: RoutesData = {};
-
+  const {
+    renderMode,
+    dataLoaderFetcher,
+  } = loadRoutesDataOptions;
   const hasGlobalLoader = typeof window !== 'undefined' && (window as any).__ICE_DATA_LOADER__;
 
   if (hasGlobalLoader) {
@@ -57,30 +67,33 @@ export async function loadRoutesData(
     );
 
     return routesData;
+  } else {
+    // If the DataLoader is not initialized, it needs to be initialized.
+    const routeIdToLoaderConfigs: RouteIdToLoaderConfigs = {};
+    Object.keys(routeModules).forEach((routeId) => {
+      routeIdToLoaderConfigs[routeId] = (routeModules[routeId] || {}).dataLoader;
+    });
+    DataLoader.init(routeIdToLoaderConfigs, {
+      dataLoaderFetcher,
+    });
   }
 
   await Promise.all(
     matches.map(async (match) => {
       const { id } = match.route;
       const routeModule = routeModules[id];
-      // const { getData, getServerData, getStaticData } = routeModule ?? {};
+      const { dataLoader, getServerData, getStaticData } = routeModule ?? {};
 
-      // let dataLoader;
-
-      // // SSG -> getStaticData
-      // // SSR -> getServerData || getData
-      // // CSR -> getData
-      // if (renderMode === 'SSG') {
-      //   dataLoader = getStaticData;
-      // } else if (renderMode === 'SSR') {
-      //   dataLoader = getServerData || getData;
-      // } else {
-      //   dataLoader = getData;
-      // }
-
-      // if (dataLoader) {
-      //   routesData[id] = await dataLoader(requestContext);
-      // }
+      // SSG -> getStaticData
+      // SSR -> getServerData || getData
+      // CSR -> getData
+      if (renderMode === 'SSG') {
+        // dataLoader = getStaticData;
+      } else if (renderMode === 'SSR') {
+        // dataLoader = getServerData || getData;
+      } else {
+        DataLoader.loadDataByRouteId(id);
+      }
     }),
   );
 

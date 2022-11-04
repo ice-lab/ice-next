@@ -230,4 +230,4 @@ export interface RouteMatch {
   route: RouteItem;
 }
 
-export type RenderMode = 'SSR' | 'SSG';
+export type RenderMode = 'SSR' | 'SSG' | 'CSR';

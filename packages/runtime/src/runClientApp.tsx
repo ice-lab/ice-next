@@ -41,6 +41,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
     hydrate,
     memoryRouter,
     runtimeOptions,
+    dataLoaderFetcher,
   } = options;
   const windowContext: WindowContext = (window as any).__ICE_APP_CONTEXT__ || {};
   const assetsManifest: AssetsManifest = (window as any).__ICE_ASSETS_MANIFEST__ || {};
@@ -91,7 +92,9 @@ export default async function runClientApp(options: RunClientAppOptions) {
   const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   if (!routesData) {
-    routesData = await loadRoutesData(matches, requestContext, routeModules);
+    routesData = await loadRoutesData(matches, requestContext, routeModules, {
+      dataLoaderFetcher,
+    });
   }
   if (!routesConfig) {
     routesConfig = getRoutesConfig(matches, routesData, routeModules);
@@ -263,7 +266,9 @@ export async function loadNextPage(
   // load data for changed route.
   const initialContext = getRequestContext(window.location);
   const matchesToLoad = filterMatchesToLoad(preMatches, currentMatches);
-  const data = await loadRoutesData(matchesToLoad, initialContext, routeModules);
+  const data = await loadRoutesData(matchesToLoad, initialContext, routeModules, {
+    // dataLoaderFetcher,
+  });
 
   const routesData: RoutesData = {};
   // merge page data.
