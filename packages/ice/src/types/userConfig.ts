@@ -61,4 +61,5 @@ export interface UserConfig {
   syntaxFeatures?: SyntaxFeatures;
   splitChunks?: boolean;
   dataLoader?: boolean;
+  crossOriginLoading?: Config['output']['crossOriginLoading'];
 }
