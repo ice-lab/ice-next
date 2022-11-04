@@ -1,4 +1,4 @@
-import type { GetData, GetDataConfig, RuntimeModules, AppExport } from './types.js';
+import type { GetData, GetDataConfig, RuntimeModules, AppExport, RuntimePlugin, CommonJsRuntime } from './types.js';
 import getRequestContext from './requestContext.js';
 
 interface Loaders {
@@ -134,7 +134,10 @@ async function init(loadersConfig: LoadersConfig, options: Options) {
   };
 
   if (runtimeModules) {
-    await Promise.all(runtimeModules.map(m => m(runtimeApi)).filter(Boolean));
+    await Promise.all(runtimeModules.map(module => {
+      const runtimeModule = (module as CommonJsRuntime).default || module as RuntimePlugin;
+      return runtimeModule(runtimeApi);
+    }).filter(Boolean));
   }
 
   const loaders = getLoaders(loadersConfig, fetcher);

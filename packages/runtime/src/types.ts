@@ -171,9 +171,15 @@ export interface RuntimeAPI {
   useAppContext: UseAppContext;
 }
 
+export interface StaticRuntimeAPI {
+  appContext: {
+    appExport: AppExport;
+  };
+}
+
 export interface RuntimePlugin {
   (
-    apis: RuntimeAPI,
+    apis: RuntimeAPI | StaticRuntimeAPI,
     runtimeOptions?: Record<string, any>,
   ): Promise<void> | void;
 }
