@@ -63,24 +63,24 @@ export async function loadRoutesData(
     matches.map(async (match) => {
       const { id } = match.route;
       const routeModule = routeModules[id];
-      const { getData, getServerData, getStaticData } = routeModule ?? {};
+      // const { getData, getServerData, getStaticData } = routeModule ?? {};
 
-      let dataLoader;
+      // let dataLoader;
 
-      // SSG -> getStaticData
-      // SSR -> getServerData || getData
-      // CSR -> getData
-      if (renderMode === 'SSG') {
-        dataLoader = getStaticData;
-      } else if (renderMode === 'SSR') {
-        dataLoader = getServerData || getData;
-      } else {
-        dataLoader = getData;
-      }
+      // // SSG -> getStaticData
+      // // SSR -> getServerData || getData
+      // // CSR -> getData
+      // if (renderMode === 'SSG') {
+      //   dataLoader = getStaticData;
+      // } else if (renderMode === 'SSR') {
+      //   dataLoader = getServerData || getData;
+      // } else {
+      //   dataLoader = getData;
+      // }
 
-      if (dataLoader) {
-        routesData[id] = await dataLoader(requestContext);
-      }
+      // if (dataLoader) {
+      //   routesData[id] = await dataLoader(requestContext);
+      // }
     }),
   );
 

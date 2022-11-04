@@ -150,7 +150,7 @@ function getLoaders(loadersConfig: RouteIdToLoaderConfigs, dataLoaderFetcher: Fu
   return loaders;
 }
 
-function defaultFetcher(options: any) {
+function defaultDataLoaderFetcher(options: any) {
   return window.fetch(options.key, options);
 }
 
@@ -165,7 +165,7 @@ function init(loaders: RouteIdToLoaderConfigs, options: DataLoaderInitOptions) {
 
   if (routeIdToLoaders) return;
 
-  routeIdToLoaders = getLoaders(loaders, dataLoaderFetcher || defaultFetcher);
+  routeIdToLoaders = getLoaders(loaders, dataLoaderFetcher || defaultDataLoaderFetcher);
 
   try {
     loadInitialData();
@@ -182,4 +182,5 @@ function init(loaders: RouteIdToLoaderConfigs, options: DataLoaderInitOptions) {
 export default {
   init,
   loadInitialData,
+  defaultDataLoaderFetcher,
 };
