@@ -55,6 +55,23 @@ export default defineConfig({
 });
 ```
 
+### crossOriginLoading
+
+- 类型：`false | 'anonymous' | 'use-credentials'`
+- 默认值：`false`
+
+配置
+
+```js
+import { defineConfig } from '@ice/app';
+
+export default defineConfig({
+  crossOriginLoading: 'anonymous'
+});
+```
+
+指定 webpack 启用 [cross-origin](https://webpack.js.org/configuration/output/#outputcrossoriginloading) 去加载 chunk。
+
 ### define
 
 - 类型：`Record<string, string | boolean>`
@@ -277,14 +294,23 @@ module.exports = {
       // 修改 postcss-preset-env 的选项
       {
         stage: 2,
-        // 注意，在自定义或修改 postcss 配置时，需要手动指定 browsers 的值（https://github.com/browserslist/browserslist#readme）。
-        // Post: 框架内置的 postcss 配置会自动读取 .browserslistrc 配置文件中的值
-        browsers: 'last 2 versions',
       }
     ]
   ],
 }
 ```
+
+### polyfill
+
+- 类型：`'usage' | 'entry' | false`
+- 默认值：`false`
+
+框架提供了多种 polyfill 的方式，开发者可以按实际情况选择对应的设置：
+
+- `usage` 按开发者使用的语法自动引入对应的 `polyfill`，适用于 `node_modules` 也进行编译的场景（一定程度上影响编译效率以及三方依赖二次编译造成的代码冗余）
+- `entry` 自动引入 browser（浏览器）需要兼容的 `polyfill`，适用于 `node_modules` 依赖不进行编译的场景（可能存在大量未被使用的 `polyfill` 被引入）
+
+> 如果面向现代浏览器进行开发，大量 ES 语法均不需要引入 Polyfill，我们推荐不开启 `polyfill` 配置。如果你的代码或者三方依赖要求兼容到 IE 11 等浏览器，可以选择主动引入指定语法的 polyfill 或者开启 `polyfill` 配置。
 
 ### transform
 
