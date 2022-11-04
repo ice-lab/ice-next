@@ -66,9 +66,7 @@ export default defineConfig({
 import { defineConfig } from '@ice/app';
 
 export default defineConfig({
-  define: {
-    crossOriginLoading: 'anonymous'
-  },
+  crossOriginLoading: 'anonymous'
 });
 ```
 
