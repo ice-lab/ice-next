@@ -70,7 +70,7 @@ export default defineConfig({
 });
 ```
 
-指定 webpack 启用 cross-origin 去加载 chunk.
+指定 webpack 启用 [cross-origin](https://webpack.js.org/configuration/output/#outputcrossoriginloading) 去加载 chunk.
 
 ### define
 
