@@ -1,4 +1,4 @@
-import type { GetData, GetDataConfig } from './types.js';
+import type { GetData, GetDataConfig, RuntimeModules, AppExport } from './types.js';
 import getRequestContext from './requestContext.js';
 
 interface Loaders {
