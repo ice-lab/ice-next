@@ -45,7 +45,7 @@ export default class DataLoaderPlugin {
             },
             {
               swc: {
-                keepExports: ['getData', 'getAppData'],
+                keepExports: ['getData', 'getAppData', 'request'],
                 keepPlatform: 'web',
                 getRoutePaths: () => {
                   return getRoutePathsFromCache(this.dataCache);

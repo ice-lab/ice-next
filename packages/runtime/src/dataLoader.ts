@@ -110,11 +110,33 @@ function getLoaders(loadersConfig: LoadersConfig, fetcher: Function): Loaders {
   return loaders;
 }
 
+interface Options {
+  fetcher: Function;
+  runtimeModules: RuntimeModules['static'];
+  appExport: AppExport;
+}
+
 /**
  * Load initial data and register global loader.
  * In order to load data, JavaScript modules, CSS and other assets in parallel.
  */
-function init(loadersConfig: LoadersConfig, fetcher: Function) {
+async function init(loadersConfig: LoadersConfig, options: Options) {
+  const {
+    fetcher,
+    runtimeModules,
+    appExport,
+  } = options;
+
+  const runtimeApi = {
+    appContext: {
+      appExport,
+    },
+  };
+
+  if (runtimeModules) {
+    await Promise.all(runtimeModules.map(m => m(runtimeApi)).filter(Boolean));
+  }
+
   const loaders = getLoaders(loadersConfig, fetcher);
 
   try {
