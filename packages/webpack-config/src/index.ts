@@ -33,6 +33,7 @@ interface GetWebpackConfigOptions {
   config: Config;
   webpack: typeof webpack;
   runtimeTmpDir: string;
+  userConfigHash: string;
 }
 type GetWebpackConfig = (options: GetWebpackConfigOptions) => Configuration;
 enum JSMinifier {
@@ -48,7 +49,7 @@ function getEntry(rootDir: string, runtimeTmpDir: string) {
   })[0];
   if (!entryFile) {
     // use generated file in template directory
-    entryFile = path.join(rootDir, runtimeTmpDir, 'entry.client.ts');
+    entryFile = path.join(rootDir, runtimeTmpDir, 'entry.client.tsx');
   }
 
   // const dataLoaderFile = path.join(rootDir, '.ice/data-loader.ts');
@@ -59,7 +60,7 @@ function getEntry(rootDir: string, runtimeTmpDir: string) {
   };
 }
 
-const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeTmpDir }) => {
+const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeTmpDir, userConfigHash }) => {
   const {
     mode,
     define = {},
@@ -95,6 +96,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     optimization = {},
     performance,
     enableCopyPlugin,
+    polyfill,
   } = config;
   const absoluteOutputDir = path.isAbsolute(outputDir) ? outputDir : path.join(rootDir, outputDir);
   const dev = mode !== 'production';
@@ -165,6 +167,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     compileIncludes,
     compileExcludes,
     swcOptions,
+    polyfill,
+    env: true,
   });
   const webpackConfig = {
     mode,
@@ -257,7 +261,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     } as Configuration['optimization'],
     cache: {
       type: 'filesystem',
-      version: `${process.env.__ICE_VERSION__}|${JSON.stringify(config)}`,
+      version: `${process.env.__ICE_VERSION__}|${userConfigHash}`,
       buildDependencies: { config: [path.join(rootDir, 'package.json')] },
       cacheDirectory: path.join(cacheDir, 'webpack'),
     },
