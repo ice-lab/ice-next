@@ -25,7 +25,8 @@ let fetcher = (options) => {
 }  
 <% } -%>
 
-const statics = [
+// Only init static runtime in data-loader. 
+const staticRuntimeModules = [
 <% staticModuleNames.forEach((moduleName, index) => { -%>
   <%= moduleName %>,
 <% }) -%>
@@ -33,6 +34,6 @@ const statics = [
 
 dataLoader.init(loaders, {
   fetcher,
-  runtimeModules: statics,
+  runtimeModules: staticRuntimeModules,
   appExport: app,
 });
