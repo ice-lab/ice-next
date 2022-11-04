@@ -179,7 +179,14 @@ export interface StaticRuntimeAPI {
 
 export interface RuntimePlugin {
   (
-    apis: RuntimeAPI | StaticRuntimeAPI,
+    apis: RuntimeAPI,
+    runtimeOptions?: Record<string, any>,
+  ): Promise<void> | void;
+}
+
+export interface RuntimePlugin {
+  (
+    apis: StaticRuntimeAPI,
     runtimeOptions?: Record<string, any>,
   ): Promise<void> | void;
 }
