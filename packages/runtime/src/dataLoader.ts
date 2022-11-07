@@ -47,24 +47,43 @@ function loadDataByRouteId(routeId: string) {
   }
 
   const requestContext = getRequestContext(window.location);
-  function runLoaderSaveCache(loader?: DataLoader, index?: Number) {
+  async function runLoaderSaveCache(loader?: DataLoader, index?: Number) {
     if (!loader) return;
-    const chacheId = getCacheId(routeId, index);
+
+    const cacheId = getCacheId(routeId, index);
+
+    // Try get data from cache.
+    const result = cache.get(cacheId);
+    if (result) {
+      const { value, status } = result;
+
+      if (status === 'RESOLVED') {
+        return value;
+      }
+
+      if (status === 'REJECTED') {
+        throw value;
+      }
+
+      // PENDING
+      return await value;
+    }
+
 
     loader(requestContext).then(data => {
-      cache.set(chacheId, {
+      cache.set(cacheId, {
         value: data,
         status: 'RESOLVED',
       });
       return data;
     }).catch(err => {
-      cache.set(chacheId, {
+      cache.set(cacheId, {
         value: err,
         status: 'REJECTED',
       });
     });
 
-    cache.set(chacheId, {
+    cache.set(cacheId, {
       value: loader,
       status: 'PENDING',
     });
