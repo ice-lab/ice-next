@@ -49,7 +49,7 @@ export default function Home() {
 
 ### 定制 SSG 的数据源
 
-如果希望在 SSG 时使用兜底数据，可以通过为路由组件定义 `staticDataLoader` 来实现。这样在 SSG 时，组件 `useData()` 获取的数据，为 `staticDataLoader` 的返回值。
+如果希望在 SSG 时使用兜底数据，可以通过为路由组件定义 `staticDataLoader` 来实现。这样在 SSG 时，组件通过 `useData()` 获取的数据为 `staticDataLoader` 的返回值。
 
 ```tsx
 // src/pages/index.tsx
@@ -80,6 +80,8 @@ export const staticDataLoader = defineStaticDataLoader(() => {
   };
 });
 ```
+
+当 `defineDataLoader` 接受入参为数组时（定义了多个数据请求），`defineStaticDataLoader` 也需要与其一一对应。
 
 构建 Client 端的 Bundle 时，会移除 `staticDataLoader` 及其相关依赖。
 

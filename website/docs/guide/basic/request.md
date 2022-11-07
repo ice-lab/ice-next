@@ -12,7 +12,7 @@ ICE 对页面数据请求的编码规范做出了约定，来最大限度的提�
 
 <img src="https://img.alicdn.com/imgextra/i2/O1CN01v9qNhw1aAPS9nFmxE_!!6000000003289-2-tps-1396-548.png" width="750px" />
 
-传统在组件 `useEffect` 后发起数据请求的方式，数据请求和组件 UI 逻辑耦合在一起，请求发起的时机是相对滞后的。
+常规的 React 应用，一般都会在组件首次 `useEffect` 时发起数据请求。这种组织方式，数据请求会在页面完成首次渲染后才发起，请求的时机是非常滞后的。
 
 ```tsx
 // src/pages/index.tsx
