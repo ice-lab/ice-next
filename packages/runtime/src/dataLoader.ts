@@ -30,20 +30,20 @@ function getCacheId(routeId: string, number?: Number) {
  * Load data by route id and set to cache.
  */
 function loadDataByRouteId(routeId: string) {
+  if (typeof window === 'undefined') return;
+
   // Try get data from ssr.
-  if (typeof window !== 'undefined') {
-    const context = (window as any).__ICE_APP_CONTEXT__ || {};
-    const routesData = context.routesData || {};
+  const context = (window as any).__ICE_APP_CONTEXT__ || {};
+  const routesData = context.routesData || {};
 
-    const dataFromSSR = routesData[routeId];
-    if (dataFromSSR) {
-      cache.set(routeId, {
-        value: dataFromSSR,
-        status: 'RESOLVED',
-      });
+  const dataFromSSR = routesData[routeId];
+  if (dataFromSSR) {
+    cache.set(routeId, {
+      value: dataFromSSR,
+      status: 'RESOLVED',
+    });
 
-      return dataFromSSR;
-    }
+    return dataFromSSR;
   }
 
   const requestContext = getRequestContext(window.location);
@@ -135,7 +135,7 @@ export interface DataLoaderInitOptions {
  * Load initial data and register global loader.
  * In order to load data, JavaScript modules, CSS and other assets in parallel.
  */
-function init(loaders: RouteIdToLoaderConfigs, options?: DataLoaderInitOptions) {
+async function init(loaders: RouteIdToLoaderConfigs, options?: DataLoaderInitOptions) {
   const {
     dataLoaderFetcher = defaultDataLoaderFetcher,
     needLoadData = false,
