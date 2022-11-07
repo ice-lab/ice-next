@@ -15,7 +15,6 @@ const { mergeWith, isArray } = lodash;
 type CSSRuleConfig = [string, string?, Record<string, any>?];
 interface Options {
   publicPath: string;
-  browsers: string[];
   postcssOptions: Config['postcss'];
   rootDir: string;
 }
@@ -23,7 +22,7 @@ interface Options {
 const require = createRequire(import.meta.url);
 
 function configCSSRule(config: CSSRuleConfig, options: Options) {
-  const { publicPath, browsers, rootDir, postcssOptions: userPostcssOptions } = options;
+  const { publicPath, rootDir, postcssOptions: userPostcssOptions } = options;
   const [style, loader, loaderOptions] = config;
   const cssLoaderOpts = {
     sourceMap: true,
@@ -47,7 +46,7 @@ function configCSSRule(config: CSSRuleConfig, options: Options) {
       },
     },
   };
-  const postcssOpts = getPostcssOpts({ rootDir, browsers, userPostcssOptions });
+  const postcssOpts = getPostcssOpts({ rootDir, userPostcssOptions });
   return {
     test: new RegExp(`\\.${style}$`),
     use: [
@@ -79,7 +78,7 @@ function configCSSRule(config: CSSRuleConfig, options: Options) {
 }
 
 const css: ModifyWebpackConfig<Configuration, typeof webpack> = (config, ctx) => {
-  const { supportedBrowsers, publicPath, hashKey, cssFilename, cssChunkFilename, postcss, rootDir } = ctx;
+  const { publicPath, hashKey, cssFilename, cssChunkFilename, postcss, rootDir } = ctx;
   const cssOutputFolder = 'css';
   config.module.rules.push(...([
     ['css'],
@@ -90,10 +89,7 @@ const css: ModifyWebpackConfig<Configuration, typeof webpack> = (config, ctx) =>
     ['scss', require.resolve('@ice/bundles/compiled/sass-loader'), {
       implementation: sass,
     }],
-  ] as CSSRuleConfig[]).map((config) => {
-    return configCSSRule(config, { publicPath, browsers: supportedBrowsers, postcssOptions: postcss, rootDir });
-  },
-  ));
+  ] as CSSRuleConfig[]).map((config) => configCSSRule(config, { publicPath, postcssOptions: postcss, rootDir })));
   config.plugins.push(
     new MiniCssExtractPlugin({
       filename: cssFilename || `${cssOutputFolder}/${hashKey ? `[name]-[${hashKey}].css` : '[name].css'}`,
@@ -108,11 +104,9 @@ const css: ModifyWebpackConfig<Configuration, typeof webpack> = (config, ctx) =>
 
 function getPostcssOpts({
   rootDir,
-  browsers,
   userPostcssOptions,
 }: {
   rootDir: string;
-  browsers: string[];
   userPostcssOptions: Options['postcssOptions'];
 }) {
   const postcssConfigPath = path.join(rootDir, 'postcss.config.js');
@@ -140,7 +134,6 @@ function getPostcssOpts({
               features: {
                 'custom-properties': false,
               },
-              browsers,
             }],
             ['@ice/bundles/compiled/postcss-plugin-rpx2vw'],
           ],
