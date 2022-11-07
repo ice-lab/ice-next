@@ -4,11 +4,15 @@ order: 6
 ---
 ## 设计理念
 
-ICE 对页面数据请求的编码规范做出了约定，来最大限度的提前页面的数据请求时机。在传统的编码模式下，数据请求一般在组件内部发起，依赖于业务 Bundle 的加载解析执行，整个过程是串行、阻塞的。而在 ICE 中，页面的数据请求会由框架（或容器）统一发起，和业务 Bundle 的加载解析是并行、不阻塞的。基于这种模式开发的页面，天然获得了更好的性能体验。
+ICE 对页面数据请求的编码规范做出了约定，来最大限度的提前页面的数据请求时机。
+- 在传统的编码模式下，数据请求一般在组件内部发起，依赖于业务 Bundle 的加载解析执行，整个过程是串行、阻塞的。
+- 而在 ICE 中，页面的数据请求会由框架（或容器）统一发起，和业务 Bundle 的加载解析是并行、不阻塞的。
 
-<img src="https://img.alicdn.com/imgextra/i1/O1CN01DSg8XZ1mDPR42RAxe_!!6000000004920-2-tps-1368-470.png" width="750px">
+基于这种模式开发的页面，天然获得了更好的性能体验。
 
-在传统的编码习惯中，数据请求一般在组件 `useEffect` 后发起，数据请求和组件的 UI 逻辑耦合在一起，请求发起的时机是相对滞后的。
+<img src="https://img.alicdn.com/imgextra/i1/O1CN01DSg8XZ1mDPR42RAxe_!!6000000004920-2-tps-1368-470.png" width="750px" />
+
+传统在组件 `useEffect` 后发起数据请求的方式，数据请求和组件 UI 逻辑耦合在一起，请求发起的时机是相对滞后的。
 
 ```tsx
 // src/pages/index.tsx
@@ -92,7 +96,7 @@ export const dataLoader = defineDataLoader(async (ctx) => {
 });
 ```
 
-`defineDataLoader` 支持传入 Function，来定义页面数据请求的具体实现，其入参，在 CSR 渲染模式下，包含：
+`defineDataLoader` 支持传入 Function，来定义页面数据请求的具体实现，其入参在 CSR 渲染模式下，包含：
 - `pathname`: `string`, 当前页面的路径名。
 - `query`: `object`, 当前页面的 `query` 信息，会被提前解析。
 
@@ -126,4 +130,4 @@ export const dataLoader = defineDataLoader([
 ]);
 ```
 
-此时，`useData` 获取的数据也为数组，数组元素和 `dataLoader` 定义的数据请求顺序一一对应。
+多个数据请求的情况下，`useData` 获取的数据也对应的为数组，数组元素和 `dataLoader` 中定义的数据请求的返回值一一对应。
