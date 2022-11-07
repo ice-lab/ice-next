@@ -464,7 +464,7 @@ const error = {
 
 大部分情况下，前端代码里用到的后端接口写的都是相对路径如 `/api/getFoo.json`，然后访问不同环境时浏览器会根据当前域名发起对应的请求。如果域名跟实际请求的接口地址不一致，则需要通过 `request.baseURL` 来配置：
 
-```ts title="src/app.ts"
+```ts title="src/app.tsx"
 import { defineRequestConfig } from '@ice/plugin-request/esm/types';
 
 export const request = defineRequestConfig({
@@ -483,9 +483,9 @@ BASEURL=http://localhost:9999/api
 BASEURL=https://example.com/api
 ```
 
-在 `src/app.ts` 中配置 `request.baseURL`:
+在 `src/app.tsx` 中配置 `request.baseURL`:
 
-```ts title="src/app.ts"
+```ts title="src/app.tsx"
 import { defineRequestConfig } from '@ice/plugin-request/esm/types';
 
 export const request = defineRequestConfig({
