@@ -1,4 +1,4 @@
-import { Outlet, useData, useConfig } from 'ice';
+import { Outlet, useData, useConfig, defineDataLoader } from 'ice';
 
 export default function Layout() {
   const data = useData();
@@ -27,7 +27,7 @@ export function getConfig() {
   };
 }
 
-export function getData() {
+export const dataLoader = defineDataLoader(() => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
@@ -35,4 +35,4 @@ export function getData() {
       });
     }, 1 * 100);
   });
-}
+});

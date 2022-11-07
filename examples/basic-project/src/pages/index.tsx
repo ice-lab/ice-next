@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react';
-import { Link, useData, useAppData, useConfig } from 'ice';
+import { Link, useData, useAppData, useConfig, defineDataLoader } from 'ice';
 // not recommended but works
 import { useAppContext } from '@ice/runtime';
 import { useRequest } from 'ahooks';
@@ -62,7 +62,7 @@ export function getConfig() {
   };
 }
 
-export function getData({ pathname, query }) {
+export const dataLoader = defineDataLoader(({ pathname, query }) => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
@@ -73,7 +73,7 @@ export function getData({ pathname, query }) {
       });
     }, 1 * 100);
   });
-}
+});
 
 export function getServerData() {
   return {

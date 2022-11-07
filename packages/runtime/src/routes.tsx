@@ -89,7 +89,8 @@ export async function loadRoutesData(
   // Load data by route id.
   await Promise.all(
     matches.map(async (match) => {
-      DataLoader.loadDataByRouteId(match.route.id);
+      const { id } = match.route;
+      routesData[id] = await DataLoader.loadDataByRouteId(match.route.id);
     }),
   );
 

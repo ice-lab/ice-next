@@ -29,9 +29,8 @@ function getCacheId(routeId: string, number?: Number) {
 /**
  * Load data by route id and set to cache.
  */
-function loadDataByRouteId(routeId: string) {
+async function loadDataByRouteId(routeId: string) {
   if (typeof window === 'undefined') return;
-
   // Try get data from ssr.
   const context = (window as any).__ICE_APP_CONTEXT__ || {};
   const routesData = context.routesData || {};
@@ -69,8 +68,7 @@ function loadDataByRouteId(routeId: string) {
       return await value;
     }
 
-
-    loader(requestContext).then(data => {
+    const res = loader(requestContext).then(data => {
       cache.set(cacheId, {
         value: data,
         status: 'RESOLVED',
@@ -84,17 +82,19 @@ function loadDataByRouteId(routeId: string) {
     });
 
     cache.set(cacheId, {
-      value: loader,
+      value: res,
       status: 'PENDING',
     });
+
+    return res;
   }
 
   const loaders: Loaders = routeIdToLoaders[routeId];
 
   if (Array.isArray(loaders)) {
-    loaders.forEach(runLoaderSaveCache);
+    return Promise.all(loaders.map(runLoaderSaveCache));
   } else {
-    runLoaderSaveCache(loaders);
+    return runLoaderSaveCache(loaders);
   }
 }
 
