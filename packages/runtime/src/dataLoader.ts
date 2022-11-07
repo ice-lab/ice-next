@@ -127,8 +127,8 @@ function defaultDataLoaderFetcher(options: any) {
 export interface DataLoaderInitOptions {
   dataLoaderFetcher?: Function;
   needLoadData?: boolean;
-  runtimeModules: RuntimeModules['statics'];
-  appExport: AppExport;
+  runtimeModules?: RuntimeModules['statics'];
+  appExport?: AppExport;
 }
 
 /**
