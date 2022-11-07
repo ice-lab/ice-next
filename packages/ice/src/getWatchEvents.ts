@@ -2,14 +2,12 @@ import * as path from 'path';
 import consola from 'consola';
 import type { Context } from 'build-scripts';
 import type { Config } from '@ice/webpack-config/esm/types';
-import type { AppConfig } from '@ice/runtime';
-import type { GetAppConfig, ServerCompiler, WatchEvent } from './types/plugin.js';
+import type { ServerCompiler, WatchEvent } from './types/plugin.js';
 import { generateRoutesInfo } from './routes.js';
 import type Generator from './service/runtimeGenerator';
 import getGlobalStyleGlobPattern from './utils/getGlobalStyleGlobPattern.js';
 import renderExportsTemplate from './utils/renderExportsTemplate.js';
 import { getFileExports } from './service/analyze.js';
-import showHashRouterError from './utils/showHashRouterError.js';
 
 interface Options {
   targetDir: string;
@@ -18,13 +16,11 @@ interface Options {
   cache: Map<string, string>;
   ctx: Context<Config>;
   serverCompiler: ServerCompiler;
-  getAppConfig: GetAppConfig;
 }
 
 const getWatchEvents = (options: Options): WatchEvent[] => {
-  const { generator, targetDir, templateDir, cache, ctx, getAppConfig } = options;
-  const { userConfig, configFile, rootDir } = ctx;
-  const { routes: routesConfig, dataLoader } = userConfig;
+  const { generator, targetDir, templateDir, cache, ctx } = options;
+  const { userConfig: { routes: routesConfig, dataLoader }, configFile, rootDir } = ctx;
   const watchRoutes: WatchEvent = [
     /src\/pages\/?[\w*-:.$]+$/,
     async (eventName: string) => {
@@ -99,24 +95,15 @@ const getWatchEvents = (options: Options): WatchEvent[] => {
         const hasExportAppData = (await getFileExports({ rootDir, file: 'src/app' })).includes('getAppData');
         if (hasExportAppData !== !!cache.get('hasExportAppData')) {
           cache.set('hasExportAppData', hasExportAppData ? 'true' : '');
-          renderExportsTemplate(
-            {
-              ...JSON.parse(cache.get('routes')),
-              hasExportAppData,
-            },
-            generator.renderFile,
-            {
-              rootDir,
-              runtimeDir: targetDir,
-              templateDir: path.join(templateDir, '../exports'),
-              dataLoader,
-            },
-          );
-        }
-
-        const appConfig = (await getAppConfig()).default;
-        if (appConfig?.router?.type === 'hash') {
-          showHashRouterError(userConfig);
+          renderExportsTemplate({
+            ...JSON.parse(cache.get('routes')),
+            hasExportAppData,
+          }, generator.renderFile, {
+            rootDir,
+            runtimeDir: targetDir,
+            templateDir: path.join(templateDir, '../exports'),
+            dataLoader,
+          });
         }
       }
     },

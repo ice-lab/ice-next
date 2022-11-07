@@ -81,13 +81,12 @@ const plugin: Plugin = () => ({
       }
     });
 
-    onHook('after.build.compile', async ({ webpackConfigs, serverEntryRef, getAppConfig }) => {
+    onHook('after.build.compile', async ({ webpackConfigs, serverEntryRef, appConfig }) => {
       const outputDir = webpackConfigs[0].output.path;
       let renderMode: RenderMode;
       if (ssg) {
         renderMode = 'SSG';
       }
-      const appConfig = (await getAppConfig()).default;
       serverEntryRef.current = serverOutfile;
       // generate html
       await generateHTML({

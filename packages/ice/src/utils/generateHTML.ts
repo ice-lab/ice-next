@@ -34,20 +34,11 @@ export default async function generateHTML(options: Options) {
     throw new Error(`import ${entry} error: ${err}`);
   }
 
-  if (routeType === 'hash') {
-    const routePath = '/';
-    const htmlContent = await renderHTML({ routePath, serverEntry, documentOnly, renderMode });
-    await writeFile(
-      await generateHTMLPath({ rootDir, routePath, outputDir }),
-      htmlContent,
-    );
-    return;
-  }
-
   // Read the latest routes info.
   const routeManifest = path.join(rootDir, ROUTER_MANIFEST);
   const routes = JSON.parse(fse.readFileSync(routeManifest, 'utf8'));
-  const paths = getRoutePaths(routes);
+  // When enable hash-router, only generate one html(index.html).
+  const paths = routeType === 'hash' ? ['/'] : getRoutePaths(routes);
   for (let i = 0, n = paths.length; i < n; i++) {
     const routePath = paths[i];
     const htmlContent = await renderHTML({ routePath, serverEntry, documentOnly, renderMode });
