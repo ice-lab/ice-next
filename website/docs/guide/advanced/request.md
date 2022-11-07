@@ -1,4 +1,4 @@
-# 统一数据请求
+# 网络请求
 
 大部分前端应用都会选择通过 HTTP(s) 协议与后端服务通讯。在 ice.js 3 框架的 [request 插件](https://www.npmjs.com/@ice/plugin-request)提供了一套从 UI 交互到请求服务端数据的完整方案，更进一步简化了应用的数据请求流程，基于此提供了 `request` 和 `useRequest` Hooks 方法。
 
