@@ -210,6 +210,7 @@ importers:
   examples/miniapp-project:
     specifiers:
       '@ice/app': workspace:*
+      '@ice/miniapp-html-styles': workspace:*
       '@ice/miniapp-runtime': workspace:*
       '@ice/plugin-miniapp': workspace:*
       '@ice/runtime': workspace:*
@@ -223,6 +224,7 @@ importers:
       webpack: ^5.73.0
     dependencies:
       '@ice/app': link:../../packages/ice
+      '@ice/miniapp-html-styles': link:../../packages/miniapp-html-styles
       '@ice/miniapp-runtime': link:../../packages/miniapp-runtime
       '@ice/plugin-miniapp': link:../../packages/plugin-miniapp
       '@ice/runtime': link:../../packages/runtime
@@ -826,6 +828,9 @@ importers:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
 
+  packages/miniapp-html-styles:
+    specifiers: {}
+
   packages/miniapp-loader:
     specifiers:
       '@ice/bundles': ^0.1.0
@@ -1146,7 +1151,6 @@ importers:
       '@ice/swc-plugin-remove-export': 0.1.1
       '@rollup/pluginutils': ^4.2.0
       '@swc/core': 1.3.3
-      browserslist: ^4.19.3
       consola: ^2.15.3
       esbuild: ^0.14.51
       fast-glob: ^3.2.11
@@ -1159,7 +1163,6 @@ importers:
       '@ice/swc-plugin-remove-export': 0.1.1
       '@rollup/pluginutils': 4.2.1
       '@swc/core': 1.3.3
-      browserslist: 4.21.4
       consola: 2.15.3
       fast-glob: 3.2.12
     devDependencies:
