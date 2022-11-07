@@ -17,7 +17,7 @@ const { debounce } = lodash;
 
 const plugin: Plugin = () => ({
   name: 'plugin-web',
-  setup: ({ registerTask, onHook, context, generator, serverCompileTask, dataCache, watch }) => {
+  setup: ({ registerTask, onHook, context, generator, serverCompileTask, dataCache, watch, getAllPlugin }) => {
     const { rootDir, commandArgs, command, userConfig } = context;
     const { ssg } = userConfig;
 
@@ -66,7 +66,7 @@ const plugin: Plugin = () => ({
       });
       webpackConfigs[0].plugins.push(
         // Add webpack plugin of data-loader in web task
-        new DataLoaderPlugin({ serverCompiler, rootDir, dataCache }),
+        new DataLoaderPlugin({ serverCompiler, rootDir, dataCache, getAllPlugin }),
         // Add ServerCompilerPlugin
         serverCompilerPlugin,
       );

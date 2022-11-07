@@ -33,6 +33,7 @@ export interface UserConfig {
   externals?: Config['externals'];
   outputDir?: string;
   proxy?: Config['proxy'];
+  polyfill?: Config['polyfill'];
   filename?: string;
   webpack?: ModifyWebpackConfig;
   routes?: {
@@ -60,4 +61,5 @@ export interface UserConfig {
   syntaxFeatures?: SyntaxFeatures;
   splitChunks?: boolean;
   dataLoader?: boolean;
+  crossOriginLoading?: Config['output']['crossOriginLoading'];
 }
