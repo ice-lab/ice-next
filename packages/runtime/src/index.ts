@@ -25,7 +25,7 @@ import runClientApp from './runClientApp.js';
 import type { RunClientAppOptions } from './runClientApp.js';
 import { useAppContext, AppContextProvider } from './AppContext.js';
 import { useAppData, AppDataProvider, getAppData } from './AppData.js';
-import { useData, defineDataLoader, useConfig, DataProvider, ConfigProvider } from './RouteContext.js';
+import { useData, defineDataLoader, defineServerDataLoader, defineStaticDataLoader, useConfig, DataProvider, ConfigProvider } from './RouteContext.js';
 import {
   Meta,
   Title,
@@ -56,6 +56,8 @@ export {
   useData,
   getAppData,
   defineDataLoader,
+  defineServerDataLoader,
+  defineStaticDataLoader,
   DataProvider,
   ConfigProvider,
   useConfig,

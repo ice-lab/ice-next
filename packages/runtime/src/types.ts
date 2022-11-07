@@ -47,11 +47,11 @@ interface StaticDataLoader {
   ext_headers: Object;
 }
 
+// route.defineDataLoader
+// route.defineServerDataLoader
+// route.defineStaticDataLoader
 export type DataLoaderConfig = DataLoader | StaticDataLoader | Array<DataLoader | StaticDataLoader>;
 
-// app.getData & route.getData
-export type GetServerData = (ctx: RequestContext) => (Promise<RouteData> | RouteData);
-export type GetStaticData = (ctx: RequestContext) => (Promise<RouteData> | RouteData);
 // route.getConfig
 export type GetConfig = (args: { data?: RouteData }) => RouteConfig;
 
@@ -113,8 +113,8 @@ export interface RequestContext extends ServerContext {
 
 export interface RouteComponent {
   default: ComponentType<any>;
-  staticDataLoader?: GetStaticData;
-  serverDataLoader?: GetServerData;
+  staticDataLoader?: DataLoaderConfig;
+  serverDataLoader?: DataLoaderConfig;
   dataLoader?: DataLoaderConfig;
   getConfig?: GetConfig;
   [key: string]: any;

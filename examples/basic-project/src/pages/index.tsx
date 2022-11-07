@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react';
-import { Link, useData, useAppData, useConfig, defineDataLoader } from 'ice';
+import { Link, useData, useAppData, useConfig, defineDataLoader, defineStaticDataLoader, defineServerDataLoader } from 'ice';
 // not recommended but works
 import { useAppContext } from '@ice/runtime';
 import { useRequest } from 'ahooks';
@@ -75,18 +75,18 @@ export const dataLoader = defineDataLoader(({ pathname, query }) => {
   });
 });
 
-export function getServerData() {
+export const serverDataLoader = defineServerDataLoader(() => {
   return {
     name: 'Home',
     count: 100,
     from: 'getServerData',
   };
-}
+});
 
-export function getStaticData() {
+export const staticDataLoader = defineStaticDataLoader(() => {
   return {
     name: 'Home',
     count: 100,
     from: 'getStaticData',
   };
-}
+});

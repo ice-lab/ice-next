@@ -41,6 +41,8 @@ const plugin: Plugin = () => ({
         'useMounted',
         'ClientOnly',
         'defineDataLoader',
+        'defineServerDataLoader',
+        'defineStaticDataLoader',
       ],
       source: '@ice/runtime',
     });

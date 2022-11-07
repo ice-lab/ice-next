@@ -23,10 +23,20 @@ function defineDataLoader(dataLoaderConfig: DataLoaderConfig): DataLoaderConfig 
   return dataLoaderConfig;
 }
 
+function defineServerDataLoader(dataLoaderConfig: DataLoaderConfig): DataLoaderConfig {
+  return dataLoaderConfig;
+}
+
+function defineStaticDataLoader(dataLoaderConfig: DataLoaderConfig): DataLoaderConfig {
+  return dataLoaderConfig;
+}
+
 export {
   useData,
   DataProvider,
   useConfig,
   ConfigProvider,
   defineDataLoader,
+  defineServerDataLoader,
+  defineStaticDataLoader,
 };
