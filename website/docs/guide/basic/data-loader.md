@@ -1,16 +1,16 @@
 ---
-title: 页面数据请求
+title: 数据加载
 order: 6
 ---
 ## 设计理念
 
-ICE 对页面数据请求的编码规范做出了约定，来最大限度的提前页面的数据请求时机。
+ICE 对页面数据加载的编码规范做出了约定，来最大限度的提前页面的数据加载时机。
 - 在传统的编码模式下，数据请求一般在组件内部发起，依赖于业务 Bundle 的加载解析执行，整个过程是串行、阻塞的。
 - 而在 ICE 中，页面的数据请求会由框架（或容器）统一发起，和业务 Bundle 的加载解析是并行、不阻塞的。
 
 基于这种模式开发的页面，天然获得了更好的性能体验。
 
-<img src="https://img.alicdn.com/imgextra/i2/O1CN01v9qNhw1aAPS9nFmxE_!!6000000003289-2-tps-1396-548.png" width="750px" />
+<img src="https://img.alicdn.com/imgextra/i4/O1CN01KETZIX1Qu4mmfve0s_!!6000000002035-2-tps-1396-566.png" width="750px" />
 
 常规的 React 应用，一般都会在组件首次 `useEffect` 时发起数据请求。这种组织方式，数据请求会在页面完成首次渲染后才发起，请求的时机是非常滞后的。
 
@@ -65,13 +65,13 @@ export const dataLoader = defineDataLoader(async () => {
 
 ## 使用示例
 
+### 页面级数据加载
+
 页面或 `layout` 组件，都支持通过导出 `dataLoader` 来声明各自的数据请求。
 
-### 基础示例
-
 下面是一个最基础的页面级数据请求示例：
-* 通过 `defineDataLoader` 定义了页面数据请求的具体实现，并导出为 `dataLoader`。
-* 通过 `useData` 方法，在组件侧获取和消费数据。
+- 通过 `defineDataLoader` 定义了页面数据请求的具体实现，并导出为 `dataLoader`。
+- 通过 `useData` 方法，在组件侧获取和消费数据。
 
 ```tsx
 import { useData, defineDataLoader } from 'ice';
@@ -99,6 +99,38 @@ export const dataLoader = defineDataLoader(async (ctx) => {
 `defineDataLoader` 支持传入 Function，来定义页面数据请求的具体实现，其入参在 CSR 渲染模式下，包含：
 - `pathname`: `string`, 当前页面的路径名。
 - `query`: `object`, 当前页面的 `query` 信息，会被提前解析。
+
+### 应用级数据加载
+
+可以在应用入口 `src/app.ts` 中定义并导出 `getAppData` 方法，来获取应用级数据。示例：
+
+```js
+import type { GetAppData } from 'ice';
+
+// ...
+
+export const getAppData: GetAppData = () => {
+  return new Promise((resolve) => {
+    resolve({
+      success: true,
+      id: 34293
+    });
+  });
+};
+```
+
+在页面或其他组件中，可以通过 `useAppData` 方法获取页面级数据。示例：
+
+```js
+import { useAppData } from 'ice';
+import type { AppData } from 'ice';
+
+export default function Home(props) {
+  const appData = useAppData<AppData>();
+
+  // ...
+}
+```
 
 ### 多个数据请求
 
