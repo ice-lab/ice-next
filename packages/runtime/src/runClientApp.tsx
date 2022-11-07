@@ -111,14 +111,15 @@ export default async function runClientApp(options: RunClientAppOptions) {
     await Promise.all(runtimeModules.commons.map(m => runtime.loadModule(m)).filter(Boolean));
   }
 
-  render({ runtime, history });
+  render({ runtime, history, dataLoaderFetcher });
 }
 
 interface RenderOptions {
   history: History;
   runtime: Runtime;
+  dataLoaderFetcher?: Function;
 }
-async function render({ history, runtime }: RenderOptions) {
+async function render({ history, runtime, dataLoaderFetcher }: RenderOptions) {
   const appContext = runtime.getAppContext();
   const { appConfig, appData } = appContext;
   const render = runtime.getRender();
@@ -142,6 +143,7 @@ async function render({ history, runtime }: RenderOptions) {
         <BrowserEntry
           history={history}
           appContext={appContext}
+          dataLoaderFetcher={dataLoaderFetcher}
           RouteWrappers={RouteWrappers}
           AppRouter={AppRouter}
         />
@@ -155,6 +157,7 @@ interface BrowserEntryProps {
   appContext: AppContext;
   RouteWrappers: RouteWrapperConfig[];
   AppRouter: React.ComponentType<AppRouterProps>;
+  dataLoaderFetcher: Function;
 }
 
 interface HistoryState {
@@ -172,6 +175,7 @@ interface RouteState {
 function BrowserEntry({
   history,
   appContext,
+  dataLoaderFetcher,
   ...rest
 }: BrowserEntryProps) {
   const {
@@ -206,7 +210,13 @@ function BrowserEntry({
           throw new Error(`Routes not found in location ${location.pathname}.`);
         }
 
-        loadNextPage(currentMatches, routeState).then(({ routesData, routesConfig, routeModules }) => {
+        loadNextPage(
+          currentMatches,
+          routeState,
+          {
+            dataLoaderFetcher,
+          },
+        ).then(({ routesData, routesConfig, routeModules }) => {
           setHistoryState({
             action,
             location,
@@ -244,6 +254,10 @@ function BrowserEntry({
   );
 }
 
+interface LoadNextPageOptions {
+  dataLoaderFetcher?: Function;
+}
+
 /**
  * Prepare for the next pages.
  * Load modules、getPageData and preLoad the custom assets.
@@ -251,12 +265,17 @@ function BrowserEntry({
 export async function loadNextPage(
   currentMatches: RouteMatch[],
   preRouteState: RouteState,
+  options?: LoadNextPageOptions,
 ) {
   const {
     matches: preMatches,
     routesData: preRoutesData,
     routeModules: preRouteModules,
   } = preRouteState;
+
+  const {
+    dataLoaderFetcher,
+  } = options || {};
 
   const routeModules = await loadRouteModules(
     currentMatches.map(({ route: { id, load } }) => ({ id, load })),
@@ -267,7 +286,7 @@ export async function loadNextPage(
   const initialContext = getRequestContext(window.location);
   const matchesToLoad = filterMatchesToLoad(preMatches, currentMatches);
   const data = await loadRoutesData(matchesToLoad, initialContext, routeModules, {
-    // dataLoaderFetcher,
+    dataLoaderFetcher,
   });
 
   const routesData: RoutesData = {};
