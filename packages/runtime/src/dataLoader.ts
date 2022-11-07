@@ -1,4 +1,4 @@
-import type { DataLoader, DataLoaderConfig } from './types.js';
+import type { DataLoader, DataLoaderConfig, RuntimeModules, AppExport, RuntimePlugin, CommonJsRuntime } from './types.js';
 import getRequestContext from './requestContext.js';
 
 type Loaders = Array<DataLoader> | DataLoader;
@@ -13,11 +13,6 @@ interface Result {
 
 export interface RouteIdToLoaderConfigs {
   [routeId: string]: DataLoaderConfig;
-}
-
-export interface DataLoaderInitOptions {
-  dataLoaderFetcher?: Function;
-  needLoadData?: boolean;
 }
 
 let routeIdToLoaders: RouteIdToLoaders;
@@ -129,6 +124,13 @@ function defaultDataLoaderFetcher(options: any) {
   return window.fetch(options.key, options);
 }
 
+export interface DataLoaderInitOptions {
+  dataLoaderFetcher?: Function;
+  needLoadData?: boolean;
+  runtimeModules: RuntimeModules['statics'];
+  appExport: AppExport;
+}
+
 /**
  * Load initial data and register global loader.
  * In order to load data, JavaScript modules, CSS and other assets in parallel.
@@ -137,11 +139,26 @@ function init(loaders: RouteIdToLoaderConfigs, options?: DataLoaderInitOptions) 
   const {
     dataLoaderFetcher = defaultDataLoaderFetcher,
     needLoadData = false,
+    runtimeModules,
+    appExport,
   } = options || {};
 
   if (routeIdToLoaders) return;
 
   routeIdToLoaders = getLoaders(loaders, dataLoaderFetcher);
+
+  const runtimeApi = {
+    appContext: {
+      appExport,
+    },
+  };
+
+  if (runtimeModules) {
+    await Promise.all(runtimeModules.map(module => {
+      const runtimeModule = (module as CommonJsRuntime).default || module as RuntimePlugin;
+      return runtimeModule(runtimeApi);
+    }).filter(Boolean));
+  }
 
   if (needLoadData) {
     try {

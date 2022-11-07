@@ -28,7 +28,6 @@ interface PredefinedOptions {
 export type MinimizerOptions<T> = PredefinedOptions & InferDefaultType<T>;
 
 interface ConfigurationCtx<T = typeof webpack> extends Config {
-  supportedBrowsers: string[];
   hashKey: string;
   webpack: T;
 }
@@ -106,6 +105,10 @@ export interface Config {
   | undefined;
 
   proxy?: ProxyConfigArrayItem | ProxyConfigMap | ProxyConfigArray | undefined;
+
+  polyfill?: 'usage' | 'entry' | false;
+  // You can use `browserslist` to automatically configure supported browsers if set to be true.
+  env?: boolean;
 
   compileIncludes?: (string | RegExp)[];
 
