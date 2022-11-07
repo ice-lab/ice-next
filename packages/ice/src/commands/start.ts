@@ -32,6 +32,7 @@ const start = async (
     spinner: ora.Ora;
     getAppConfig: GetAppConfig;
     getRoutesConfig: GetRoutesConfig;
+    userConfigHash: string;
   },
 ) => {
   const {
@@ -42,6 +43,7 @@ const start = async (
     spinner,
     getAppConfig,
     getRoutesConfig,
+    userConfigHash,
   } = options;
   const { commandArgs, rootDir } = context;
   const { platform = WEB } = commandArgs;
@@ -51,6 +53,7 @@ const start = async (
     // @ts-expect-error fix type error of compiled webpack
     webpack,
     runtimeTmpDir: RUNTIME_TMP_DIR,
+    userConfigHash,
   }));
 
   const hooksAPI = {
@@ -136,6 +139,7 @@ async function startDevServer({
         renderMode,
         getAppConfig,
         taskConfig: webTaskConfig,
+        userConfig,
       });
       const insertIndex = middlewares.findIndex(({ name }) => name === 'serve-index');
       middlewares.splice(

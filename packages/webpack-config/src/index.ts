@@ -13,7 +13,6 @@ import ESlintPlugin from '@ice/bundles/compiled/eslint-webpack-plugin/index.js';
 import CopyPlugin from '@ice/bundles/compiled/copy-webpack-plugin/index.js';
 import type { NormalModule, Compiler, Configuration } from 'webpack';
 import type webpack from 'webpack';
-import browserslist from 'browserslist';
 import type { Config, ModifyWebpackConfig } from './types.js';
 import configAssets from './config/assets.js';
 import configCss from './config/css.js';
@@ -35,6 +34,7 @@ interface GetWebpackConfigOptions {
   config: Config;
   webpack: typeof webpack;
   runtimeTmpDir: string;
+  userConfigHash: string;
 }
 type GetWebpackConfig = (options: GetWebpackConfigOptions) => Configuration;
 enum JSMinifier {
@@ -50,7 +50,7 @@ function getEntry(rootDir: string, runtimeTmpDir: string) {
   })[0];
   if (!entryFile) {
     // use generated file in template directory
-    entryFile = path.join(rootDir, runtimeTmpDir, 'entry.client.ts');
+    entryFile = path.join(rootDir, runtimeTmpDir, 'entry.client.tsx');
   }
 
   // const dataLoaderFile = path.join(rootDir, '.ice/data-loader.ts');
@@ -61,7 +61,7 @@ function getEntry(rootDir: string, runtimeTmpDir: string) {
   };
 }
 
-const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeTmpDir }) => {
+const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeTmpDir, userConfigHash }) => {
   const {
     mode,
     define = {},
@@ -97,10 +97,10 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     optimization = {},
     performance,
     enableCopyPlugin,
+    polyfill,
   } = config;
   const absoluteOutputDir = path.isAbsolute(outputDir) ? outputDir : path.join(rootDir, outputDir);
   const dev = mode !== 'production';
-  const supportedBrowsers = getSupportedBrowsers(rootDir, dev);
   const hashKey = hash === true ? 'hash:8' : (hash || '');
   // formate alias
   const aliasWithRoot = {};
@@ -167,6 +167,8 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     compileIncludes,
     compileExcludes,
     swcOptions,
+    polyfill,
+    env: true,
   });
   const webpackConfig = {
     mode,
@@ -259,7 +261,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     } as Configuration['optimization'],
     cache: {
       type: 'filesystem',
-      version: `${process.env.__ICE_VERSION__}|${JSON.stringify(config)}`,
+      version: `${process.env.__ICE_VERSION__}|${userConfigHash}`,
       buildDependencies: { config: [path.join(rootDir, 'package.json')] },
       cacheDirectory: path.join(cacheDir, 'webpack'),
     },
@@ -399,7 +401,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
   // pipe webpack by built-in functions and custom functions
   const ctx = {
     ...config,
-    supportedBrowsers,
+    rootDir,
     hashKey,
     webpack,
   };
@@ -417,23 +419,6 @@ function getDevtoolValue(sourceMap: Config['sourceMap']) {
   }
 
   return 'source-map';
-}
-
-function getSupportedBrowsers(
-  dir: string,
-  isDevelopment: boolean,
-): string[] | undefined {
-  let browsers: any;
-  try {
-    browsers = browserslist.loadConfig({
-      path: dir,
-      env: isDevelopment ? 'development' : 'production',
-    });
-  } catch {
-    consola.debug('[browsers]', 'fail to load config of browsers');
-  }
-
-  return browsers;
 }
 
 export {
