@@ -2,33 +2,13 @@
 title: 页面数据请求
 order: 6
 ---
+## 设计理念
 
-在 ICE 中，推荐为页面组件定义 `getData()` 方法，来发起页面的数据请求。在 `getData()` 中定义的数据请求，会和页面的资源加载并行发起，以达到更好的性能体验。
+ICE 对页面数据请求的编码规范做出了约定，来最大限度的提前页面的数据请求时机。在传统的编码模式下，数据请求一般在组件内部发起，依赖于业务 Bundle 的加载解析执行，整个过程是串行、阻塞的。而在 ICE 中，页面的数据请求会由框架（或容器）统一发起，和业务 Bundle 的加载解析是并行、不阻塞的。基于这种模式开发的页面，天然获得了更好的性能体验。
 
-示例：
+<img src="https://img.alicdn.com/imgextra/i1/O1CN01DSg8XZ1mDPR42RAxe_!!6000000004920-2-tps-1368-470.png" width="750px">
 
-```tsx
-// src/pages/index.tsx
-import { useData } from 'ice';
-
-export default function Home() {
-  const data = useData();
-  return (
-    <>
-      <div>Hello ICE</div>
-      <div>{JSON.stringify(data)}</div>
-    </>
-  );
-};
-
-export async function getData() {
-  const data = await fetch('https://example.com/api/xxx');
-
-  return data;
-}
-```
-
-传统的做法，一般是在 useEffect 中发起数据请求，数据请求依赖于页面的 Bundle 加载、解析、执行，整个过程是串行的。
+在传统的编码习惯中，数据请求一般在组件 `useEffect` 后发起，数据请求和组件的 UI 逻辑耦合在一起，请求发起的时机是相对滞后的。
 
 ```tsx
 // src/pages/index.tsx
@@ -52,36 +32,16 @@ export default function Home() {
 };
 ```
 
-相比之下，`getData()` 变数据请求从串行到并行，天然带来了更好的性能体验，是框架推荐的数据方法。
-
-## 入参
-
-`getData()` 的入参包含：
-
-- `pathname`: `string`, 当前页面的路径名。
-- `query`: `object`, 当前页面的 `query` 信息，会被提前解析。
-
-```tsx
-export async function getData(params) {
-  console.log(params.pathname);
-  console.log(params.query);
-
-  const data = await fetch('https://example.com/api/xxx');
-
-  return data;
-}
-```
-
-## useData()
-
-在路由组件里使用 `getData()` 返回的数据，需配合 `useData()` 使用。 示例：
+在 ICE 中，我们推荐将页面的的数据请求和 UI 实现解耦，通过 `dataLoader` 来定义页面的数据请求。示例：
 
 ```tsx
 // src/pages/index.tsx
-import { useData } from 'ice';
+import { useData, defineDataLoader } from 'ice';
 
+// 页面组件的 UI 实现
 export default function Home() {
   const data = useData();
+
   return (
     <>
       <div>Hello ICE</div>
@@ -89,4 +49,81 @@ export default function Home() {
     </>
   );
 };
+
+// 页面的数据请求
+export const dataLoader = defineDataLoader(async () => {
+  const data = await fetch('https://example.com/api/xxx');
+  return data;
+});
 ```
+
+通过 `dataLoader` 导出的数据请求，会由框架在进入页面时发起，和业务 Bundle 的加载解析是并行的。在支持预请求的容器下（例如 PHA），数据请求还可以被进一步的提升为预请求。
+
+## 使用示例
+
+页面或 `layout` 组件，都支持通过导出 `dataLoader` 来声明各自的数据请求。
+
+### 基础示例
+
+下面是一个最基础的页面级数据请求示例：
+* 通过 `defineDataLoader` 定义了页面数据请求的具体实现，并导出为 `dataLoader`。
+* 通过 `useData` 方法，在组件侧获取和消费数据。
+
+```tsx
+import { useData, defineDataLoader } from 'ice';
+
+export default function Home() {
+  const data = useData();
+
+  return (
+    <>
+      <div>Hello ICE</div>
+      <div>{JSON.stringify(data)}</div>
+    </>
+  );
+};
+
+export const dataLoader = defineDataLoader(async (ctx) => {
+  console.log(ctx.pathname);
+  console.log(ctx.query);
+
+  const data = await fetch('https://example.com/api/xxx');
+  return data;
+});
+```
+
+`defineDataLoader` 支持传入 Function，来定义页面数据请求的具体实现，其入参，在 CSR 渲染模式下，包含：
+- `pathname`: `string`, 当前页面的路径名。
+- `query`: `object`, 当前页面的 `query` 信息，会被提前解析。
+
+### 多个数据请求
+
+如果页面需要同时发起多个数据请求，可以在 `defineDataLoader` 时，以数组的方式传入数据请求实现。示例：
+
+```tsx
+import { useData, defineDataLoader } from 'ice';
+
+export default function Home() {
+  const [useInfo, itemInfo] = useData();
+
+  return (
+    <>
+      <div>Hello {userInfo?.name}</div>
+      <div>{JSON.stringify(itemInfo)}</div>
+    </>
+  );
+};
+
+export const dataLoader = defineDataLoader([
+  async () => {
+    const useInfo = await fetch('https://example.com/api/userInfo');
+    return useInfo;
+  },
+  async (ctx) => {
+    const itemInfo = await fetch(`https://example.com/api/itemInfo${ctx?.query?.itemId}`);
+    return itemInfo;
+  },
+]);
+```
+
+此时，`useData` 获取的数据也为数组，数组元素和 `dataLoader` 定义的数据请求顺序一一对应。
