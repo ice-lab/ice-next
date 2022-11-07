@@ -79,7 +79,7 @@ import txtContent from './text.txt?raw';
 
 `public/` 目录作为框架默认的静态资源目录，不被构建工具进行编译的资源都可以放在该目录下。
 
-比如 `favicon.ico` 文件，我们并不希望该文件名编译（默认静态资源文件名在编译后会生成独立 hash，`favicon.ico` 希望保持原有文件名），在使用时直接在 Document 中进行引用：
+比如 `favicon.ico` 文件，我们并不希望该文件名编译（默认静态资源文件名在编译后会生成独立 hash，`favicon.ico` 希望保持原有文件名），在使用时直接在 Document 组件中进行引用：
 
 ```jsx
 export default function Document() {
@@ -100,6 +100,6 @@ export default function Document() {
 
 :::caution
 
-- `public` 目录中的资源在开发时能直接通过 `/` 根路径访问到（`public/icon.svg` 应该在源码中被引用为 `/icon.png`），并且打包时会被完整复制到目标目录的根目录下
-- `public` 中的资源不应该被 JavaScript 文件或者 CSS 文件引用
+- `public` 目录中的资源在开发时应该要通过 `/` 根路径进行访问（`public/icon.svg` 应该在源码中被引用为 `/icon.svg`），并且打包时会被完整复制到目标目录的根目录下
+- `public` 中的资源不应该被 JavaScript 文件（除 `src/document.jsx`）或者 CSS 文件引用
 :::
