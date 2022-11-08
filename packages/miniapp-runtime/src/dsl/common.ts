@@ -4,7 +4,7 @@ import type * as React from 'react';
 import type { MiniappPageConfig } from '../types.js';
 
 import { raf } from '../bom/raf.js';
-import { BEHAVIORS, CUSTOM_WRAPPER, EXTERNAL_CLASSES, ON_HIDE, ON_LOAD, ON_READY, ON_SHOW, OPTIONS, PAGE_INIT, VIEW } from '../constants/index.js';
+import { BEHAVIORS, CUSTOM_WRAPPER, EXTERNAL_CLASSES, ON_HIDE, ON_LOAD, ON_READY, ON_SHOW, OPTIONS, PAGE_INIT, VIEW, GET_APP_DATA_READY } from '../constants/index.js';
 import { Current } from '../current.js';
 import { eventHandler } from '../dom/event.js';
 import type { RootElement } from '../dom/root.js';
@@ -17,6 +17,7 @@ import type { Instance, PageInstance, PageProps } from './instance.js';
 
 const instances = new Map<string, Instance>();
 const pageId = incrementId();
+let isGetAppDataReady = false;
 
 export function injectPageInstance(inst: Instance<PageProps>, id: string) {
   hooks.call('mergePageInstance', instances.get(id), inst);
@@ -141,7 +142,7 @@ export function createPageConfig(
         getData = () => new Promise<void>(resolve => resolve());
       }
       const mount = () => {
-        getData(this.$iceParams!).then(routeData => {
+        getData({ pathname: id, query: this.$iceParams }).then(routeData => {
           Current.app!.mount!(component, { id: $icePath, routeData, routeConfig }, () => {
             pageElement = env.document.getElementById<RootElement>($icePath);
 
@@ -156,8 +157,14 @@ export function createPageConfig(
 
       if (unmounting) {
         prepareMountList.push(mount);
-      } else {
+      } else if (isGetAppDataReady) {
         mount();
+      } else {
+        // Only when getAppData is ready, the page can be mounted
+        eventCenter.on(GET_APP_DATA_READY, () => {
+          isGetAppDataReady = true;
+          mount();
+        });
       }
     },
     [ONUNLOAD]() {
