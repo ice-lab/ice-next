@@ -35,7 +35,7 @@ export default function Home() {
 };
 ```
 
-在 ICE 中，我们推荐将页面的的数据请求和 UI 实现解耦，通过 `dataLoader` 来定义页面的数据请求。示例：
+在 ice.js 中，我们推荐将页面的的数据请求和 UI 实现解耦，通过 `dataLoader` 来定义页面的数据请求。示例：
 
 ```tsx title="src/pages/index.tsx"
 import { useData, defineDataLoader } from 'ice';
@@ -63,9 +63,7 @@ export const dataLoader = defineDataLoader(async () => {
 
 同一个项目，两种不同写法，数据请求发起时机的差异对比如下（测试环境 chrome slow 3G)：
 
-<video style="max-width: 750px" loop mute autoplay>
-  <source src="https://iceworks.oss-cn-hangzhou.aliyuncs.com/site-assets/dataloader-compare.mp4" type="video/mp4">
-</video>
+<video loop mute autoplay src="https://iceworks.oss-cn-hangzhou.aliyuncs.com/site-assets/dataloader-compare.mp4" style="max-width: 750px"></video>
 
 ## 使用示例
 
@@ -135,7 +133,7 @@ export default function Home(props) {
 
 如果页面需要同时发起多个数据请求，首先推荐使用[嵌套路由]()来组织页面内容，将不同区块的数据请求，放到不同路由组件下来注册。
 
-<img src="https://img.alicdn.com/imgextra/i1/O1CN019fsC6o299xcHyZ2jo_!!6000000008026-2-tps-626-638.png" style="max-width: 300px" />
+<img src="https://img.alicdn.com/imgextra/i1/O1CN019fsC6o299xcHyZ2jo_!!6000000008026-2-tps-626-638.png" height="300px" />
 
 如果多个数据请求属于同一个路由组件，则可以在 `defineDataLoader` 时，以数组的方式传入数据请求实现。示例：
 
