@@ -457,6 +457,27 @@ importers:
       ts-jest: 28.0.8_fztrhi54teek7om3xmnfwid3mq
       typescript: 4.8.4
 
+  examples/with-jsx-plus:
+    specifiers:
+      '@ice/app': workspace:*
+      '@ice/plugin-jsx-plus': workspace:*
+      '@ice/runtime': workspace:*
+      '@types/react': ^18.0.17
+      '@types/react-dom': ^18.0.6
+      react: ^18.2.0
+      react-dom: ^18.2.0
+      tslib: ^2.4.0
+    dependencies:
+      '@ice/app': link:../../packages/ice
+      '@ice/plugin-jsx-plus': link:../../packages/plugin-jsx-plus
+      '@ice/runtime': link:../../packages/runtime
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      tslib: 2.4.0
+    devDependencies:
+      '@types/react': 18.0.21
+      '@types/react-dom': 18.0.6
+
   examples/with-pha:
     specifiers:
       '@ice/app': workspace:*
@@ -3477,7 +3498,7 @@ packages:
       '@docusaurus/react-loadable': 5.5.2_react@17.0.2
       '@docusaurus/types': 2.1.0_sfoxds7t5ydpegc3knd667wn6m
       '@types/history': 4.7.11
-      '@types/react': 17.0.50
+      '@types/react': 18.0.21
       '@types/react-router-config': 5.0.6
       '@types/react-router-dom': 5.3.3
       react: 17.0.2
@@ -6031,7 +6052,7 @@ packages:
     resolution: {integrity: sha512-db1mx37a1EJDf1XeX8jJN7R3PZABmJQXR8r28yUjVMFSjkmnQo6X6pOEEmNl+Tp2gYQOGPdYbFIipBtdElZ3Yg==}
     dependencies:
       '@types/history': 4.7.11
-      '@types/react': 17.0.50
+      '@types/react': 18.0.21
       '@types/react-router': 5.1.19
 
   /@types/react-router-dom/5.3.3:
