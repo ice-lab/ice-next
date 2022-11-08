@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react';
-import { Link, useData, useConfig } from 'ice';
+import { Link, useData, useConfig, defineDataLoader } from 'ice';
 // not recommended but works
 import { useAppContext } from '@ice/runtime';
 import { Button } from 'antd-mobile';
@@ -47,7 +47,7 @@ export function getConfig() {
   };
 }
 
-export function getData() {
+export const dataLoader = defineDataLoader(() => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
@@ -55,4 +55,4 @@ export function getData() {
       });
     }, 1 * 100);
   });
-}
+});

@@ -1,4 +1,4 @@
-import { Link, useData, useConfig, history } from 'ice';
+import { Link, useData, useConfig, history, defineDataLoader } from 'ice';
 import type { RouteConfig } from 'ice';
 import { isWeb } from '@uni/env';
 import url from './ice.png';
@@ -45,7 +45,7 @@ export function getConfig(): RouteConfig {
   };
 }
 
-export function getData() {
+export const dataLoader = defineDataLoader(() => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
@@ -53,4 +53,4 @@ export function getData() {
       });
     }, 1 * 100);
   });
-}
+});
