@@ -1,6 +1,27 @@
 # 网络请求
 
-大部分前端应用都会选择通过 HTTP(s) 协议与后端服务通讯。在 ice.js 3 框架的 [request 插件](https://www.npmjs.com/@ice/plugin-request)提供了一套从 UI 交互到请求服务端数据的完整方案，更进一步简化了应用的数据请求流程，基于此提供了 `request` 和 `useRequest` Hooks 方法。
+大部分前端应用都会选择通过 HTTP(s) 协议与后端服务通讯。ice.js 提供了一套从 UI 交互到请求服务端数据的完整方案，进一步简化了应用的数据请求流程，并基于此提供了 `request` 和 `useRequest` Hooks 方法。
+
+## 安装 [request 插件](https://www.npmjs.com/@ice/plugin-request)
+
+网络请求是可选能力，这也帮助框架进一步降低安装大小，在使用前需要单独安装 `@ice/plugin-request` 插件。
+
+```bash
+npm i @ice/plugin-request -S
+```
+
+在配置文件中添加插件：
+
+```tsx title="ice.config.mts"
+import { defineConfig } from '@ice/app';
+import request from '@ice/plugin-request';
+
+export default defineConfig({
+  plugins: [
+    request(),
+  ],
+});
+```
 
 ## 目录约定
 
