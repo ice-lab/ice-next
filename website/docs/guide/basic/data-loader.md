@@ -4,9 +4,9 @@ order: 6
 ---
 ## 设计理念
 
-ICE 对页面数据加载的编码规范做出了约定，来最大限度的提前页面的数据加载时机。
+框架对页面数据加载的编码规范做出了约定，来最大限度的提前页面的数据加载时机。
 - 在传统的编码模式下，数据请求一般在组件内部发起，依赖于业务 Bundle 的加载解析执行，整个过程是串行、阻塞的。
-- 而在 ICE 中，页面的数据请求会由框架（或容器）统一发起，和业务 Bundle 的加载解析是并行、不阻塞的。
+- 而在 ice.js 中，页面的数据请求会由框架（或容器）统一发起，和业务 Bundle 的加载解析是并行、不阻塞的。
 
 基于这种模式开发的页面，天然获得了更好的性能体验。
 
@@ -14,8 +14,7 @@ ICE 对页面数据加载的编码规范做出了约定，来最大限度的提�
 
 常规的 React 应用，一般都会在组件首次 `useEffect` 时发起数据请求。这种组织方式，数据请求会在页面完成首次渲染后才发起，请求的时机是非常滞后的。
 
-```tsx
-// src/pages/index.tsx
+```tsx title="src/pages/index.tsx"
 import { useState, useEffect } from 'react';
 
 export default function Home() {
@@ -38,8 +37,7 @@ export default function Home() {
 
 在 ICE 中，我们推荐将页面的的数据请求和 UI 实现解耦，通过 `dataLoader` 来定义页面的数据请求。示例：
 
-```tsx
-// src/pages/index.tsx
+```tsx title="src/pages/index.tsx"
 import { useData, defineDataLoader } from 'ice';
 
 // 页面组件的 UI 实现
@@ -102,13 +100,13 @@ export const dataLoader = defineDataLoader(async (ctx) => {
 });
 ```
 
-`defineDataLoader` 支持传入 Function，来定义页面数据请求的具体实现，其入参在 CSR 渲染模式下，包含：
+`defineDataLoader` 支持传入 Function，来定义页面数据请求的具体实现，其入参包含：
 - `pathname`: `string`, 当前页面的路径名。
 - `query`: `object`, 当前页面的 `query` 信息，会被提前解析。
 
 ### 应用级数据加载
 
-如果是应用级的数据加载（所有页面复用），可以在应用入口 `src/app.ts` 中定义并导出 `dataLoader` 方法，来注册数据加载逻辑。示例：
+如果是应用级的数据加载，可以在应用入口 `src/app.ts` 中定义并导出 `dataLoader` 方法，来注册数据加载逻辑。示例：
 
 ```ts
 import type { defineDataLoader } from 'ice';
