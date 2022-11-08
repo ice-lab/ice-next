@@ -135,7 +135,11 @@ export default function Home(props) {
 
 ### 多个数据请求
 
-如果页面需要同时发起多个数据请求，可以在 `defineDataLoader` 时，以数组的方式传入数据请求实现。示例：
+如果页面需要同时发起多个数据请求，首先推荐使用[嵌套路由]()来组织页面内容，将不同区块的数据请求，放到不同路由组件下来注册。
+
+<img src="https://img.alicdn.com/imgextra/i1/O1CN019fsC6o299xcHyZ2jo_!!6000000008026-2-tps-626-638.png" style="max-width: 300px" />
+
+如果多个数据请求属于同一个路由组件，则可以在 `defineDataLoader` 时，以数组的方式传入数据请求实现。示例：
 
 ```tsx
 import { useData, defineDataLoader } from 'ice';
