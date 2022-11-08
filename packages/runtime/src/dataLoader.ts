@@ -30,22 +30,22 @@ function getCacheId(routeId: string, number?: Number) {
  * Load data by route id and set to cache.
  */
 async function loadDataByRouteId(routeId: string) {
-  if (typeof window === 'undefined') return;
-  // Try get data from ssr.
-  const context = (window as any).__ICE_APP_CONTEXT__ || {};
-  const routesData = context.routesData || {};
+  if (typeof window !== 'undefined') {
+    // Try get data from ssr.
+    const context = (window as any).__ICE_APP_CONTEXT__ || {};
+    const routesData = context.routesData || {};
 
-  const dataFromSSR = routesData[routeId];
-  if (dataFromSSR) {
-    cache.set(routeId, {
-      value: dataFromSSR,
-      status: 'RESOLVED',
-    });
+    const dataFromSSR = routesData[routeId];
+    if (dataFromSSR) {
+      cache.set(routeId, {
+        value: dataFromSSR,
+        status: 'RESOLVED',
+      });
 
-    return dataFromSSR;
+      return dataFromSSR;
+    }
   }
 
-  const requestContext = getRequestContext(window.location);
   async function runLoaderSaveCache(loader?: DataLoader, index?: Number) {
     if (!loader) return;
 
@@ -67,24 +67,31 @@ async function loadDataByRouteId(routeId: string) {
       // PENDING
       return await value;
     }
+    const res = loader(typeof window !== 'undefined' && getRequestContext(window.location));
+    if (res instanceof Promise) {
+      res.then(data => {
+        cache.set(cacheId, {
+          value: data,
+          status: 'RESOLVED',
+        });
+        return data;
+      }).catch(err => {
+        cache.set(cacheId, {
+          value: err,
+          status: 'REJECTED',
+        });
+      });
 
-    const res = loader(requestContext).then(data => {
       cache.set(cacheId, {
-        value: data,
+        value: res,
+        status: 'PENDING',
+      });
+    } else {
+      cache.set(cacheId, {
+        value: res,
         status: 'RESOLVED',
       });
-      return data;
-    }).catch(err => {
-      cache.set(cacheId, {
-        value: err,
-        status: 'REJECTED',
-      });
-    });
-
-    cache.set(cacheId, {
-      value: res,
-      status: 'PENDING',
-    });
+    }
 
     return res;
   }
@@ -161,8 +168,6 @@ async function init(loaders: RouteIdToLoaderConfigs, options?: DataLoaderInitOpt
     runtimeModules,
     appExport,
   } = options || {};
-
-  if (routeIdToLoaders) return;
 
   routeIdToLoaders = getLoaders(loaders, dataLoaderFetcher);
 

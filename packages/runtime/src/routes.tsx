@@ -84,6 +84,7 @@ export async function loadRoutesData(
   });
   DataLoader.init(routeIdToLoaderConfigs, {
     dataLoaderFetcher,
+    needLoadData: false,
   });
 
   // Load data by route id.
