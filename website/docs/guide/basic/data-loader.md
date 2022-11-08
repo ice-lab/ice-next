@@ -63,6 +63,12 @@ export const dataLoader = defineDataLoader(async () => {
 
 通过 `dataLoader` 导出的数据请求，会由框架在进入页面时发起，和业务 Bundle 的加载解析是并行的。在支持预请求的容器下（例如 PHA），数据请求还可以被进一步的提升为预请求。
 
+同一个项目，两种不同写法，数据请求发起时机的差异对比如下（测试环境 chrome slow 3G)：
+
+<video style="max-width: 750px" loop mute autoplay>
+  <source src="https://iceworks.oss-cn-hangzhou.aliyuncs.com/site-assets/dataloader-compare.mp4" type="video/mp4">
+</video>
+
 ## 使用示例
 
 ### 页面级数据加载
