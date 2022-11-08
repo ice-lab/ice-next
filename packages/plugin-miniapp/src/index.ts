@@ -57,9 +57,10 @@ const plugin: Plugin<MiniappOptions> = () => ({
       }));
       onHook('after.start.compile', async ({ isSuccessful, isFirstCompile }) => {
         if (isSuccessful && isFirstCompile) {
+          const outputDir = context.userConfig?.outputDir || 'build';
           let logoutMessage = '\n';
           logoutMessage += chalk.green(`Use ${platform} developer tools to open the following folder:`);
-          logoutMessage += `\n${chalk.underline.white(rootDir)}`;
+          logoutMessage += `\n${chalk.underline.white(path.join(rootDir, outputDir))}\n`;
           consola.log(`${logoutMessage}\n`);
         }
       });
