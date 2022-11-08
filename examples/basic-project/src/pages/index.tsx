@@ -4,6 +4,8 @@ import { Link, useData, useAppData, useConfig, defineDataLoader, defineStaticDat
 import { useAppContext } from '@ice/runtime';
 import { useRequest } from 'ahooks';
 import type { AppData } from 'ice';
+import textContext from '../assets/robot.txt?raw';
+import textUrl from '../assets/robot.txt?url';
 import './index.css';
 import styles from './index.module.css';
 import lessStyles from './index.module.less';
@@ -16,7 +18,6 @@ export default function Home(props) {
   const appData = useAppData<AppData>();
   const data = useData();
   const config = useConfig();
-
   if (typeof window !== 'undefined') {
     console.log('render Home', props);
     console.log('get AppData', appData);
@@ -40,6 +41,8 @@ export default function Home(props) {
         <div className={sassStyles.data}>users: {JSON.stringify(users)}</div>
         <div>userInfo: {JSON.stringify(userInfo)}</div>
         <div>data from: <span id="data-from">{data.from}</span></div>
+        <div> assets content: {textContext}</div>
+        <div> assets url: {textUrl}</div>
       </div>
     </>
   );
@@ -58,7 +61,6 @@ export function getConfig() {
         content: '#f00',
       },
     ],
-    auth: ['admin'],
   };
 }
 
