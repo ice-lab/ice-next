@@ -1,7 +1,7 @@
 import type { History } from 'history';
 import { createMiniAppHistory } from 'miniapp-history';
 
-let routerHistory: History | null = null;
+let routerHistory: History;
 
 interface IRoute {
   path: string;
