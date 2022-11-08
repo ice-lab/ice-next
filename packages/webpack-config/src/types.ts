@@ -30,6 +30,7 @@ export type MinimizerOptions<T> = PredefinedOptions & InferDefaultType<T>;
 
 interface ConfigurationCtx<T = typeof webpack> extends Config {
   hashKey: string;
+  enableRpx2Vw: boolean;
   webpack: T;
   rootDir: string;
 }
@@ -168,6 +169,8 @@ export interface Config {
 
   postcss?: ProcessOptions & { plugins?: (string | [string, Record<string, any>?])[] };
   enableCopyPlugin?: boolean;
+
+  enableRpx2Vw?: boolean;
 
   getAppConfig?: (exportNamse?: string[]) => Promise<any>;
 

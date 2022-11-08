@@ -14,14 +14,14 @@ const require = createRequire(import.meta.url);
 
 // The same as @ice/webpack-config
 function getEntry(rootDir: string, runtimeDir: string) {
-  // check entry.client.ts
+  // check entry.client.tsx
   let entryFile = fg.sync('entry.client.{tsx,ts,jsx.js}', {
     cwd: path.join(rootDir, 'src'),
     absolute: true,
   })[0];
   if (!entryFile) {
     // use generated file in template directory
-    entryFile = path.join(rootDir, runtimeDir, 'entry.client.ts');
+    entryFile = path.join(rootDir, runtimeDir, 'entry.client.tsx');
   }
   return {
     main: entryFile,
@@ -129,6 +129,7 @@ const getMiniappTask = ({
     },
     cssFilename: `[name]${fileType.style}`,
     cssChunkFilename: `[name]${fileType.style}`,
+    enableRpx2Vw: false, // No need to transform rpx to vw in miniapp
     logging: process.env.WEBPACK_LOGGING || defaultLogging,
   };
 };

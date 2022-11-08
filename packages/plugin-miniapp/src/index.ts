@@ -3,7 +3,7 @@ import consola from 'consola';
 import chalk from 'chalk';
 import type { Plugin } from '@ice/app/esm/types';
 import getMiniappTask from './miniapp/index.js';
-import { ALL_PLATFORMS, WEB } from './constant.js';
+import { MINIAPP_PLATFORMS } from './constant.js';
 
 interface MiniappOptions {
   // TODO: specify the config type of native.
@@ -15,7 +15,7 @@ const plugin: Plugin<MiniappOptions> = () => ({
   setup: ({ registerTask, onHook, context, dataCache, generator }) => {
     const { commandArgs, rootDir, command } = context;
     const { platform } = commandArgs;
-    if (platform !== WEB && ALL_PLATFORMS.includes(platform)) {
+    if (MINIAPP_PLATFORMS.includes(platform)) {
       const configAPI = {
         getAppConfig: async () => ({}),
         getRoutesConfig: async () => ({}),

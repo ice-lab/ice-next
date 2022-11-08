@@ -43,7 +43,7 @@ enum JSMinifier {
 }
 
 function getEntry(rootDir: string, runtimeTmpDir: string) {
-  // check entry.client.ts
+  // check entry.client.tsx
   let entryFile = fg.sync('entry.client.{tsx,ts,jsx.js}', {
     cwd: path.join(rootDir, 'src'),
     absolute: true,
@@ -98,6 +98,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     performance,
     enableCopyPlugin,
     polyfill,
+    enableRpx2Vw = true,
   } = config;
   const absoluteOutputDir = path.isAbsolute(outputDir) ? outputDir : path.join(rootDir, outputDir);
   const dev = mode !== 'production';
@@ -407,6 +408,7 @@ const getWebpackConfig: GetWebpackConfig = ({ rootDir, config, webpack, runtimeT
     rootDir,
     hashKey,
     webpack,
+    enableRpx2Vw,
   };
   const finalWebpackConfig = [configCss, configAssets, ...(configureWebpack || [])]
     .reduce((result, next: ModifyWebpackConfig<Configuration, typeof webpack>) => next(result, ctx), webpackConfig);
