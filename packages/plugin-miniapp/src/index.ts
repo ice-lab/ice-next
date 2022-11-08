@@ -55,8 +55,9 @@ const plugin: Plugin<MiniappOptions> = () => ({
         runtimeDir: '.ice',
         cacheDir: path.join(rootDir, 'node_modules/.cache'),
       }));
-      onHook('after.start.compile', async ({ isSuccessful, isFirstCompile }) => {
-        if (isSuccessful && isFirstCompile) {
+      onHook(`after.${command as 'start' | 'build'}.compile`, async ({ isSuccessful, isFirstCompile }) => {
+        const shouldShowLog = isSuccessful && ((command === 'start' && isFirstCompile) || command === 'build');
+        if (shouldShowLog) {
           const outputDir = context.userConfig?.outputDir || 'build';
           let logoutMessage = '\n';
           logoutMessage += chalk.green(`Use ${platform} developer tools to open the following folder:`);
