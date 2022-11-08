@@ -13,6 +13,8 @@ export default function Home() {
   console.log('json', json);
   const [params] = useSearchParams();
   console.log('🚀 ~ file: index.tsx ~ line 15 ~ Home ~ params', params);
+  // @ts-ignore
+  console.log('ASSETS_VERSION', ASSETS_VERSION);
   return (
     <>
       <view className="title" onClick={() => { console.log(123123); }}>Home Page</view>
@@ -25,7 +27,9 @@ export default function Home() {
         {/* @ts-ignore */}
         <image src={url} />
         <Link to="/?hello=world">222</Link>
-        <view onClick={() => { history.push('/?hello=computer'); }}>点我跳转</view>
+        <view onClick={() => { history.push('/?hello=computer'); }}>点我跳转本页</view>
+        <view onClick={() => { history.push('/about?hello=computer'); }}>点我跳转 about 页</view>
+        <view onClick={() => { history.push('/second/profile?hello=computer'); }}>点我跳转 second/profile 页</view>
         <div>嘻嘻，我是 div 标签</div>
       </view>
     </>
@@ -40,7 +44,8 @@ export function getConfig() {
 
 export function getData(options) {
   // options comes from onLoad in miniapp page config
-  console.log('options', options);
+  console.log('options.pathname', options.pathname);
+  console.log('options.query', options.query);
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({

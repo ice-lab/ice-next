@@ -2,10 +2,12 @@ import { defineAppConfig, type GetAppData } from 'ice';
 
 export const getAppData: GetAppData = () => {
   return new Promise((resolve) => {
-    resolve({
-      success: true,
-      id: 34293,
-    });
+    setTimeout(() => {
+      resolve({
+        success: true,
+        id: 34293,
+      });
+    }, 1000);
   });
 };
 
@@ -21,6 +23,6 @@ export const miniappManifest = {
 
 export default defineAppConfig({
   app: {
-    rootId: 'app',
+    strict: true,
   },
 });
