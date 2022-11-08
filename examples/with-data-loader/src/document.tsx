@@ -1,11 +1,6 @@
 import { Meta, Title, Links, Main, Scripts } from 'ice';
-// import { useAppContext } from '@ice/runtime';
 
 function Document() {
-  // const context = useAppContext();
-
-  // console.log(context.assetsManifest);
-
   return (
     <html>
       <head>
