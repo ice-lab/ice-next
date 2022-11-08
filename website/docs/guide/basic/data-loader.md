@@ -63,7 +63,7 @@ export const dataLoader = defineDataLoader(async () => {
 
 同一个项目，两种不同写法，数据请求发起时机的差异对比如下（测试环境 chrome slow 3G)：
 
-<video loop mute autoplay src="https://iceworks.oss-cn-hangzhou.aliyuncs.com/site-assets/dataloader-compare.mp4" style="max-width: 750px"></video>
+<img src="https://img.alicdn.com/imgextra/i1/O1CN01S3QvE925z1IySHjDz_!!6000000007596-1-tps-1280-720.gif" width="750px" />
 
 ## 使用示例
 
