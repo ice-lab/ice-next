@@ -36,5 +36,6 @@ dataLoader.init(loaders, {
   fetcher,
   runtimeModules: staticRuntimeModules,
   appExport: app,
+  needLoadData: true,
   <% if(dataLoaderImport.imports) {-%>dataLoaderFetcher<% } -%>
 });
