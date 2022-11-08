@@ -67,7 +67,7 @@ export const dataLoader = defineDataLoader(async () => {
 
 ### 页面级数据加载
 
-页面或 `layout` 组件，都支持通过导出 `dataLoader` 来声明各自的数据请求。
+页面路由组件或 `layout` 组件，都支持通过导出 `dataLoader` 来声明各自的数据请求。
 
 下面是一个最基础的页面级数据请求示例：
 - 通过 `defineDataLoader` 定义了页面数据请求的具体实现，并导出为 `dataLoader`。
@@ -102,31 +102,26 @@ export const dataLoader = defineDataLoader(async (ctx) => {
 
 ### 应用级数据加载
 
-可以在应用入口 `src/app.ts` 中定义并导出 `getAppData` 方法，来获取应用级数据。示例：
+如果是应用级的数据加载（所有页面复用），可以在应用入口 `src/app.ts` 中定义并导出 `dataLoader` 方法，来注册数据加载逻辑。示例：
 
-```js
-import type { GetAppData } from 'ice';
+```ts
+import type { defineDataLoader } from 'ice';
 
 // ...
 
-export const getAppData: GetAppData = () => {
-  return new Promise((resolve) => {
-    resolve({
-      success: true,
-      id: 34293
-    });
-  });
-};
+export const dataLoader = defineDataLoader(async () => {
+  const data = await fetch('https://example.com/api/xxx');
+  return data;
+}）;
 ```
 
-在页面或其他组件中，可以通过 `useAppData` 方法获取页面级数据。示例：
+在页面或其他组件中，可以通过 `useAppData` 方法获取应用级数据。示例：
 
-```js
+```ts
 import { useAppData } from 'ice';
-import type { AppData } from 'ice';
 
 export default function Home(props) {
-  const appData = useAppData<AppData>();
+  const appData = useAppData();
 
   // ...
 }
