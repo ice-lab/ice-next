@@ -86,10 +86,12 @@ export default {
 除此以外，还可以使用函数的形式来计算返回值，这在需要动态返回接口数据时很有用，如：
 
 ```ts
+import type { Request, Response } from '@ice/app';
+
 export default {
-  'POST /api/users/:id': (req, res) => {
-    const { id } = req.params;
-    res.send({ id: id });
+  'POST /api/users/:id': (request: Request, response: Response) => {
+    const { id } = request.params;
+    response.send({ id: id });
   },
 }
 ```
