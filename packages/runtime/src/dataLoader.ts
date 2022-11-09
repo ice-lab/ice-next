@@ -15,7 +15,7 @@ export interface RouteIdToLoaderConfigs {
   [routeId: string]: DataLoaderConfig;
 }
 
-let routeIdToLoaders: RouteIdToLoaders;
+let routeIdToLoaders: RouteIdToLoaders = {};
 
 const cache = new Map<string, Result>();
 
@@ -169,7 +169,7 @@ async function init(loaders: RouteIdToLoaderConfigs, options?: DataLoaderInitOpt
     appExport,
   } = options || {};
 
-  routeIdToLoaders = getLoaders(loaders, dataLoaderFetcher);
+  routeIdToLoaders = Object.assign(routeIdToLoaders, getLoaders(loaders, dataLoaderFetcher));
 
   const runtimeApi = {
     appContext: {

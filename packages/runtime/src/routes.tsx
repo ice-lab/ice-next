@@ -57,6 +57,7 @@ export async function loadRoutesData(
   } = loadRoutesDataOptions;
   const hasGlobalLoader = typeof window !== 'undefined' && (window as any).__ICE_DATA_LOADER__;
 
+  // Try get data from __ICE_DATA_LOADER__.
   if (hasGlobalLoader) {
     const load = (window as any).__ICE_DATA_LOADER__;
 
@@ -75,9 +76,9 @@ export async function loadRoutesData(
   Object.keys(routeModules).forEach((routeId) => {
     const routeModule = routeModules[routeId];
     if (renderMode === 'SSG') {
-      routeIdToLoaderConfigs[routeId] = routeModule.staticDataLoader;
+      routeIdToLoaderConfigs[routeId] = routeModule.staticDataLoader || routeModule.dataLoader;
     } else if (renderMode === 'SSR') {
-      routeIdToLoaderConfigs[routeId] = routeModule.serverDataLoader;
+      routeIdToLoaderConfigs[routeId] = routeModule.serverDataLoader || routeModule.dataLoader;
     } else {
       routeIdToLoaderConfigs[routeId] = routeModule.dataLoader;
     }
