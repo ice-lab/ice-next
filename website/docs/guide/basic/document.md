@@ -3,7 +3,7 @@ title: 定制 HTML
 order: 12
 ---
 
-ICE 使用 JSX 维护页面的 HTML 模板结构，其入口位于 `src/document.tsx`。
+ice.js 使用 JSX 维护页面的 HTML 模板结构，其入口位于 `src/document.tsx`。
 
 ## 初始模板
 
@@ -17,7 +17,7 @@ function Document() {
     <html>
       <head>
         <meta charSet="utf-8" />
-        <meta name="description" content="ICE DEMO" />
+        <meta name="description" content="ice.js DEMO" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Title />

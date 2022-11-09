@@ -1,4 +1,6 @@
-# ICE Request Plugin
+# @ice/plugin-request
+
+Provides a unified request method for ice.js projects.
 
 ## Usage
 

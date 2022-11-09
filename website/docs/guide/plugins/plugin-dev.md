@@ -61,7 +61,7 @@ import { defineConfig } from '@ice/app';
 export default defineConfig(() => ({
   plugins: [
 +   myPlugin(),
-  ]
+  ],
 }))
 ```
 
@@ -148,7 +148,7 @@ import { defineConfig } from '@ice/app';
 export default defineConfig(() => ({
   plugins: [
 +   myPlugin(),
-  ]
+  ],
 }));
 ```
 
@@ -185,10 +185,10 @@ const plugin = () => ({
     onGetConfig((config) => {
       config.alias = {
         '@': './src/',
-      }
+      };
     });
   },
-})
+});
 ```
 
 为了简化开发者的配置，通过 `onGetConfig` 修改配置项是基于底层工程工具的抽象，包括以下配置项：

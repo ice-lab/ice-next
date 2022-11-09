@@ -4,7 +4,7 @@
 > Licensed under the MIT License
 > https://github.com/NervJS/taro/blob/next/LICENSE
 
-ICE miniapp runtime. Connect the framework (DSL) rendering mechanism to the miniapp rendering mechanism, and connect the miniapp routing and life cycle to the corresponding life cycle of the framework
+ice.js miniapp runtime. Connect the framework (DSL) rendering mechanism to the miniapp rendering mechanism, and connect the miniapp routing and life cycle to the corresponding life cycle of the framework
 
 ## Core API
 
