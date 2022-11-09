@@ -1,18 +1,15 @@
 import { defineConfig } from '@ice/app';
 import pluginMiniapp from '@ice/plugin-miniapp';
-
+console.log('process.env.FOO', process.env.FOO);
 export default defineConfig({
   ssg: false,
   hash: true,
-  minify: true,
+  // minify: true,
   dropLogLevel: 'trace',
   outputDir: 'build/wechat',
   alias: {
     components: './src/components',
   },
-  // TODO:
-  // proxy: {}
-  sourceMap: false,
   plugins: [pluginMiniapp()],
   // eslint: false,
   define: {

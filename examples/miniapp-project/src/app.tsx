@@ -21,8 +21,11 @@ export const miniappManifest = {
   ],
 };
 
-export default defineAppConfig({
-  app: {
-    strict: true,
-  },
+export default defineAppConfig(() => {
+  return {
+    app: {
+      strict: true,
+      errorBoundary: true,
+    },
+  };
 });
