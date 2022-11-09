@@ -1,6 +1,6 @@
 # @ice/plugin-rax-compat
 
-ICE plugin for migrating `rax-app` project into `ice.js`.
+An ice.js plugin for migrating `rax-app` projects.
 
 ## Usage
 

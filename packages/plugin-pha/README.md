@@ -1,6 +1,6 @@
 # @ice/plugin-pha
 
-ICE plugin to enable PHA features.
+An ice.js plugin to enable PHA features.
 
 ## Usage
 
