@@ -13,7 +13,9 @@ ice.js 内置了大量规则处理静态资源，一般情况下开发者无需�
 - 字体文件：`.woff`、`.woff2`、`.ttf`、`.eot`
 - svg 文件：`.svg`
 
-上述资源默认会被编译并通过资源地址加载（比如 `./assets/background.png` 会被编译构建成 `/assets/background.ef5b6544.png`）。推荐将这些资源放在 `src/assets/` 目录下：
+上述资源文件名默认会经过 hash 处理，并通过资源地址的方式加载（比如 `./assets/background.png` 经过构建处理后变成 `/assets/background.ef5b6544.png`）。
+
+推荐将这些资源放在 `src/assets/` 目录下：
 
 ```markdown
 src
@@ -100,6 +102,6 @@ export default function Document() {
 
 :::caution
 
-- `public` 目录中的资源在开发时应该要通过 `/` 根路径进行访问（`public/icon.svg` 应该在源码中被引用为 `/icon.svg`），并且打包时会被完整复制到目标目录的根目录下
-- `public` 中的资源不应该被 JavaScript 文件（除 `src/document.jsx`）或者 CSS 文件引用
+- public` 目录中的资源会在构建阶段完整复制到 `outputDir` 根目录，并且文件名不变，在部署时必须把资源文件放在服务器资源根目录下。（比如 `public/icon.svg` 文件应该在通过 `http:example.com/icon.svg` 进行访问）
+
 :::
