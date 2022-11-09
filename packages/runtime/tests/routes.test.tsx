@@ -1,3 +1,7 @@
+/**
+ * @vitest-environment jsdom
+ */
+
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { expect, it, describe, beforeEach, afterEach, vi } from 'vitest';
@@ -53,11 +57,13 @@ describe('routes', () => {
   it('route Component', () => {
     const domstring = renderToString(
       // @ts-ignore
-      <AppContextProvider value={{ routeModules: {
-        home: {
-          default: () => <div>home</div>,
+      <AppContextProvider value={{
+        routeModules: {
+          home: {
+            default: () => <div>home</div>,
+          },
         },
-      } }}
+      }}
       >
         <RouteComponent id="home" />
       </AppContextProvider>,

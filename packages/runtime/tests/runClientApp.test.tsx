@@ -1,3 +1,7 @@
+/**
+ * @vitest-environment jsdom
+ */
+
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { expect, it, vi, describe, beforeEach, afterEach } from 'vitest';
