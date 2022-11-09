@@ -1,0 +1,1 @@
+import 'somepack/core-js/fixture/test';
