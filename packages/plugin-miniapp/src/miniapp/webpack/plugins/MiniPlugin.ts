@@ -261,6 +261,9 @@ export default class MiniPlugin {
   async getAppConfig(): Promise<MiniappAppConfig> {
     const { configAPI } = this.options;
     const { miniappManifest } = await configAPI.getAppConfig(['miniappManifest']);
+    if (!miniappManifest) {
+      throw new Error('缺少 miniappManifest，请检查！');
+    }
     const appConfig = {
       pages: miniappManifest.routes.map(route => `pages/${route}`),
       ...miniappManifest,
@@ -371,7 +374,7 @@ export default class MiniPlugin {
   async compileFile(file: MiniappComponent, routesConfig: any) {
     // Remove pages/ prefix
     const id = file.name.slice(6);
-    const routeConfig = routesConfig[id]?.();
+    const routeConfig = routesConfig[id]?.() || {};
     const filePath = file.path;
     const fileConfigPath = file.isNative ? this.replaceExt(filePath, '.json') : this.getConfigFilePath(filePath);
     // TODO: 如果使用原生小程序组件，则需要配置 usingComponents，需要递归收集依赖的第三方组件
