@@ -27,7 +27,7 @@ const PLUGIN_NAME = 'MiniPlugin';
 const APP_CONFIG_FILE = 'app.json';
 
 interface MiniPluginOptions {
-  sourceDir: string;
+  rootDir: string;
   commonChunks: string[];
   baseLevel: number;
   minifyXML?: {
@@ -69,12 +69,15 @@ export default class MiniPlugin {
   /** 插件配置选项 */
   options: MiniPluginOptions;
   context: string;
+  /** 源码路径 */
+  sourceDir: string;
   /** app 入口文件路径 */
   appEntry: string;
   /** app config 配置内容 */
   appConfig: MiniappAppConfig;
   /** app、页面、组件的配置集合 */
   filesConfig: FilesConfig = {};
+  routeManifest: Record<string, any> = [];
   isWatch = false;
   /** 页面列表 */
   pages = new Set<MiniappComponent>();
@@ -88,7 +91,7 @@ export default class MiniPlugin {
 
   constructor(options = {} as MiniPluginOptions) {
     this.options = options;
-
+    this.sourceDir = path.join(this.options.rootDir, 'src');
     const { template, baseLevel } = this.options;
     if (template.isSupportRecursive === false && baseLevel > 0) {
       (template as UnRecursiveTemplate).baseLevel = baseLevel;
@@ -118,6 +121,8 @@ export default class MiniPlugin {
     const {
       commonChunks,
     } = this.options;
+    const routeManifestPath = path.join(this.options.rootDir, '.ice', 'route-manifest.json');
+    this.routeManifest = fs.readJSONSync(routeManifestPath);
     /** build mode */
     compiler.hooks.run.tapAsync(
       PLUGIN_NAME,
@@ -157,7 +162,7 @@ export default class MiniPlugin {
         const promises: Promise<null>[] = [];
         dependencies.forEach(dep => {
           promises.push(new Promise<null>((resolve, reject) => {
-            compilation.addEntry(this.options.sourceDir, dep, {
+            compilation.addEntry(this.sourceDir, dep, {
               name: dep.name,
               ...dep.options,
             }, err => (err ? reject(err) : resolve(null)));
@@ -178,14 +183,20 @@ export default class MiniPlugin {
        */
       webpack.NormalModule.getCompilationHooks(compilation).loader.tap(PLUGIN_NAME,
         (_loaderContext, module:/** NormalModule */ any) => {
-          const { loaderMeta = {} } = this.options;
           if (module.miniType === META_TYPE.PAGE) {
             const loaderName = require.resolve(this.pageLoaderName);
             if (!isLoaderExist(module.loaders, loaderName)) {
+              const routeInfo = this.routeManifest.find(route => path.join('pages', route.id) === module.name);
+              const hasExportData = routeInfo?.exports?.includes('getData');
+              const hasExportConfig = routeInfo?.exports?.includes('getConfig');
+              debugger;
               module.loaders.unshift({
                 loader: loaderName,
                 options: {
-                  loaderMeta,
+                  loaderMeta: {
+                    hasExportData,
+                    hasExportConfig,
+                  },
                   name: module.name,
                   config: this.filesConfig,
                   appConfig: this.appConfig,
@@ -293,7 +304,7 @@ export default class MiniPlugin {
     this.getTabBarFiles(this.appConfig);
     this.pages = new Set([
       ...appPages.map<MiniappComponent>(item => {
-        const pagePath = resolveMainFilePath(path.join(this.options.sourceDir, item), SCRIPT_EXT);
+        const pagePath = resolveMainFilePath(path.join(this.sourceDir, item), SCRIPT_EXT);
         const pageTemplatePath = this.getTemplatePath(pagePath);
         const isNative = this.isNativePageORComponent(pageTemplatePath);
         return {
@@ -427,7 +438,7 @@ export default class MiniPlugin {
 
   /** 生成小程序相关文件 */
   async generateMiniFiles(compilation: webpack.Compilation) {
-    const { template, sourceDir } = this.options;
+    const { template } = this.options;
     const baseTemplateName = 'base';
     const baseCompName = 'comp';
     const customWrapperName = 'custom-wrapper';
@@ -479,13 +490,13 @@ export default class MiniPlugin {
       let importBaseTemplatePath = promoteRelativePath(
         path.relative(
           page.path,
-          path.join(sourceDir, this.getTemplatePath(baseTemplateName)),
+          path.join(this.sourceDir, this.getTemplatePath(baseTemplateName)),
         ),
       );
       const config = this.filesConfig[this.getConfigFilePath(page.name)];
       if (config) {
-        let importBaseCompPath = promoteRelativePath(path.relative(page.path, path.join(sourceDir, this.getTargetFilePath(baseCompName, ''))));
-        let importCustomWrapperPath = promoteRelativePath(path.relative(page.path, path.join(sourceDir, this.getTargetFilePath(customWrapperName, ''))));
+        let importBaseCompPath = promoteRelativePath(path.relative(page.path, path.join(this.sourceDir, this.getTargetFilePath(baseCompName, ''))));
+        let importCustomWrapperPath = promoteRelativePath(path.relative(page.path, path.join(this.sourceDir, this.getTargetFilePath(customWrapperName, ''))));
         config.content.usingComponents = {
           [customWrapperName]: importCustomWrapperPath,
           ...config.content.usingComponents,
@@ -557,7 +568,7 @@ export default class MiniPlugin {
       componentName = componentPath.replace(this.context, '').replace(/\\/g, '/').replace(path.extname(componentPath), '');
       componentName = componentName.replace(/node_modules/gi, 'npm');
     } else {
-      componentName = componentPath.replace(this.options.sourceDir, '').replace(/\\/g, '/').replace(path.extname(componentPath), '');
+      componentName = componentPath.replace(this.sourceDir, '').replace(/\\/g, '/').replace(path.extname(componentPath), '');
     }
 
     return componentName.replace(/^(\/|\\)/, '');
@@ -600,7 +611,7 @@ export default class MiniPlugin {
    * @param compilation
    */
   generateDarkModeFile(compilation: webpack.Compilation) {
-    const themeLocationPath = path.resolve(this.options.sourceDir, this.themeLocation);
+    const themeLocationPath = path.resolve(this.sourceDir, this.themeLocation);
     if (fs.existsSync(themeLocationPath)) {
       const themeLocationSource = fs.readFileSync(themeLocationPath);
       compilation.assets[this.themeLocation] = new RawSource(themeLocationSource);
@@ -612,7 +623,7 @@ export default class MiniPlugin {
    */
   generateTabBarFiles(compilation: webpack.Compilation) {
     this.tabBarIcons.forEach(icon => {
-      const iconPath = path.resolve(this.options.sourceDir, icon);
+      const iconPath = path.resolve(this.sourceDir, icon);
       if (fs.existsSync(iconPath)) {
         const iconSource = fs.readFileSync(iconPath);
         compilation.assets[icon] = new RawSource(iconSource);

@@ -55,7 +55,7 @@ export class MiniWebpackPlugin {
     const { rootDir, template, fileType, configAPI } = this.config;
     const sourceDir = path.join(rootDir, 'src');
     const options = {
-      sourceDir,
+      rootDir,
       fileType,
       template,
       commonChunks: ['runtime', 'vendors', 'common', 'ice'],
