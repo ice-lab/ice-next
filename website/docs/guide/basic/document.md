@@ -42,7 +42,7 @@ export default Document;
 - `Scripts` 页面依赖的 JS 资源
 - `Main` 页面渲染的容器节点
 
-这些组件，配合各路由组件的 `getConfig()` 配置，可以实现不同页面 HTML 模板的差异化渲染。
+这些组件，配合各路由组件的 `pageConfig` 配置，可以实现不同页面 HTML 模板的差异化渲染。
 
 ## 内容定制
 

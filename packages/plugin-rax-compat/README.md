@@ -1,6 +1,6 @@
 # @ice/plugin-rax-compat
 
-ICE plugin for migrating `rax-app` project into `ICE`.
+ICE plugin for migrating `rax-app` project into `ice.js`.
 
 ## Usage
 
@@ -10,14 +10,14 @@ Add plugin in `ice.config.mts`:
 import { defineConfig } from 'ice';
 import compatRax from '@ice/plugin-rax-compat';
 
-export default defineConfig({
+export default defineConfig(() => ({
   plugins: [compatRax({ /* options */ })],
-});
+}));
 ```
 
 ## Options
 
-- inlineStyle: 
-  - Enable stylesheet loader to import CSS files.
+- `inlineStyle`: 
   - default to `false`.
+  - Enable stylesheet loader to import CSS files.
   

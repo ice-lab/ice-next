@@ -2,8 +2,6 @@
 
 ## Usage
 
-Install from npm.
-
 ```bash
 $ npm i @ice/plugin-request -S
 ```
@@ -14,11 +12,11 @@ Add plugin.
 import { defineConfig } from '@ice/app';
 import request from '@ice/plugin-request';
 
-export default defineConfig({
+export default defineConfig(() => ({
   plugins: [
     request(),
   ],
-});
+}));
 ```
 
 ## API

@@ -90,7 +90,7 @@ export function getStaticData() {
 ```tsx
 import { defineConfig } from '@ice/app';
 
-export default defineConfig({
+export default defineConfig(() => ({
   ssg: false,
-});
+}));
 ```

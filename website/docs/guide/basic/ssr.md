@@ -16,10 +16,10 @@ SSR 相比传统在浏览器端渲染的模式(CSR)，受设备性能和网络�
 ```tsx
 import { defineConfig } from '@ice/app';
 
-export default defineConfig({
+export default defineConfig(() => ({
   // ...
   ssr: true,
-});
+}));
 ```
 
 ## 数据请求

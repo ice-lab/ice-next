@@ -25,12 +25,12 @@ ICE 提供了开箱即用的 Mock 方案，支持 CRUD 等操作，在启动本�
 ```js title="ice.config.mts"
 import { defineConfig } from '@ice/app';
 
-export default defineConfig({
+export default defineConfig(() => ({
   mock: {
     // 忽略 mock 目录中 custom 目录下的文件以及 api.ts 文件
     exclude: ["custom/**", "api.ts"]
   },
-});
+}));
 ```
 
 ## 编写 Mock 接口

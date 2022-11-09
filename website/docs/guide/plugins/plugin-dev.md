@@ -58,11 +58,11 @@ export default plugin;
 import { defineConfig } from '@ice/app';
 + import myPlugin from './my-plugin';
 
-export default defineConfig({
+export default defineConfig(() => ({
   plugins: [
 +   myPlugin(),
   ]
-})
+}))
 ```
 
 ### 发布插件到 npm 
@@ -145,11 +145,11 @@ export default runtime;
 import { defineConfig } from '@ice/app';
 + import myPlugin from '@ice/my-plugin';
 
-export default defineConfig({
+export default defineConfig(() => ({
   plugins: [
 +   myPlugin(),
   ]
-})
+}));
 ```
 
 ## 工程能力定制
