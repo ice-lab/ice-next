@@ -1,1 +1,1 @@
-import 'core-js/fixture/test';
+import 'core-js/modules/test';

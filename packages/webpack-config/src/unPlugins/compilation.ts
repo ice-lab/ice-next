@@ -151,7 +151,7 @@ const compilationPlugin = (options: Options): UnpluginOptions => {
         let { map } = output;
         return {
           code: polyfill
-            ? transformCoreJs(
+            ? await transformCoreJs(
               code,
               path.dirname(require.resolve('core-js/package.json')),
             ) : code,

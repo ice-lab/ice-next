@@ -8,7 +8,7 @@ const transformCoreJs = async (source: string, coreJsPath: string) => {
   let s: MagicString | undefined;
   const str = () => s || (s = new MagicString(source));
   imports.forEach((targetImport) => {
-    if (targetImport.n.startsWith('core-js/')) {
+    if (targetImport.n.startsWith('core-js/modules/')) {
       str().overwrite(targetImport.s, targetImport.e, targetImport.n.replace('core-js/', coreJsPath));
     }
   });
