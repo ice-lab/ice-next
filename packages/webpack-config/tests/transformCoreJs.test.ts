@@ -10,7 +10,7 @@ describe('transform core js path', () => {
   const coreJsPath = '/path/to/core-js/';
   it('matched', async () => {
     const orignalCode = fs.readFileSync(path.join(__dirname, './fixtures/transformCoreJs/match.js'), 'utf-8');
-    expect(await transformCoreJs(orignalCode, coreJsPath)).toBe('import \'/path/to/core-js/fixture/test\';');
+    expect(await transformCoreJs(orignalCode, coreJsPath)).toBe('import \'/path/to/core-js/modules/test\';');
   });
 
   it('miss match', async () => {
@@ -20,6 +20,6 @@ describe('transform core js path', () => {
 
   it('string included', async () => {
     const orignalCode = fs.readFileSync(path.join(__dirname, './fixtures/transformCoreJs/stringInclude.js'), 'utf-8');
-    expect(await transformCoreJs(orignalCode, coreJsPath)).toBe('import \'somepack/core-js/fixture/test\';');
+    expect(await transformCoreJs(orignalCode, coreJsPath)).toBe('import \'somepack/core-js/modules/test\';');
   });
 });
