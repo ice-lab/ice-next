@@ -125,6 +125,8 @@ export interface Config {
 
   port?: string | number;
 
+  enableCache?: boolean;
+
   cacheDir?: string;
 
   tsCheckerOptions?: ForkTsCheckerWebpackPluginOptions;

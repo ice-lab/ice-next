@@ -53,7 +53,6 @@ const plugin: Plugin<MiniappOptions> = () => ({
         configAPI,
         dataCache,
         runtimeDir: '.ice',
-        cacheDir: path.join(rootDir, 'node_modules/.cache'),
       }));
       onHook(`after.${command as 'start' | 'build'}.compile`, async ({ isSuccessful, isFirstCompile }) => {
         const shouldShowLog = isSuccessful && ((command === 'start' && isFirstCompile) || command === 'build');

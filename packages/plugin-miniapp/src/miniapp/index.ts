@@ -35,7 +35,6 @@ const getMiniappTask = ({
   configAPI,
   dataCache,
   runtimeDir,
-  cacheDir,
 }): Config => {
   const entry = getEntry(rootDir, runtimeDir);
   const mode = command === 'start' ? 'development' : 'production';
@@ -71,7 +70,8 @@ const getMiniappTask = ({
       '@ice/shared': require.resolve('@ice/shared'),
       'react-dom$': require.resolve('@ice/miniapp-react-dom'),
     },
-    cacheDir: path.join(rootDir, cacheDir),
+    // FIXME: enable cache will cause error, disable it temporarily
+    enableCache: false,
     plugins,
     loaders: module.rules,
     optimization: {
