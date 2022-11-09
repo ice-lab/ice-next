@@ -361,7 +361,7 @@ const { data, error, loading, request } = useRequest((id) => ({
 ```ts title="src/app.tsx"
 import { defineRequestConfig } from '@ice/plugin-request/esm/types';
 
-export const request = defineRequestConfig({
+export const requestConfig = defineRequestConfig({
   // 可选的，全局设置 request 是否返回 response 对象，默认为 false
   withFullResponse: false,
 
@@ -408,7 +408,7 @@ export const request = defineRequestConfig({
 ```ts title="src/app.tsx"
 import { defineRequestConfig } from '@ice/plugin-request/esm/types';
 
-export const request = defineRequestConfig([
+export const requestConfig = defineRequestConfig([
   {
     baseURL: '/api',
     // ...RequestConfig 其他参数
@@ -488,7 +488,7 @@ const error = {
 ```ts title="src/app.tsx"
 import { defineRequestConfig } from '@ice/plugin-request/esm/types';
 
-export const request = defineRequestConfig({
+export const requestConfig = defineRequestConfig({
   baseURL: '//service.example.com/api',
 });
 ```
@@ -509,7 +509,7 @@ BASEURL=https://example.com/api
 ```ts title="src/app.tsx"
 import { defineRequestConfig } from '@ice/plugin-request/esm/types';
 
-export const request = defineRequestConfig({
+export const requestConfig = defineRequestConfig({
   baseURL: process.env.BASEURL,
 });
 ```
