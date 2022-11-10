@@ -77,7 +77,7 @@ export const dataLoader = defineDataLoader(async () => {
 - 通过 `defineDataLoader` 定义了页面数据请求的具体实现，并导出为 `dataLoader`。
 - 通过 `useData` 方法，在组件侧获取和消费数据。
 
-```tsx
+```tsx title="src/pages/index.tsx"
 import { useData, defineDataLoader } from 'ice';
 
 export default function Home() {
@@ -100,15 +100,17 @@ export const dataLoader = defineDataLoader(async (ctx) => {
 });
 ```
 
-`defineDataLoader` 支持传入 Function，来定义页面数据请求的具体实现，其入参包含：
+`defineDataLoader` 支持传入 Function，来定义页面数据请求的具体实现，其入参 `ctx` 包含：
 - `pathname`: `string`, 当前页面的路径名。
 - `query`: `object`, 当前页面的 `query` 信息，会被提前解析。
+
+返回值为希望传给页面组件的具体数据，类型支持 `Data | Promise<Data>`。
 
 ### 应用级数据加载
 
 如果是应用级的数据加载，可以在应用入口 `src/app.ts` 中定义并导出 `dataLoader` 方法，来注册数据加载逻辑。示例：
 
-```ts
+```ts title="src/app.ts"
 import type { defineDataLoader } from 'ice';
 
 // ...
@@ -133,7 +135,7 @@ export default function Home(props) {
 
 ### 多个数据请求
 
-如果页面需要同时发起多个数据请求，首先推荐使用嵌套路由来组织页面内容，将不同区块的数据请求，放到不同路由组件下来注册。
+如果页面需要同时发起多个数据请求，首先推荐使用[嵌套路由来](./router.md)组织页面内容，将不同区块的数据请求，放到不同路由组件下来注册。
 
 <img src="https://img.alicdn.com/imgextra/i1/O1CN019fsC6o299xcHyZ2jo_!!6000000008026-2-tps-626-638.png" width="260px" />
 
