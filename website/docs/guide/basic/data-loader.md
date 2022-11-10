@@ -67,9 +67,11 @@ export const dataLoader = defineDataLoader(async () => {
 
 ## 使用示例
 
+[示例工程](https://github.com/ice-lab/ice-next/tree/master/examples/with-data-loader)
+
 ### 页面级数据加载
 
-页面路由组件或 `layout` 组件，都支持通过导出 `dataLoader` 来声明各自的数据请求。[示例工程](https://github.com/ice-lab/ice-next/tree/master/examples/with-data-loader)
+页面路由组件或 `layout` 组件，都支持通过导出 `dataLoader` 来声明各自的数据请求。
 
 下面是一个最基础的页面级数据请求示例：
 - 通过 `defineDataLoader` 定义了页面数据请求的具体实现，并导出为 `dataLoader`。
