@@ -42,6 +42,7 @@ describe('run client app', () => {
     }));
   });
   afterEach(() => {
+    (window as any).__ICE_DATA_LOADER__ = undefined;
     windowSpy.mockRestore();
     documentSpy.mockRestore();
   });
@@ -366,7 +367,7 @@ describe('run client app', () => {
       },
     );
     expect(routesData).toStrictEqual({
-      index: { type: 'getDataAbout' },
+      index: { type: 'getDataIndex' },
     });
     expect(routesConfig).toStrictEqual({
       index: {
@@ -374,7 +375,7 @@ describe('run client app', () => {
       },
     });
     expect(routeModules).toStrictEqual({
-      home: indexPage,
+      index: indexPage,
     });
   });
 });
