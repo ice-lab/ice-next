@@ -10,9 +10,10 @@ interface IRoute {
 
 function generateRoutes(routes: Array<string>): Array<IRoute> {
   return routes.map(route => {
+    const removedSlashRoute = route.replace(/^\//, ''); // Remove / at the beginning of the route
     return {
-      path: route === 'index' ? '/' : `/${route}`.replace(/index$/, ''),
-      source: `pages/${route}`,
+      path: removedSlashRoute === 'index' ? '/' : `/${removedSlashRoute}`.replace(/\/index$/, ''),
+      source: `pages/${removedSlashRoute}`,
     };
   });
 }

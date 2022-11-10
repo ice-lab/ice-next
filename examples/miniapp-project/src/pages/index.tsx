@@ -32,10 +32,12 @@ export default function Home() {
         <image src="https://v3.ice.work/img/logo.png" />
         {/* @ts-ignore */}
         <image src={url} />
-        <Link to="/?hello=world">222</Link>
-        <view onClick={() => { history.push('/?hello=computer'); }}>点我跳转本页</view>
-        <view onClick={() => { history.push('/about?hello=computer'); }}>点我跳转 about 页</view>
-        <view onClick={() => { history.push('/second/profile?hello=computer'); }}>点我跳转 second/profile 页</view>
+        <view onClick={() => { history.push('/?hello=computer'); }}>history 跳转本页</view>
+        <view onClick={() => { history.push('/about?hello=computer'); }}>history 跳转 about 页</view>
+        <view onClick={() => { history.push('/second/profile?hello=computer'); }}>history 跳转 second/profile 页</view>
+        <view onClick={() => { history.push('/third'); }}>history 跳转 third/index 页</view>
+        <Link to="/?hello=world">Link 标签跳转本页</Link>
+        <Link to="/third/index">Link 标签跳转 third/index 页</Link>
         <div onClick={test}>嘻嘻，我是 div 标签</div>
         <view onClick={onClickDiv}>嘻嘻，我是 view 标签</view>
       </view>

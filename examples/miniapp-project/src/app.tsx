@@ -18,6 +18,7 @@ export const miniappManifest = {
     'index',
     'about',
     'second/profile',
+    'third/index',
   ],
 };
 
