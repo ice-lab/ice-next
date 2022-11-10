@@ -114,7 +114,7 @@ export default function() {
 
 ## 定制路由地址
 
-对于约定式路由不满足的场景，可以通过 `routes` 方式进行自定义，例如:
+对于约定式路由不满足的场景，可以通过在 `src/app.ts` 中 `defineConfig` 方式进行自定义，例如:
 
 ```js
 import { defineConfig } from '@ice/app';
