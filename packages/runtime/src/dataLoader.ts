@@ -52,9 +52,8 @@ async function loadDataByRouteId(routeId: string) {
     const cacheId = getCacheId(routeId, index);
 
     // Try get data from cache.
-    const result = cache.get(cacheId);
-    if (result) {
-      const { value, status } = result;
+    if (cache.has(cacheId)) {
+      const { value, status } = cache.get(cacheId);
 
       if (status === 'RESOLVED') {
         return value;
@@ -97,7 +96,6 @@ async function loadDataByRouteId(routeId: string) {
   }
 
   const loaders: Loaders = routeIdToLoaders[routeId];
-
   if (Array.isArray(loaders)) {
     return Promise.all(loaders.map(runLoaderSaveCache));
   } else {
@@ -129,7 +127,6 @@ function getLoaders(loadersConfig: RouteIdToLoaderConfigs, dataLoaderFetcher: Fu
   }
 
   const loaders: RouteIdToLoaders = {};
-
   Object.keys(loadersConfig).forEach(id => {
     const loaderConfig: DataLoaderConfig = loadersConfig[id];
     if (!loaderConfig) return;
@@ -169,7 +166,12 @@ async function init(loaders: RouteIdToLoaderConfigs, options?: DataLoaderInitOpt
     appExport,
   } = options || {};
 
-  routeIdToLoaders = Object.assign(routeIdToLoaders, getLoaders(loaders, dataLoaderFetcher));
+  // Clear cache when loaders changed.
+  Object.keys(loaders).forEach(routeId => {
+    cache.delete(routeId);
+  });
+
+  routeIdToLoaders = getLoaders(loaders, dataLoaderFetcher);
 
   const runtimeApi = {
     appContext: {
