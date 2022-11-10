@@ -120,16 +120,29 @@ export function Scripts(props: React.ScriptHTMLAttributes<HTMLScriptElement>) {
   );
 }
 
+// use app context separately
 export function Data() {
-  const { routesData, documentOnly } = useAppContext();
+  const { routesData, documentOnly, matches, routesConfig, downgrade } = useAppContext();
   const appData = useAppData();
+
+  const matchedIds = matches.map(match => match.route.id);
+  const routePath = getCurrentRoutePath(matches);
+  const windowContext: WindowContext = {
+    appData,
+    routesData,
+    routesConfig,
+    routePath,
+    downgrade,
+    matchedIds,
+    documentOnly,
+  };
 
   return (
     // Disable hydration warning for csr.
     // initial app data may not equal csr result.
     <script
       suppressHydrationWarning={documentOnly}
-      dangerouslySetInnerHTML={{ __html: `window.__ICE_APP_CONTEXT__=${JSON.stringify({ routesData, appData })}` }}
+      dangerouslySetInnerHTML={{ __html: `window.__ICE_APP_CONTEXT__=${JSON.stringify(windowContext)};` }}
     />
   );
 }
