@@ -17,7 +17,7 @@ import {
   getRoutesConfig,
 } from '../src/routes.js';
 
-describe.only('routes', () => {
+describe('routes', () => {
   let windowSpy;
   beforeEach(() => {
     windowSpy = vi.spyOn(global, 'window', 'get');
