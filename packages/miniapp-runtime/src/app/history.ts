@@ -1,12 +1,14 @@
 import type { History } from 'history';
 import { createMiniAppHistory } from 'miniapp-history';
 
-let routerHistory: History;
 
 interface IRoute {
   path: string;
   source: string;
 }
+
+let routerHistory: History;
+let miniappRoutes: Array<IRoute> = [];
 
 function generateRoutes(routes: Array<string>): Array<IRoute> {
   return routes.map(route => {
@@ -19,10 +21,16 @@ function generateRoutes(routes: Array<string>): Array<IRoute> {
 }
 
 function setHistory(routes: Array<string>) {
-  routerHistory = createMiniAppHistory(generateRoutes(routes));
+  miniappRoutes = generateRoutes(routes);
+  routerHistory = createMiniAppHistory(miniappRoutes);
+}
+
+function getMiniappRoutes() {
+  return miniappRoutes;
 }
 
 export {
   routerHistory,
   setHistory,
+  getMiniappRoutes,
 };

@@ -34,8 +34,11 @@ export default function Home() {
         <view onClick={() => { history.push('/about?hello=computer'); }}>history 跳转 about 页</view>
         <view onClick={() => { history.push('/second/profile?hello=computer'); }}>history 跳转 second/profile 页</view>
         <view onClick={() => { history.push('/third'); }}>history 跳转 third/index 页</view>
+        <view onClick={() => { history.push('/third/test'); }}>history 跳转 third/test 页</view>
         <Link to="/?hello=world">Link 标签跳转本页</Link>
-        <Link to="/third/index">Link 标签跳转 third/index 页</Link>
+        <Link to="/about">Link 标签跳转 about 页</Link>
+        <Link to="/third">Link 标签跳转 third/index 页</Link>
+        <Link to="/third/test">Link 标签跳转 third/test 页</Link>
         <div onClick={onClick}>嘻嘻，我是 div 标签</div>
         <view onClick={onClick}>嘻嘻，我是 view 标签</view>
       </view>
