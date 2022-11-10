@@ -63,13 +63,13 @@ export const dataLoader = defineDataLoader(async () => {
 
 同一个项目，两种不同写法，数据请求发起时机的差异对比如下（测试环境 chrome slow 3G)：
 
-<img src="https://img.alicdn.com/imgextra/i1/O1CN01S3QvE925z1IySHjDz_!!6000000007596-1-tps-1280-720.gif" width="750px" />
+<img src="https://iceworks.oss-cn-hangzhou.aliyuncs.com/site-assets/dataloader-compare.gif" width="750px" />
 
 ## 使用示例
 
 ### 页面级数据加载
 
-页面路由组件或 `layout` 组件，都支持通过导出 `dataLoader` 来声明各自的数据请求。
+页面路由组件或 `layout` 组件，都支持通过导出 `dataLoader` 来声明各自的数据请求。[示例工程](https://github.com/ice-lab/ice-next/tree/master/examples/with-data-loader)
 
 下面是一个最基础的页面级数据请求示例：
 - 通过 `defineDataLoader` 定义了页面数据请求的具体实现，并导出为 `dataLoader`。
