@@ -10,7 +10,7 @@ order: 6
 
 基于这种模式开发的页面，天然获得了更好的性能体验。
 
-<img src="https://img.alicdn.com/imgextra/i4/O1CN01TOHI2v2AGCd4fa1E6_!!6000000008175-2-tps-1362-480.png" width="750px" />
+<img src="https://img.alicdn.com/imgextra/i1/O1CN01IaC2Oj26L0Jm5W06X_!!6000000007644-2-tps-1330-488.png" width="750px" />
 
 常规的 React 应用，一般都会在组件首次 `useEffect` 时发起数据请求。这种组织方式，数据请求会在页面完成首次渲染后才发起，请求的时机是非常滞后的。
 
