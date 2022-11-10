@@ -73,8 +73,7 @@ function App {
 
 ## rax-app 工程迁移
 
-对于之前使用 rax-app 的用户，ice3 提供了一款工程自动化迁移工具—— [rax-migrate
-](https://www.npmjs.com/package/rax-migrate) ，它可以辅助平滑迁移大部分工程配置。插件等能力由于构建器不同以及版本差异等需要手动确认以及迁移。
+对于之前使用 rax-app 的用户，ice.js 提供了一款工程自动化迁移工具—— [rax-migrate](https://www.npmjs.com/package/rax-migrate) ，它可以辅助平滑迁移大部分工程配置。插件或者 ice3 不再支持的能力由于构建器不同以及版本差异等需要手动确认以及迁移。
 
 ### 安装
 
