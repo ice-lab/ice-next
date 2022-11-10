@@ -1,13 +1,14 @@
 # 网络请求
 
-大部分前端应用都会选择通过 HTTP(s) 协议与后端服务通讯。ice.js 提供了一套从 UI 交互到请求服务端数据的完整方案，进一步简化了应用的数据请求流程，并基于此提供了 `request` 和 `useRequest` Hooks 方法。
+大部分前端应用都会选择通过 HTTP(s) 协议与后端服务通讯。  
+ice.js 提供了一套从 UI 交互到请求服务端数据的完整方案，提供了统一的数据请求管理，通过切面编程的方式简化了统一设置参数、错误处理等逻辑的实现。
 
 ## 安装 [request 插件](https://www.npmjs.com/@ice/plugin-request)
 
 网络请求是可选能力，这也帮助框架进一步降低安装大小，在使用前需要单独安装 `@ice/plugin-request` 插件。
 
 ```bash
-npm i @ice/plugin-request -S
+npm i @ice/plugin-request -D
 ```
 
 在配置文件中添加插件：
@@ -16,21 +17,21 @@ npm i @ice/plugin-request -S
 import { defineConfig } from '@ice/app';
 import request from '@ice/plugin-request';
 
-export default defineConfig({
+export default defineConfig(() => ({
   plugins: [
     request(),
   ],
-});
+}));
 ```
 
 ## 目录约定
 
-目录组织如下：
+框架约定 `service` 目录用于收敛请求逻辑，目录组织如下：
 
 ```diff
  src
  ├── models
-+├── services                       // 定义全局数据请求
++├── services                       // 定义全局数据请求，非必须
 +│   └── user.ts
  └── pages
  |   ├── home
@@ -44,9 +45,10 @@ export default defineConfig({
  |   │   └── index.tsx
  └── app.ts
 ```
-通过调用 request 定义数据请求如下：
 
-```ts
+通过调用 `request` 定义数据请求如下：
+
+```ts title="pages/home/service/repo.ts"
 import { request } from 'ice';
 
 export default {
@@ -235,7 +237,7 @@ RequestConfig:
 
 更完整的配置请 [参考](https://github.com/axios/axios#request-config)。
 
-返回完整 Response Schema 如下：
+返回完整 Response Scheme 如下：
 
 ```ts
 {
@@ -311,7 +313,7 @@ const {
   // 默认参数
   defaultParams,
   // 轮询间隔，单位为毫秒
-  pollingInterval
+  pollingInterval,
   // 在页面隐藏时，是否继续轮询，默认为 true，即不会停止轮询
   pollingWhenHidden,
   // 根据 params，获取当前请求的 key
@@ -327,13 +329,13 @@ const {
   // 只有当 ready 为 true 时，才会发起请求
   ready,
   // 在 manual = false 时，refreshDeps 变化，会触发请求重新执行
-  refreshDeps
+  refreshDeps,
 });
 ```
 
 #### 常用使用方式
 
-```tsx
+```ts
 import { useRequest } from 'ice';
 // 用法 1：传入字符串
 const { data, error, loading } = useRequest('/api/repo');
