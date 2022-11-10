@@ -94,9 +94,7 @@ ice.js 针对 `嵌套路由` 的场景，应用了以下优化，来让页面达
 
 ## 动态路由
 
-在某些场景下可能需要动态指定路由，例如 `/user/:id`，可以以 `$` 开头创建文件名或目录名。
-
-> 注意：动态路由仅在 SSR 下生效。
+在某些场景下可能需要动态指定路由，例如 `/user/:id`，可以以 `$` 开头创建文件名或目录名, 例如 `src/pages/user/$id.tsx`:
 
 <img src="https://img.alicdn.com/imgextra/i4/O1CN01IzAaaD1SnKBElEVDM_!!6000000002291-2-tps-722-440.png" width="350px" />
 
