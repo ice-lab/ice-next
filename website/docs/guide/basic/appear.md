@@ -1,5 +1,5 @@
 ---
-title: 元素可见 Appear
+title: 元素可见
 order: 16
 ---
 
