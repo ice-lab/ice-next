@@ -51,8 +51,8 @@ async function loadDataByRouteId(routeId: string) {
 
     const cacheId = getCacheId(routeId, index);
 
-    // Try get data from cache.
-    if (cache.has(cacheId)) {
+    // Try get data from cache when CSR.
+    if (typeof window !== 'undefined' && cache.has(cacheId)) {
       const { value, status } = cache.get(cacheId);
 
       if (status === 'RESOLVED') {
