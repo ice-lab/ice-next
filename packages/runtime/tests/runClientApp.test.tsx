@@ -331,10 +331,10 @@ describe('run client app', () => {
   });
 
   it('load next page', async () => {
-    const homePage = {
+    const indexPage = {
       default: () => <></>,
-      getConfig: () => ({ title: 'home' }),
-      dataLoader: async () => ({ type: 'getDataHome' }),
+      getConfig: () => ({ title: 'index' }),
+      dataLoader: async () => ({ type: 'getDataIndex' }),
     };
     const aboutPage = {
       default: () => <></>,
@@ -343,9 +343,9 @@ describe('run client app', () => {
     };
     const mockedModules = [
       {
-        id: 'home',
+        id: 'index',
         load: async () => {
-          return homePage;
+          return indexPage;
         },
       },
       {
@@ -366,15 +366,15 @@ describe('run client app', () => {
       },
     );
     expect(routesData).toStrictEqual({
-      home: { type: 'getDataHome' },
+      index: { type: 'getDataAbout' },
     });
     expect(routesConfig).toStrictEqual({
-      home: {
-        title: 'home',
+      index: {
+        title: 'index',
       },
     });
     expect(routeModules).toStrictEqual({
-      home: homePage,
+      home: indexPage,
     });
   });
 });
