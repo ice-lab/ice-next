@@ -4,7 +4,7 @@ import type {
 } from '@ice/runtime';
 import { AppContextProvider, AppDataProvider, getAppData, getAppConfig, Runtime } from '@ice/runtime';
 import { eventCenter } from '../emitter/emitter.js';
-import { GET_APP_DATA_READY } from '../constants/index.js';
+import { APP_READY } from '../constants/index.js';
 import App from './App.js';
 import { createMiniApp } from './connect.js';
 import { setHistory } from './history.js';
@@ -23,7 +23,6 @@ export default async function runClientApp(options: RunClientAppOptions) {
   }
   const appData = await getAppData(app);
   // When getAppData ready, page mount function can be invoked
-  eventCenter.trigger(GET_APP_DATA_READY);
 
   const { miniappManifest } = app;
 
@@ -36,6 +35,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
   render(runtime);
   // TODO: transform routes to pages in miniappManifest
   createMiniApp(miniappManifest);
+  eventCenter.trigger(APP_READY);
 }
 
 async function render(

@@ -43,4 +43,4 @@ export const ON_HIDE = 'onHide';
 export const OPTIONS = 'options';
 export const EXTERNAL_CLASSES = 'externalClasses';
 export const BEHAVIORS = 'behaviors';
-export const GET_APP_DATA_READY = 'getAppDataReady';
+export const APP_READY = 'appReady';

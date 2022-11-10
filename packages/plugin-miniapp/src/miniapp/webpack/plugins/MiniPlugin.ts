@@ -189,7 +189,6 @@ export default class MiniPlugin {
               const routeInfo = this.routeManifest.find(route => path.join('pages', route.id) === module.name);
               const hasExportData = routeInfo?.exports?.includes('getData');
               const hasExportConfig = routeInfo?.exports?.includes('getConfig');
-              debugger;
               module.loaders.unshift({
                 loader: loaderName,
                 options: {
