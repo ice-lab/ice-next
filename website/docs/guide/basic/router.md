@@ -3,7 +3,7 @@ title: 路由
 order: 4
 ---
 
-ice.js 采用约定式路由，并针对 `嵌套路由` 做了一系列加载和渲染上的优化，帮助业务构建性能更好的 Web 应用。
+ice.js 采用 `约定式路由`，并针对 `嵌套路由` 做了一系列加载和渲染上的优化，以构建出性能更好的 Web 应用。
 
 ## 基础概念
 
@@ -26,7 +26,7 @@ export default function Home() {
 };
 ```
 
-更多配置能力，详见[页面](./page.md)。
+路由组件支持配置页面级配置和数据加载逻辑，详见[页面](./page.md)。
 
 ### 布局组件
 
@@ -77,12 +77,12 @@ export default function Home() {
 ```
 ## 嵌套路由
 
-通过 `创建文件夹` 和 `布局组件`，我们可以轻松构建嵌套路由。例如，下面的示例中，`/repo/preview` 页面，由下面三个组件嵌套而成：
+通过 `创建文件夹` 和 `布局组件`，可以轻松构建嵌套路由。例如，下面的示例中，`/repo/preview` 页面，由下面三个组件嵌套而成：
 - 应用级 layout.tsx
 - 页面级的 repo/layout.tsx
 - preview.tsx
 
-这三个组件也被称为 `路由组件`。ice.js 针对 `嵌套路由` 的场景，应用了以下优化，以帮助业务达成更好的性能体验：
+ice.js 针对 `嵌套路由` 的场景，应用了以下优化，来让页面达成更好的性能体验：
 - 各路由组件的 `资源` 和 `数据请求` 会被并行加载，以达到最快的资源加载速度。
 - 进行路由间跳转时，比如从 `/repo/preview` 跳转到 `/repo/edit`，框架只会加载差异化的路由组件 `edit.tsx` 进行渲染，而不会重新渲染整个页面。
 
@@ -93,6 +93,8 @@ export default function Home() {
 例如，下面这个常见的移动端营销页，可以将顶部通用的 `Slider` 抽象为 `布局组件`，将不同 `tab` 下对应的瀑布流，抽象为 `页面组件`。这样，`Slider` 和 `瀑布流` 就可以做到并行加载，并且当切换 `tab` 时，新的 tab 内容将由框架触发按需加载和渲染。
 
 <img src="https://img.alicdn.com/imgextra/i1/O1CN0164MThE1QAjZmVKmHH_!!6000000001936-2-tps-1638-740.png" width="750">
+
+[示例工程](https://github.com/ice-lab/ice-next/tree/master/examples/with-nested-routes)
 
 ## 动态路由
 
