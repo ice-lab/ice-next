@@ -80,7 +80,9 @@ const css: ModifyWebpackConfig<Configuration, typeof webpack> = (config, ctx) =>
     ['scss', require.resolve('@ice/bundles/compiled/sass-loader'), {
       implementation: sass,
     }],
-  ] as CSSRuleConfig[]).map((config) => configCSSRule(config, { publicPath, postcssOptions: postcss, rootDir, enableRpx2Vw })));
+  ] as CSSRuleConfig[]).map((config) => configCSSRule(config, {
+    publicPath, postcssOptions: postcss, rootDir, enableRpx2Vw },
+  )));
   config.plugins.push(
     new MiniCssExtractPlugin({
       filename: cssFilename || `${cssOutputFolder}/${hashKey ? `[name]-[${hashKey}].css` : '[name].css'}`,

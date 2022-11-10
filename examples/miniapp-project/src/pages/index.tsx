@@ -1,7 +1,6 @@
 import './index.scss';
 import { useAppData, useConfig, useData, Link, useSearchParams, history } from 'ice';
 import json from '../test.json';
-import { test } from '../utils';
 import url from './ice.png';
 
 export default function Home() {
@@ -17,9 +16,8 @@ export default function Home() {
   console.log('🚀 ~ file: index.tsx ~ line 15 ~ Home ~ params', params);
   // @ts-ignore
   console.log('ASSETS_VERSION', ASSETS_VERSION);
-  function onClickDiv() {
+  function onClick() {
     console.log('123');
-    debugger;
   }
   return (
     <>
@@ -38,8 +36,8 @@ export default function Home() {
         <view onClick={() => { history.push('/third'); }}>history 跳转 third/index 页</view>
         <Link to="/?hello=world">Link 标签跳转本页</Link>
         <Link to="/third/index">Link 标签跳转 third/index 页</Link>
-        <div onClick={test}>嘻嘻，我是 div 标签</div>
-        <view onClick={onClickDiv}>嘻嘻，我是 view 标签</view>
+        <div onClick={onClick}>嘻嘻，我是 div 标签</div>
+        <view onClick={onClick}>嘻嘻，我是 view 标签</view>
       </view>
     </>
   );
