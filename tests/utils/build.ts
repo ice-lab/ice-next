@@ -1,5 +1,4 @@
 import path from 'path';
-import process from 'process';
 import { fileURLToPath } from 'url';
 import getPort from 'get-port';
 import createService from '../../packages/ice/src/createService';
