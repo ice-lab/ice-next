@@ -92,7 +92,7 @@ describe('run client app', () => {
           );
         },
         getConfig: () => ({ title: 'home' }),
-        getData: async () => ({ data: 'test' }),
+        dataLoader: async () => ({ data: 'test' }),
       }),
     },
   ];
@@ -321,7 +321,7 @@ describe('run client app', () => {
             );
           },
           getConfig: () => ({ title: 'home' }),
-          getData: async () => ({ data: 'test' }),
+          dataLoader: async () => ({ data: 'test' }),
         }),
       }],
       runtimeModules: { commons: [serverRuntime] },
@@ -334,12 +334,12 @@ describe('run client app', () => {
     const homePage = {
       default: () => <></>,
       getConfig: () => ({ title: 'home' }),
-      getData: async () => ({ type: 'getDataHome' }),
+      dataLoader: async () => ({ type: 'getDataHome' }),
     };
     const aboutPage = {
       default: () => <></>,
       getConfig: () => ({ title: 'about' }),
-      getData: async () => ({ type: 'getDataAbout' }),
+      dataLoader: async () => ({ type: 'getDataAbout' }),
     };
     const mockedModules = [
       {
