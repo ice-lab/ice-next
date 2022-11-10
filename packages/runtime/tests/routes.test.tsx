@@ -125,7 +125,7 @@ describe('routes', () => {
     });
   });
 
-  it.only('load route data for SSR', async () => {
+  it('load route data for SSR', async () => {
     const routeModule = await loadRouteModules(routeModules);
     const routesDataSSR = await loadRoutesData(
       // @ts-ignore
