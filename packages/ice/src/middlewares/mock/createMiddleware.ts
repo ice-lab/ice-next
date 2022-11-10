@@ -54,7 +54,13 @@ export default function createMiddleware(options: MockOptions): Middleware {
   };
 }
 
-function matchPath(req, mockConfigs: MockConfig[]): void | { keys: Key[]; mockConfig: MockConfig; match: RegExpExecArray } {
+type MatchResult = void | {
+  keys: Key[];
+  mockConfig: MockConfig;
+  match: RegExpExecArray;
+};
+
+function matchPath(req, mockConfigs: MockConfig[]): MatchResult {
   for (const mockConfig of mockConfigs) {
     const keys = [];
     if (req.method.toLocaleUpperCase() === mockConfig.method) {
