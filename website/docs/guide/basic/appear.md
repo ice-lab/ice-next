@@ -7,28 +7,36 @@ order: 16
 
 ## 监测元素是否可见
 
-```tsx
+```js
 import VisibilityChange from '@ice/appear';
 
 export default function Home() {
-  return <VisibilityChange
-    onAppear={() => {
-      console.log('onAppear')
-    }}
-  >show something</VisibilityChange>
+  return (
+    <VisibilityChange
+      onAppear={() => {
+        console.log('onAppear')
+      }}
+    >
+      show something
+    </VisibilityChange>
+  )
 }
 ```
 
 ## 检测元素是否消失
 
-```tsx
+```js
 import VisibilityChange from '@ice/appear';
 
 export default function Home() {
-  return <VisibilityChange
-    onDisappear={() => {
-      console.log('onDisappear')
-    }}
-  >show something</VisibilityChange>
+  return (
+    <VisibilityChange
+      onDisappear={() => {
+        console.log('onDisappear')
+      }}
+    >
+      show something
+    </VisibilityChange>
+  )
 }
 ```
