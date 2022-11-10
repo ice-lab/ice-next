@@ -52,7 +52,7 @@ export async function loadRoutesData(
 ): Promise<RoutesData> {
   const routesData: RoutesData = {};
   const {
-    renderMode,
+    renderMode = 'CSR',
     dataLoaderFetcher,
   } = loadRoutesDataOptions;
   const hasGlobalLoader = typeof window !== 'undefined' && (window as any).__ICE_DATA_LOADER__;
@@ -80,6 +80,7 @@ export async function loadRoutesData(
     } else if (renderMode === 'SSR') {
       routeIdToLoaderConfigs[routeId] = routeModule.serverDataLoader || routeModule.dataLoader;
     } else {
+      // For single JS bundle.
       routeIdToLoaderConfigs[routeId] = routeModule.dataLoader;
     }
   });

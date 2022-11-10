@@ -17,7 +17,7 @@ import {
   getRoutesConfig,
 } from '../src/routes.js';
 
-describe('routes', () => {
+describe.only('routes', () => {
   let windowSpy;
   beforeEach(() => {
     windowSpy = vi.spyOn(global, 'window', 'get');
@@ -31,9 +31,9 @@ describe('routes', () => {
   const homeItem = {
     default: () => <></>,
     getConfig: () => ({ title: 'home' }),
-    getData: async () => ({ type: 'getData' }),
-    getServerData: async () => ({ type: 'getServerData' }),
-    getStaticData: async () => ({ type: 'getStaticData' }),
+    dataLoader: async () => ({ type: 'getData' }),
+    serverDataLoader: async () => ({ type: 'getServerData' }),
+    staticDataLoader: async () => ({ type: 'getStaticData' }),
   };
   const aboutItem = {
     default: () => <></>,
@@ -106,39 +106,56 @@ describe('routes', () => {
     });
   });
 
-  it('load route data', async () => {
+  it('load route data for SSG', async () => {
     const routeModule = await loadRouteModules(routeModules);
     const routesDataSSG = await loadRoutesData(
       // @ts-ignore
       [{ route: routeModules[0] }],
       {},
       routeModule,
-      'SSG',
+      {
+        renderMode: 'SSG',
+      },
     );
-    const routesDataSSR = await loadRoutesData(
-      // @ts-ignore
-      [{ route: routeModules[0] }],
-      {},
-      routeModule,
-      'SSR',
-    );
-    const routesDataCSR = await loadRoutesData(
-      // @ts-ignore
-      [{ route: routeModules[0] }],
-      {},
-      routeModule,
-      'CSR',
-    );
+
     expect(routesDataSSG).toStrictEqual({
       home: {
         type: 'getStaticData',
       },
     });
+  });
+
+  it.only('load route data for SSR', async () => {
+    const routeModule = await loadRouteModules(routeModules);
+    const routesDataSSR = await loadRoutesData(
+      // @ts-ignore
+      [{ route: routeModules[0] }],
+      {},
+      routeModule,
+      {
+        renderMode: 'SSR',
+      },
+    );
+
     expect(routesDataSSR).toStrictEqual({
       home: {
         type: 'getServerData',
       },
     });
+  });
+
+  it('load route data for CSR', async () => {
+    const routeModule = await loadRouteModules(routeModules);
+    const routesDataCSR = await loadRoutesData(
+      // @ts-ignore
+      [{ route: routeModules[0] }],
+      {},
+      routeModule,
+      {
+        renderMode: 'CSR',
+      },
+    );
+
     expect(routesDataCSR).toStrictEqual({
       home: {
         type: 'getData',
