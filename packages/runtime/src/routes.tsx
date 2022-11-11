@@ -39,9 +39,6 @@ export interface LoadRoutesDataOptions {
   renderMode?: RenderMode;
 }
 
-const hasGlobalLoader = typeof window !== 'undefined' && (window as any).__ICE_DATA_LOADER__;
-const globalLoader = hasGlobalLoader ? (window as any).__ICE_DATA_LOADER__ : null;
-
 /**
 * get data for the matched routes.
 */
@@ -53,6 +50,9 @@ export async function loadRoutesData(
 ): Promise<RoutesData> {
   const { renderMode } = options || {};
   const routesData: RoutesData = {};
+
+  const hasGlobalLoader = typeof window !== 'undefined' && (window as any).__ICE_DATA_LOADER__;
+  const globalLoader = hasGlobalLoader ? (window as any).__ICE_DATA_LOADER__ : null;
 
   await Promise.all(
     matches.map(async (match) => {

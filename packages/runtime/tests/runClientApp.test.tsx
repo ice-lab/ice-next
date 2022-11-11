@@ -276,9 +276,12 @@ describe('run client app', () => {
     let executed = false;
     windowSpy.mockImplementation(() => ({
       ...mockData,
-      __ICE_DATA_LOADER__: async () => {
-        useGlobalLoader = true;
-        return { msg: '-globalData' };
+      __ICE_DATA_LOADER__: {
+        hasLoad: () => true,
+        getData: async () => {
+          useGlobalLoader = true;
+          return { msg: '-globalData' };
+        },
       },
     }));
 

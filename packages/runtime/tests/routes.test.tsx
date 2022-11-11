@@ -165,14 +165,17 @@ describe('routes', () => {
 
   it('load data from __ICE_DATA_LOADER__', async () => {
     windowSpy.mockImplementation(() => ({
-      __ICE_DATA_LOADER__: async (id) => ({ id: `${id}_data` }),
+      __ICE_DATA_LOADER__: {
+        hasLoad: () => true,
+        getData: async (id) => ({ id: `${id}_data` }),
+      },
     }));
     const routesData = await loadRoutesData(
       // @ts-ignore
       [{ route: routeModules[0] }],
       {},
       {},
-      'SSG',
+      { renderMode: 'SSG' },
     );
     expect(routesData).toStrictEqual({
       home: {
