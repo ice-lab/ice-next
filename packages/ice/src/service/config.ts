@@ -62,7 +62,7 @@ class Config {
   };
 
   public reCompile = (taskKey: string) => {
-    // Re-compile only triggered when `getConfig` has been called.
+    // Re-compile only triggered when `pageConfig` has been called.
     if (this.compileTasks[taskKey]) {
       this.compileTasks[taskKey] = this.compiler(this.lastOptions);
     }
