@@ -11,6 +11,18 @@ interface Result {
   status: string;
 }
 
+export function defineDataLoader(dataLoaderConfig: DataLoaderConfig): DataLoaderConfig {
+  return dataLoaderConfig;
+}
+
+export function defineServerDataLoader(dataLoaderConfig: DataLoaderConfig): DataLoaderConfig {
+  return dataLoaderConfig;
+}
+
+export function defineStaticDataLoader(dataLoaderConfig: DataLoaderConfig): DataLoaderConfig {
+  return dataLoaderConfig;
+}
+
 const cache = new Map<string, Result>();
 
 /**
