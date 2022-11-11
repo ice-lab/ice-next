@@ -3,7 +3,7 @@ title: 应用入口
 order: 4
 ---
 
-ICE 通过应用配置的方式渲染整个应用，开发者可以根据提供的配置定制应用。
+ice.js 通过应用配置的方式渲染整个应用，开发者可以根据提供的配置定制应用。
 
 ## 应用配置文件
 
@@ -12,11 +12,11 @@ ICE 通过应用配置的方式渲染整个应用，开发者可以根据提供�
 ```ts
 import { defineAppConfig } from 'ice';
 
-export default defineAppConfig({
+export default defineAppConfig(() => ({
   app: {
     strict: true,
   },
-});
+}));
 ```
 
 > 推荐通过 `defineAppConfig()` 的方式导出应用配置，以获得良好的类型提示。
@@ -73,13 +73,13 @@ export default defineAppConfig({
 ```ts
 import { defineAppConfig } from 'ice';
 
-export default defineAppConfig({
+export default defineAppConfig(() => ({
   router: {
     type: 'memory',
     // 渲染 home 页面
     initialEntries: ['/home']
   }
-});
+}));
 ```
 
 #### `basename`
@@ -88,38 +88,6 @@ export default defineAppConfig({
 
 - 类型：`string`
 - 默认值：`/`
-
-## 应用级数据
-
-可以在应用入口定义并导出 `getAppData` 方法，来获取应用级数据。示例：
-
-```js
-import type { GetAppData } from 'ice';
-
-// ...
-
-export const getAppData: GetAppData = () => {
-  return new Promise((resolve) => {
-    resolve({
-      success: true,
-      id: 34293
-    });
-  });
-};
-```
-
-在页面或其他组件中，可以通过 `useAppData` 方法获取页面级数据。示例：
-
-```js
-import { useAppData } from 'ice';
-import type { AppData } from 'ice';
-
-export default function Home(props) {
-  const appData = useAppData<AppData>();
-
-  // ...
-}
-```
 
 ## 运行时拓展
 
@@ -130,7 +98,7 @@ import { defineAppConfig } from 'ice';
 import { defineAuthConfig } from '@ice/plugin-auth/esm/types';
 
 // 导出 auth 相关的能力，该能力由 @ice/plugin-auth 插件提供
-export const auth = defineAuthConfig(() => {
+export const authConfig = defineAuthConfig(() => {
   return {
     initialAuth: {
       admin: true,
@@ -138,11 +106,11 @@ export const auth = defineAuthConfig(() => {
   };
 });
 
-export default defineAppConfig({
+export default defineAppConfig(() => ({
   app: {
     strict: true,
   },
-});
+}));
 ```
 
 [//]: # (更多运行时插件能力，请参考[官方插件]&#40;/plugin/list/auth&#41;。)

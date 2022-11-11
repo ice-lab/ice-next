@@ -5,7 +5,7 @@ order: 10
 
 构建时渲染，简称 SSG (Static Site Generation)，是指在构建时提前生成内容 HTML 的渲染模式。
 
-ICE 默认开启 SSG 能力。SSG 不仅适用于静态站点，也适用于为普通 CSR 应用提前生成静态内容。
+ice.js 默认开启 SSG 能力。SSG 不仅适用于静态站点，也适用于为普通 CSR 应用提前生成静态内容。
 
 假设有如下路由组件，其内容为：
 
@@ -49,11 +49,11 @@ export default function Home() {
 
 ### 定制 SSG 的数据源
 
-如果希望在 SSG 时使用兜底数据，可以通过为路由组件定义 `getStaticData()` 方法。这样在 SSG 时，组件 `useData()` 获取的数据，为 `getStaticData()` 的返回值。
+如果希望在 SSG 时使用兜底数据，可以通过为路由组件定义 `staticDataLoader` 来实现。这样在 SSG 时，组件通过 `useData()` 获取的数据为 `staticDataLoader` 的返回值。
 
 ```tsx
 // src/pages/index.tsx
-import { useData } from 'ice';
+import { useData, defineDataLoader, defineStaticDataLoader } from 'ice';
 
 export default function Home() {
   const data = useData();
@@ -66,22 +66,24 @@ export default function Home() {
 }
 
 // 浏览器侧的常规数据请求
-export function getData() {
+export const dataLoader = defineDataLoader(() => {
   return {
     stars: 1000,
   };
-}
+});
 
 // 返回用于 SSG 的数据
-export function getStaticData() {
+export const staticDataLoader = defineStaticDataLoader(() => {
   // 浏览器侧的常规数据请求
   return {
     stars: 0,
   };
-}
+});
 ```
 
-构建 Client 端的 Bundle 时，会移除 `getStaticData()` 及其相关依赖。
+当 `defineDataLoader` 接受入参为数组时（定义了多个数据请求），`defineStaticDataLoader` 也需要与其一一对应。
+
+构建 Client 端的 Bundle 时，会移除 `staticDataLoader` 及其相关依赖。
 
 ## 关闭 SSG
 
@@ -90,7 +92,7 @@ export function getStaticData() {
 ```tsx
 import { defineConfig } from '@ice/app';
 
-export default defineConfig({
+export default defineConfig(() => ({
   ssg: false,
-});
+}));
 ```
