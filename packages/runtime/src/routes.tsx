@@ -3,8 +3,7 @@ import { RouteComponent } from './types.js';
 import type { RouteItem, RouteModules, RouteWrapperConfig, RouteMatch, RequestContext, RoutesConfig, RoutesData, RenderMode } from './types.js';
 import RouteWrapper from './RouteWrapper.js';
 import { useAppContext } from './AppContext.js';
-import DataLoader from './dataLoader.js';
-import type { RouteIdToLoaderConfigs } from './dataLoader.js';
+import { loadDataByCustomFetcher } from './dataLoaderFetcher.js';
 
 type RouteModule = Pick<RouteItem, 'id' | 'load'>;
 
@@ -38,8 +37,10 @@ export async function loadRouteModules(routes: RouteModule[], originRouteModules
 
 export interface LoadRoutesDataOptions {
   renderMode?: RenderMode;
-  dataLoaderFetcher?: Function;
 }
+
+const hasGlobalLoader = typeof window !== 'undefined' && (window as any).__ICE_DATA_LOADER__;
+const globalLoader = hasGlobalLoader ? (window as any).__ICE_DATA_LOADER__ : null;
 
 /**
 * get data for the matched routes.
@@ -48,52 +49,47 @@ export async function loadRoutesData(
   matches: RouteMatch[],
   requestContext: RequestContext,
   routeModules: RouteModules,
-  loadRoutesDataOptions?: LoadRoutesDataOptions,
+  options?: LoadRoutesDataOptions,
 ): Promise<RoutesData> {
+  const { renderMode } = options || {};
   const routesData: RoutesData = {};
-  const {
-    renderMode = 'CSR',
-    dataLoaderFetcher,
-  } = loadRoutesDataOptions;
-  const hasGlobalLoader = typeof window !== 'undefined' && (window as any).__ICE_DATA_LOADER__;
 
-  // Try get data from __ICE_DATA_LOADER__.
-  if (hasGlobalLoader) {
-    const load = (window as any).__ICE_DATA_LOADER__;
-
-    await Promise.all(
-      matches.map(async (match) => {
-        const { id } = match.route;
-        routesData[id] = await load(id);
-      }),
-    );
-
-    return routesData;
-  }
-
-  // If the DataLoader is not initialized, it needs to be initialized.
-  const routeIdToLoaderConfigs: RouteIdToLoaderConfigs = {};
-  Object.keys(routeModules).forEach((routeId) => {
-    const routeModule = routeModules[routeId];
-    if (renderMode === 'SSG') {
-      routeIdToLoaderConfigs[routeId] = routeModule.staticDataLoader || routeModule.dataLoader;
-    } else if (renderMode === 'SSR') {
-      routeIdToLoaderConfigs[routeId] = routeModule.serverDataLoader || routeModule.dataLoader;
-    } else {
-      // For single JS bundle.
-      routeIdToLoaderConfigs[routeId] = routeModule.dataLoader;
-    }
-  });
-  DataLoader.init(routeIdToLoaderConfigs, {
-    dataLoaderFetcher,
-    needLoadData: false,
-  });
-
-  // Load data by route id.
   await Promise.all(
     matches.map(async (match) => {
       const { id } = match.route;
-      routesData[id] = await DataLoader.loadDataByRouteId(match.route.id);
+
+      if (globalLoader.hasLoad(id)) {
+        routesData[id] = await globalLoader.getData(id);
+        return;
+      }
+
+      const routeModule = routeModules[id];
+      const { dataLoader, serverDataLoader, staticDataLoader } = routeModule ?? {};
+
+      let loader;
+
+      // SSG -> getStaticData
+      // SSR -> getServerData || getData
+      // CSR -> getData
+      if (renderMode === 'SSG') {
+        loader = staticDataLoader;
+      } else if (renderMode === 'SSR') {
+        loader = serverDataLoader || dataLoader;
+      } else {
+        loader = dataLoader;
+      }
+
+      if (Array.isArray(loader)) {
+        routesData[id] = await Promise.all(loader.map(load => {
+          if (typeof load === 'object') {
+            return loadDataByCustomFetcher(load);
+          }
+
+          return load(requestContext);
+        }));
+      } else if (loader) {
+        routesData[id] = await loader(requestContext);
+      }
     }),
   );
 
