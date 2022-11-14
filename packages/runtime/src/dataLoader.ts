@@ -5,12 +5,12 @@ interface Loaders {
   [routeId: string]: DataLoaderConfig;
 }
 
-interface PreLoadResult {
+interface CachedResult {
   value: any;
   status: string;
 }
 
-interface Options {
+interface LoaderOptions {
   fetcher: Function;
   runtimeModules: RuntimeModules['statics'];
   appExport: AppExport;
@@ -29,8 +29,8 @@ export function defineStaticDataLoader(dataLoaderConfig: DataLoaderConfig): Data
 }
 
 /**
- * custom fetcher for load static data loader config
- * set globally to avoid passing this fetcher too deep
+ * Custom fetcher for load static data loader config.
+ * Set globally to avoid passing this fetcher too deep.
  */
 let dataLoaderFetcher;
 
@@ -43,7 +43,7 @@ export function loadDataByCustomFetcher(config) {
 }
 
 /**
- * handle for different dataLoader
+ * Handle for different dataLoader.
  */
 export function callDataLoader(dataLoader: DataLoaderConfig, requestContext): DataLoaderResult {
   if (Array.isArray(dataLoader)) {
@@ -59,7 +59,7 @@ export function callDataLoader(dataLoader: DataLoaderConfig, requestContext): Da
   return dataLoader(requestContext);
 }
 
-const cache = new Map<string, PreLoadResult>();
+const cache = new Map<string, CachedResult>();
 
 /**
  * Start getData once data-loader.js is ready in client, and set to cache.
@@ -99,7 +99,7 @@ function loadInitialDataInClient(loaders: Loaders) {
  * Load initial data and register global loader.
  * In order to load data, JavaScript modules, CSS and other assets in parallel.
  */
-async function init(loadersConfig: Loaders, options: Options) {
+async function init(loadersConfig: Loaders, options: LoaderOptions) {
   const {
     fetcher,
     runtimeModules,
