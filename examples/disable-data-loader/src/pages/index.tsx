@@ -1,3 +1,5 @@
+import { defineDataLoader } from 'ice';
+
 export default function Home() {
   return (
     <>
@@ -6,7 +8,7 @@ export default function Home() {
   );
 }
 
-export function getConfig() {
+export function pageConfig() {
   return {
     title: 'Home',
     meta: [
@@ -23,7 +25,7 @@ export function getConfig() {
   };
 }
 
-export function getData({ pathname, query }) {
+export const dataLoader = defineDataLoader(({ pathname, query }) => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
@@ -34,4 +36,4 @@ export function getData({ pathname, query }) {
       });
     }, 1 * 100);
   });
-}
+});

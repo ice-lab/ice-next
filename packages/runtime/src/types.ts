@@ -19,7 +19,7 @@ type App = Partial<{
 export type AppData = any;
 export type RouteData = any;
 
-// route.getConfig return value
+// route.pageConfig return value
 export type RouteConfig<T = {}> = T & {
   // Support for extends config.
   title?: string;
@@ -36,14 +36,24 @@ export interface AppExport {
 
 export type GetAppData = (ctx: RequestContext) => (Promise<AppData> | AppData);
 
-export type GetDataConfig = (ctx: RequestContext) => (Promise<RouteData> | RouteData) | RouteData;
+export type DataLoader = (ctx: RequestContext) => (Promise<RouteData> | RouteData) | RouteData;
 
-// app.getData & route.getData
-export type GetData = (ctx: RequestContext) => (Promise<RouteData> | RouteData);
-export type GetServerData = (ctx: RequestContext) => (Promise<RouteData> | RouteData);
-export type GetStaticData = (ctx: RequestContext) => (Promise<RouteData> | RouteData);
-// route.getConfig
-export type GetConfig = (args: { data?: RouteData }) => RouteConfig;
+interface StaticDataLoader {
+  key?: string;
+  prefetch_type?: string;
+  api: string;
+  v: string;
+  data: any;
+  ext_headers: Object;
+}
+
+// route.defineDataLoader
+// route.defineServerDataLoader
+// route.defineStaticDataLoader
+export type DataLoaderConfig = DataLoader | StaticDataLoader | Array<DataLoader | StaticDataLoader>;
+
+// route.pageConfig
+export type PageConfig = (args: { data?: RouteData }) => RouteConfig;
 
 export interface AppConfig {
   app?: App;
@@ -103,10 +113,10 @@ export interface RequestContext extends ServerContext {
 
 export interface RouteComponent {
   default: ComponentType<any>;
-  getStaticData?: GetStaticData;
-  getServerData?: GetServerData;
-  getData?: GetData;
-  getConfig?: GetConfig;
+  staticDataLoader?: DataLoaderConfig;
+  serverDataLoader?: DataLoaderConfig;
+  dataLoader?: DataLoaderConfig;
+  pageConfig?: PageConfig;
   [key: string]: any;
 }
 
@@ -233,4 +243,4 @@ export interface RouteMatch {
   route: RouteItem;
 }
 
-export type RenderMode = 'SSR' | 'SSG';
+export type RenderMode = 'SSR' | 'SSG' | 'CSR';

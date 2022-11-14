@@ -1,4 +1,4 @@
-import { useData } from 'ice';
+import { useData, defineDataLoader } from 'ice';
 import styles from './index.module.css';
 
 export default function Home() {
@@ -12,15 +12,15 @@ export default function Home() {
   );
 }
 
-export function getConfig() {
+export function pageConfig() {
   return {
     title: 'Home',
   };
 }
 
-export async function getData() {
+export const dataLoader = defineDataLoader(async () => {
   const result = await fetch('https://api.github.com/repos/ice-lab/ice-next');
   const data = await result.json();
 
   return data;
-}
+});

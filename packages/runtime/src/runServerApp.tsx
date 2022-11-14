@@ -7,7 +7,7 @@ import type {
   AppContext, RouteItem, ServerContext,
   AppExport, AssetsManifest,
   RouteMatch,
-  GetConfig,
+  PageConfig,
   RenderMode,
   DocumentComponent,
   RuntimeModules,
@@ -42,7 +42,7 @@ interface RenderOptions {
   routePath?: string;
   disableFallback?: boolean;
   routesConfig: {
-    [key: string]: GetConfig;
+    [key: string]: PageConfig;
   };
   runtimeOptions?: Record<string, any>;
 }
@@ -199,7 +199,7 @@ async function doRender(serverContext: ServerContext, renderOptions: RenderOptio
   }
   try {
     const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
-    const routesData = await loadRoutesData(matches, requestContext, routeModules, renderMode);
+    const routesData = await loadRoutesData(matches, requestContext, routeModules, { renderMode });
     const routesConfig = getRoutesConfig(matches, routesData, routeModules);
     runtime.setAppContext({ ...appContext, routeModules, routesData, routesConfig, routePath, matches, appData });
     if (runtimeModules.commons) {
@@ -319,9 +319,9 @@ function renderDocument(options: RenderDocumentOptions): RenderResult {
   const matchedRoutesConfig = {};
   matches.forEach(async (match) => {
     const { id } = match.route;
-    const getConfig = routesConfig[id];
+    const pageConfig = routesConfig[id];
 
-    matchedRoutesConfig[id] = getConfig ? getConfig({}) : {};
+    matchedRoutesConfig[id] = pageConfig ? pageConfig({}) : {};
   });
 
   const appContext: AppContext = {
