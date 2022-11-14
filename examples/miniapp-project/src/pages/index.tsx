@@ -1,7 +1,5 @@
-import { defineDataLoader } from 'ice';
-
 import './index.scss';
-import { useAppData, useConfig, useData, Link, useSearchParams, history } from 'ice';
+import { useAppData, useConfig, useData, Link, useSearchParams, history, defineDataLoader } from 'ice';
 import json from '../test.json';
 import url from './ice.png';
 
