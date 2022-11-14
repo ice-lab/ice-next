@@ -158,6 +158,10 @@ public String index(Model model) {
 
 > 示例展示的是 HashRouter 路由，如果为 BrowserRouter，建议改为 @GetMapping(value = { "/**" }) 实现前端 fallback
 
+## 小程序发布
+
+// TODO
+
 ## FAQ
 
 ### 静态资源在非根目录或 CDN

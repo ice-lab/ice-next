@@ -123,3 +123,24 @@ export const pageConfig = definePageConfig(() => ({
 ```
 
 推荐在页面组件内按需异步加载，以达到更好的性能体验。
+@TODO 补充推荐的方式示例
+
+### 小程序页面配置
+
+小程序端不支持上述 title/metas/links/scripts 等配置。但是，通过 `getConfig` 方法能够声明该页面的小程序页面配置。以阿里小程序为例，[阿里小程序-页面配置](https://opendocs.alipay.com/mini/framework/page-json)的内容均可通过该方式声明：
+
+```jsx title=src/pages/index.tsx
+export function getConfig() {
+  return {
+    "defaultTitle": "",
+    "allowsBounceVertical": "NO",
+    "transparentTitle": "auto",
+    "titleBarColor": "#262833",
+    "optionMenu": {
+      "icon": "https://img.alicdn.com/tps/i3/T1OjaVFl4dXXa.JOZB-114-114.png"
+    },
+    "titlePenetrate": "YES",
+    "barButtonTheme": "light"
+  };
+}
+```

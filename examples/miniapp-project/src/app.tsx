@@ -12,7 +12,9 @@ export const getAppData: GetAppData = () => {
 };
 
 export const miniappManifest = {
-  title: 'miniapp test',
+  window: {
+    defaultTitle: 'miniapp test',
+  },
   routes: [
     'index',
     'about',

@@ -19,6 +19,12 @@ module.exports = {
     },
     {
       type: 'category',
+      label: '小程序',
+      collapsed: true,
+      items: getDocsFromDir('guide/miniapp'),
+    },
+    {
+      type: 'category',
       label: '进阶',
       collapsed: false,
       items: getDocsFromDir('guide/advanced'),
