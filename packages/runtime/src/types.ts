@@ -19,7 +19,7 @@ type App = Partial<{
 export type AppData = any;
 export type RouteData = any;
 
-// route.getConfig return value
+// route.pageConfig return value
 export type RouteConfig<T = {}> = T & {
   // Support for extends config.
   title?: string;
@@ -52,8 +52,8 @@ interface StaticDataLoader {
 // route.defineStaticDataLoader
 export type DataLoaderConfig = DataLoader | StaticDataLoader | Array<DataLoader | StaticDataLoader>;
 
-// route.getConfig
-export type GetConfig = (args: { data?: RouteData }) => RouteConfig;
+// route.pageConfig
+export type PageConfig = (args: { data?: RouteData }) => RouteConfig;
 
 export interface AppConfig {
   app?: App;
@@ -116,7 +116,7 @@ export interface RouteComponent {
   staticDataLoader?: DataLoaderConfig;
   serverDataLoader?: DataLoaderConfig;
   dataLoader?: DataLoaderConfig;
-  getConfig?: GetConfig;
+  pageConfig?: PageConfig;
   [key: string]: any;
 }
 

@@ -1,4 +1,4 @@
-import { Outlet, useData, useConfig, defineDataLoader } from 'ice';
+import { Outlet, useData, useConfig, definePageConfig, defineDataLoader } from 'ice';
 
 export default () => {
   const data = useData();
@@ -14,7 +14,7 @@ export default () => {
   );
 };
 
-export function getConfig() {
+export const pageConfig = definePageConfig(() => {
   return {
     title: 'Layout',
     meta: [
@@ -25,7 +25,7 @@ export function getConfig() {
     ],
     auth: ['admin'],
   };
-}
+});
 
 export const dataLoader = defineDataLoader(() => {
   return new Promise((resolve) => {

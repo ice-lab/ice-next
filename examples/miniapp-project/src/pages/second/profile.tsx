@@ -1,4 +1,5 @@
 import styles from './profile.module.css';
+
 export default function Profile() {
   return (
     <>
@@ -7,7 +8,7 @@ export default function Profile() {
   );
 }
 
-export function getConfig() {
+export function pageConfig() {
   return {
     title: 'Second profile',
   };

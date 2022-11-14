@@ -92,7 +92,7 @@ describe('run client app', () => {
             <div>home{appData?.msg || ''}</div>
           );
         },
-        getConfig: () => ({ title: 'home' }),
+        pageConfig: () => ({ title: 'home' }),
         dataLoader: async () => ({ data: 'test' }),
       }),
     },
@@ -324,7 +324,7 @@ describe('run client app', () => {
               <div>home{data?.data}{config.title}</div>
             );
           },
-          getConfig: () => ({ title: 'home' }),
+          pageConfig: () => ({ title: 'home' }),
           dataLoader: async () => ({ data: 'test' }),
         }),
       }],
@@ -337,12 +337,12 @@ describe('run client app', () => {
   it('load next page', async () => {
     const indexPage = {
       default: () => <></>,
-      getConfig: () => ({ title: 'index' }),
-      dataLoader: async () => ({ type: 'getDataIndex' }),
+      pageConfig: () => ({ title: 'home' }),
+      dataLoader: async () => ({ type: 'getDataHome' }),
     };
     const aboutPage = {
       default: () => <></>,
-      getConfig: () => ({ title: 'about' }),
+      pageConfig: () => ({ title: 'about' }),
       dataLoader: async () => ({ type: 'getDataAbout' }),
     };
     const mockedModules = [

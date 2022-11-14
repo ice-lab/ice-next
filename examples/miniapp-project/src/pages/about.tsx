@@ -1,5 +1,3 @@
-// import './index.css';
-
 export default function Home() {
   return (
     <>
@@ -8,7 +6,7 @@ export default function Home() {
   );
 }
 
-export function getConfig() {
+export function pageConfig() {
   return {
     title: 'About',
   };

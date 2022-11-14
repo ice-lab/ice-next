@@ -1,6 +1,6 @@
 import { Suspense, lazy } from 'react';
-import { Link, useData, useAppData, useConfig, defineDataLoader, defineStaticDataLoader, defineServerDataLoader } from 'ice';
-// not recommended but works
+import { Link, useData, useAppData, useConfig, definePageConfig, defineDataLoader, defineStaticDataLoader, defineServerDataLoader } from 'ice';
+// Not recommended but works.
 import { useAppContext } from '@ice/runtime';
 import { useRequest } from 'ahooks';
 import type { AppData } from 'ice';
@@ -48,7 +48,8 @@ export default function Home(props) {
   );
 }
 
-export function getConfig() {
+
+export const pageConfig = definePageConfig(() => {
   return {
     title: 'Home',
     meta: [
@@ -62,7 +63,7 @@ export function getConfig() {
       },
     ],
   };
-}
+});
 
 export const dataLoader = defineDataLoader(({ pathname, query }) => {
   return new Promise((resolve) => {

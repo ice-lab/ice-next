@@ -19,7 +19,7 @@ describe('run server app', () => {
             <div>home</div>
           );
         },
-        getConfig: () => ({ title: 'home' }),
+        pageConfig: () => ({ title: 'home' }),
         getData: async () => ({ data: 'test' }),
       }),
     },
