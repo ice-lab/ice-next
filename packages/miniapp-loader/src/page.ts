@@ -20,7 +20,7 @@ export default function (this: webpack.LoaderContext<any>) {
   const thisLoaderIndex = loaders.findIndex(item => normalizePath(item.path).indexOf('miniapp-loader/lib/page') >= 0);
   const componentPath = this.request.split('!').slice(thisLoaderIndex + 1).join('!');
 
-  const getDataAndConfigString = `${hasExportConfig ? 'getConfig, ' : ''}${hasExportData ? 'getData' : ''}`;
+  const getDataAndConfigString = `${hasExportConfig ? 'pageConfig, ' : ''}${hasExportData ? 'getData' : ''}`;
   let instantiatePage = `var inst = Page(createPageConfig(component, '${options.name}', {root:{cn:[]}}, { ${getDataAndConfigString} }, config || {}))`;
 
   const importDataAndConfigString = hasExportConfig || hasExportData

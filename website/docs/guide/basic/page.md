@@ -127,11 +127,12 @@ export const pageConfig = definePageConfig(() => ({
 
 ### 小程序页面配置
 
-小程序端不支持上述 title/metas/links/scripts 等配置。但是，通过 `getConfig` 方法能够声明该页面的小程序页面配置。以阿里小程序为例，[阿里小程序-页面配置](https://opendocs.alipay.com/mini/framework/page-json)的内容均可通过该方式声明：
+小程序端不支持上述 title/metas/links/scripts 等配置。但是，通过导出 `pageConfig` 能够声明该页面的小程序页面配置。以阿里小程序为例，[阿里小程序-页面配置](https://opendocs.alipay.com/mini/framework/page-json)的内容均可通过该方式声明：
 
 ```jsx title=src/pages/index.tsx
-export function getConfig() {
-  return {
+import { definePageConfig } from 'ice';
+
+export const pageConfig = definePageConfig(() => ({
     "defaultTitle": "",
     "allowsBounceVertical": "NO",
     "transparentTitle": "auto",
@@ -141,6 +142,5 @@ export function getConfig() {
     },
     "titlePenetrate": "YES",
     "barButtonTheme": "light"
-  };
-}
+  }));
 ```
