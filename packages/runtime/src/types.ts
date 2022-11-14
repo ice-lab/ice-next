@@ -34,7 +34,8 @@ export interface AppExport {
   dataLoader?: DataLoader;
 }
 
-export type DataLoader = (ctx: RequestContext) => (Promise<RouteData> | RouteData) | RouteData;
+export type DataLoaderResult = (Promise<RouteData> | RouteData) | RouteData;
+export type DataLoader = (ctx: RequestContext) => DataLoaderResult;
 
 interface StaticDataLoader {
   key?: string;

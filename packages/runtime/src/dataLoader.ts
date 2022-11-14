@@ -1,14 +1,19 @@
-import type { DataLoaderConfig, RuntimeModules, AppExport, RuntimePlugin, CommonJsRuntime } from './types.js';
+import type { DataLoaderConfig, DataLoaderResult, RuntimeModules, AppExport, RuntimePlugin, CommonJsRuntime } from './types.js';
 import getRequestContext from './requestContext.js';
-import { setFetcher, loadDataByCustomFetcher } from './dataLoaderFetcher.js';
 
 interface Loaders {
   [routeId: string]: DataLoaderConfig;
 }
 
-interface Result {
+interface PreLoadResult {
   value: any;
   status: string;
+}
+
+interface Options {
+  fetcher: Function;
+  runtimeModules: RuntimeModules['statics'];
+  appExport: AppExport;
 }
 
 export function defineDataLoader(dataLoaderConfig: DataLoaderConfig): DataLoaderConfig {
@@ -23,12 +28,43 @@ export function defineStaticDataLoader(dataLoaderConfig: DataLoaderConfig): Data
   return dataLoaderConfig;
 }
 
-const cache = new Map<string, Result>();
+/**
+ * custom fetcher for load static data loader config
+ * set globally to avoid passing this fetcher too deep
+ */
+let dataLoaderFetcher;
+
+export function setFetcher(customFetcher) {
+  dataLoaderFetcher = customFetcher;
+}
+
+export function loadDataByCustomFetcher(config) {
+  return dataLoaderFetcher(config);
+}
 
 /**
- * Start getData once loader is ready, and set to cache.
+ * handle for different dataLoader
  */
-function loadInitialData(loaders: Loaders) {
+export function callDataLoader(dataLoader: DataLoaderConfig, requestContext): DataLoaderResult {
+  if (Array.isArray(dataLoader)) {
+    return dataLoader.map(loader => {
+      return typeof loader === 'object' ? loadDataByCustomFetcher(loader) : loader(requestContext);
+    });
+  }
+
+  if (typeof dataLoader === 'object') {
+    return loadDataByCustomFetcher(dataLoader);
+  }
+
+  return dataLoader(requestContext);
+}
+
+const cache = new Map<string, PreLoadResult>();
+
+/**
+ * Start getData once data-loader.js is ready in client, and set to cache.
+ */
+function loadInitialDataInClient(loaders: Loaders) {
   const context = (window as any).__ICE_APP_CONTEXT__ || {};
   const matchedIds = context.matchedIds || [];
   const routesData = context.routesData || {};
@@ -48,22 +84,7 @@ function loadInitialData(loaders: Loaders) {
 
     if (dataLoader) {
       const requestContext = getRequestContext(window.location);
-
-      let loader;
-
-      if (Array.isArray(dataLoader)) {
-        loader = dataLoader.map(loader => {
-          if (typeof loader === 'object') {
-            return loadDataByCustomFetcher(loader);
-          }
-
-          return loader(requestContext);
-        });
-      } else if (typeof dataLoader === 'object') {
-        return loadDataByCustomFetcher(loader);
-      } else {
-        loader = dataLoader(requestContext);
-      }
+      const loader = callDataLoader(dataLoader, requestContext);
 
       cache.set(id, {
         value: loader,
@@ -73,13 +94,8 @@ function loadInitialData(loaders: Loaders) {
   });
 }
 
-interface Options {
-  fetcher: Function;
-  runtimeModules: RuntimeModules['statics'];
-  appExport: AppExport;
-}
-
 /**
+ * Init data loader in client side.
  * Load initial data and register global loader.
  * In order to load data, JavaScript modules, CSS and other assets in parallel.
  */
@@ -108,7 +124,7 @@ async function init(loadersConfig: Loaders, options: Options) {
   }
 
   try {
-    loadInitialData(loadersConfig);
+    loadInitialDataInClient(loadersConfig);
   } catch (error) {
     console.error('Load initial data error: ', error);
   }

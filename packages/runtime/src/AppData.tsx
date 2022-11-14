@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { AppExport, AppData, RequestContext } from './types.js';
-import { loadDataByCustomFetcher } from './dataLoaderFetcher.js';
+import { callDataLoader } from './dataLoader.js';
 
 const Context = React.createContext<AppData | undefined>(undefined);
 
@@ -30,17 +30,9 @@ async function getAppData(appExport: AppExport, requestContext?: RequestContext)
 
   const loader = appExport?.dataLoader;
 
-  if (Array.isArray(loader)) {
-    return await Promise.all(loader.map(load => {
-      if (typeof load === 'object') {
-        return loadDataByCustomFetcher(load);
-      }
+  if (!loader) return null;
 
-      return load(requestContext);
-    }));
-  } else if (loader) {
-    await loader(requestContext);
-  }
+  await callDataLoader(loader, requestContext);
 }
 
 export {
