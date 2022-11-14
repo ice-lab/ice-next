@@ -1,6 +1,6 @@
-import { defineAppConfig, type GetAppData } from 'ice';
+import { defineAppConfig, defineDataLoader } from 'ice';
 
-export const getAppData: GetAppData = () => {
+export const dataLoader = defineDataLoader(() => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
@@ -9,7 +9,7 @@ export const getAppData: GetAppData = () => {
       });
     }, 1000);
   });
-};
+});
 
 export const miniappManifest = {
   window: {
