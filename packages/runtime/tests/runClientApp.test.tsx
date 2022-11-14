@@ -337,8 +337,8 @@ describe('run client app', () => {
   it('load next page', async () => {
     const indexPage = {
       default: () => <></>,
-      pageConfig: () => ({ title: 'home' }),
-      dataLoader: async () => ({ type: 'getDataHome' }),
+      pageConfig: () => ({ title: 'index' }),
+      dataLoader: async () => ({ type: 'getDataIndex' }),
     };
     const aboutPage = {
       default: () => <></>,
