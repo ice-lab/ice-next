@@ -7,10 +7,10 @@ import { MINIAPP_PLATFORMS } from './constant.js';
 
 interface MiniappOptions {
   // TODO: specify the config type of native.
-  nativeConfig: any;
+  nativeConfig?: Record<string, any>;
 }
 
-const plugin: Plugin<MiniappOptions> = () => ({
+const plugin: Plugin<MiniappOptions> = ({ nativeConfig = {} }) => ({
   name: '@ice/plugin-miniapp',
   setup: ({ registerTask, onHook, context, dataCache, generator }) => {
     const { commandArgs, rootDir, command } = context;
@@ -53,6 +53,7 @@ const plugin: Plugin<MiniappOptions> = () => ({
         configAPI,
         dataCache,
         runtimeDir: '.ice',
+        nativeConfig,
       }));
       onHook(`after.${command as 'start' | 'build'}.compile`, async ({ isSuccessful, isFirstCompile }) => {
         const shouldShowLog = isSuccessful && ((command === 'start' && isFirstCompile) || command === 'build');

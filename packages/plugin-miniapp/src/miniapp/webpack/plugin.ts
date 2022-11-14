@@ -51,7 +51,7 @@ export class MiniWebpackPlugin {
   }
 
   getMainPlugin() {
-    const { rootDir, template, fileType, configAPI } = this.config;
+    const { rootDir, template, fileType, configAPI, nativeConfig, projectConfigJson } = this.config;
     const options = {
       rootDir,
       fileType,
@@ -60,6 +60,8 @@ export class MiniWebpackPlugin {
       baseLevel: 16,
       minifyXML: {},
       configAPI,
+      nativeConfig,
+      projectConfigJson,
     };
     return new MiniPlugin(options);
   }

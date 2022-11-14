@@ -12,10 +12,10 @@ order: 7
 在 ice.js 中，你可以在小程序开发的插件中使用 `nativeConfig` 字段来进行相应的配置。编译完成后，该字段的内容将被写入项目配置文件中：
 
 ```ts title=ice.config.mts
-import pluginMiniapp from '@ice/plugin-miniapp';
+import miniapp from '@ice/plugin-miniapp';
 
 export default defineConfig({
-  plugins: [pluginMiniapp({
+  plugins: [miniapp({
     nativeConfig: {
       appid: '<your-app-id>'
     }

@@ -40,6 +40,8 @@ interface MiniPluginOptions {
     getAppConfig: Config['getAppConfig'];
     getRoutesConfig: Config['getRoutesConfig'];
   };
+  nativeConfig: Record<string, any>;
+  projectConfigJson?: string;
 }
 
 interface FilesConfig {
@@ -444,6 +446,9 @@ export default class MiniPlugin {
 
     // TODO:与原生小程序混写时解析模板与样式
 
+
+    // project.config.json
+    this.generateProjectConfigFile(compilation);
     // app.json
     this.generateConfigFile(compilation, APP_CONFIG_FILE, this.filesConfig[APP_CONFIG_FILE].content);
 
@@ -513,6 +518,14 @@ export default class MiniPlugin {
     this.injectCommonStyles(compilation);
     if (this.themeLocation) {
       this.generateDarkModeFile(compilation);
+    }
+  }
+
+  generateProjectConfigFile(compilation: webpack.Compilation) {
+    const { nativeConfig, projectConfigJson } = this.options;
+    if (projectConfigJson) {
+      const projectConfigStr = JSON.stringify(nativeConfig);
+      compilation.assets[projectConfigJson] = new RawSource(projectConfigStr);
     }
   }
 

@@ -35,15 +35,18 @@ const getMiniappTask = ({
   configAPI,
   dataCache,
   runtimeDir,
+  nativeConfig,
 }): Config => {
   const entry = getEntry(rootDir, runtimeDir);
   const mode = command === 'start' ? 'development' : 'production';
-  const { template, globalObject, fileType } = getMiniappPlatformConfig(platform);
+  const { template, globalObject, fileType, projectConfigJson } = getMiniappPlatformConfig(platform);
   const { plugins, module } = getMiniappWebpackConfig({
     rootDir,
     template,
     fileType,
     configAPI,
+    projectConfigJson,
+    nativeConfig,
   });
   const defaultLogging = command === 'start' ? 'summary' : 'summary assets';
   return {

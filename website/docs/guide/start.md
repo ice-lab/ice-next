@@ -53,10 +53,10 @@ $ npm start
 在 `ice.config.mts` 中配置 `@ice/plugin-miniapp` 插件：
 
 ```js title=ice.config.mts
-import pluginMiniapp from '@ice/plugin-miniapp';
+import miniapp from '@ice/plugin-miniapp';
 
 export default defineConfig({
-  plugins: [pluginMiniapp()],
+  plugins: [miniapp()],
 });
 
 ```
