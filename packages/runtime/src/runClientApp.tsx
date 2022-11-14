@@ -18,6 +18,7 @@ import getRequestContext from './requestContext.js';
 import getAppConfig from './appConfig.js';
 import matchRoutes from './matchRoutes.js';
 import DefaultAppRouter from './AppRouter.js';
+import { setFetcher } from './dataLoaderFetcher.js';
 
 export interface RunClientAppOptions {
   app: AppExport;
@@ -43,6 +44,7 @@ export default async function runClientApp(options: RunClientAppOptions) {
     runtimeOptions,
     dataLoaderFetcher,
   } = options;
+
   const windowContext: WindowContext = (window as any).__ICE_APP_CONTEXT__ || {};
   const assetsManifest: AssetsManifest = (window as any).__ICE_ASSETS_MANIFEST__ || {};
   let {
@@ -80,6 +82,8 @@ export default async function runClientApp(options: RunClientAppOptions) {
     await Promise.all(runtimeModules.statics.map(m => runtime.loadModule(m)).filter(Boolean));
   }
 
+  setFetcher(dataLoaderFetcher);
+
   if (!appData) {
     appData = await getAppData(app, requestContext);
   }
@@ -92,10 +96,9 @@ export default async function runClientApp(options: RunClientAppOptions) {
   const routeModules = await loadRouteModules(matches.map(({ route: { id, load } }) => ({ id, load })));
 
   if (!routesData) {
-    routesData = await loadRoutesData(matches, requestContext, routeModules, {
-      dataLoaderFetcher,
-    });
+    routesData = await loadRoutesData(matches, requestContext, routeModules);
   }
+
   if (!routesConfig) {
     routesConfig = getRoutesConfig(matches, routesData, routeModules);
   }
@@ -111,15 +114,15 @@ export default async function runClientApp(options: RunClientAppOptions) {
     await Promise.all(runtimeModules.commons.map(m => runtime.loadModule(m)).filter(Boolean));
   }
 
-  render({ runtime, history, dataLoaderFetcher });
+  render({ runtime, history });
 }
 
 interface RenderOptions {
   history: History;
   runtime: Runtime;
-  dataLoaderFetcher?: Function;
 }
-async function render({ history, runtime, dataLoaderFetcher }: RenderOptions) {
+
+async function render({ history, runtime }: RenderOptions) {
   const appContext = runtime.getAppContext();
   const { appConfig, appData } = appContext;
   const render = runtime.getRender();
@@ -143,7 +146,6 @@ async function render({ history, runtime, dataLoaderFetcher }: RenderOptions) {
         <BrowserEntry
           history={history}
           appContext={appContext}
-          dataLoaderFetcher={dataLoaderFetcher}
           RouteWrappers={RouteWrappers}
           AppRouter={AppRouter}
         />
@@ -157,7 +159,6 @@ interface BrowserEntryProps {
   appContext: AppContext;
   RouteWrappers: RouteWrapperConfig[];
   AppRouter: React.ComponentType<AppRouterProps>;
-  dataLoaderFetcher: Function;
 }
 
 interface HistoryState {
@@ -175,7 +176,6 @@ interface RouteState {
 function BrowserEntry({
   history,
   appContext,
-  dataLoaderFetcher,
   ...rest
 }: BrowserEntryProps) {
   const {
@@ -213,9 +213,6 @@ function BrowserEntry({
         loadNextPage(
           currentMatches,
           routeState,
-          {
-            dataLoaderFetcher,
-          },
         ).then(({ routesData, routesConfig, routeModules }) => {
           setHistoryState({
             action,
@@ -254,10 +251,6 @@ function BrowserEntry({
   );
 }
 
-interface LoadNextPageOptions {
-  dataLoaderFetcher?: Function;
-}
-
 /**
  * Prepare for the next pages.
  * Load modules、getPageData and preLoad the custom assets.
@@ -265,17 +258,12 @@ interface LoadNextPageOptions {
 export async function loadNextPage(
   currentMatches: RouteMatch[],
   preRouteState: RouteState,
-  options?: LoadNextPageOptions,
 ) {
   const {
     matches: preMatches,
     routesData: preRoutesData,
     routeModules: preRouteModules,
   } = preRouteState;
-
-  const {
-    dataLoaderFetcher,
-  } = options || {};
 
   const routeModules = await loadRouteModules(
     currentMatches.map(({ route: { id, load } }) => ({ id, load })),
@@ -285,9 +273,7 @@ export async function loadNextPage(
   // load data for changed route.
   const initialContext = getRequestContext(window.location);
   const matchesToLoad = filterMatchesToLoad(preMatches, currentMatches);
-  const data = await loadRoutesData(matchesToLoad, initialContext, routeModules, {
-    dataLoaderFetcher,
-  });
+  const data = await loadRoutesData(matchesToLoad, initialContext, routeModules);
 
   const routesData: RoutesData = {};
   // merge page data.
