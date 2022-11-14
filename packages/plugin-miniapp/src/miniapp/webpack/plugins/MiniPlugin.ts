@@ -189,7 +189,7 @@ export default class MiniPlugin {
             const loaderName = require.resolve(this.pageLoaderName);
             if (!isLoaderExist(module.loaders, loaderName)) {
               const routeInfo = this.routeManifest.find(route => path.join('pages', route.id) === module.name);
-              const hasExportData = routeInfo?.exports?.includes('getData');
+              const hasExportData = routeInfo?.exports?.includes('dataLoader');
               const hasExportConfig = routeInfo?.exports?.includes('pageConfig');
               module.loaders.unshift({
                 loader: loaderName,

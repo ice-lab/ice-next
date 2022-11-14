@@ -1,3 +1,5 @@
+import { defineDataLoader } from 'ice';
+
 import './index.scss';
 import { useAppData, useConfig, useData, Link, useSearchParams, history } from 'ice';
 import json from '../test.json';
@@ -52,15 +54,15 @@ export function pageConfig() {
   };
 }
 
-export function getData(options) {
+export const dataLoader = defineDataLoader((options) => {
   // options comes from onLoad in miniapp page config
-  console.log('options.pathname', options.pathname);
-  console.log('options.query', options.query);
+  console.log('index page options.pathname', options.pathname);
+  console.log('index page options.query', options.query);
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
-        name: 'About',
+        name: 'Index',
       });
     }, 1 * 100);
   });
-}
+});

@@ -1,3 +1,4 @@
+import { defineDataLoader } from 'ice';
 export default function Home() {
   return (
     <>
@@ -12,7 +13,7 @@ export function pageConfig() {
   };
 }
 
-export function getData(options) {
+export const dataLoader = defineDataLoader((options) => {
   // options comes from onLoad in miniapp page config
   console.log('about page options.pathname', options.pathname);
   console.log('about page options.query', options.query);
@@ -23,4 +24,4 @@ export function getData(options) {
       });
     }, 1 * 100);
   });
-}
+});

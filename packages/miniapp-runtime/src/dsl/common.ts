@@ -86,7 +86,7 @@ export function createPageConfig(
   component: any,
   pageName: string,
   data: Record<string, unknown>,
-  { getData, pageConfig },
+  { dataLoader, pageConfig },
   miniappPageConfig?: MiniappPageConfig) {
   // 小程序 Page 构造器是一个傲娇小公主，不能把复杂的对象挂载到参数上
   const id = pageName ?? `ice_page_${pageId()}`;
@@ -137,12 +137,12 @@ export function createPageConfig(
 
       setCurrentRouter(this);
       const routeConfig = pageConfig?.();
-      if (!getData) {
+      if (!dataLoader) {
         // createRoot(render) is asynchronous
-        getData = () => new Promise<void>(resolve => setTimeout(resolve, 0));
+        dataLoader = () => new Promise<void>(resolve => setTimeout(resolve, 0));
       }
       const mount = () => {
-        getData({ pathname: id, query: this.$iceParams }).then(routeData => {
+        dataLoader({ pathname: id, query: this.$iceParams }).then(routeData => {
           Current.app!.mount!(component, { id: $icePath, routeData, routeConfig }, () => {
             pageElement = env.document.getElementById<RootElement>($icePath);
 

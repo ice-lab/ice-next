@@ -32,6 +32,7 @@ const plugin: Plugin<MiniappOptions> = ({ nativeConfig = {} }) => ({
           'Link',
           'useSearchParams',
           'history',
+          'defineDataLoader',
         ],
         source: miniappRuntime,
       });
