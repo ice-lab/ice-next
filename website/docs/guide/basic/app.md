@@ -55,7 +55,7 @@ export default defineAppConfig(() => ({
 ### router
 
 :::caution
-小程序端不支持 router 配置。关于小程序的 router 配置参考[小程序开发-路由](/docs/guide/basic/miniapp#路由)
+小程序端不支持 router 配置。关于小程序的 router 配置参考[小程序开发-路由](../miniapp/router)
 :::
 
 #### `type` 

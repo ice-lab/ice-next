@@ -3,7 +3,7 @@ title: 插件列表
 order: 2
 ---
 
-## [@ice/plugin-miniapp](../basic/miniapp)
+## [@ice/plugin-miniapp](../miniapp/start)
 
 提供小程序的开发能力。
 
