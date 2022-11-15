@@ -86,7 +86,7 @@ Use wechat-miniprogram developer tools to open the following folder:
 
 受小程序环境限制，以下 ice.js 提供的能力在小程序端不适用，相关章节中也会进行标注：
 
-- [数据模拟 Mock](/docs/guide/basic/mock)
+- [数据模拟 Mock](../basic/mock)
 
 :::info
 小程序中的数据请求需要统一使用其提供的 request 相关 API，因此 ice.js 提供的数据模拟 Mock 能力对小程序不适用。小程序端的数据模拟能力可通过开发者工具进行配置使用，这里列出阿里及微信小程序的相关使用文档：
