@@ -15,7 +15,7 @@ import type {
   AppProvider,
   RouteWrapper,
   RenderMode,
-  GetAppData,
+  DataLoaderConfig,
   RouteWrapperConfig,
 } from './types.js';
 import Runtime from './runtime.js';
@@ -33,7 +33,7 @@ import {
   Main,
   Data,
 } from './Document.js';
-import dataLoader from './dataLoader.js';
+import dataLoader, { defineDataLoader, defineServerDataLoader, defineStaticDataLoader } from './dataLoader.js';
 import AppRouter from './AppRouter.js';
 import AppErrorBoundary from './AppErrorBoundary.js';
 import getAppConfig, { defineAppConfig } from './appConfig.js';
@@ -54,6 +54,9 @@ export {
   useAppData,
   useData,
   getAppData,
+  defineDataLoader,
+  defineServerDataLoader,
+  defineStaticDataLoader,
   DataProvider,
   ConfigProvider,
   useConfig,
@@ -90,6 +93,6 @@ export type {
   AppProvider,
   RouteWrapper,
   RenderMode,
-  GetAppData,
+  DataLoaderConfig,
   RunClientAppOptions,
 };

@@ -1,4 +1,4 @@
-import { Outlet, useData, useConfig } from 'ice';
+import { Outlet, useData, useConfig, definePageConfig, defineDataLoader } from 'ice';
 
 export default function Layout() {
   const data = useData();
@@ -14,7 +14,8 @@ export default function Layout() {
   );
 }
 
-export function getConfig() {
+
+export const pageConfig = definePageConfig(() => {
   return {
     title: 'Layout',
     meta: [
@@ -24,9 +25,9 @@ export function getConfig() {
       },
     ],
   };
-}
+});
 
-export function getData() {
+export const dataLoader = defineDataLoader(() => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
@@ -34,4 +35,4 @@ export function getData() {
       });
     }, 1 * 100);
   });
-}
+});

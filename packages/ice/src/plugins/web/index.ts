@@ -46,6 +46,9 @@ const plugin: Plugin = () => ({
         'KeepAliveOutlet',
         'useMounted',
         'ClientOnly',
+        'defineDataLoader',
+        'defineServerDataLoader',
+        'defineStaticDataLoader',
       ],
       source: '@ice/runtime',
     });

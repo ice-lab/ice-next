@@ -141,7 +141,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   const coreEnvKeys = getCoreEnvKeys();
 
   const routesInfo = await generateRoutesInfo(rootDir, routesConfig);
-  const hasExportAppData = (await getFileExports({ rootDir, file: 'src/app' })).includes('getAppData');
+  const hasExportAppData = (await getFileExports({ rootDir, file: 'src/app' })).includes('dataLoader');
   const csr = !userConfig.ssr && !userConfig.ssg;
 
   const disableRouter = userConfig?.optimization?.router && routesInfo.routesCount <= 1;
@@ -177,7 +177,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
   dataCache.set('routes', JSON.stringify(routesInfo));
   dataCache.set('hasExportAppData', hasExportAppData ? 'true' : '');
 
-  // Render exports files if route component export getData / getConfig.
+  // Render exports files if route component export dataLoader / pageConfig.
   renderExportsTemplate({
     ...routesInfo,
     hasExportAppData,

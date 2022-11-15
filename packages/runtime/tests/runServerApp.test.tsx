@@ -1,3 +1,6 @@
+/**
+ * @vitest-environment jsdom
+ */
 import React from 'react';
 import { expect, it, describe } from 'vitest';
 import { renderToHTML, renderToResponse } from '../src/runServerApp';
@@ -16,7 +19,7 @@ describe('run server app', () => {
             <div>home</div>
           );
         },
-        getConfig: () => ({ title: 'home' }),
+        pageConfig: () => ({ title: 'home' }),
         getData: async () => ({ data: 'test' }),
       }),
     },
@@ -188,7 +191,7 @@ describe('run server app', () => {
       res: {
         destination: {},
         // @ts-ignore
-        setHeader: () => {},
+        setHeader: () => { },
         // @ts-ignore
         end: (content) => {
           htmlContent = content;
