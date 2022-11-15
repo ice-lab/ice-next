@@ -11,7 +11,7 @@ ice.js 支持小程序开发。由于小程序端大部分能力及配置均与 
 
 ## 配置命令
 
-参考[快速开始-创建应用](/docs/guide/start)并安装依赖后，在 `package.json` 中配置以下 scripts 命令：
+参考[快速开始-创建应用](../start)并安装依赖后，在 `package.json` 中配置以下 scripts 命令：
 
 ```json
   "scripts": {
@@ -94,12 +94,12 @@ Use wechat-miniprogram developer tools to open the following folder:
 - [微信小程序 API Mock](https://developers.weixin.qq.com/miniprogram/dev/devtools/api-mock.html)
 :::
 
-- [构建时渲染 SSG](/docs/guide/basic/ssg)
-- [服务端渲染 SSR](/docs/guide/basic/ssr)
-- [定制 HTML](/docs/guide/basic/document)
-- [权限管理](/docs/guide/advanced/auth)
-- [CSS 资源本地化](/docs/guide/advanced/css-assets-local)
-- [Keep Alive](/docs/guide/advanced/keep-alive)
+- [构建时渲染 SSG](../basic/ssg)
+- [服务端渲染 SSR](../basic/ssr)
+- [定制 HTML](../basic/document)
+- [权限管理](../advanced/auth)
+- [CSS 资源本地化](../advanced/css-assets-local)
+- [Keep Alive](../advanced/keep-alive)
 - 使用 antd/fusion 等已有 Web 组件库
 
 :::info

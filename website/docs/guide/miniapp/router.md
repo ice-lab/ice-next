@@ -3,7 +3,7 @@ title: 路由
 order: 3
 ---
 
-小程序端路由相关概念基本与[指南-路由](../basic/router)章节保持一致（不支持[布局组件](/docs/guide/basic/router#布局组件)、[动态路由](/docs/guide/basic/router#动态路由)），以下仅列出小程序端路由的注意点。
+小程序端路由相关概念基本与[指南-路由](../basic/router)章节保持一致（不支持[布局组件](../basic/router#布局组件)、[动态路由](../basic/router#动态路由)），以下仅列出小程序端路由的注意点。
 
 ## 路由规则
 

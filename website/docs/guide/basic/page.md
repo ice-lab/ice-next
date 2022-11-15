@@ -123,7 +123,6 @@ export const pageConfig = definePageConfig(() => ({
 ```
 
 推荐在页面组件内按需异步加载，以达到更好的性能体验。
-@TODO 补充推荐的方式示例
 
 ### 小程序页面配置
 
@@ -133,14 +132,14 @@ export const pageConfig = definePageConfig(() => ({
 import { definePageConfig } from 'ice';
 
 export const pageConfig = definePageConfig(() => ({
-    "defaultTitle": "",
-    "allowsBounceVertical": "NO",
-    "transparentTitle": "auto",
-    "titleBarColor": "#262833",
-    "optionMenu": {
-      "icon": "https://img.alicdn.com/tps/i3/T1OjaVFl4dXXa.JOZB-114-114.png"
-    },
-    "titlePenetrate": "YES",
-    "barButtonTheme": "light"
-  }));
+  "defaultTitle": "",
+  "allowsBounceVertical": "NO",
+  "transparentTitle": "auto",
+  "titleBarColor": "#262833",
+  "optionMenu": {
+    "icon": "https://img.alicdn.com/tps/i3/T1OjaVFl4dXXa.JOZB-114-114.png"
+  },
+  "titlePenetrate": "YES",
+  "barButtonTheme": "light"
+}));
 ```

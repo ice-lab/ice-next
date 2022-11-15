@@ -160,7 +160,12 @@ public String index(Model model) {
 
 ## 小程序发布
 
-// TODO
+执行 `npm run build` 命令完成构建后，按照命令行提示使用对应的小程序开发者工具打开产物目录。在小程序开发者工具项目页面找到『上传』按钮即可上传小程序。然后进入对应的小程序管理后台进行小程序的提交审核及发布即可。
+
+> 参考文档：
+>
+> - [微信小程序代码协同工作和发布](https://developers.weixin.qq.com/miniprogram/dev/framework/quickstart/release.html#%E5%8D%8F%E5%90%8C%E5%B7%A5%E4%BD%9C)
+> - [阿里小程序提审、发布与运营](https://opendocs.alipay.com/mini/introduce/release)
 
 ## FAQ
 
