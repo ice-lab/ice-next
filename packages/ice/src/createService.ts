@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
+import fse from 'fs-extra';
 import { Context } from 'build-scripts';
 import consola from 'consola';
 import type { CommandArgs, CommandName } from 'build-scripts';
@@ -23,7 +24,7 @@ import { setEnv, updateRuntimeEnv, getCoreEnvKeys } from './utils/runtimeEnv.js'
 import getRuntimeModules from './utils/getRuntimeModules.js';
 import { generateRoutesInfo } from './routes.js';
 import * as config from './config.js';
-import { RUNTIME_TMP_DIR, WEB } from './constant.js';
+import { ROUTER_MANIFEST, RUNTIME_TMP_DIR, WEB } from './constant.js';
 import createSpinner from './utils/createSpinner.js';
 import getRoutePaths from './utils/getRoutePaths.js';
 import ServerCompileTask from './utils/ServerCompileTask.js';
@@ -103,6 +104,7 @@ async function createService({ rootDir, command, commandArgs }: CreateServiceOpt
       },
       serverCompileTask,
       dataCache,
+      getRouteManifest: () => fse.readJSONSync(path.join(rootDir, ROUTER_MANIFEST)),
     },
   });
   // resolve userConfig from ice.config.ts before registerConfig
